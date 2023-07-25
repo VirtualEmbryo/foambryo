@@ -1,6 +1,7 @@
 # foambryo
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+[![DOI](https://zenodo.org/badge/625305276.svg)](https://zenodo.org/badge/latestdoi/625305276)
 
 **foambryo** is a python package based on Polyscope designed to infer relative surface tensions, cell pressures and cell stress tensors from the geometry of foam-like cell clusters, such as early-embryos, many tissues and stem-cell derived organoids and embryoids.
 
