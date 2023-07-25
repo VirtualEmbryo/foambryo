@@ -3,31 +3,43 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 [![DOI](https://zenodo.org/badge/625305276.svg)](https://zenodo.org/badge/latestdoi/625305276)
 
-**foambryo** is a python package based on Polyscope designed to infer relative surface tensions, cell pressures and cell stress tensors from the geometry of foam-like cell clusters, such as early-embryos, many tissues and stem-cell derived organoids and embryoids.
-
-Living structures encountered in the field of developmental biology have intricate shapes and structures, that reflectes their physiological functions. Mechanics is at the heart of the development of these structures, yet tools to investigate the forces at play in 3D remain scarse. Inferring forces or stresses from cell shapes allows allows one to reveal the fundamental mechanics shaping cells. This software makes the classical hypothesis that cells in many embryos, tissues or aggregates are akin to heterogeneous foam-like structures (see [Physical model](README.md/#Physical-model)).
-
-foambryo was created by Sacha Ichbiah during his PhD in [Turlier Lab](https://www.turlierlab.com), and is maintained by Sacha Ichbiah and Hervé Turlier. For support, please open an issue.
-If you use this library in your work please cite the [paper](https://doi.org/10.1101/2023.04.12.536641).
+**foambryo** is a python package developed to infer in 3D the relative surface tensions and cell pressures from the geometry of cells forming foam-like clusters, such as early-embryos or tissues, including stem-cell derived organoids or embryoids.
 
 <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
 
+It was developed by Sacha Ichbiah during his PhD in [Turlier Lab](https://www.turlierlab.com), and is maintained by Sacha Ichbiah and Hervé Turlier. For support, please open an issue.
+If you use our library in your work please cite the [paper](https://doi.org/10.1101/2023.04.12.536641).
 
+If you are interested in inferring tensions in 2D, please look at the [foambryo2D](https://github.com/VirtualEmbryo/foambryo2D) package instead. 
 
+### Biological and biophysical context 
 
-Foambryo requires the prior segmentation of the aggregate into cell segmentation mask images using your favorite algorithm (watershed, [cellpose](https://www.cellpose.org) or others)
+Multicellular structures encountered in the field of developmental biology have various shapes and arrangements that reflectes their physiological functions. Mechanics is at the heart of the development of these structures, yet tools to investigate the forces at play in 3D remain scarse. Inferring forces or stresses from cell shapes only allows one to reveal the fundamental mechanics shaping cells from microscopy imaging. This software makes the hypothesis that cells in many early embryos, tissues and cell aggregates are mechanically akin to heterogeneous foam-like structures (see [Physical model](README.md/#Physical-model)).
 
-We rely on our companion tool [**delaunay-watershed**](https://github.com/VirtualEmbryo/delaunay-watershed) to construct precise multimaterial meshes from instance segmentations. From these multimaterial meshes, we can efficiently and robustly extract junction angles and interface curvatures, and invert the **Young-Dupré** and **Laplace** laws, to retrieve the fundamental forces involved in the mechanical equilibrium of foam-like cell aggregates: **surface tensions** $\gamma_{ij}$ and **cell pressures** $p_i$.
+### Prerequisites 
+
+**foambryo** requires a prior segmentation of the multicellular aggregate into cell segmentation masks using one's favorite algorithm (watershed algorithm, [cellpose](https://www.cellpose.org) or any preferred one). The quality of the segmentation and the size of the original image will directly affect the precision of the inference results.
+
+We rely on a companion tool [**delaunay-watershed**](https://github.com/VirtualEmbryo/delaunay-watershed) that we developed to construct precise multimaterial meshes from instance segmentations. From these multimaterial meshes, we can efficiently and robustly extract junction angles and interface curvatures, and invert the **Young-Dupré** and **Laplace** laws, to retrieve the fundamental forces involved in the mechanical equilibrium of foam-like cell aggregates: **surface tensions** $\gamma_{ij}$ and **cell pressures** $p_i$.
 
 The viewer is based on **Polyscope**, a popular viewer designed to visualise 3-dimensional geometrical structures.
+
+### Installation
+
+We recommand to install **foambryo** from the PyPI repository directly
+```shell
+pip install foambryo
+```
+
+For developers, you may also install **foambryo** by cloning the source code and installing from the local directory
+```shell
+git clone https://github.com/VirtualEmbryo/foambryo.git
+pip install pathtopackage/foambryo
+```
 
 ### Quick start example 
 
 Load an instance segmentation, reconstruct its multimaterial mesh, infer and visualize the forces with Polyscope
-
-```shell
-pip install foambryo
-```
 
 ```py
 from dw3d import DCEL_Data, geometry_reconstruction_3d
@@ -49,22 +61,16 @@ plot_force_inference(Mesh)
 plot_tension_inference(Mesh)
 ```
 
-### Installation
-
-```shell
-pip install foambryo
-```
-
 ### Physical model
 We consider a tissue constituted of cells i. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Equilibrium.png" alt="drawing" width="175"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Equilibrium.png" alt="drawing" width=“200”/>
 
 They minimize, under conservation of volume an energy 
 $\mathcal{E}=\underset{ij}{\sum}\gamma_{ij}$.
 
-The two main laws involved are: 
-- **Young-Dupré Law:** $\gamma_{ij} + \gamma_{ik} + \gamma_{jk} = 0$ .
+The two main laws underlying mechanical force balance are: 
+- **Young-Dupré Law:** $\gamma_{ij} + \gamma_{ik} + \gamma_{jk} = 0$.
 - **Laplace Law:** $p_j - p_i = 2 \gamma_{ij} H_{ij}$ where $H_{ij}$ is the mean curvature of the interface between the cell i and j.
 
 
@@ -74,23 +80,23 @@ The two main laws involved are:
 
 #### 1 - Loading a multimaterial mesh
 The first step is to load your multimaterial mesh into a `DCEL_Data` object via the builder `DCEL_Data(Verts, Faces_multimaterial)`. 
-    - `Verts` is an V x 3 Numpy array of vertex positions
-    - `Faces_multimaterial` is an F x 5 numpy array of face and material indices, where at each row the 3 first indices refers to a vertex and the 2 last refer to a given material, 0 being the exterior media
+    - `Verts` is a V x 3 Numpy array of vertex positions, where V is the number of vertices.
+    - `Faces_multimaterial` is a F x 5 numpy array of F faces (triangles) and labels, where at each row the 3 first indices refers to the indices of the three vertices of that triangle and the 2 last refer to a given interface label. An interface label is made of two indices referring to the two materials (e.g. cells) lying on each of its side, 0 being the exterior by convention.
 
 #### 2 - Infer tensions and pressures
- Then the second step is to use this `Mesh` object to infer the tensions and pressions
+Then the second step is to use this `Mesh` object to infer the relative surface tensions and cell pressures
 - `infer_tension(Mesh,mean_tension=1,mode='YD')`: 
-We infer relative tensions by inverting junctional equilibrium relations
-    - `Mesh` is a `DCEL_Data` object
-    - `mean_tension` has to be defined as we only infer ratio between tensions
-    - `mode` is the formula used to infer the tensions. It has to be choosen among: `YD`, `Eq`, `Projection_YD`,  `cotan`, `inv_cotan`, `Lamy`, `inv_Lamy`, `Lamy_Log`, `Variational`
+One infers relative tensions by inverting mechanical equilibrium at each tri-material/cellular junction
+    - `Mesh` is a `DCEL_Data` object.
+    - `mean_tension` has to be defined as one only infers ratios between tensions, you can set it to 1 for instance.
+    - `mode` is the formula used to infer the tensions from contact angles at each junction. It has to be choosen among: `YD` (Young-Dupré with cosines only), `Eq`, `Projection_YD` (Young-Dupré with cosines and sines),  `cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)), `inv_cotan` (inverse of the cotangent formula), `Lamy` ([Lamy's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)), `inv_Lamy` (inverse of the Lamy's relation), `Lamy_Log` (logarithm of the Lamy's relation), `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641))
 
 - `infer_pressures(Mesh,dict_tensions,mode='Variational', P0 = 0)`: 
-We infer pressures relative to the exterior (of zero pressure) by inverting membrane equilibrium relation
-    - `Mesh` is a `DCEL_Data` object
-    -  `dict_tensions` is the dictionnary obtained with `infer_tension`
-    - `P0` has to be defined as we only infer relative pressures
-    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational`, `Laplace`
+We infer pressures relative to the exterior pressure $P_0$ by inverting normal force balance at each interface
+    - `Mesh` is a `DCEL_Data` object.
+    -  `dict_tensions` is the dictionnary obtained with `infer_tension`.
+    - `P0` has to be defined as one only pressures relative to the exterior.
+    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), `Laplace` (Laplace's law).
 
 #### 3 - Visualize
 
@@ -132,14 +138,13 @@ We use segmentation data from [Guignard, L., Fiúza, U. et al.](https://www.scie
 
 <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.png" alt="drawing" width="900"/>
 
-#### View scalar quantities on surface meshes
+#### Plotting scalar quantities on surface meshes
 
 Gaussian and mean curvature can be plotted on our meshes, and may be useful to study the geometric properties of interfaces between cells. 
 We can also plot the vertex area and volume derivatives, that appear in our variational formulas, the difference between the two principal curvatures and the residual of the best sphere-fit that can be used to detect non-spherical constant-mean-curvature surfaces.
 They can be obtained by putting the option `scalar_quantities = True` when viewing the forces. 
 
 <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/scalar_quantities.png" alt="drawing" width="900"/>
-
 
 - Gaussian Curvature is computed using the angle defect formula.
 - Mean Curvature is computed using the cotan formula.
