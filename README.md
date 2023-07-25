@@ -10,7 +10,7 @@ Living structures encountered in the field of developmental biology have intrica
 foambryo was created by Sacha Ichbiah during his PhD in [Turlier Lab](https://www.turlierlab.com), and is maintained by Sacha Ichbiah and Hervé Turlier. For support, please open an issue.
 If you use this library in your work please cite the [paper](https://doi.org/10.1101/2023.04.12.536641).
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.pngWindow_76_cells.png" alt="drawing" width="650"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
 
 
 
@@ -58,7 +58,7 @@ pip install foambryo
 ### Physical model
 We consider a tissue constituted of cells i. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.pngEquilibrium.png" alt="drawing" width="175"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Equilibrium.png" alt="drawing" width="175"/>
 
 They minimize, under conservation of volume an energy 
 $\mathcal{E}=\underset{ij}{\sum}\gamma_{ij}$.
@@ -124,13 +124,13 @@ The viewer part of the package is built around several functions, each of them t
 *Phallusia mammillata* is a solitary marine tunicate of the ascidian class known for its stereotypical development. As the embryo develops freely, without any constraint, we can do a full force inference and infer its tensions, pressures and stresses.
 We use segmentation data from [Guignard, L., Fiúza, U. et al.](https://www.science.org/doi/10.1126/science.aar5663)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.pngAscidians.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Ascidians.png" alt="drawing" width="900"/>
 
 
 #### *C. elegans* early embryo
 *Caenorhabditis elegans* is a widely studied model organism, with one of the most reproducible development. The embryo of this earthworm is developing within a shell. As the shell shape and mechanics is unknown, the pressures are not accessible. However we can still use Young-Dupré relationships to retrieve surface tensions at cell membranes. Here we use segmentation data from [Cao, J., Guan, G., Ho, V.W.S. et al.](https://doi.org/10.1038/s41467-020-19863-x)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.pngCElegans.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.png" alt="drawing" width="900"/>
 
 #### View scalar quantities on surface meshes
 
@@ -138,7 +138,7 @@ Gaussian and mean curvature can be plotted on our meshes, and may be useful to s
 We can also plot the vertex area and volume derivatives, that appear in our variational formulas, the difference between the two principal curvatures and the residual of the best sphere-fit that can be used to detect non-spherical constant-mean-curvature surfaces.
 They can be obtained by putting the option `scalar_quantities = True` when viewing the forces. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/CElegans.pngscalar_quantities.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/scalar_quantities.png" alt="drawing" width="900"/>
 
 
 - Gaussian Curvature is computed using the angle defect formula.
