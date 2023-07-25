@@ -64,7 +64,7 @@ plot_tension_inference(Mesh)
 ### Physical model
 We consider a tissue constituted of cells i. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Equilibrium.png" alt="drawing" width=“200”/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Equilibrium.png" alt="drawing" width=“175”/>
 
 They minimize, under conservation of volume an energy 
 $\mathcal{E}=\underset{ij}{\sum}\gamma_{ij}$.
@@ -140,7 +140,7 @@ We use segmentation data from [Guignard, L., Fiúza, U. et al.](https://www.scie
 
 #### Plotting scalar quantities on surface meshes
 
-Gaussian and mean curvature can be plotted on our meshes, and may be useful to study the geometric properties of interfaces between cells. 
+Gaussian and mean curvatures can be plotted on our meshes, and may be useful to study the geometric properties of interfaces between cells. 
 We can also plot the vertex area and volume derivatives, that appear in our variational formulas, the difference between the two principal curvatures and the residual of the best sphere-fit that can be used to detect non-spherical constant-mean-curvature surfaces.
 They can be obtained by putting the option `scalar_quantities = True` when viewing the forces. 
 
