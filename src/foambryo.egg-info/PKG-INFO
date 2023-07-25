@@ -1,0 +1,166 @@
+Metadata-Version: 2.1
+Name: foambryo
+Version: 0.1.9
+Summary: Tension inference for 3D cell assemblies
+Home-page: https://github.com/sacha-ichbiah/foambryo
+Author: Sacha Ichbiah
+Author-email: sacha.ichbiah@college-de-france.fr
+Project-URL: Team website, https://www.turlierlab.com/
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: Science/Research
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+### foambryo
+
+**foambryo** is a python package based on Polyscope designed to infer surface tensions, pressures and stresses from the geometry of epithelial-cell-clusters, namely early-embryos and structures encoutered in stem cell cultures, as organoids and embryoids `pip install foambryo`
+
+Living structures encountered in the field of developmental biology have intricate shapes and structures, that reflectes their physiological functions. They embody important features: symmetries, polarisations, patterning.
+Mechanics is at the heart of the development of these structures, yet tools to investigate forces at play during development in 3D are scarse. Characterizing and quantifying precisely their shapes allows us to match them to a simple physical model, and to reveal the forces shaping cells.
+
+<img src="Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
+
+
+
+
+We rely on **delaunay-watershed**, a tool we designed to reconstruct efficiently multimaterial meshes from instance segmentations. From these multimaterial meshes, we can efficiently and robustly extract junctional angles and surfaces curvatures, and invert **Young-Dupré** and **Laplace** laws, to find back the physical parameters involved in the mechanical equilibrium: **surface tensions** $\gamma_{ij}$ and **cell pressures** $p_i$.
+
+The viewer is based on **Polyscope**, a popular viewer designed to visualise 3-dimensional geometrical structures.
+
+### Example 
+
+Load an instance segmentation, reconstruct its multimaterial mesh, infer and visualize the forces with Polyscope
+
+```shell
+pip install delaunay-watershed-3d foambryo
+```
+
+```py
+from dw3d import DCEL_Data, geometry_reconstruction_3d
+from foambryo import plot_force_inference, plot_tension_inference
+
+## Load the labels
+import skimage.io as io
+Segmentation = io.imread("Segmentation.tif")
+
+## Reconstruct a multimaterial mesh from the labels
+DW = geometry_reconstruction_3d(Segmentation,min_dist = 5)
+Verts, Faces_multimaterial = DW.return_mesh()
+Mesh = DCEL_Data(Verts,Faces_multimaterial)
+
+## Infer and view the forces
+plot_force_inference(Mesh)
+
+#Or just the tensions
+plot_tension_inference(Mesh)
+```
+
+### Installation
+
+`pip install foambryo `
+
+### Physical model
+We consider a tissue constituted of cells i. 
+
+<img src="Images_github_repo/Equilibrium.png" alt="drawing" width="150"/>
+
+They minimize, under conservation of volume an energy $\mathcal{E} = \underset{ij}{\sum}\gamma_{ij}A_{ij}$
+The two main laws involved are: 
+- **Young-Dupré Law:** $\vec{\gamma}_{ij} + \vec{\gamma}_{ik} + \vec{\gamma}_{jk} = \vec{0}$
+- **Laplace Law:** $P_j - P_i = 2 \gamma_{ij} h_{ij}$ where $h_{ij}$ is the mean curvature of the interface between the cell i and j. `
+
+
+---
+
+### API and Documentation
+
+#### 1 - Creating a Mesh object
+The first step is to load your multimaterial mesh into a `DCEL_Data` object via the builder `DCEL_Data(Verts, Faces_multimaterial)`. 
+    - `Verts` is an V x 3 numpy array of vertex positions
+    - `Faces_multimaterial` is an F x 5 numpy array of face and material indices, where at each row the 3 first indices refers to a vertex and the 2 last refer to a given material, 0 being the exterior media
+
+#### 2 - Infer the forces
+ Then the second step is to use this `Mesh` object to infer the tensions and pressions
+- `infer_tension(Mesh,mean_tension=1,mode='YD')`: 
+We infer tensions ratios by inverting junctional equilibrium relations
+    - `Mesh` is a `DCEL_Data` object
+    - `mean_tension` has to be defined as we only infer ratio between tensions
+    - `mode` is the formula used to infer the tensions. It has to be choosen among: `YD`, `Eq`, `Projection_YD`,  `cotan`, `inv_cotan`, `Lamy`, `inv_Lamy`, `Lamy_Log`, `Variational`
+
+- `infer_pressures(Mesh,dict_tensions,mode='Variational', P0 = 0)`: 
+We infer relative pressures by inverting membrane equilibrium relation
+    - `Mesh` is a `DCEL_Data` object
+    -  `dict_tensions` is the dictionnary obtained with `infer_tension`
+    - `P0` has to be defined as we only infer relative pressures
+    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational`, `Laplace`
+
+#### 3 - Visualize
+
+This package is then built around several functions, each of them taking as an entry a `Mesh` object: 
+- `plot_tension_inference(Mesh,dict_tensions=None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions by inverting Young-Dupré relations
+    - `Mesh` is a `DCEL_Data` object
+    - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
+    - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
+    - `scalar_quantities`: plot of vertex volume and area derivatives, of mean, gaussian curvatures, and principal curvatures discrepancy. Can be quite long for big meshes
+    - `scattered`: scattered view of the mesh
+    - `scatter_coeff`: amount of displacement if scattered is activated
+
+ 
+- `plot_force_inference(Mesh,dict_tensions = None, dict_pressure = None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions, pressures and principal directions of the stress tensor
+    - `Mesh` is a `DCEL_Data` object
+    - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
+    - `dict_pressure` is the dictionnary obtained with `infer_pressure`, and is computed automatically if unspecified. 
+    - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
+    - `scalar_quantities`: plot of vertex volume and area derivatives, of mean, gaussian curvatures, and principal curvatures discrepancy. Can be quite long for big meshes
+    - `scattered`: scattered view of the mesh
+    - `scatter_coeff`: amount of displacement if scattered is activated
+ 
+- `plot_valid_junctions(Mesh)`: Valid junctions are plotted in green, and unstable junctions are plotted in red. This is used to assess the validity of the inference
+    - `Mesh` is a `DCEL_Data` object
+
+
+
+
+
+---
+### Biological use-cases
+#### Phallusia mammillata
+Phallusia mammillata is a solitary marine tunicate of the ascidian class known for its stereotypical development. As the embryo develops freely, without any constraint, we can do a full force inference and infer its tensions, pressures and stresses.
+We use data from [Guignard, L., Fiúza, U. et al.](https://www.science.org/doi/10.1126/science.aar5663)
+
+<img src="Images_github_repo/Ascidians.png" alt="drawing" width="900"/>
+
+
+#### C.elegans, constrained within a shell
+Caenorhabditis elegans is a widely studied model organism, with one of the most reproducible development. This earthworm is developing in a shell. As the shell topology is unknown, the pressures are not accessible. However we can still use Young-Dupré relationships to deduce the surface tensions of the membranes. We use data from the [Cao, J., Guan, G., Ho, V.W.S. et al.](https://doi.org/10.1038/s41467-020-19863-x)
+
+<img src="Images_github_repo/CElegans.png" alt="drawing" width="900"/>
+
+#### View scalar quantities on surface meshes
+
+Gaussian and mean curvature can be plotted on our meshes, and are useful to study the properties of surfaces obtained from simulations. 
+We also plot the vertex area and volume derivatives, that appears in our variational formulas, the difference between the two principal curvatures and the sphere-fit residual that can be used to detect robust non-spherical CMC surfaces (see our paper for more details)
+They can be obtained by putting the option `scalar_quantities = True` when viewing the forces. 
+
+<img src="Images_github_repo/scalar_quantities.png" alt="drawing" width="900"/>
+
+- Gaussian Curvature is computed using the angle defect formula.
+- Mean Curvature is computed using the cotan formula.
+
+To see the code of each of these use-cases, please load the associated jupyter notebooks in the folder Notebooks
+
+---
+
+
+### Credits, contact, citations
+If you use this tool, please cite the associated preprint: 
+Do not hesitate to contact Sacha Ichbiah and Hervé Turlier for practical questions and applications. 
+We hope that **foambryo** could help biologists and physicists to shed light on the mechanical aspects of early development.
+
+
+
+
