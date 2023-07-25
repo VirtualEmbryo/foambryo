@@ -26,7 +26,7 @@ The viewer is based on [**Polyscope**](https://github.com/nmwsharp/polyscope), a
 
 ### Installation
 
-We recommand to install **foambryo** from the PyPI repository directly
+We recommend to install **foambryo** from the PyPI repository directly
 ```shell
 pip install foambryo
 ```
