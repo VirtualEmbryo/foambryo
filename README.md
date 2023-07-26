@@ -35,7 +35,8 @@ The viewer is based on [**Polyscope**](https://github.com/nmwsharp/polyscope), a
 This package should work on any OS and was tested on the following macOS and Linux systems:
 
 macOS: BigSur (11.7.9) and Ventura (13.5)
-Linux: Ubuntu 16.04
+
+Linux: Ubuntu 16.04, CentOS 7 and Manjaro 22.0
 
 
 ### Installation
