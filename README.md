@@ -3,7 +3,7 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 [![DOI](https://zenodo.org/badge/625305276.svg)](https://zenodo.org/badge/latestdoi/625305276)
 
-**foambryo** is a python package developed to infer in 3D the relative surface tensions and cell pressures from the geometry of cells forming foam-like clusters, such as early-embryos or tissues, including stem-cell derived organoids or embryoids.
+**foambryo** is a python package developed to infer relative surface tensions and cell pressures from the 3D geometry of cells in foam-like clusters, such as early-embryos, tissues or organoids.
 
 <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/main/Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
 
@@ -18,11 +18,25 @@ Multicellular structures encountered in the field of developmental biology have 
 
 ### Prerequisites 
 
-**foambryo** requires a prior segmentation of the multicellular aggregate into cell segmentation masks using one's favorite algorithm (watershed algorithm, [cellpose](https://www.cellpose.org) or any preferred one). The quality of the segmentation and the size of the original image will directly affect the precision of the inference results.
+**foambryo** requires Python >3.6 with pip.
 
-It relies on a companion tool [**delaunay-watershed**](https://github.com/VirtualEmbryo/delaunay-watershed) that we developed to construct precise multimaterial meshes from instance segmentations. From these multimaterial meshes, one can efficiently and robustly measure junction angles and interface curvatures to invert the **Young-Dupré** and **Laplace** laws and infer the **surface tensions** $\gamma_{ij}$ and **cell pressures** $p_i$ underlying the mechanical equilibrium of foam-like cell aggregates.
+**foambryo** requires the prior segmentation of images of multicellular aggregates into cell segmentation masks using one's favorite algorithm (watershed algorithm, [cellpose](https://www.cellpose.org) or any preferred one). The quality of the segmentation and the size of the original image will directly affect the precision of the inference results.
+
+#### Dependencies
+
+All required dependencies are installed by pip automatically.
+
+**foambryo** relies on a companion tool [**delaunay-watershed**](https://github.com/VirtualEmbryo/delaunay-watershed) that we developed to construct precise multimaterial meshes from instance segmentations. From these multimaterial meshes, one can efficiently and robustly measure junction angles and interface curvatures to invert the **Young-Dupré** and **Laplace** laws and infer the **surface tensions** $\gamma_{ij}$ and **cell pressures** $p_i$ underlying the mechanical equilibrium of foam-like cell aggregates.
 
 The viewer is based on [**Polyscope**](https://github.com/nmwsharp/polyscope), a C++/Python viewer designed to visualize 3-dimensional geometrical, in particular meshes.
+
+#### Operating systems
+
+This package should work on any OS and was tested on the following macOS and Linux systems:
+
+macOS: BigSur (11.7.9) and Ventura (13.5)
+Linux: Ubuntu 16.04
+
 
 ### Installation
 
