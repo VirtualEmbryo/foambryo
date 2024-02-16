@@ -57,7 +57,7 @@ pip install pathtopackage/foambryo
 Load an instance segmentation, reconstruct its multimaterial mesh, infer and visualize the forces with Polyscope
 
 ```py
-from dw3d import DCEL_Data, geometry_reconstruction_3d
+from dw3d import DcelData, geometry_reconstruction_3d
 from foambryo import plot_force_inference, plot_tension_inference
 
 ## Load the labels
@@ -67,7 +67,7 @@ Segmentation = io.imread("Segmentation.tif")
 ## Reconstruct a multimaterial mesh from the labels
 DW = geometry_reconstruction_3d(Segmentation,min_dist = 5)
 Verts, Faces_multimaterial = DW.return_mesh()
-Mesh = DCEL_Data(Verts,Faces_multimaterial)
+Mesh = DcelData(Verts,Faces_multimaterial)
 
 ## Infer and view the forces
 plot_force_inference(Mesh)
@@ -94,7 +94,7 @@ The two main laws underlying mechanical force balance are:
 ### API and Documentation
 
 #### 1 - Loading a multimaterial mesh
-The first step is to load your multimaterial mesh into a `DCEL_Data` object via the builder `DCEL_Data(Verts, Faces_multimaterial)`. 
+The first step is to load your multimaterial mesh into a `DcelData` object via the builder `DcelData(Verts, Faces_multimaterial)`. 
     - `Verts` is a V x 3 Numpy array of vertex positions, where V is the number of vertices.
     - `Faces_multimaterial` is a F x 5 numpy array of F faces (triangles) and labels, where at each row the 3 first indices refers to the indices of the three vertices of that triangle and the 2 last refer to a given interface label. An interface label is made of two indices referring to the two materials (e.g. cells) lying on each of its side, 0 being the exterior by convention.
 
@@ -102,13 +102,13 @@ The first step is to load your multimaterial mesh into a `DCEL_Data` object via 
 Then the second step is to use this `Mesh` object to infer the relative surface tensions and cell pressures
 - `infer_tension(Mesh,mean_tension=1,mode='YD')`: 
 One infers relative tensions by inverting mechanical equilibrium at each tri-material/cellular junction
-    - `Mesh` is a `DCEL_Data` object.
+    - `Mesh` is a `DcelData` object.
     - `mean_tension` has to be defined as one only infers ratios between tensions, you can set it to 1 for instance.
     - `mode` is the formula used to infer the tensions from contact angles at each junction. It has to be choosen among: `YD` (Young-Dupré with cosines only), `Eq`, `Projection_YD` (Young-Dupré with cosines and sines),  `cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)), `inv_cotan` (inverse of the cotangent formula), `Lamy` ([Lamy's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)), `inv_Lamy` (inverse of the Lamy's relation), `Lamy_Log` (logarithm of the Lamy's relation), `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641))
 
 - `infer_pressures(Mesh,dict_tensions,mode='Variational', P0 = 0)`: 
 We infer pressures relative to the exterior pressure $P_0$ by inverting normal force balance at each interface
-    - `Mesh` is a `DCEL_Data` object.
+    - `Mesh` is a `DcelData` object.
     -  `dict_tensions` is the dictionnary obtained with `infer_tension`.
     - `P0` has to be defined as one only pressures relative to the exterior.
     - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), `Laplace` (Laplace's law).
@@ -117,7 +117,7 @@ We infer pressures relative to the exterior pressure $P_0$ by inverting normal f
 
 The viewer part of the package is built around several functions, each of them taking as an entry a `Mesh` object: 
 - `plot_tension_inference(Mesh,dict_tensions=None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions by inverting Young-Dupré relations
-    - `Mesh` is a `DCEL_Data` object
+    - `Mesh` is a `DcelData` object
     - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
     - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
     - `scalar_quantities`: plot of vertex volume and area derivatives, of mean, Gaussian curvatures, and principal curvatures discrepancy. Can be quite long for big meshes
@@ -126,7 +126,7 @@ The viewer part of the package is built around several functions, each of them t
 
  
 - `plot_force_inference(Mesh,dict_tensions = None, dict_pressure = None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions, pressures and principal directions of the stress tensor
-    - `Mesh` is a `DCEL_Data` object
+    - `Mesh` is a `DcelData` object
     - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
     - `dict_pressure` is the dictionnary obtained with `infer_pressure`, and is computed automatically if unspecified. 
     - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
@@ -135,7 +135,7 @@ The viewer part of the package is built around several functions, each of them t
     - `scatter_coeff`: amount of displacement if scattered is activated
  
 - `plot_valid_junctions(Mesh)`: Valid junctions are plotted in green, and unstable junctions are plotted in red. This is used to assess the validity of the inference
-    - `Mesh` is a `DCEL_Data` object
+    - `Mesh` is a `DcelData` object
 
 
 
