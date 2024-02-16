@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 def compute_laplacian_cotan(
     points: NDArray[np.float64],
-    triangles: NDArray[np.ulonglong],
+    triangles: NDArray[np.int64],
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     r"""Laplacian computation.
 
@@ -96,9 +96,7 @@ def compute_gaussian_curvature_vertices(mesh: "DcelData") -> NDArray[np.float64]
         NDArray[np.float64]: Discrete gaussian curvature at every vertex of the mesh.
     """
     mesh_trimesh = trimesh.Trimesh(vertices=mesh.v, faces=mesh.f[:, :3])
-    return trimesh.curvature.discrete_gaussian_curvature_measure(
-        mesh_trimesh, mesh.v, 0.0
-    )
+    return trimesh.curvature.discrete_gaussian_curvature_measure(mesh_trimesh, mesh.v, 0.0)
 
 
 def compute_curvature_vertices_cotan(
@@ -113,9 +111,7 @@ def compute_curvature_vertices_cotan(
     first_term: float = np.dot(lcot.toarray(), points)
     second_term: NDArray[np.float64] = points * sum_cols
     laplacian: NDArray[np.float64] = (first_term - second_term) / 2
-    mean_curvature: NDArray[np.float64] = (
-        np.linalg.norm(laplacian, axis=1) * 3 * inv_areas / 2
-    )
+    mean_curvature: NDArray[np.float64] = np.linalg.norm(laplacian, axis=1) * 3 * inv_areas / 2
     return (
         mean_curvature,
         inv_areas,
@@ -123,16 +119,12 @@ def compute_curvature_vertices_cotan(
     )
 
 
-def compute_curvature_interfaces(
-    mesh: "DcelData", weighted: bool = True
-) -> dict[tuple[int, int], float]:
+def compute_curvature_interfaces(mesh: "DcelData", weighted: bool = True) -> dict[tuple[int, int], float]:
     """Compute the mean curvature on the interfaces of the mesh."""
     lcot, inv_areas = compute_laplacian_cotan(points=mesh.v, triangles=mesh.f[:, :3])
 
     vertex_normals = mesh.compute_vertex_normals()
-    mean_curvature = np.sign(
-        np.sum(np.multiply(lcot, vertex_normals), axis=1)
-    ) * np.linalg.norm(lcot, axis=1)
+    mean_curvature = np.sign(np.sum(np.multiply(lcot, vertex_normals), axis=1)) * np.linalg.norm(lcot, axis=1)
 
     vertices_on_interfaces = {}
     for edge in mesh.half_edges:
@@ -141,9 +133,7 @@ def compute_curvature_interfaces(
         materials = (edge.incident_face.material_1, edge.incident_face.material_2)
         interface_key = (min(materials), max(materials))
 
-        vertices_on_interfaces[interface_key] = vertices_on_interfaces.get(
-            interface_key, []
-        )
+        vertices_on_interfaces[interface_key] = vertices_on_interfaces.get(interface_key, [])
         vertices_on_interfaces[interface_key].append(edge.origin.key)
         vertices_on_interfaces[interface_key].append(edge.destination.key)
 
@@ -198,7 +188,7 @@ def compute_curvature_interfaces(
 
 def laplacian_cot(
     points: NDArray[np.float64],
-    triangles: NDArray[np.ulonglong],
+    triangles: NDArray[np.int64],
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Returns the Laplacian matrix with cotangent weights and the inverse of the face areas.
 
@@ -229,9 +219,7 @@ def laplacian_cot(
     s = 0.5 * (len_a + len_b + len_c)
     # note that the area can be negative (close to 0) causing nans after sqrt()
     # we clip it to a small positive value
-    area = np.sqrt(
-        s * (s - len_a) * (s - len_b) * (s - len_c)
-    )  # .clamp_(min=1e-12).sqrt()
+    area = np.sqrt(s * (s - len_a) * (s - len_b) * (s - len_c))  # .clamp_(min=1e-12).sqrt()
 
     # Compute cotangents of angles, of shape (sum(F_n), 3)
     sq_a, sq_b, sq_c = len_a * len_a, len_b * len_b, len_c * len_c
@@ -249,9 +237,7 @@ def laplacian_cot(
     jj = triangles[:, [2, 0, 1]]
     idx = np.stack([ii, jj], axis=0).reshape(2, nbtri * 3)
 
-    laplacian_matrix: NDArray[np.float64] = sp.coo_matrix(
-        (cot.reshape(-1), (idx[1], idx[0])), shape=(nbpts, nbpts)
-    )
+    laplacian_matrix: NDArray[np.float64] = sp.coo_matrix((cot.reshape(-1), (idx[1], idx[0])), shape=(nbpts, nbpts))
 
     # Make it symmetric; this means we are also setting
     # L[v2, v1] = cota
@@ -340,9 +326,7 @@ def compute_areas_interfaces(mesh: "DcelData") -> dict[tuple[int, int], float]:
     return interfaces_areas
 
 
-def compute_triangles_areas(
-    points: NDArray[np.float64], triangles: NDArray[np.ulonglong]
-) -> NDArray[np.float64]:
+def compute_triangles_areas(points: NDArray[np.float64], triangles: NDArray[np.int64]) -> NDArray[np.float64]:
     """Compute the area of every triangles in a mesh.
 
     Args:

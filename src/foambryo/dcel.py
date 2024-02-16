@@ -32,8 +32,8 @@ from foambryo.geometry import (
 
 
 def separate_faces_dict(
-    triangles_and_labels: NDArray[np.uint],
-) -> dict[int, NDArray[np.uint]]:
+    triangles_and_labels: NDArray[np.int64],
+) -> dict[int, NDArray[np.int64]]:
     """Construct a dictionnary that maps a region id to the array of triangles forming this region."""
     nb_regions = np.amax(triangles_and_labels[:, [3, 4]]) + 1
 
@@ -56,7 +56,7 @@ def separate_faces_dict(
             else:
                 triangles_of_region[region2].append(triangle)
 
-    faces_separated: dict[int, NDArray[np.uint]] = {}
+    faces_separated: dict[int, NDArray[np.int64]] = {}
     for i in sorted(triangles_of_region.keys()):
         faces_separated[i] = np.array(triangles_of_region[i])
 
@@ -65,8 +65,8 @@ def separate_faces_dict(
 
 def renormalize_verts(
     points: NDArray[np.float64],
-    triangles: NDArray[np.ulonglong],
-) -> tuple[NDArray[np.float64], NDArray[np.ulonglong]]:
+    triangles: NDArray[np.int64],
+) -> tuple[NDArray[np.float64], NDArray[np.int64]]:
     """Take a mesh made from points and triangles and remove points not indexed in triangles. Re-index triangles.
 
     Return the filtered points and reindexed triangles.
@@ -78,7 +78,7 @@ def renormalize_verts(
 
     reindexed_triangles = np.fromiter(
         (mapping[xi] for xi in triangles.reshape(-1)),
-        dtype=np.ulonglong,
+        dtype=np.int64,
         count=3 * len(triangles),
     ).reshape((-1, 3))
 
@@ -263,9 +263,7 @@ class Face:
         else:
 
             def _distance(p1: Vertex, p2: Vertex) -> float:
-                return math.sqrt(
-                    (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + ((p1.z - p2.z) ** 2)
-                )
+                return math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + ((p1.z - p2.z) ** 2))
 
             area = 0
             vertices = self.get_vertices()
@@ -282,8 +280,8 @@ class Face:
 
 
 def separate_faces_dict_keep_idx(
-    triangles_and_labels: NDArray[np.uint],
-) -> tuple[dict[int, NDArray[np.uint]], dict[int, NDArray[np.uint]]]:
+    triangles_and_labels: NDArray[np.int64],
+) -> tuple[dict[int, NDArray[np.int64]], dict[int, NDArray[np.int64]]]:
     """Construct two dictionnaries to map region -> triangles.
 
     One that maps a region id to the array of triangles forming this region.
@@ -315,8 +313,8 @@ def separate_faces_dict_keep_idx(
                 triangles_of_region[region2].append(triangle)
                 indices_of_triangles_of_region[region2].append(idx)
 
-    faces_separated: dict[int, NDArray[np.uint]] = {}
-    indices_faces_separated: dict[int, NDArray[np.uint]] = {}
+    faces_separated: dict[int, NDArray[np.int64]] = {}
+    indices_faces_separated: dict[int, NDArray[np.int64]] = {}
     for i in sorted(triangles_of_region.keys()):
         faces_separated[i] = np.array(triangles_of_region[i])
         indices_faces_separated[i] = np.array(indices_of_triangles_of_region[i])
@@ -351,9 +349,7 @@ def compute_scattered_arrays(mesh: "DcelData", coeff: float) -> None:
         # to change with a formula from DDG
         array_centroid = np.mean(vn, axis=0)
         vn = vn + coeff * (array_centroid - embryo_centroid)
-        clusters_displacements[key] = (
-            coeff * (array_centroid - embryo_centroid)
-        ).copy()
+        clusters_displacements[key] = (coeff * (array_centroid - embryo_centroid)).copy()
 
         all_verts.append(vn.copy())
         all_faces.append(fn.copy() + offset)
@@ -375,26 +371,18 @@ def compute_scattered_arrays(mesh: "DcelData", coeff: float) -> None:
 class DcelData:
     """DCEL Graph containing faces, half-edges and vertices."""
 
-    def __init__(
-        self, points: NDArray[np.float64], triangles_and_labels: NDArray[np.uint]
-    ) -> None:
+    def __init__(self, points: NDArray[np.float64], triangles_and_labels: NDArray[np.int64]) -> None:
         """Take a multimaterial mesh as input."""
         for i, f in enumerate(triangles_and_labels):
             if f[3] > f[4]:
                 triangles_and_labels[i] = triangles_and_labels[i, [0, 2, 1, 4, 3]]
-        points, triangles_and_labels = remove_unused_vertices(
-            points, triangles_and_labels
-        )
+        points, triangles_and_labels = remove_unused_vertices(points, triangles_and_labels)
         self.v = points
         self.f = triangles_and_labels
         # self.n_materials = np.amax(Faces[:,[3,4]])+1
-        self.materials: NDArray[np.ulonglong] = np.unique(
-            triangles_and_labels[:, [3, 4]]
-        )
+        self.materials: NDArray[np.int64] = np.unique(triangles_and_labels[:, [3, 4]])
         self.n_materials = len(self.materials)
-        vertices_list, halfedges_list, faces_list = build_lists(
-            points, triangles_and_labels
-        )
+        vertices_list, halfedges_list, faces_list = build_lists(points, triangles_and_labels)
         self.vertices = vertices_list
         self.faces = faces_list
         self.half_edges = halfedges_list
@@ -423,7 +411,7 @@ class DcelData:
 
         Args:
             points (NDArray[np.float64]): points of the mesh
-            triangles (NDArray[np.ulonglong]): triangles of the mesh
+            triangles (NDArray[np.int64]): triangles of the mesh
 
         Returns:
             NDArray[np.float64]: normal for every vertex
@@ -434,7 +422,7 @@ class DcelData:
         self,
     ) -> tuple[
         dict[tuple[int, int], NDArray[np.float64]],
-        dict[tuple[int, int], NDArray[np.ulonglong]],
+        dict[tuple[int, int], NDArray[np.int64]],
     ]:
         """Returns two dicts that maps (label1, label2) of an interface to array of vertices & triangles."""
         return compute_verts_and_faces_interfaces(self)
@@ -443,7 +431,7 @@ class DcelData:
         """Compute a graph with values extracted from the mesh. Nodes = regions, edges = interfaces."""
         return compute_networkx_graph(self)
 
-    def find_trijunctional_edges(self) -> NDArray[np.uint]:
+    def find_trijunctional_edges(self) -> NDArray[np.int64]:
         """Return an array of edges on trijunction.
 
         Each edge is [index of point 1, index of point 2].
@@ -455,19 +443,13 @@ class DcelData:
         self.centroids = {}
         separated_faces = separate_faces_dict(self.f)
         for i in separated_faces:
-            self.centroids[i] = np.mean(
-                self.v[np.unique(separated_faces[i]).astype(int)], axis=0
-            )
+            self.centroids[i] = np.mean(self.v[np.unique(separated_faces[i]).astype(int)], axis=0)
 
-    def mark_trijunctional_vertices(
-        self, return_list: bool = False
-    ) -> NDArray[np.uint]:
+    def mark_trijunctional_vertices(self, return_list: bool = False) -> NDArray[np.int64]:
         """Check for vertices on trijunction and mark them as such. Can return the keys of those vertices."""
         return mark_trijunctional_vertices(self, return_list)
 
-    def compute_length_trijunctions(
-        self, prints: bool = False
-    ) -> dict[tuple[int, int, int], float]:
+    def compute_length_trijunctions(self, prints: bool = False) -> dict[tuple[int, int, int], float]:
         """Compute the length of trijunctions, identified by their 3 adjacent regions."""
         return compute_length_trijunctions(self, prints)
 
@@ -525,9 +507,7 @@ class DcelData:
         """Compute three maps trijunction (id reg 1, id reg 2, id reg 3) to mean angle, mean angle (deg), length."""
         return compute_angles_tri(self, unique=unique)
 
-    def compute_curvatures_interfaces(
-        self, weighted: bool = True
-    ) -> dict[tuple[int, int], float]:
+    def compute_curvatures_interfaces(self, weighted: bool = True) -> dict[tuple[int, int], float]:
         """Compute the mean curvature on the interfaces of the mesh."""
         # "robust" or "cotan"
         return compute_curvature_interfaces(self, weighted=weighted)
@@ -554,9 +534,7 @@ DCEL BUILDING FUNCTIONS
 """
 
 
-def compute_normal_faces(
-    points: NDArray[np.float64], triangles: NDArray[np.ulonglong]
-) -> NDArray[np.float64]:
+def compute_normal_faces(points: NDArray[np.float64], triangles: NDArray[np.int64]) -> NDArray[np.float64]:
     """Compute normals on every triangle."""
     positions = points[triangles[:, :3]]
     sides1 = positions[:, 1] - positions[:, 0]
@@ -569,7 +547,7 @@ def compute_normal_faces(
 
 def build_lists(
     points: NDArray[np.float64],
-    triangles_and_labels: NDArray[np.uint],
+    triangles_and_labels: NDArray[np.int64],
 ) -> tuple[list[Vertex], list[HalfEdge], list[Face]]:
     """Build lists of DCEL objects from mesh."""
     normals = compute_normal_faces(points, triangles_and_labels)
@@ -577,21 +555,9 @@ def build_lists(
     halfedge_list: list[HalfEdge] = []
     for i in range(len(triangles_and_labels)):
         a, b, c, _, _ = triangles_and_labels[i]
-        halfedge_list.append(
-            HalfEdge(
-                origin=vertices_list[a], destination=vertices_list[b], key=3 * i + 0
-            )
-        )
-        halfedge_list.append(
-            HalfEdge(
-                origin=vertices_list[c], destination=vertices_list[a], key=3 * i + 1
-            )
-        )
-        halfedge_list.append(
-            HalfEdge(
-                origin=vertices_list[b], destination=vertices_list[c], key=3 * i + 2
-            )
-        )
+        halfedge_list.append(HalfEdge(origin=vertices_list[a], destination=vertices_list[b], key=3 * i + 0))
+        halfedge_list.append(HalfEdge(origin=vertices_list[c], destination=vertices_list[a], key=3 * i + 1))
+        halfedge_list.append(HalfEdge(origin=vertices_list[b], destination=vertices_list[c], key=3 * i + 2))
 
     for i in range(len(triangles_and_labels)):
         index = 3 * i
@@ -653,9 +619,7 @@ def make_vertices_list(points: NDArray[np.float64]) -> list[Vertex]:
     return vertices_list
 
 
-def mark_trijunctional_vertices(
-    mesh: DcelData, return_list: bool = False
-) -> NDArray[np.uint]:
+def mark_trijunctional_vertices(mesh: DcelData, return_list: bool = False) -> NDArray[np.int64]:
     """Check for vertices on trijunction and mark them as such. Can return the keys of those vertices."""
     list_trijunctional_vertices = []
     for edge in mesh.half_edges:
@@ -673,7 +637,7 @@ DCEL Geometry functions
 """
 
 
-def find_trijunctional_edges(mesh: DcelData) -> NDArray[np.uint]:
+def find_trijunctional_edges(mesh: DcelData) -> NDArray[np.int64]:
     """Return an array of edges on trijunction.
 
     Each edge is [index of point 1, index of point 2].
@@ -704,9 +668,7 @@ def compute_length_halfedges(mesh: DcelData) -> None:
         edge.compute_length()
 
 
-def compute_faces_areas(
-    points: NDArray[np.float64], triangles: NDArray[np.ulonglong]
-) -> NDArray[np.float64]:
+def compute_faces_areas(points: NDArray[np.float64], triangles: NDArray[np.int64]) -> NDArray[np.float64]:
     """Compute the area of every triangle using Heron's formula."""
     positions = points[triangles[:, :3]]
     sides = positions - positions[:, [2, 0, 1]]
@@ -719,13 +681,13 @@ def compute_faces_areas(
 
 def compute_vertex_normals(
     points: NDArray[np.float64],
-    triangles: NDArray[np.ulonglong],
+    triangles: NDArray[np.int64],
 ) -> NDArray[np.float64]:
     """Compute normals at every vertex.
 
     Args:
         points (NDArray[np.float64]): points of the mesh
-        triangles (NDArray[np.ulonglong]): triangles of the mesh
+        triangles (NDArray[np.int64]): triangles of the mesh
 
     Returns:
         NDArray[np.float64]: normal for every vertex
@@ -758,19 +720,15 @@ def compute_vertex_normals(
 
 def remove_unused_vertices(
     points: NDArray[np.float64],
-    triangles_and_labels: NDArray[np.uint],
-) -> tuple[NDArray[np.float64], NDArray[np.ulonglong]]:
+    triangles_and_labels: NDArray[np.int64],
+) -> tuple[NDArray[np.float64], NDArray[np.int64]]:
     """From points and triangles with labels ; remove points not indexed in triangles. Re-index triangles and labels.
 
     Return the filtered points and reindexed triangles and labels.
     """
     # Some unused vertices appears after the tetrahedral remeshing. We need to remove them.
-    filtered_points, reindexed_triangles = renormalize_verts(
-        points, triangles_and_labels[:, :3]
-    )
-    reindexed_triangles_and_labels = np.hstack(
-        (reindexed_triangles, triangles_and_labels[:, 3:])
-    )
+    filtered_points, reindexed_triangles = renormalize_verts(points, triangles_and_labels[:, :3])
+    reindexed_triangles_and_labels = np.hstack((reindexed_triangles, triangles_and_labels[:, 3:]))
     return (filtered_points, reindexed_triangles_and_labels)
 
 
@@ -779,9 +737,7 @@ def compute_centroids_graph(mesh: DcelData) -> NDArray[np.float64]:
     centroids = np.zeros((mesh.n_materials, 3))
     faces_dict = separate_faces_dict(mesh.f)
     for index_region in faces_dict:
-        centroids[index_region] = np.mean(
-            mesh.v[faces_dict[index_region]].reshape(-1, 3), axis=0
-        )
+        centroids[index_region] = np.mean(mesh.v[faces_dict[index_region]].reshape(-1, 3), axis=0)
     return centroids
 
 
@@ -799,10 +755,7 @@ def compute_networkx_graph(mesh: DcelData) -> networkx.Graph:
     # Centroids = compute_centroids_graph(Mesh)
 
     graph = networkx.Graph()
-    data_dicts = [
-        {"area": areas[x], "volume": volumes[x], "centroid": centroids[x]}
-        for x in mesh.materials
-    ]
+    data_dicts = [{"area": areas[x], "volume": volumes[x], "centroid": centroids[x]} for x in mesh.materials]
     graph.add_nodes_from(zip(mesh.materials, data_dicts, strict=False))
 
     edges_array = [
@@ -822,9 +775,7 @@ def compute_networkx_graph(mesh: DcelData) -> networkx.Graph:
     return graph
 
 
-def update_graph_with_scattered_values(
-    graph: networkx.Graph, mesh: DcelData
-) -> networkx.Graph:
+def update_graph_with_scattered_values(graph: networkx.Graph, mesh: DcelData) -> networkx.Graph:
     """Update graph after scattering regions (it moves vertices and centroids)."""
     new_centroids = dict(graph.nodes.data("centroid"))
     for key in new_centroids:
@@ -851,20 +802,18 @@ def compute_verts_and_faces_interfaces(
     mesh: DcelData,
 ) -> tuple[
     dict[tuple[int, int], NDArray[np.float64]],
-    dict[tuple[int, int], NDArray[np.ulonglong]],
+    dict[tuple[int, int], NDArray[np.int64]],
 ]:
     """Returns two dicts that maps (label1, label2) of an interface to array of vertices & triangles."""
     # encode interface (label1, label2) to unique id
     key_mult = np.amax(mesh.f[:, [3, 4]]) + 1
     keys, inv_1 = np.unique(mesh.f[:, 3] + mesh.f[:, 4] * key_mult, return_inverse=True)
 
-    interfaces: list[tuple[int, int]] = [
-        (key % key_mult, key // key_mult) for key in keys
-    ]
-    faces_dict: dict[tuple[int, int], NDArray[np.uint]] = {
+    interfaces: list[tuple[int, int]] = [(key % key_mult, key // key_mult) for key in keys]
+    faces_dict: dict[tuple[int, int], NDArray[np.int64]] = {
         interfaces[i]: mesh.f[:, :3][keys[inv_1] == keys[i]] for i in range(len(keys))
     }
-    faces_interfaces: dict[tuple[int, int], NDArray[np.ulonglong]] = {}
+    faces_interfaces: dict[tuple[int, int], NDArray[np.int64]] = {}
     verts_interfaces: dict[tuple[int, int], NDArray[np.float64]] = {}
 
     for key in faces_dict:

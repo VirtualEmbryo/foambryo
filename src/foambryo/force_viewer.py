@@ -7,12 +7,12 @@ from .tension_inference import (
     compute_residual_junctions_dict,
 )
 
-from dw3d.Dcel import (
+from foambryo.dcel import (
     compute_faces_areas,
-    compute_normal_Faces,
+    compute_normal_faces,
     update_graph_with_scattered_values,
 )
-from dw3d.Curvature import (
+from foambryo.curvature import (
     compute_gaussian_curvature_vertices,
     compute_curvature_vertices_cotan,
     compute_sphere_fit_residues_dict,
@@ -310,9 +310,7 @@ def view_pressures_on_mesh(
         ps_mesh = ps.register_surface_mesh("Embryo", v, f[:, [0, 1, 2]])
     ps_mesh.set_color((0.3, 0.6, 0.8))  # rgb triple on [0,1]
     colors_face = cm.magma(pressures)[:, :3]
-    ps_mesh.add_color_quantity(
-        "Pressures Cells", colors_face, defined_on="faces", enabled=True
-    )
+    ps_mesh.add_color_quantity("Pressures Cells", colors_face, defined_on="faces", enabled=True)
     return ps_mesh
 
 
@@ -587,20 +585,16 @@ def plot_stress_tensor(
         Membrane_in_contact_with_cells[a].append(key)
         Membrane_in_contact_with_cells[b].append(key)
 
-    dict_faces_membrane = dict(
-        zip(dict_tensions.keys(), [[] for i in range(len(dict_tensions.keys()))])
-    )
+    dict_faces_membrane = dict(zip(dict_tensions.keys(), [[] for i in range(len(dict_tensions.keys()))]))
     for i, face in enumerate(Mesh.f):
         a, b = face[3:]
         dict_faces_membrane[(a, b)].append(i)
 
     Areas_triangles = compute_faces_areas(Mesh.v, Mesh.f)
-    Normals_triangles = compute_normal_Faces(Mesh.v, Mesh.f)
+    Normals_triangles = compute_normal_faces(Mesh.v, Mesh.f)
     delta = np.identity(3)
     tensor_normal_normal = lambda x: delta - np.tensordot(x, x, axes=0)
-    Tensordot_normal_triangles = np.array(
-        list(map(tensor_normal_normal, Normals_triangles))
-    )
+    Tensordot_normal_triangles = np.array(list(map(tensor_normal_normal, Normals_triangles)))
 
     for i in range(len(Tensordot_normal_triangles)):
         Tensordot_normal_triangles[i] *= Areas_triangles[i]
@@ -681,9 +675,7 @@ def plot_stress_tensor(
 
     # register a point cloud
     N = Mesh.n_materials - 1
-    centroids = np.array([a[1] for a in G.nodes.data("centroid")])[
-        np.array(G.nodes.data("volume"))[:, 1] > 0
-    ]
+    centroids = np.array([a[1] for a in G.nodes.data("centroid")])[np.array(G.nodes.data("volume"))[:, 1] > 0]
 
     # ps_mesh = ps.register_surface_mesh("volume mesh", Mesh.v, Mesh.f[:,[0,1,2]])
 
@@ -692,9 +684,7 @@ def plot_stress_tensor(
     # ps_mesh.set_color((0.3, 0.6, 0.8)) # rgb triple on [0,1]
     # ps_mesh.set_transparency(0.2)
 
-    ps_cloud = ps.register_point_cloud(
-        "Stress tensors principal directions", centroids, color=(0, 0, 0), radius=0.004
-    )
+    ps_cloud = ps.register_point_cloud("Stress tensors principal directions", centroids, color=(0, 0, 0), radius=0.004)
 
     # For extensile stress:
     vecs_0 = Stress_vectors[:, :, 0][np.array(G.nodes.data("volume"))[1:, 1] > 0]
@@ -755,15 +745,9 @@ def plot_stress_tensor(
     )
 
     # For compressive stress:
-    vecs_comp_0 = Compression_vectors[:, :, 0][
-        np.array(G.nodes.data("volume"))[1:, 1] > 0
-    ]
-    vecs_comp_1 = Compression_vectors[:, :, 1][
-        np.array(G.nodes.data("volume"))[1:, 1] > 0
-    ]
-    vecs_comp_2 = Compression_vectors[:, :, 2][
-        np.array(G.nodes.data("volume"))[1:, 1] > 0
-    ]
+    vecs_comp_0 = Compression_vectors[:, :, 0][np.array(G.nodes.data("volume"))[1:, 1] > 0]
+    vecs_comp_1 = Compression_vectors[:, :, 1][np.array(G.nodes.data("volume"))[1:, 1] > 0]
+    vecs_comp_2 = Compression_vectors[:, :, 2][np.array(G.nodes.data("volume"))[1:, 1] > 0]
     red = (0.7, 0.0, 0.0)
     all_vecs = np.vstack((vecs_0, -vecs_0, vecs_1, -vecs_1, vecs_2, -vecs_2))
     ps_cloud.add_vector_quantity(
@@ -834,9 +818,7 @@ def display_embryo_graph(Mesh, clean_before=True, clean_after=True, show=True):
         Edges_for_plotting.append(np.array(edge) - 1)
     Edges_for_plotting = np.array(Edges_for_plotting)
     Centroids_for_plotting = np.array([a[1] for a in G.nodes.data("centroid")])[1:]
-    ps.register_point_cloud(
-        "Nodes", Centroids_for_plotting, color=[0, 0, 0], radius=0.07
-    )
+    ps.register_point_cloud("Nodes", Centroids_for_plotting, color=[0, 0, 0], radius=0.07)
     ps.register_curve_network(
         "Edges",
         Centroids_for_plotting,
@@ -877,9 +859,7 @@ def display_embryo_graph_forces(
 
         v2 = G.nodes[b]["centroid"]
         if a == 0:
-            v1 = np.mean(
-                G.edges[key]["verts"], axis=0
-            )  # + (np.mean(G.edges[key]['verts'],axis=0)-v2)*1.7
+            v1 = np.mean(G.edges[key]["verts"], axis=0)  # + (np.mean(G.edges[key]['verts'],axis=0)-v2)*1.7
             v_p0_list.append(v1.copy())
         else:
             v1 = G.nodes[a]["centroid"]
@@ -908,19 +888,13 @@ def display_embryo_graph_forces(
         radius=0.007,
         color=np.array([92, 85, 141]) / 255,
     )  # ,color = "000000")
-    ps_net.add_color_quantity(
-        "Surface tensions", colors_tensions, defined_on="edges", enabled=True
-    )
+    ps_net.add_color_quantity("Surface tensions", colors_tensions, defined_on="edges", enabled=True)
 
     Centroids_for_plotting = np.array([a[1] for a in G.nodes.data("centroid")])[
         np.array(G.nodes.data("volume"))[:, 1] > 0
     ]  # [1:]
-    ps_cloud = ps.register_point_cloud(
-        "Graph Nodes", Centroids_for_plotting, radius=0.02, color=[0, 0, 0]
-    )  # )
-    ps_ext = ps.register_point_cloud(
-        "Graph Exterior Nodes", v_p0_list, color=cm.magma(1.0)[:3], radius=0.015
-    )
+    ps_cloud = ps.register_point_cloud("Graph Nodes", Centroids_for_plotting, radius=0.02, color=[0, 0, 0])  # )
+    ps_ext = ps.register_point_cloud("Graph Exterior Nodes", v_p0_list, color=cm.magma(1.0)[:3], radius=0.015)
 
     if Plot_pressures:
         Pressure_for_plotting = np.array([a[1] for a in G.nodes.data("pressure")])[
@@ -966,9 +940,7 @@ def plot_valid_junctions(Mesh, dict_tensions=None):
 
     ps.set_ground_plane_mode("none")
     ps.remove_all_structures()
-    ps.register_surface_mesh(
-        "mesh", Mesh.v, Mesh.f[:, :3], color=(1, 1, 1), transparency=0.1
-    )
+    ps.register_surface_mesh("mesh", Mesh.v, Mesh.f[:, :3], color=(1, 1, 1), transparency=0.1)
     if np.amax(list(dict_validity.values())) == 0:
         plot_trijunctions_topo_change_viewer(
             Mesh,
@@ -978,9 +950,7 @@ def plot_valid_junctions(Mesh, dict_tensions=None):
             clean_before=False,
         )
     else:
-        plot_trijunctions_topo_change_viewer(
-            Mesh, Dict_trijunctional_values=dict_validity, color=1, clean_before=False
-        )
+        plot_trijunctions_topo_change_viewer(Mesh, Dict_trijunctional_values=dict_validity, color=1, clean_before=False)
 
 
 def plot_residual_junctions(Mesh, dict_tensions=None, alpha=0.05):
@@ -996,13 +966,9 @@ def plot_residual_junctions(Mesh, dict_tensions=None, alpha=0.05):
 
     ps.set_ground_plane_mode("none")
     ps.remove_all_structures()
-    ps.register_surface_mesh(
-        "mesh", Mesh.v, Mesh.f[:, :3], color=(1, 1, 1), transparency=0.1
-    )
+    ps.register_surface_mesh("mesh", Mesh.v, Mesh.f[:, :3], color=(1, 1, 1), transparency=0.1)
 
-    plot_trijunctions(
-        Mesh, Dict_trijunctional_values=dict_residuals, clean_before=False, cmap=cm.jet
-    )
+    plot_trijunctions(Mesh, Dict_trijunctional_values=dict_residuals, clean_before=False, cmap=cm.jet)
 
 
 """
