@@ -1,24 +1,29 @@
-from numpy.linalg import eig
 import networkx as nx
-from .tension_inference import (
-    infer_forces,
-    infer_tension,
-    infer_pressure,
-    compute_residual_junctions_dict,
-)
+from numpy.linalg import eig
 
+from foambryo.curvature import (
+    compute_curvature_vertices_cotan,
+    compute_gaussian_curvature_vertices,
+    compute_sphere_fit_residues_dict,
+)
 from foambryo.dcel import (
     compute_faces_areas,
     compute_normal_faces,
     update_graph_with_scattered_values,
 )
-from foambryo.curvature import (
-    compute_gaussian_curvature_vertices,
-    compute_curvature_vertices_cotan,
-    compute_sphere_fit_residues_dict,
-)
 
-from .plotting_utilities import *
+from .plotting_utilities import (
+    plot_trijunctions,
+    plot_trijunctions_topo_change_viewer,
+    view_dict_values_on_mesh,
+    view_vertex_values_on_embryo,
+)
+from .tension_inference import (
+    compute_residual_junctions_dict,
+    infer_forces,
+    infer_pressure,
+    infer_tension,
+)
 
 
 def plot_force_inference(
@@ -319,7 +324,7 @@ def view_pressures_on_mesh(Mesh,dict_pressures,alpha = 0.05,ps_mesh = None, clea
 
     v,f = Mesh.v,Mesh.f
 
-    def find_pressure(face): 
+    def find_pressure(face):
         return(dict_pressures[max(face[3],face[4])])
 
     pressures = np.array(list(map(find_pressure,f)))
@@ -338,16 +343,16 @@ def view_pressures_on_mesh(Mesh,dict_pressures,alpha = 0.05,ps_mesh = None, clea
 
 
 def view_faces_values_on_embryo(Mesh,Vf,name_values = "Values",ps_mesh = None,colormap = cm.jet,min_to_zero=True,clean_before = True, clean_after=True,show=True,highlight_junctions=False,adapt_values = True, scattered = False):
-    
-    if scattered : 
+
+    if scattered :
         v,f,idx = Mesh.v_scattered,Mesh.f_scattered, Mesh.idx_scattered
-    
-    else : 
+
+    else :
         v,f,idx = Mesh.v,Mesh.f, np.arange(len(Mesh.f))
-        
+
     Values = Vf.copy()
-    if adapt_values : 
-        if min_to_zero : 
+    if adapt_values :
+        if min_to_zero :
             Values-=np.amin(Values)
         Values/=(np.amax(Values)-np.amin(Values))
 
@@ -355,30 +360,30 @@ def view_faces_values_on_embryo(Mesh,Vf,name_values = "Values",ps_mesh = None,co
     colors_face = colormap(Values)[:,:3]
 
     ps.init()
-    
-    if clean_before : 
+
+    if clean_before :
         ps.remove_all_structures()
 
 
-    if ps_mesh == None : 
+    if ps_mesh == None :
         ps_mesh = ps.register_surface_mesh("Embryo", v,f[:,[0,1,2]])
 
     ps_mesh.set_color((0.3, 0.6, 0.8)) # rgb triple on [0,1]
     #ps_mesh.set_transparency(0.2)
     ps_mesh.add_color_quantity(name_values, colors_face, defined_on='faces',enabled=True)
-    
-    
-    if highlight_junctions : 
+
+
+    if highlight_junctions :
         plot_trijunctions(Mesh,clean_before = False, clean_after = False, show=False, color = "uniform",value_color = np.ones(3))
-    
-    ps.set_ground_plane_mode("none") 
-    
-    if show : 
+
+    ps.set_ground_plane_mode("none")
+
+    if show :
         ps.show()
-    
-    if clean_after : 
+
+    if clean_after :
         ps.remove_all_structures()
-        
+
     return(ps_mesh)
 
 """
@@ -415,7 +420,6 @@ def view_area_derivatives(
         name_values="Area Derivatives",
         ps_mesh=ps_mesh,
         remove_trijunctions=remove_trijunctions,
-        clean_before=clean_before,
         clean_after=clean_after,
         show=show,
         scattered=scattered,
@@ -452,7 +456,6 @@ def view_volume_derivatives(
         ps_mesh=ps_mesh,
         name_values="Volume Derivatives",
         remove_trijunctions=remove_trijunctions,
-        clean_before=clean_before,
         clean_after=clean_after,
         show=show,
         scattered=scattered,
@@ -483,7 +486,6 @@ def view_mean_curvature_cotan(
         ps_mesh=ps_mesh,
         name_values="Mean Curvature Cotan",
         remove_trijunctions=remove_trijunctions,
-        clean_before=clean_before,
         clean_after=clean_after,
         show=show,
         scattered=scattered,
@@ -514,7 +516,6 @@ def view_gaussian_curvature(
         ps_mesh=ps_mesh,
         name_values="Gaussian Curvature",
         remove_trijunctions=remove_trijunctions,
-        clean_before=clean_before,
         clean_after=clean_after,
         show=show,
         scattered=scattered,
@@ -550,7 +551,6 @@ def view_discrepancy_of_principal_curvatures(
         ps_mesh=ps_mesh,
         name_values="Principal curvature discrepancy",
         remove_trijunctions=remove_trijunctions,
-        clean_before=clean_before,
         clean_after=clean_after,
         show=show,
         scattered=scattered,
@@ -585,7 +585,7 @@ def plot_stress_tensor(
         Membrane_in_contact_with_cells[a].append(key)
         Membrane_in_contact_with_cells[b].append(key)
 
-    dict_faces_membrane = dict(zip(dict_tensions.keys(), [[] for i in range(len(dict_tensions.keys()))]))
+    dict_faces_membrane = dict(zip(dict_tensions.keys(), [[] for i in range(len(dict_tensions.keys()))], strict=False))
     for i, face in enumerate(Mesh.f):
         a, b = face[3:]
         dict_faces_membrane[(a, b)].append(i)
@@ -944,13 +944,13 @@ def plot_valid_junctions(Mesh, dict_tensions=None):
     if np.amax(list(dict_validity.values())) == 0:
         plot_trijunctions_topo_change_viewer(
             Mesh,
-            Dict_trijunctional_values=dict_validity,
+            dict_trijunctional_values=dict_validity,
             color="uniform",
             value_color=(0, 1, 0),
             clean_before=False,
         )
     else:
-        plot_trijunctions_topo_change_viewer(Mesh, Dict_trijunctional_values=dict_validity, color=1, clean_before=False)
+        plot_trijunctions_topo_change_viewer(Mesh, dict_trijunctional_values=dict_validity, color=1, clean_before=False)
 
 
 def plot_residual_junctions(Mesh, dict_tensions=None, alpha=0.05):
@@ -968,4 +968,4 @@ def plot_residual_junctions(Mesh, dict_tensions=None, alpha=0.05):
     ps.remove_all_structures()
     ps.register_surface_mesh("mesh", Mesh.v, Mesh.f[:, :3], color=(1, 1, 1), transparency=0.1)
 
-    plot_trijunctions(Mesh, Dict_trijunctional_values=dict_residuals, clean_before=False, cmap=cm.jet)
+    plot_trijunctions(Mesh, dict_trijunctional_values=dict_residuals, clean_before=False, cmap=cm.jet)

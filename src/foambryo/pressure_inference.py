@@ -15,9 +15,7 @@ def infer_pressure_laplace(Mesh, dict_tensions, P0=0, weighted=False):
     dict_areas = Mesh.compute_areas_interfaces()
     dict_curvature = Mesh.compute_curvatures_interfaces(weighted=weighted)
 
-    M, B = build_matrix_laplace(
-        dict_curvature, dict_areas, dict_tensions, Mesh.n_materials, Mesh.materials, P0
-    )
+    M, B = build_matrix_laplace(dict_curvature, dict_areas, dict_tensions, Mesh.n_materials, Mesh.materials, P0)
     x, resid, rank, sigma = linalg.lstsq(M, B)
 
     nc = Mesh.n_materials
@@ -72,23 +70,19 @@ def infer_pressure(Mesh, dict_tensions, mode="Variational", P0=0, weighted=False
         return None
 
 
-def build_matrix_laplace(
-    dict_curvature, dict_areas, dict_tensions, n_materials, materials, P0=0
-):
-    Total_area_mesh = sum(
-        dict_areas.values()
-    )  # sum of the areas of all the surfaces of the mesh
+def build_matrix_laplace(dict_curvature, dict_areas, dict_tensions, n_materials, materials, P0=0):
+    Total_area_mesh = sum(dict_areas.values())  # sum of the areas of all the surfaces of the mesh
     T = np.array(list(dict_curvature.keys()))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # MX = B
     # x : structure : [0,nc[ : pressions
     nm = len(T)
     nc = n_materials - 1
 
-    reverse_map_materials = dict(zip(materials, np.arange(len(materials))))
+    reverse_map_materials = dict(zip(materials, np.arange(len(materials)), strict=False))
 
     B = np.zeros(nm + 1)
     B[-1] = P0  # Po = Pb with Pb = 1
@@ -132,7 +126,7 @@ def build_matrix_discrete(DA, DV, materials, mean_tension=1):
     T = np.array(list(DA.keys()))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] + T[:, 1] * kt
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # MX = B
     # x : structure : ([0,nm[ : tensions) ([nm:nm+nc] : pressions) : (ya,yb,yc,yd...p0,p1,p2..pnc)
@@ -140,9 +134,7 @@ def build_matrix_discrete(DA, DV, materials, mean_tension=1):
     nc = len(materials) - 1
     size = (nm + nc + 1) * (nm + nc + 1)
     B = np.zeros(nm + nc + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = mean_tensions
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = mean_tensions
     M = np.zeros((nm + nc + 1, nm + nc))
     # print("n_j",nj,"\nn_m",nm,"\nn_c",nc,"\nNumber of unknowns ",nm+nc+1)
 

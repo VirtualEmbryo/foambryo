@@ -1,17 +1,12 @@
 import numpy as np
 from scipy import linalg
+
 from .pressure_inference import infer_pressure
 
 
-def infer_forces(
-    Mesh, mean_tension=1, P0=0, mode_tension="Young-Dupré", mode_pressure="Variational"
-):
-    _, dict_tensions, _ = infer_tension(
-        Mesh, mean_tension=mean_tension, mode=mode_tension
-    )
-    _, dict_pressures, _ = infer_pressure(
-        Mesh, dict_tensions, mode=mode_pressure, P0=P0
-    )
+def infer_forces(Mesh, mean_tension=1, P0=0, mode_tension="Young-Dupré", mode_pressure="Variational"):
+    _, dict_tensions, _ = infer_tension(Mesh, mean_tension=mean_tension, mode=mode_tension)
+    _, dict_pressures, _ = infer_pressure(Mesh, dict_tensions, mode=mode_pressure, P0=P0)
     return (dict_tensions, dict_pressures)
 
 
@@ -51,10 +46,10 @@ def factors_z(z1, z2, z3):
 
 
 """
-FORCE INFERENCE ONLY TAKING INTO ACCOUNT TRIJUNCTIONS : 
-THERE ARE A LOT OF QUADRIJUNCTIONS IN THE MESH 
+FORCE INFERENCE ONLY TAKING INTO ACCOUNT TRIJUNCTIONS :
+THERE ARE A LOT OF QUADRIJUNCTIONS IN THE MESH
 HOWEVER, TAKING ONLY THE TRIJUNCTIONS INTO ACCOUNT SHOULD SUFFICE IN MOST CASES, ESPECIALLY WITH A FEW CELLS
-BECAUSE : 
+BECAUSE :
 THE PROBLEM IS HIGHLY OVERDETERMINED
 AND THE QUADRIJUNCTIONS ARE NOT VERY PRESENT (THEY OCCUPY A LITTLE LENGTH)
 """
@@ -85,9 +80,7 @@ def infer_tension(Mesh, mean_tension=1, mode="Young-Dupré"):
         return None
 
 
-def build_matrix_tension_inv_lamy(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_inv_lamy(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -96,7 +89,7 @@ def build_matrix_tension_inv_lamy(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -113,9 +106,7 @@ def build_matrix_tension_inv_lamy(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -147,9 +138,7 @@ def build_matrix_tension_inv_lamy(
     return (M, B)
 
 
-def build_matrix_tension_lamy(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_lamy(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -158,7 +147,7 @@ def build_matrix_tension_lamy(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -175,9 +164,7 @@ def build_matrix_tension_lamy(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -209,9 +196,7 @@ def build_matrix_tension_lamy(
     return (M, B)
 
 
-def build_matrix_tension_projection_yd(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_projection_yd(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -220,7 +205,7 @@ def build_matrix_tension_projection_yd(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -237,9 +222,7 @@ def build_matrix_tension_projection_yd(
     nj = len(A)
     size = (2 * nj + 1) * (nm)
     B = np.zeros(2 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((2 * nj + 1, nm))
 
     # CLASSICAL
@@ -266,9 +249,7 @@ def build_matrix_tension_projection_yd(
     return (M, B)
 
 
-def build_matrix_tension_lamy_log(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_lamy_log(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -277,7 +258,7 @@ def build_matrix_tension_lamy_log(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -294,9 +275,7 @@ def build_matrix_tension_lamy_log(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = nm * np.log(
-        mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * np.log(mean_tension)  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -331,9 +310,7 @@ def build_matrix_tension_lamy_log(
     return (M, B)
 
 
-def build_matrix_tension_cotan(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_cotan(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -342,7 +319,7 @@ def build_matrix_tension_cotan(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -359,9 +336,7 @@ def build_matrix_tension_cotan(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -399,9 +374,7 @@ def build_matrix_tension_cotan(
     return (M, B)
 
 
-def build_matrix_tension_inv_cotan(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_inv_cotan(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -410,7 +383,7 @@ def build_matrix_tension_inv_cotan(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -427,9 +400,7 @@ def build_matrix_tension_inv_cotan(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -472,7 +443,7 @@ def build_matrix_equilibrium_tensions(Mesh, dict_areas, mean_tension=1):
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # MX = B
     # x : structure : [0,nm[ : tensions
@@ -484,9 +455,7 @@ def build_matrix_equilibrium_tensions(Mesh, dict_areas, mean_tension=1):
     ne = len(table)
 
     B = np.zeros(3 * ne + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * ne + 1, nm))
     M[-1] = 1
 
@@ -556,9 +525,7 @@ def tensions_equilibrium(phi1, phi2, phi3):
     return (t1, t2, t3)
 
 
-def build_matrix_tension_symmetrical_yd(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_symmetrical_yd(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -567,7 +534,7 @@ def build_matrix_tension_symmetrical_yd(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -584,9 +551,7 @@ def build_matrix_tension_symmetrical_yd(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -626,7 +591,7 @@ def build_matrix_discrete(DA, DV, materials, mean_tension=1):
     T = np.array(list(DA.keys()))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] + T[:, 1] * kt
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # MX = B
     # x : structure : ([0,nm[ : tensions) ([nm:nm+nc] : pressions) : (ya,yb,yc,yd...p0,p1,p2..pnc)
@@ -634,9 +599,7 @@ def build_matrix_discrete(DA, DV, materials, mean_tension=1):
     nc = len(materials) - 1
     size = (nm + nc + 1) * (nm + nc + 1)
     B = np.zeros(nm + nc + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = mean_tensions
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = mean_tensions
     M = np.zeros((nm + nc + 1, nm + nc))
     # print("n_j",nj,"\nn_m",nm,"\nn_c",nc,"\nNumber of unknowns ",nm+nc+1)
 
@@ -695,9 +658,7 @@ def extract_submatrices(M, nm):
 def infer_tension_projection_yd(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_projection_yd(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_projection_yd(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -711,9 +672,7 @@ def infer_tension_projection_yd(Mesh, mean_tension=1):
 def infer_tension_symmetrical_yd(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_symmetrical_yd(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_symmetrical_yd(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -727,9 +686,7 @@ def infer_tension_symmetrical_yd(Mesh, mean_tension=1):
 def infer_tension_cotan(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_cotan(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_cotan(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -743,9 +700,7 @@ def infer_tension_cotan(Mesh, mean_tension=1):
 def infer_tension_inv_cotan(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_inv_cotan(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_inv_cotan(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -759,9 +714,7 @@ def infer_tension_inv_cotan(Mesh, mean_tension=1):
 def infer_tension_lamy(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_lamy(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_lamy(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -775,9 +728,7 @@ def infer_tension_lamy(Mesh, mean_tension=1):
 def infer_tension_inv_lamy(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_inv_lamy(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_inv_lamy(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x, resid, rank, sigma = linalg.lstsq(M, B)
     dict_tensions = {}
     T = np.array(sorted(list(dict_areas.keys())))
@@ -791,9 +742,7 @@ def infer_tension_inv_lamy(Mesh, mean_tension=1):
 def infer_tension_lamy_log(Mesh, mean_tension=1):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_lamy_log(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension
-    )
+    M, B = build_matrix_tension_lamy_log(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension)
     x_log, resid, rank, sigma = linalg.lstsq(M, B)
     x = np.exp(x_log)
     dict_tensions = {}
@@ -855,9 +804,7 @@ def infer_tension_equilibrium(Mesh, mean_tension=1):
 ###RESIDUAL STUFF
 
 
-def build_matrix_tension_validity(
-    dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1
-):
+def build_matrix_tension_validity(dict_rad, dict_areas, dict_length_tri, n_materials, mean_tension=1):
     Total_length_mesh = (
         sum(dict_length_tri.values()) / 3
     )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
@@ -866,7 +813,7 @@ def build_matrix_tension_validity(
     T = np.array(sorted(list(dict_areas.keys())))
     kt = np.amax(T) + 1
     Keys_t = T[:, 0] * kt + T[:, 1]
-    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t))))
+    reverse_map_t = dict(zip(Keys_t, np.arange(len(Keys_t)), strict=False))
 
     # Index angles :
     A = np.array(list(dict_rad.keys()))
@@ -883,9 +830,7 @@ def build_matrix_tension_validity(
     nj = len(A)
     size = (3 * nj + 1) * (nm)
     B = np.zeros(3 * nj + 1)
-    B[-1] = (
-        nm * mean_tension
-    )  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    B[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
     M = np.zeros((3 * nj + 1, nm))
 
     # CLASSICAL
@@ -923,9 +868,7 @@ def build_matrix_tension_validity(
 def compute_residual_junctions_dict(Mesh, dict_tensions, alpha=0.05):
     dict_rad, _, dict_length = Mesh.compute_angles_tri(unique=False)
     dict_areas = Mesh.compute_areas_interfaces()
-    M, B = build_matrix_tension_validity(
-        dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension=1
-    )
+    M, B = build_matrix_tension_validity(dict_rad, dict_areas, dict_length, Mesh.n_materials, mean_tension=1)
 
     T = np.array(sorted(list(dict_areas.keys())))
     nm = len(T)
@@ -942,17 +885,13 @@ def compute_residual_junctions_dict(Mesh, dict_tensions, alpha=0.05):
     dict_residuals = {}
     array_resid = (np.abs(M @ x - B) ** 2)[:-1]
 
-    array_resid = array_resid.clip(
-        np.quantile(array_resid, alpha), np.quantile(array_resid, 1 - alpha)
-    )
+    array_resid = array_resid.clip(np.quantile(array_resid, alpha), np.quantile(array_resid, 1 - alpha))
 
     for i, key in enumerate(Keys_a):
         c = key // ka**2
         b = (key - (c * (ka**2))) // ka
         a = key % ka
 
-        dict_residuals[(a, b, c)] = (
-            array_resid[3 * i + 0] + array_resid[3 * i + 1] + array_resid[3 * i + 2]
-        )
+        dict_residuals[(a, b, c)] = array_resid[3 * i + 0] + array_resid[3 * i + 1] + array_resid[3 * i + 2]
 
     return dict_residuals

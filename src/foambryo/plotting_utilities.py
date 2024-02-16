@@ -1,275 +1,423 @@
+"""Module defining several plotting scenarii for a polyscope viewer.
 
+Sacha Ichbiah 2021
+Matthieu Perez 2024
+"""
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Literal
+
+import numpy as np
 import polyscope as ps
-import numpy as np 
 from matplotlib import cm
+from numpy.typing import NDArray
 
-
-
-def separate_faces_with_quantity(Faces_q,n_towers=10): 
-    n_towers = int(np.amax(Faces_q[:,[3,4]])+1)
-   
-    Occupancy=np.zeros(n_towers)
-    Dict={}
-    Faces_separated=[]
-    for face in Faces_q : 
-        num1,num2 = face[[3,4]].astype(int)
-        if num1!=-1:
-            if Occupancy[num1]==0:
-                Dict[num1]=[face[[0,1,2,5]]]
-                Occupancy[num1]+=1
-            else : 
-                Dict[num1].append(face[[0,1,2,5]])
-            
-        if num2!=-1:
-            if Occupancy[num2]==0:
-                Dict[num2]=[face[[0,1,2,5]]]
-                Occupancy[num2]+=1
-            else : 
-                Dict[num2].append(face[[0,1,2,5]])
-            
-    for i in sorted(list(Dict.keys())) : 
-        Faces_separated.append(np.array(Dict[i]))
-        
-    return(np.array(Faces_separated))
-
+if TYPE_CHECKING:
+    from foambryo.dcel import DcelData
 
 
 ##Support functions, simple mesh
 
 
-def view_faces_values_on_embryo(Mesh,Vf,name_values = "Values",ps_mesh = None,colormap = cm.jet,min_to_zero=True,clean_before = True, clean_after=True,show=True,highlight_junctions=False,adapt_values = True, scattered = False):
-    
-    if scattered : 
-        v,f,idx = Mesh.v_scattered,Mesh.f_scattered, Mesh.idx_scattered
-    
-    else : 
-        v,f,idx = Mesh.v,Mesh.f, np.arange(len(Mesh.f))
-        
-    Values = Vf.copy()
-    if adapt_values : 
-        if min_to_zero : 
-            Values-=np.amin(Values)
-        Values/=(np.amax(Values)-np.amin(Values))
+def view_faces_values_on_embryo(
+    mesh: "DcelData",
+    face_values: NDArray[np.float64],
+    name_values: str = "Values",
+    ps_mesh: ps.SurfaceMesh | None = None,
+    colormap: cm.colors.ColorMap = cm.jet,
+    min_to_zero: bool = True,
+    clean_before: bool = True,
+    clean_after: bool = True,
+    show: bool = True,
+    highlight_junctions: bool = False,
+    adapt_values: bool = True,
+    scattered: bool = False,
+) -> ps.SurfaceMesh:
+    """Visualize face_values data on a surface mesh.
 
-    Values = Values[idx]
-    colors_face = colormap(Values)[:,:3]
+    Args:
+        mesh (DcelData): Mesh data to visualize.
+        face_values (NDArray[np.float64]): Data array to visualize, per mesh triangle.
+        name_values (str, optional): Name of the data in viewer. Defaults to "Values".
+        ps_mesh (ps.SurfaceMesh|None, optional): If given, data is added to it and "mesh" is not used. Defaults to None.
+        colormap (cm.colors.ColorMap, optional): Matplotlib colormap for the data. Defaults to cm.jet.
+        min_to_zero (bool, optional): Map the minimum value to 0, if adapt_values is True too. Defaults to True.
+        clean_before (bool, optional): Clean polyscope viewer before adding the mesh. Defaults to True.
+        clean_after (bool, optional): Clean polyscope viewer after adding the mesh. Defaults to True.
+        show (bool, optional): Show polyscope viewer directly. Defaults to True.
+        highlight_junctions (bool, optional): Show trijunctions on mesh. Defaults to False.
+        adapt_values (bool, optional): Values are stretched so that min & max have a difference of 1. Defaults to True.
+        scattered (bool, optional): Separate individual cells. Defaults to False.
+
+    Returns:
+        ps.SurfaceMesh: _description_
+    """
+    if scattered:
+        v, f, idx = mesh.v_scattered, mesh.f_scattered, mesh.idx_scattered
+
+    else:
+        v, f, idx = mesh.v, mesh.f, np.arange(len(mesh.f))
+
+    values = face_values.copy()
+    if adapt_values:
+        if min_to_zero:
+            values -= np.amin(values)
+        values /= np.amax(values) - np.amin(values)
+
+    values = values[idx]
+    colors_face = colormap(values)[:, :3]
 
     ps.init()
-    
-    if clean_before : 
+
+    if clean_before:
         ps.remove_all_structures()
 
+    if ps_mesh is None:
+        ps_mesh = ps.register_surface_mesh("Embryo", v, f[:, [0, 1, 2]])
 
-    if ps_mesh == None : 
-        ps_mesh = ps.register_surface_mesh("Embryo", v,f[:,[0,1,2]])
+    ps_mesh.set_color((0.3, 0.6, 0.8))  # rgb triple on [0,1]
+    # ps_mesh.set_transparency(0.2)
+    ps_mesh.add_color_quantity(name_values, colors_face, defined_on="faces", enabled=True)
 
-    ps_mesh.set_color((0.3, 0.6, 0.8)) # rgb triple on [0,1]
-    #ps_mesh.set_transparency(0.2)
-    ps_mesh.add_color_quantity(name_values, colors_face, defined_on='faces',enabled=True)
-    
-    
-    if highlight_junctions : 
-        plot_trijunctions(Mesh,clean_before = False, clean_after = False, show=False, color = "uniform",value_color = np.ones(3))
-    
-    ps.set_ground_plane_mode("none") 
-    
-    if show : 
+    if highlight_junctions:
+        plot_trijunctions(
+            mesh,
+            clean_before=False,
+            clean_after=False,
+            show=False,
+            color="uniform",
+            value_color=np.ones(3),
+        )
+
+    ps.set_ground_plane_mode("none")
+
+    if show:
         ps.show()
-    
-    if clean_after : 
+
+    if clean_after:
         ps.remove_all_structures()
-        
-    return(ps_mesh)
-        
 
-def view_vertex_values_on_embryo(Mesh,H,remove_trijunctions=True,ps_mesh = None,name_values = "Values",scattering_coeff = 1.0,clean_before = True, clean_after=True,show=True,highlight_junction = False,scattered = True):
-    #H : Gaussian curvature at each vertex
+    return ps_mesh
 
-    v,f = Mesh.v,Mesh.f
 
-    Values = np.zeros(len(Mesh.f))
+def view_vertex_values_on_embryo(  # noqa: C901
+    mesh: "DcelData",
+    value_on_vertices: NDArray[np.float64],
+    remove_trijunctions: bool = True,
+    ps_mesh: ps.SurfaceMesh | None = None,
+    name_values: str = "Values",
+    clean_after: bool = True,
+    show: bool = True,
+    highlight_junction: bool = False,
+    scattered: bool = True,
+) -> ps.SurfaceMesh:
+    """Plot a Surface Mesh with colors based on data on the mesh's vertices.
 
-    Mesh.mark_trijunctional_vertices()
+    Args:
+        mesh (DcelData): Mesh data to show.
+        value_on_vertices (NDArray[np.float64]): Data to show.
+        remove_trijunctions (bool, optional): Do not show data on trijunctions. Defaults to True.
+        ps_mesh (ps.SurfaceMesh | None, optional): Polyscope mesh pre-existing replacing the mesh. Defaults to None.
+        name_values (str, optional): Name of the data in the viewer. Defaults to "Values".
+        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
+        show (bool, optional): Show polyscope viewer directly. Defaults to True.
+        highlight_junction (bool, optional): Show junctions. Defaults to False.
+        scattered (bool, optional): Use scattered version of the mesh, with cells separated. Defaults to True.
+
+    Returns:
+        ps.SurfaceMesh: Polyscope mesh with associated data visualized.
+    """
+    v, f = mesh.v, mesh.f
+
+    values = np.zeros(len(mesh.f))
+
+    mesh.mark_trijunctional_vertices()
     valid_values = []
     indices_nan = []
-    for i,face in enumerate(f[:,[0,1,2]]) : 
-        a,b,c = face
+    for i, face in enumerate(f[:, [0, 1, 2]]):
+        a, b, c = face
         liste = []
-        for vert_idx in face : 
-            if remove_trijunctions : 
-                if not Mesh.vertices[vert_idx].on_trijunction :
-                    liste.append(H[vert_idx])
-            else : 
-                liste.append(H[vert_idx])
-        if len(liste)>0 : 
-            Values[i]=np.mean(np.array(liste))
-            valid_values.append(Values[i])
-        else : 
+        for vert_idx in face:
+            if remove_trijunctions:
+                if not mesh.vertices[vert_idx].on_trijunction:
+                    liste.append(value_on_vertices[vert_idx])
+            else:
+                liste.append(value_on_vertices[vert_idx])
+        if len(liste) > 0:
+            values[i] = np.mean(np.array(liste))
+            valid_values.append(values[i])
+        else:
             indices_nan.append(i)
 
     mean = np.mean(np.array(valid_values))
-    for i in indices_nan : 
-        Values[i]=mean
+    for i in indices_nan:
+        values[i] = mean
 
     ps.init()
 
-    Values-=np.amin(Values)
-    Values/=np.amax(Values)
+    values -= np.amin(values)
+    values /= np.amax(values)
 
-    if scattered :
-        v,f,idx = Mesh.v_scattered,Mesh.f_scattered,Mesh.idx_scattered
-        Values = Values[idx]
+    if scattered:
+        v, f, idx = mesh.v_scattered, mesh.f_scattered, mesh.idx_scattered
+        values = values[idx]
 
-    colors_face = cm.jet(Values)[:,:3]
+    colors_face = cm.jet(values)[:, :3]
 
-    if ps_mesh == None : 
-        ps_mesh = ps.register_surface_mesh("Embryo", v,f[:,[0,1,2]])
-    ps_mesh.add_color_quantity(name_values, colors_face, defined_on='faces',enabled=True)
-       
-    if highlight_junction : 
-        plot_trijunctions(Mesh,clean_before = False, clean_after = False, show=False, color = "uniform",value_color = np.ones(3))
+    if ps_mesh is None:
+        ps_mesh = ps.register_surface_mesh("Embryo", v, f[:, [0, 1, 2]])
+    ps_mesh.add_color_quantity(name_values, colors_face, defined_on="faces", enabled=True)
 
-    ps.set_ground_plane_mode("none") 
-    if show : 
+    if highlight_junction:
+        plot_trijunctions(
+            mesh,
+            clean_before=False,
+            clean_after=False,
+            show=False,
+            color="uniform",
+            value_color=np.ones(3),
+        )
+
+    ps.set_ground_plane_mode("none")
+    if show:
         ps.show()
-    
-    if clean_after : 
+
+    if clean_after:
         ps.remove_all_structures()
-    
-    return(ps_mesh)
-    
-def view_dict_values_on_mesh(Mesh,dict_values,alpha = 0.05,ps_mesh = None, clean_before = True, clean_after=True,show=True,scattered = False,name_values = "Values",alpha_values=True, min_value = None, max_value = None,cmap = cm.jet):
 
-    v,f = Mesh.v,Mesh.f
+    return ps_mesh
 
-    def find_values(face): 
-        return(dict_values[tuple(face[[3,4]])])
-    values = np.array(list(map(find_values,f)))
+
+def view_dict_values_on_mesh(
+    mesh: "DcelData",
+    dict_values: dict[tuple[int, int], float],
+    alpha: float = 0.05,
+    ps_mesh: ps.SurfaceMesh | None = None,
+    clean_before: bool = True,
+    clean_after: bool = True,
+    show: bool = True,
+    scattered: bool = False,
+    name_values: str = "Values",
+    alpha_values: bool = True,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    cmap: cm.colors.ColorMap = cm.jet,
+) -> ps.SurfaceMesh:
+    """View the mesh with data defined per interface.
+
+    Args:
+        mesh (DcelData): Mesh to view.
+        dict_values (dict[tuple[int, int], float]): Data on interfaces
+        alpha (float, optional): Percentage to clip min & max value. Defaults to 0.05.
+        ps_mesh (ps.SurfaceMesh | None, optional): Polyscope mesh already instead of the mesh. Defaults to None.
+        clean_before (bool, optional): Clear polyscope viewer before this function. Defaults to True.
+        clean_after (bool, optional): Clear polyscope viewer after this function. Defaults to True.
+        show (bool, optional): Show polyscope viewer directly. Defaults to True.
+        scattered (bool, optional): Show scattered mesh. Defaults to False.
+        name_values (str, optional): Name of the data in the viewer. Defaults to "Values".
+        alpha_values (bool, optional): Use alpha parameter. Defaults to True.
+        min_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
+        max_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
+        cmap (cm.colors.ColorMap, optional): Colormap to color the data. Defaults to cm.jet.
+
+    Returns:
+        ps.SurfaceMesh: _description_
+    """
+    _, f = mesh.v, mesh.f
+
+    def _find_values(triangles_and_labels: NDArray[np.int64]) -> float:
+        return dict_values[tuple(triangles_and_labels[[3, 4]])]
+
+    values = np.array(list(map(_find_values, f)))
     values_values = np.array(list(dict_values.values()))
     if alpha_values:
-        mint = np.quantile(values_values,alpha)
-        maxt = np.quantile(values_values,1-alpha)
-    else : 
+        mint = np.quantile(values_values, alpha)
+        maxt = np.quantile(values_values, 1 - alpha)
+    else:
         mint = min_value
         maxt = max_value
-    values = values.clip(mint,maxt)
-    print("Extremas of the "+name_values+" plotted : ",mint,maxt)
-    values-=np.amin(mint)
-    values/=np.amax(maxt-mint)
-    
-    ps_mesh = view_faces_values_on_embryo(Mesh,values,ps_mesh = ps_mesh,name_values = name_values,colormap = cmap,clean_before = clean_before, clean_after=clean_after,show=show,adapt_values=False,scattered= scattered)
+    values = values.clip(mint, maxt)
+    print("Extremas of the " + name_values + " plotted : ", mint, maxt)
+    values -= np.amin(mint)
+    values /= np.amax(maxt - mint)
 
-    return(ps_mesh)
-        
-def plot_trijunctions(Mesh,Dict_trijunctional_values=None,clean_before = True, clean_after = True, show=True, color = "values",value_color = np.ones(3),cmap = cm.jet) : 
-    #Dict_trijunctional_values=dict_line_tensions
-    Dict_trijunctions = {}
+    ps_mesh = view_faces_values_on_embryo(
+        mesh,
+        values,
+        ps_mesh=ps_mesh,
+        name_values=name_values,
+        colormap=cmap,
+        clean_before=clean_before,
+        clean_after=clean_after,
+        show=show,
+        adapt_values=False,
+        scattered=scattered,
+    )
 
-    for edge in Mesh.half_edges : 
-        if len(edge.twin)>1 :
+    return ps_mesh
+
+
+def plot_trijunctions(  # noqa: C901
+    mesh: "DcelData",
+    dict_trijunctional_values: dict[Iterable[int], float] | None = None,
+    clean_before: bool = True,
+    clean_after: bool = True,
+    show: bool = True,
+    color: Literal["values"] | Literal["uniform"] = "values",
+    value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
+    cmap: cm.colors.ColorMap = cm.jet,
+) -> None:
+    """Plot trijunctions curve network of a mesh with optional data.
+
+    Args:
+        mesh (DcelData): Mesh to show.
+        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): Data to plot on junctions.
+            Defaults to None.
+        clean_before (bool, optional): Clean polyscope viewer before this function. Defaults to True.
+        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
+        show (bool, optional): Sho directly polyscope viewer. Defaults to True.
+        color (Literal["values"] | Literal["uniform"], optional): Show values from dict or one fixed color.
+            Defaults to "values".
+        value_color (tuple[float, float, float], optional): if color=="uniform", show junctions with this color.
+            Defaults to (1.0, 1.0, 1.0).
+        cmap (cm.colors.ColorMap, optional): if color=="values" show junctions with this colormap. Defaults to cm.jet.
+    """
+    dict_trijunctions = {}
+
+    for edge in mesh.half_edges:
+        if len(edge.twin) > 1:
             list_materials = []
-            for a in edge.twin : 
-                list_materials.append(Mesh.half_edges[a].incident_face.material_1)
-                list_materials.append(Mesh.half_edges[a].incident_face.material_2)
+            for a in edge.twin:
+                list_materials.append(mesh.half_edges[a].incident_face.material_1)
+                list_materials.append(mesh.half_edges[a].incident_face.material_2)
             list_materials = np.unique(list_materials)
             key_junction = tuple(list_materials)
-            Dict_trijunctions[key_junction] = Dict_trijunctions.get(key_junction,[]) + [[edge.origin.key,edge.destination.key]]
+            dict_trijunctions[key_junction] = [
+                *dict_trijunctions.get(key_junction, []),
+                [edge.origin.key, edge.destination.key],
+            ]
 
     ps.init()
-    if clean_before : ps.remove_all_structures()
+    if clean_before:
+        ps.remove_all_structures()
 
-    if color == "uniform" : 
+    if color == "uniform":
         plotted_edges = []
         edges = []
         verts = []
-        i=0
-        for key in Dict_trijunctions:
-            if len(key)>=3: 
-                for n in range(len(np.array(Dict_trijunctions[key]))): 
-                    plotted_edges.append([2*i,2*i+1])
-                    i+=1
-                edges.append(np.array(Dict_trijunctions[key]))
-                verts.append(Mesh.v[edges[-1]].reshape(-1,3))
-        
-        edges = np.vstack(edges)
-        verts = np.vstack(verts)
-        plotted_edges = np.array(plotted_edges)
-        ps.register_curve_network("trijunctions", verts,plotted_edges,color = value_color)
-        
-    else : 
-        
-        edges = []
-        verts = []
-        plotted_edges=[]
-        edges_values = []
-        i=0
-        for key in Dict_trijunctions : 
-            if len(key)>=3:
-                edges.append(np.array(Dict_trijunctions[key]))
-                verts.append(Mesh.v[edges[-1]].reshape(-1,3))
-                for n in range(len(edges[-1])): 
-                    plotted_edges.append([2*i,2*i+1])
-                    i+=1
-                    edges_values.append(Dict_trijunctional_values.get(key,0))
+        i = 0
+        for key in dict_trijunctions:
+            if len(key) >= 3:
+                for _ in range(len(np.array(dict_trijunctions[key]))):
+                    plotted_edges.append([2 * i, 2 * i + 1])
+                    i += 1
+                edges.append(np.array(dict_trijunctions[key]))
+                verts.append(mesh.v[edges[-1]].reshape(-1, 3))
 
         edges = np.vstack(edges)
         verts = np.vstack(verts)
         plotted_edges = np.array(plotted_edges)
-        curv_net = ps.register_curve_network("trijunctions", verts,plotted_edges,color = np.random.rand(3))
+        ps.register_curve_network("trijunctions", verts, plotted_edges, color=value_color)
+
+    else:
+        edges = []
+        verts = []
+        plotted_edges = []
+        edges_values = []
+        i = 0
+        for key in dict_trijunctions:
+            if len(key) >= 3:
+                edges.append(np.array(dict_trijunctions[key]))
+                verts.append(mesh.v[edges[-1]].reshape(-1, 3))
+                for _ in range(len(edges[-1])):
+                    plotted_edges.append([2 * i, 2 * i + 1])
+                    i += 1
+                    edges_values.append(dict_trijunctional_values.get(key, 0))
+
+        edges = np.vstack(edges)
+        verts = np.vstack(verts)
+        plotted_edges = np.array(plotted_edges)
+        curv_net = ps.register_curve_network(
+            "trijunctions",
+            verts,
+            plotted_edges,
+            color=np.random.default_rng().random(3),
+        )
 
         edges_values = np.array(edges_values)
-        edges_values/= np.amax(edges_values)
-        color_values = cmap(edges_values)[:,:3]
-        curv_net.add_color_quantity("line tensions", color_values, defined_on='edges',enabled = True)
+        edges_values /= np.amax(edges_values)
+        color_values = cmap(edges_values)[:, :3]
+        curv_net.add_color_quantity("line tensions", color_values, defined_on="edges", enabled=True)
 
-
-
-    if show : 
+    if show:
         ps.show()
-        
-    if clean_after : ps.remove_all_structures()
+
+    if clean_after:
+        ps.remove_all_structures()
 
 
+def plot_trijunctions_topo_change_viewer(  # noqa: C901
+    mesh: "DcelData",
+    dict_trijunctional_values: dict[Iterable[int], float] | None = None,
+    clean_before: bool = True,
+    clean_after: bool = True,
+    show: bool = True,
+    color: Literal["values"] | Literal["uniform"] = "values",
+    value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
+) -> None:
+    """Plot trijunctions curve network of a mesh with optional data. The color are not from a colormap.
 
+    TODO: find what this function does ;-) please document your own functions ;-)
 
+    Args:
+        mesh (DcelData): Mesh to show.
+        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): Data to plot on junctions.
+            Defaults to None.
+        clean_before (bool, optional): Clean polyscope viewer before this function. Defaults to True.
+        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
+        show (bool, optional): Sho directly polyscope viewer. Defaults to True.
+        color (Literal["values"] | Literal["uniform"], optional): Show values from dict or one fixed color.
+            Defaults to "values".
+        value_color (tuple[float, float, float], optional): if color=="uniform", show junctions with this color.
+            Defaults to (1.0, 1.0, 1.0).
+    """
+    dict_trijunctions = {}
 
-
-def plot_trijunctions_topo_change_viewer(Mesh,Dict_trijunctional_values=None,clean_before = True, clean_after = True, show=True, color = "values",value_color = np.ones(3)) : 
-
-    Dict_trijunctions = {}
-
-    for edge in Mesh.half_edges : 
-        if len(edge.twin)>1 :
+    for edge in mesh.half_edges:
+        if len(edge.twin) > 1:
             list_materials = []
-            for a in edge.twin : 
-                list_materials.append(Mesh.half_edges[a].incident_face.material_1)
-                list_materials.append(Mesh.half_edges[a].incident_face.material_2)
+            for a in edge.twin:
+                list_materials.append(mesh.half_edges[a].incident_face.material_1)
+                list_materials.append(mesh.half_edges[a].incident_face.material_2)
             list_materials = np.unique(list_materials)
             key_junction = tuple(list_materials)
-            Dict_trijunctions[key_junction] = Dict_trijunctions.get(key_junction,[]) + [[edge.origin.key,edge.destination.key]]
+            dict_trijunctions[key_junction] = [
+                *dict_trijunctions.get(key_junction, []),
+                [edge.origin.key, edge.destination.key],
+            ]
 
     ps.init()
-    if clean_before : ps.remove_all_structures()
+    if clean_before:
+        ps.remove_all_structures()
 
-    if color == "uniform" : 
+    if color == "uniform":
         plotted_edges = []
         edges = []
         verts = []
-        i=0
-        for key in Dict_trijunctions:
-            if len(key)>=3: 
-                for n in range(len(np.array(Dict_trijunctions[key]))): 
-                    plotted_edges.append([2*i,2*i+1])
-                    i+=1
-                edges.append(np.array(Dict_trijunctions[key]))
-                verts.append(Mesh.v[edges[-1]].reshape(-1,3))
-        
+        i = 0
+        for key in dict_trijunctions:
+            if len(key) >= 3:
+                for _ in range(len(np.array(dict_trijunctions[key]))):
+                    plotted_edges.append([2 * i, 2 * i + 1])
+                    i += 1
+                edges.append(np.array(dict_trijunctions[key]))
+                verts.append(mesh.v[edges[-1]].reshape(-1, 3))
+
         edges = np.vstack(edges)
         verts = np.vstack(verts)
         plotted_edges = np.array(plotted_edges)
-        ps.register_curve_network("trijunctions", verts,plotted_edges,color = value_color)
-        
-    else : 
+        ps.register_curve_network("trijunctions", verts, plotted_edges, color=value_color)
+
+    else:
         edges_r = []
         verts_r = []
         edges_g = []
@@ -277,50 +425,40 @@ def plot_trijunctions_topo_change_viewer(Mesh,Dict_trijunctional_values=None,cle
         green_edges = []
         red_edges = []
         edges_values = []
-        b=0
-        r=0
-        for key in Dict_trijunctions : 
-            if len(key)>=3:
-                edges_values.append(np.clip(Dict_trijunctional_values.get(key,0),0,None))
-                if edges_values[-1]==1: 
-                    for n in range(len(Dict_trijunctions[key])):
-                        red_edges.append([2*r,2*r+1])
-                        r+=1
-                    edges_r.append(np.array(Dict_trijunctions[key]))
-                    verts_r.append(Mesh.v[edges_r[-1]].reshape(-1,3))
-                else : 
-                    for n in range(len(Dict_trijunctions[key])):
-                        green_edges.append([2*b,2*b+1])
-                        b+=1
+        b = 0
+        r = 0
+        for key in dict_trijunctions:
+            if len(key) >= 3:
+                edges_values.append(np.clip(dict_trijunctional_values.get(key, 0), 0, None))
+                if edges_values[-1] == 1:
+                    for _ in range(len(dict_trijunctions[key])):
+                        red_edges.append([2 * r, 2 * r + 1])
+                        r += 1
+                    edges_r.append(np.array(dict_trijunctions[key]))
+                    verts_r.append(mesh.v[edges_r[-1]].reshape(-1, 3))
+                else:
+                    for _ in range(len(dict_trijunctions[key])):
+                        green_edges.append([2 * b, 2 * b + 1])
+                        b += 1
 
-
-                    edges_g.append(np.array(Dict_trijunctions[key]))
-                    verts_g.append(Mesh.v[edges_g[-1]].reshape(-1,3))
-
+                    edges_g.append(np.array(dict_trijunctions[key]))
+                    verts_g.append(mesh.v[edges_g[-1]].reshape(-1, 3))
 
         verts_r = np.vstack(verts_r)
         verts_g = np.vstack(verts_g)
         red_edges = np.array(red_edges)
         green_edges = np.array(green_edges)
-        curv_net = ps.register_curve_network("valid trijunctions", verts_g,green_edges,color = (0,1,0),transparency = 0.3)
-        curv_net = ps.register_curve_network("bad trijunctions", verts_r,red_edges,color = (1,0,0),transparency = 1.0)
+        ps.register_curve_network(
+            "valid trijunctions",
+            verts_g,
+            green_edges,
+            color=(0, 1, 0),
+            transparency=0.3,
+        )
+        ps.register_curve_network("bad trijunctions", verts_r, red_edges, color=(1, 0, 0), transparency=1.0)
 
-
-    if show : 
+    if show:
         ps.show()
-        
-    if clean_after : ps.remove_all_structures()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if clean_after:
+        ps.remove_all_structures()
