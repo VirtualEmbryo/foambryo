@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.typing import NDArray
 from scipy import linalg
 
 from .pressure_inference import infer_pressure
@@ -6,22 +7,13 @@ from .pressure_inference import infer_pressure
 
 def infer_forces(Mesh, mean_tension=1, P0=0, mode_tension="Young-Dupré", mode_pressure="Variational"):
     _, dict_tensions, _ = infer_tension(Mesh, mean_tension=mean_tension, mode=mode_tension)
-    _, dict_pressures, _ = infer_pressure(Mesh, dict_tensions, mode=mode_pressure, P0=P0)
+    _, dict_pressures, _ = infer_pressure(Mesh, dict_tensions, mode=mode_pressure, base_pressure=P0)
     return (dict_tensions, dict_pressures)
 
 
 def infer_forces_variational_lt(Mesh):
     # TODO
     return None
-
-
-def change_idx_cells(faces, mapping):
-    # mapping : {key_init:key_end} has to be a bijection
-    new_faces = faces.copy()
-    for key in mapping:
-        new_faces[faces[:, 3] == key][x:, 3] = mapping[key]
-        new_faces[faces[:, 4] == key][:, 4] = mapping[key]
-    return new_faces
 
 
 def cot(x):
@@ -647,12 +639,14 @@ def build_matrix_discrete(DA, DV, materials, mean_tension=1):
     return (M, B, nm)
 
 
-def extract_submatrices(M, nm):
-    F_g = M[:nm, :nm]
-    F_p = -M[:nm, nm:]
-    G_g = M[nm:-1, :nm]
-    G_p = -M[nm:-1, nm:]
-    return (F_g, F_p, G_g, G_p)
+def _extract_submatrices(
+    matrix: NDArray[np.float64], nm: int
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+    f_g = matrix[:nm, :nm]
+    f_p = -matrix[:nm, nm:]
+    g_g = matrix[nm:-1, :nm]
+    g_p = -matrix[nm:-1, nm:]
+    return (f_g, f_p, g_g, g_p)
 
 
 def infer_tension_projection_yd(Mesh, mean_tension=1):
@@ -759,7 +753,7 @@ def infer_tension_variational_yd(Mesh, mean_tension=1, prints=False):
 
     M, B, nm = build_matrix_discrete(DA, DV, Mesh.materials)
 
-    F_g, F_p, G_g, G_p = extract_submatrices(M, nm)
+    F_g, F_p, G_g, G_p = _extract_submatrices(M, nm)
 
     Mat_t = F_g - F_p @ (np.linalg.inv(G_p)) @ G_g
     if prints:
