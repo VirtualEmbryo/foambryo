@@ -23,7 +23,7 @@ def view_faces_values_on_embryo(
     face_values: NDArray[np.float64],
     name_values: str = "Values",
     ps_mesh: ps.SurfaceMesh | None = None,
-    colormap: cm.colors.ColorMap = cm.jet,
+    colormap: "cm.colors.ColorMap" = cm.jet,
     min_to_zero: bool = True,
     clean_before: bool = True,
     clean_after: bool = True,
@@ -39,7 +39,7 @@ def view_faces_values_on_embryo(
         face_values (NDArray[np.float64]): Data array to visualize, per mesh triangle.
         name_values (str, optional): Name of the data in viewer. Defaults to "Values".
         ps_mesh (ps.SurfaceMesh|None, optional): If given, data is added to it and "mesh" is not used. Defaults to None.
-        colormap (cm.colors.ColorMap, optional): Matplotlib colormap for the data. Defaults to cm.jet.
+        colormap ("cm.colors.ColorMap", optional): Matplotlib colormap for the data. Defaults to cm.jet.
         min_to_zero (bool, optional): Map the minimum value to 0, if adapt_values is True too. Defaults to True.
         clean_before (bool, optional): Clean polyscope viewer before adding the mesh. Defaults to True.
         clean_after (bool, optional): Clean polyscope viewer after adding the mesh. Defaults to True.
@@ -200,7 +200,7 @@ def view_dict_values_on_mesh(
     alpha_values: bool = True,
     min_value: float | None = None,
     max_value: float | None = None,
-    cmap: cm.colors.ColorMap = cm.jet,
+    cmap: "cm.colors.ColorMap" = cm.jet,
 ) -> ps.SurfaceMesh:
     """View the mesh with data defined per interface.
 
@@ -217,7 +217,7 @@ def view_dict_values_on_mesh(
         alpha_values (bool, optional): Use alpha parameter. Defaults to True.
         min_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
         max_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
-        cmap (cm.colors.ColorMap, optional): Colormap to color the data. Defaults to cm.jet.
+        cmap ("cm.colors.ColorMap", optional): Colormap to color the data. Defaults to cm.jet.
 
     Returns:
         ps.SurfaceMesh: _description_
@@ -264,7 +264,7 @@ def plot_trijunctions(  # noqa: C901
     show: bool = True,
     color: Literal["values"] | Literal["uniform"] = "values",
     value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
-    cmap: cm.colors.ColorMap = cm.jet,
+    cmap: "cm.colors.ColorMap" = cm.jet,
 ) -> None:
     """Plot trijunctions curve network of a mesh with optional data.
 
@@ -279,7 +279,7 @@ def plot_trijunctions(  # noqa: C901
             Defaults to "values".
         value_color (tuple[float, float, float], optional): if color=="uniform", show junctions with this color.
             Defaults to (1.0, 1.0, 1.0).
-        cmap (cm.colors.ColorMap, optional): if color=="values" show junctions with this colormap. Defaults to cm.jet.
+        cmap ("cm.colors.ColorMap", optional): if color=="values" show junctions with this colormap. Defaults to cm.jet.
     """
     dict_trijunctions = {}
 
