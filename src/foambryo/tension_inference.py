@@ -62,11 +62,11 @@ def infer_tensions(
         dict[tuple[int, int], float]:
             - map interface id (label 1, label 2) -> tension on this interface
     """
-    _, dict_tensions, _ = infer_tensions(mesh, mean_tension, mode)
+    _, dict_tensions, _ = infer_tensions_and_residuals(mesh, mean_tension, mode)
     return dict_tensions
 
 
-def infer_tensions(
+def infer_tensions_and_residuals(
     mesh: "DcelData",
     mean_tension: float = 1,
     mode: TensionComputationMethod = TensionComputationMethod.YoungDupre,

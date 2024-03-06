@@ -371,8 +371,9 @@ def compute_scattered_arrays(mesh: "DcelData", coeff: float) -> None:
 class DcelData:
     """DCEL Graph containing faces, half-edges and vertices."""
 
-    def __init__(self, points: NDArray[np.float64], triangles_and_labels: NDArray[np.int64]) -> None:
+    def __init__(self, points: NDArray[np.float64], triangles: NDArray[np.int64], labels: NDArray[np.int64]) -> None:
         """Take a multimaterial mesh as input."""
+        triangles_and_labels = np.hstack((triangles, labels))
         for i, f in enumerate(triangles_and_labels):
             if f[3] > f[4]:
                 triangles_and_labels[i] = triangles_and_labels[i, [0, 2, 1, 4, 3]]

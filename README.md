@@ -57,23 +57,23 @@ pip install pathtopackage/foambryo
 Load an instance segmentation, reconstruct its multimaterial mesh, infer and visualize the forces with Polyscope
 
 ```py
-from dw3d import DcelData, geometry_reconstruction_3d
-from foambryo import plot_force_inference, plot_tension_inference
+from dw3d import GeometryReconstruction3D
+from foambryo import DcelData, plot_force_inference, plot_tension_inference
 
-## Load the labels
+# Load the labels
 import skimage.io as io
-Segmentation = io.imread("Segmentation.tif")
+segmentation = io.imread("Segmentation.tif")
 
-## Reconstruct a multimaterial mesh from the labels
-DW = geometry_reconstruction_3d(Segmentation,min_dist = 5)
-Verts, Faces_multimaterial = DW.return_mesh()
-Mesh = DcelData(Verts,Faces_multimaterial)
+# Reconstruct a multimaterial mesh from segmentation
+dw = GeometryReconstruction3D(segmentation)
+points, triangles, labels = dw.return_mesh()
+mesh = DcelData(points, triangles, labels)
 
-## Infer and view the forces
-plot_force_inference(Mesh)
+# Infer and view the forces
+plot_force_inference(mesh)
 
 #Or just the tensions
-plot_tension_inference(Mesh)
+plot_tension_inference(mesh)
 ```
 
 ### Physical model
