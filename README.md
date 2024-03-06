@@ -99,12 +99,21 @@ The first step is to load your multimaterial mesh into a `DcelData` object via t
     - `Faces_multimaterial` is a F x 5 numpy array of F faces (triangles) and labels, where at each row the 3 first indices refers to the indices of the three vertices of that triangle and the 2 last refer to a given interface label. An interface label is made of two indices referring to the two materials (e.g. cells) lying on each of its side, 0 being the exterior by convention.
 
 #### 2 - Infer tensions and pressures
-Then the second step is to use this `Mesh` object to infer the relative surface tensions and cell pressures
-- `infer_tension(Mesh,mean_tension=1,mode='YD')`: 
+Then the second step is to use this `mesh` object to infer the relative surface tensions and cell pressures
+- `infer_tensions(mesh, mean_tension=1,mode=TensionsComputationMethod.YoungDupre)`: 
 One infers relative tensions by inverting mechanical equilibrium at each tri-material/cellular junction
-    - `Mesh` is a `DcelData` object.
-    - `mean_tension` has to be defined as one only infers ratios between tensions, you can set it to 1 for instance.
-    - `mode` is the formula used to infer the tensions from contact angles at each junction. It has to be choosen among: `YD` (Young-Dupré with cosines only), `Eq`, `Projection_YD` (Young-Dupré with cosines and sines),  `cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)), `inv_cotan` (inverse of the cotangent formula), `Lamy` ([Lamy's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)), `inv_Lamy` (inverse of the Lamy's relation), `Lamy_Log` (logarithm of the Lamy's relation), `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641))
+    - `mesh` is a `DcelData` object.
+    - `mean_tension` as one only infers ratios between tensions, it has to be given. You can set it to 1 for instance.
+    - `mode` is the formula used to infer the tensions from contact angles at each junction. It can be: 
+        - `YoungDupre` (Young-Dupré with cosines only),
+        - `ProjectionYoungDupre` (Young-Dupré with cosines and sines),
+        - `Equilibrium`,
+        - `Cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)),
+        - `InvCotan` (inverse of the cotangent formula),
+        - `Lami` ([Lami's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)),
+        - `InvLami` (inverse of the Lami's relation),
+        - `LogLami` (logarithm of the Lami's relation),
+        - `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)).
 
 - `infer_pressures(mesh, dict_tensions, mode=PressureComputationMethod.Variational, base_pressure = 0)`: 
 We infer pressures relative to the exterior pressure $P_0$ by inverting normal force balance at each interface

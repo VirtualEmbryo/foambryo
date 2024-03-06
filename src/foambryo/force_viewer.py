@@ -22,17 +22,17 @@ from foambryo.dcel import (
     compute_normal_faces,
     update_graph_with_scattered_values,
 )
+from foambryo.force_inference import infer_forces
 from foambryo.plotting_utilities import (
     plot_trijunctions,
     plot_trijunctions_topo_change_viewer,
     view_dict_values_on_mesh,
     view_vertex_values_on_embryo,
 )
+from foambryo.pressure_inference import infer_pressures
 from foambryo.tension_inference import (
     compute_residual_junctions_dict,
-    infer_forces,
-    infer_pressures_and_residuals,
-    infer_tension,
+    infer_tensions,
 )
 
 if TYPE_CHECKING:
@@ -64,7 +64,7 @@ def plot_force_inference(
     if dict_tensions is None:
         dict_tensions, dict_pressure = infer_forces(mesh)
     if dict_pressure is None:
-        dict_pressure = infer_pressures_and_residuals(mesh, dict_tensions)
+        dict_pressure = infer_pressures(mesh, dict_tensions)
 
     nx_graph = mesh.compute_networkx_graph()
     nx.set_edge_attributes(nx_graph, dict_tensions, "tension")
@@ -208,7 +208,7 @@ def plot_tension_inference(
     ps.remove_all_structures()
 
     if dict_tensions is None:
-        _, dict_tensions, _ = infer_tension(mesh, mean_tension=1)
+        dict_tensions = infer_tensions(mesh, mean_tension=1)
 
     nx_graph = mesh.compute_networkx_graph()
     nx.set_edge_attributes(nx_graph, dict_tensions, "tension")
@@ -1087,7 +1087,7 @@ def plot_valid_junctions(
         dict_tensions (dict[tuple[int, int], float] | None, optional): Tensions map, computed if None. Defaults to None.
     """
     if dict_tensions is None:
-        _, dict_tensions, _ = infer_tension(mesh, mean_tension=1)
+        dict_tensions = infer_tensions(mesh, mean_tension=1)
     dict_length = mesh.compute_length_trijunctions()
     dict_validity = {}
     for key in dict_length:
@@ -1131,7 +1131,7 @@ def plot_residual_junctions(
         alpha (float, optional): Quantile to ignore extreme values. Defaults to 0.05.
     """
     if dict_tensions is None:
-        _, dict_tensions, _ = infer_tension(mesh, mean_tension=1)
+        dict_tensions = infer_tensions(mesh, mean_tension=1)
     dict_residuals = compute_residual_junctions_dict(mesh, dict_tensions, alpha=alpha)
 
     print(

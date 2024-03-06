@@ -3,102 +3,80 @@
 Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
+from enum import Enum
 from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
 from scipy import linalg
 
-from .pressure_inference import infer_pressures_and_residuals
-
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
 
 
-def infer_forces(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-    base_pressure: float = 0,
-    mode_tension: str = "Young-Dupré",
-    mode_pressure: str = "Variational",
-) -> tuple[dict[tuple[int, int], float], dict[int, float]]:
-    """Infer tensions and pressures from a 3D mesh.
+class TensionComputationMethod(Enum):
+    """Describe the formula used to infer the tensions from contact angles at each junction.
 
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-        base_pressure (float, optional): Expected base pressure for exterior. Defaults to 0.
-        mode_tension (str, optional): Algorithm name to compute tensions. Defaults to "Young-Dupré".
-        mode_pressure (str, optional): Algorithm name to compute pressures. Defaults to "Variational".
-
-    Returns:
-        tuple[dict[tuple[int, int], float], dict[int, float]]:
-            - map of interface id (label 1, label 2) -> tensions on this interface.
-            - map of cell id (0 = exterior) -> pressure in this cell.
+    It can be:
+    - YoungDupre (Young-Dupré with cosines only),
+    - ProjectionYoungDupre (Young-Dupré with cosines and sines),
+    - Equilibrium,
+    - Cotan (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)),
+    - InvCotan (inverse of the cotangent formula),
+    - Lami ([Lami's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)),
+    - InvLami (inverse of the Lami's relation),
+    - LogLami (logarithm of the Lami's relation),
+    - Variational (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)).
     """
-    _, dict_tensions, _ = infer_tension(mesh, mean_tension=mean_tension, mode=mode_tension)
-    _, dict_pressures, _ = infer_pressures_and_residuals(
-        mesh, dict_tensions, mode=mode_pressure, base_pressure=base_pressure
-    )
-    return (dict_tensions, dict_pressures)
+
+    YoungDupre = 0
+    ProjectionYoungDupre = 1
+    Equilibrium = 2
+    Cotan = 3
+    InvCotan = 4
+    Lami = 5
+    InvLami = 6
+    LogLami = 7
+    Variational = 8
 
 
-# def infer_forces_variational_lt(mesh: "DcelData"):
-#     # TODO
-#     return None
-
-
-def _cot(x: float) -> float:
-    return np.cos(x) / np.sin(x)
-
-
-def _compute_z(phi1: float, phi2: float, phi3: float) -> tuple[float, float, float]:
-    z1 = np.sin(phi1) / (1 - np.cos(phi1))
-    z2 = np.sin(phi2) / (1 - np.cos(phi2))
-    z3 = np.sin(phi3) / (1 - np.cos(phi3))
-    return (z1, z2, z3)
-
-
-def _factors_z(z1: float, z2: float, z3: float) -> tuple[float, float, float, float, float, float]:
-    f1 = z2 * z3
-    f2 = z1 * z3
-    f3 = z1 * z2
-    s1 = z1 * (z2 + z3) / 2
-    s2 = z2 * (z1 + z3) / 2
-    s3 = z3 * (z1 + z2) / 2
-    return (f1, f2, f3, s1, s2, s3)
-
-
-"""
-FORCE INFERENCE ONLY TAKING INTO ACCOUNT TRIJUNCTIONS :
-THERE ARE A LOT OF QUADRIJUNCTIONS IN THE MESH
-HOWEVER, TAKING ONLY THE TRIJUNCTIONS INTO ACCOUNT SHOULD SUFFICE IN MOST CASES, ESPECIALLY WITH A FEW CELLS
-BECAUSE :
-THE PROBLEM IS HIGHLY OVERDETERMINED
-AND THE QUADRIJUNCTIONS ARE NOT VERY PRESENT (THEY OCCUPY A LITTLE LENGTH)
-"""
-
-
-def infer_tension(
+# FORCE INFERENCE ONLY TAKING INTO ACCOUNT TRIJUNCTIONS :
+# THERE ARE A LOT OF QUADRIJUNCTIONS IN THE MESH
+# HOWEVER, TAKING ONLY THE TRIJUNCTIONS INTO ACCOUNT SHOULD SUFFICE IN MOST CASES, ESPECIALLY WITH A FEW CELLS
+# BECAUSE :
+# THE PROBLEM IS HIGHLY OVERDETERMINED
+# AND THE QUADRIJUNCTIONS ARE NOT VERY PRESENT (THEY OCCUPY A LITTLE LENGTH)
+def infer_tensions(
     mesh: "DcelData",
     mean_tension: float = 1,
-    mode: str = "Young-Dupré",
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    mode: TensionComputationMethod = TensionComputationMethod.YoungDupre,
+) -> dict[tuple[int, int], float]:
     """Infer tensions using chosen method.
 
     Args:
         mesh (DcelData): Mesh to analyze.
         mean_tension (float, optional): Expected mean tension. Defaults to 1.
-        mode (str, optional): method to infer tensions. Can be :
-            - "Young-Dupré",
-            - "Eq",
-            - "Projection Young-Dupré",
-            - "cotan",
-            - "inv_cotan",
-            - "Lami",
-            - "Lami inverse",
-            - "Lami logaritm",
-            - "Variational",
+        mode (TensionComputationMethod, optional): method to infer tensions.
+
+    Returns:
+        dict[tuple[int, int], float]:
+            - map interface id (label 1, label 2) -> tension on this interface
+    """
+    _, dict_tensions, _ = infer_tensions(mesh, mean_tension, mode)
+    return dict_tensions
+
+
+def infer_tensions(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+    mode: TensionComputationMethod = TensionComputationMethod.YoungDupre,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using chosen method. Get residuals too.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+        mode (TensionComputationMethod, optional): method to infer tensions.
 
     Returns:
         tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
@@ -106,31 +84,56 @@ def infer_tension(
             - map interface id (label 1, label 2) -> tension on this interface
             - residuals of the least square method.
     """
-    if mode == "Young-Dupré":
-        return infer_tension_symmetrical_yd(mesh, mean_tension)
-    elif mode == "Eq":
-        return infer_tension_equilibrium(mesh, mean_tension)
-    elif mode == "Projection Young-Dupré":
-        return infer_tension_projection_yd(mesh, mean_tension)
-    elif mode == "cotan":
-        return infer_tension_cotan(mesh, mean_tension)
-    elif mode == "inv_cotan":
-        return infer_tension_inv_cotan(mesh, mean_tension)
-    elif mode == "Lami":
-        return infer_tension_lamy(mesh, mean_tension)
-    elif mode == "Lami inverse":
-        return infer_tension_inv_lamy(mesh, mean_tension)
-    elif mode == "Lami logarithm":
-        return infer_tension_lamy_log(mesh, mean_tension)
-    elif mode == "Variational":
-        return infer_tension_variational_yd(mesh, mean_tension)
-
-    else:
-        print("Unimplemented method. We use Young-Dupré.")
-        return infer_tension_symmetrical_yd(mesh, mean_tension)
+    if mode == TensionComputationMethod.ProjectionYoungDupre:
+        return _infer_tension_projection_yd(mesh, mean_tension)
+    elif mode == TensionComputationMethod.Equilibrium:
+        return _infer_tension_equilibrium(mesh, mean_tension)
+    elif mode == TensionComputationMethod.Cotan:
+        return _infer_tension_cotan(mesh, mean_tension)
+    elif mode == TensionComputationMethod.InvCotan:
+        return _infer_tension_inv_cotan(mesh, mean_tension)
+    elif mode == TensionComputationMethod.Lami:
+        return _infer_tension_lami(mesh, mean_tension)
+    elif mode == TensionComputationMethod.InvLami:
+        return _infer_tension_inv_lami(mesh, mean_tension)
+    elif mode == TensionComputationMethod.LogLami:
+        return _infer_tension_lami_log(mesh, mean_tension)
+    elif mode == TensionComputationMethod.Variational:
+        return _infer_tension_variational_yd(mesh, mean_tension)
+    else:  # if mode == TensionComputationMethod.YoungDupre:
+        return _infer_tension_symmetrical_yd(mesh, mean_tension)
 
 
-def build_matrix_tension_inv_lamy(
+def _infer_tension_symmetrical_yd(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using Symmetrical Young-Dupré method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_symmetrical_yd(dict_rad, dict_areas, dict_length, mean_tension)
+    tensions, residuals, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interfaces = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interfaces)
+    for i in range(nm):
+        dict_tensions[tuple(key_interfaces[i])] = tensions[i]
+
+    return (tensions, dict_tensions, residuals)
+
+
+def _build_matrix_tension_symmetrical_yd(
     dict_rad: dict[tuple[int, int, int], float],
     dict_areas: dict[tuple[int, int], float],
     dict_length_tri: dict[tuple[int, int, int], float],
@@ -184,101 +187,60 @@ def build_matrix_tension_inv_lamy(
 
         angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
         angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]
+        angle_c = dict_rad[(a, c, b)]  # O_c = acb angle
+
         idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
         idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
         idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
 
         factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = np.sin(angle_a) * factor
-        matrix_m[3 * i, idx_tbc] = -np.sin(angle_c) * factor
+        matrix_m[3 * i, idx_tab] = 1 * factor
+        matrix_m[3 * i, idx_tbc] = np.cos(angle_b) * factor
+        matrix_m[3 * i, idx_tac] = np.cos(angle_a) * factor
 
-        matrix_m[3 * i + 1, idx_tab] = np.sin(angle_b) * factor
-        matrix_m[3 * i + 1, idx_tac] = -np.sin(angle_c) * factor
+        matrix_m[3 * i + 1, idx_tab] = np.cos(angle_b) * factor
+        matrix_m[3 * i + 1, idx_tbc] = 1 * factor
+        matrix_m[3 * i + 1, idx_tac] = np.cos(angle_c) * factor
 
-        matrix_m[3 * i + 2, idx_tbc] = np.sin(angle_b) * factor
-        matrix_m[3 * i + 2, idx_tac] = -np.sin(angle_a) * factor
+        matrix_m[3 * i + 2, idx_tab] = np.cos(angle_a) * factor
+        matrix_m[3 * i + 2, idx_tbc] = np.cos(angle_c) * factor
+        matrix_m[3 * i + 2, idx_tac] = 1 * factor
 
     matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
 
     return (matrix_m, vector_b)
 
 
-def build_matrix_tension_lamy(
-    dict_rad: dict[tuple[int, int, int], float],
-    dict_areas: dict[tuple[int, int], float],
-    dict_length_tri: dict[tuple[int, int, int], float],
+def _infer_tension_projection_yd(
+    mesh: "DcelData",
     mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using projection Young-Dupré method.
 
     Args:
-        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
-        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
-        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mesh (DcelData): Mesh to analyze.
         mean_tension (float, optional): Expected mean tension. Defaults to 1.
 
     Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64]]:
-            - M
-            - B
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
     """
-    total_length_mesh = (
-        sum(dict_length_tri.values()) / 3
-    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_projection_yd(dict_rad, dict_areas, dict_length, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interfaces = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interfaces)
+    for i in range(nm):
+        dict_tensions[tuple(key_interfaces[i])] = x[i]
 
-    # Index interfaces :
-    keys_t = np.array(sorted(dict_areas.keys()))
-    nb_zones = np.amax(keys_t) + 1
-    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
-    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
-
-    # Index angles :
-    keys_angles = np.array(list(dict_rad.keys()))
-    keys_angles = -np.sort(-keys_angles, axis=1)
-    ka = np.amax(keys_angles)
-    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
-    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
-    keys_angles = keys_angles[index]
-
-    # MX = B
-    # x : structure : [0,nm[ : tensions
-    nm = len(keys_t)
-    nj = len(keys_angles)
-    vector_b = np.zeros(3 * nj + 1)
-    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
-    matrix_m = np.zeros((3 * nj + 1, nm))
-
-    # CLASSICAL
-    # YOUNG-DUPRÉ
-    for i, key in enumerate(linear_keys_angles):
-        c = key // ka**2
-        b = (key - (c * (ka**2))) // ka
-        a = key % ka
-
-        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
-        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]
-        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
-        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
-        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
-
-        factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = 1 / np.sin(angle_c) * factor
-        matrix_m[3 * i, idx_tbc] = -1 / np.sin(angle_a) * factor
-
-        matrix_m[3 * i + 1, idx_tab] = 1 / np.sin(angle_c) * factor
-        matrix_m[3 * i + 1, idx_tac] = -1 / np.sin(angle_b) * factor
-
-        matrix_m[3 * i + 2, idx_tbc] = 1 / np.sin(angle_a) * factor
-        matrix_m[3 * i + 2, idx_tac] = -1 / np.sin(angle_b) * factor
-
-    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
-
-    return (matrix_m, vector_b)
+    return (x, dict_tensions, resid)
 
 
-def build_matrix_tension_projection_yd(
+def _build_matrix_tension_projection_yd(
     dict_rad: dict[tuple[int, int, int], float],
     dict_areas: dict[tuple[int, int], float],
     dict_length_tri: dict[tuple[int, int, int], float],
@@ -347,244 +309,35 @@ def build_matrix_tension_projection_yd(
     return (matrix_m, vector_b)
 
 
-def build_matrix_tension_lamy_log(
-    dict_rad: dict[tuple[int, int, int], float],
-    dict_areas: dict[tuple[int, int], float],
-    dict_length_tri: dict[tuple[int, int, int], float],
+def _infer_tension_equilibrium(
+    mesh: "DcelData",
     mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using Equilibrium method.
 
     Args:
-        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
-        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
-        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mesh (DcelData): Mesh to analyze.
         mean_tension (float, optional): Expected mean tension. Defaults to 1.
 
     Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64]]:
-            - M
-            - B
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
     """
-    total_length_mesh = (
-        sum(dict_length_tri.values()) / 3
-    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_equilibrium_tensions(mesh, dict_areas, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interface = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interface)
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
 
-    # Index interfaces :
-    keys_t = np.array(sorted(dict_areas.keys()))
-    nb_zones = np.amax(keys_t) + 1
-    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
-    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
-
-    # Index angles :
-    keys_angles = np.array(list(dict_rad.keys()))
-    keys_angles = -np.sort(-keys_angles, axis=1)
-    ka = np.amax(keys_angles)
-    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
-    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
-    keys_angles = keys_angles[index]
-
-    # MX = B
-    # x : structure : [0,nm[ : tensions
-    nm = len(keys_t)
-    nj = len(keys_angles)
-    vector_b = np.zeros(3 * nj + 1)
-    vector_b[-1] = nm * np.log(mean_tension)  # Sum of tensions = number of membrane <=> mean of tensions = 1
-    matrix_m = np.zeros((3 * nj + 1, nm))
-
-    # CLASSICAL
-    # YOUNG-DUPRÉ
-    for i, key in enumerate(linear_keys_angles):
-        c = key // ka**2
-        b = (key - (c * (ka**2))) // ka
-        a = key % ka
-
-        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
-        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]
-        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
-        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
-        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
-
-        factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = 1 * factor
-        matrix_m[3 * i, idx_tbc] = -1 * factor
-        vector_b[3 * i] = (np.log(np.sin(angle_c)) - np.log(np.sin(angle_a))) * factor
-
-        matrix_m[3 * i + 1, idx_tab] = 1 * factor
-        matrix_m[3 * i + 1, idx_tac] = -1 * factor
-        vector_b[3 * i + 1] = (np.log(np.sin(angle_c)) - np.log(np.sin(angle_b))) * factor
-
-        matrix_m[3 * i + 2, idx_tbc] = 1 * factor
-        matrix_m[3 * i + 2, idx_tac] = -1 * factor
-        vector_b[3 * i + 2] = (np.log(np.sin(angle_a)) - np.log(np.sin(angle_b))) * factor
-
-    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
-
-    return (matrix_m, vector_b)
+    return (x, dict_tensions, resid)
 
 
-def build_matrix_tension_cotan(
-    dict_rad: dict[tuple[int, int, int], float],
-    dict_areas: dict[tuple[int, int], float],
-    dict_length_tri: dict[tuple[int, int, int], float],
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
-
-    Args:
-        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
-        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
-        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64]]:
-            - M
-            - B
-    """
-    total_length_mesh = (
-        sum(dict_length_tri.values()) / 3
-    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
-
-    # Index interfaces :
-    keys_t = np.array(sorted(dict_areas.keys()))
-    nb_zones = np.amax(keys_t) + 1
-    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
-    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
-
-    # Index angles :
-    keys_angles = np.array(list(dict_rad.keys()))
-    keys_angles = -np.sort(-keys_angles, axis=1)
-    ka = np.amax(keys_angles)
-    linear_keys_a = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
-    linear_keys_a, index = np.unique(linear_keys_a, return_index=True)
-    keys_angles = keys_angles[index]
-
-    # MX = B
-    # x : structure : [0,nm[ : tensions
-    nm = len(keys_t)
-    nj = len(keys_angles)
-    vector_b = np.zeros(3 * nj + 1)
-    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
-    matrix_m = np.zeros((3 * nj + 1, nm))
-
-    # CLASSICAL
-    # YOUNG-DUPRÉ
-    for i, key in enumerate(linear_keys_a):
-        c = key // ka**2
-        b = (key - (c * (ka**2))) // ka
-        a = key % ka
-
-        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
-        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]
-        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
-        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
-        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
-
-        z1, z2, z3 = _compute_z(angle_a, angle_b, angle_c)
-        f1, f2, f3, s1, s2, s3 = _factors_z(z1, z2, z3)
-
-        factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = -s3 - f3 * factor
-        matrix_m[3 * i, idx_tbc] = s3 * factor
-        matrix_m[3 * i, idx_tac] = s3 * factor
-
-        matrix_m[3 * i + 1, idx_tab] = s1 * factor
-        matrix_m[3 * i + 1, idx_tbc] = -s1 - f1 * factor
-        matrix_m[3 * i + 1, idx_tac] = s1 * factor
-
-        matrix_m[3 * i + 2, idx_tab] = s2 * factor
-        matrix_m[3 * i + 2, idx_tbc] = s2 * factor
-        matrix_m[3 * i + 2, idx_tac] = -s2 - f2 * factor
-
-    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
-
-    return (matrix_m, vector_b)
-
-
-def build_matrix_tension_inv_cotan(
-    dict_rad: dict[tuple[int, int, int], float],
-    dict_areas: dict[tuple[int, int], float],
-    dict_length_tri: dict[tuple[int, int, int], float],
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
-
-    Args:
-        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
-        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
-        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64]]:
-            - M
-            - B
-    """
-    total_length_mesh = (
-        sum(dict_length_tri.values()) / 3
-    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
-
-    # Index interfaces :
-    keys_t = np.array(sorted(dict_areas.keys()))
-    nb_zones = np.amax(keys_t) + 1
-    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
-    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
-
-    # Index angles :
-    keys_angles = np.array(list(dict_rad.keys()))
-    keys_angles = -np.sort(-keys_angles, axis=1)
-    ka = np.amax(keys_angles)
-    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
-    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
-    keys_angles = keys_angles[index]
-
-    # MX = B
-    # x : structure : [0,nm[ : tensions
-    nm = len(keys_t)
-    nj = len(keys_angles)
-    vector_b = np.zeros(3 * nj + 1)
-    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
-    matrix_m = np.zeros((3 * nj + 1, nm))
-
-    # CLASSICAL
-    # YOUNG-DUPRÉ
-    for i, key in enumerate(linear_keys_angles):
-        c = key // ka**2
-        b = (key - (c * (ka**2))) // ka
-        a = key % ka
-
-        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
-        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]
-        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
-        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
-        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
-
-        z1, z2, z3 = _compute_z(angle_a, angle_b, angle_c)
-        f1, f2, f3, s1, s2, s3 = _factors_z(z1, z2, z3)
-
-        factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = -1 / s3 - 1 / f3 * factor
-        matrix_m[3 * i, idx_tbc] = 1 / f3 * factor
-        matrix_m[3 * i, idx_tac] = 1 / f3 * factor
-
-        matrix_m[3 * i + 1, idx_tab] = 1 / f1 * factor
-        matrix_m[3 * i + 1, idx_tbc] = -1 / s1 - 1 / f1 * factor
-        matrix_m[3 * i + 1, idx_tac] = 1 / f1 * factor
-
-        matrix_m[3 * i + 2, idx_tab] = 1 / f2 * factor
-        matrix_m[3 * i + 2, idx_tbc] = 1 / f2 * factor
-        matrix_m[3 * i + 2, idx_tac] = -1 / f2 - 1 / s2 * factor
-
-    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
-
-    return (matrix_m, vector_b)
-
-
-def build_matrix_equilibrium_tensions(
+def _build_matrix_equilibrium_tensions(
     mesh: "DcelData",
     dict_areas: dict[tuple[int, int], float],
     mean_tension: float = 1,
@@ -672,14 +425,145 @@ def build_matrix_equilibrium_tensions(
     return (matrix_m, vector_b)
 
 
-def _tensions_equilibrium(phi1: float, phi2: float, phi3: float) -> tuple[float, float, float]:
-    t1 = _cot(phi1 / 2) * (_cot(phi2 / 2) + _cot(phi3 / 2))
-    t2 = _cot(phi2 / 2) * (_cot(phi1 / 2) + _cot(phi3 / 2))
-    t3 = _cot(phi3 / 2) * (_cot(phi1 / 2) + _cot(phi2 / 2))
-    return (t1, t2, t3)
+def _infer_tension_cotan(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using cotangents method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_cotan(dict_rad, dict_areas, dict_length, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interface = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interface)
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
+
+    return (x, dict_tensions, resid)
 
 
-def build_matrix_tension_symmetrical_yd(
+def _build_matrix_tension_cotan(
+    dict_rad: dict[tuple[int, int, int], float],
+    dict_areas: dict[tuple[int, int], float],
+    dict_length_tri: dict[tuple[int, int, int], float],
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+
+    Args:
+        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
+        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
+        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], NDArray[np.float64]]:
+            - M
+            - B
+    """
+    total_length_mesh = (
+        sum(dict_length_tri.values()) / 3
+    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+
+    # Index interfaces :
+    keys_t = np.array(sorted(dict_areas.keys()))
+    nb_zones = np.amax(keys_t) + 1
+    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
+    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
+
+    # Index angles :
+    keys_angles = np.array(list(dict_rad.keys()))
+    keys_angles = -np.sort(-keys_angles, axis=1)
+    ka = np.amax(keys_angles)
+    linear_keys_a = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
+    linear_keys_a, index = np.unique(linear_keys_a, return_index=True)
+    keys_angles = keys_angles[index]
+
+    # MX = B
+    # x : structure : [0,nm[ : tensions
+    nm = len(keys_t)
+    nj = len(keys_angles)
+    vector_b = np.zeros(3 * nj + 1)
+    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    matrix_m = np.zeros((3 * nj + 1, nm))
+
+    # CLASSICAL
+    # YOUNG-DUPRÉ
+    for i, key in enumerate(linear_keys_a):
+        c = key // ka**2
+        b = (key - (c * (ka**2))) // ka
+        a = key % ka
+
+        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
+        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
+        angle_c = dict_rad[(a, c, b)]
+        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
+        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
+        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
+
+        z1, z2, z3 = _compute_z(angle_a, angle_b, angle_c)
+        f1, f2, f3, s1, s2, s3 = _factors_z(z1, z2, z3)
+
+        factor = dict_length_tri[(a, b, c)] / total_length_mesh
+        matrix_m[3 * i, idx_tab] = -s3 - f3 * factor
+        matrix_m[3 * i, idx_tbc] = s3 * factor
+        matrix_m[3 * i, idx_tac] = s3 * factor
+
+        matrix_m[3 * i + 1, idx_tab] = s1 * factor
+        matrix_m[3 * i + 1, idx_tbc] = -s1 - f1 * factor
+        matrix_m[3 * i + 1, idx_tac] = s1 * factor
+
+        matrix_m[3 * i + 2, idx_tab] = s2 * factor
+        matrix_m[3 * i + 2, idx_tbc] = s2 * factor
+        matrix_m[3 * i + 2, idx_tac] = -s2 - f2 * factor
+
+    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
+
+    return (matrix_m, vector_b)
+
+
+def _infer_tension_inv_cotan(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using inverse cotangents method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_inv_cotan(dict_rad, dict_areas, dict_length, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interface = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interface)
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
+
+    return (x, dict_tensions, resid)
+
+
+def _build_matrix_tension_inv_cotan(
     dict_rad: dict[tuple[int, int, int], float],
     dict_areas: dict[tuple[int, int], float],
     dict_length_tri: dict[tuple[int, int, int], float],
@@ -733,31 +617,388 @@ def build_matrix_tension_symmetrical_yd(
 
         angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
         angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
-        angle_c = dict_rad[(a, c, b)]  # O_c = acb angle
-
+        angle_c = dict_rad[(a, c, b)]
         idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
         idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
         idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
 
+        z1, z2, z3 = _compute_z(angle_a, angle_b, angle_c)
+        f1, f2, f3, s1, s2, s3 = _factors_z(z1, z2, z3)
+
         factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        matrix_m[3 * i, idx_tab] = 1 * factor
-        matrix_m[3 * i, idx_tbc] = np.cos(angle_b) * factor
-        matrix_m[3 * i, idx_tac] = np.cos(angle_a) * factor
+        matrix_m[3 * i, idx_tab] = -1 / s3 - 1 / f3 * factor
+        matrix_m[3 * i, idx_tbc] = 1 / f3 * factor
+        matrix_m[3 * i, idx_tac] = 1 / f3 * factor
 
-        matrix_m[3 * i + 1, idx_tab] = np.cos(angle_b) * factor
-        matrix_m[3 * i + 1, idx_tbc] = 1 * factor
-        matrix_m[3 * i + 1, idx_tac] = np.cos(angle_c) * factor
+        matrix_m[3 * i + 1, idx_tab] = 1 / f1 * factor
+        matrix_m[3 * i + 1, idx_tbc] = -1 / s1 - 1 / f1 * factor
+        matrix_m[3 * i + 1, idx_tac] = 1 / f1 * factor
 
-        matrix_m[3 * i + 2, idx_tab] = np.cos(angle_a) * factor
-        matrix_m[3 * i + 2, idx_tbc] = np.cos(angle_c) * factor
-        matrix_m[3 * i + 2, idx_tac] = 1 * factor
+        matrix_m[3 * i + 2, idx_tab] = 1 / f2 * factor
+        matrix_m[3 * i + 2, idx_tbc] = 1 / f2 * factor
+        matrix_m[3 * i + 2, idx_tac] = -1 / f2 - 1 / s2 * factor
 
     matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
 
     return (matrix_m, vector_b)
 
 
-def build_matrix_discrete(
+def _infer_tension_lami(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using Lamy method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_lami(dict_rad, dict_areas, dict_length, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    key_interface = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interface)
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
+
+    return (x, dict_tensions, resid)
+
+
+def _build_matrix_tension_lami(
+    dict_rad: dict[tuple[int, int, int], float],
+    dict_areas: dict[tuple[int, int], float],
+    dict_length_tri: dict[tuple[int, int, int], float],
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+
+    Args:
+        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
+        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
+        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], NDArray[np.float64]]:
+            - M
+            - B
+    """
+    total_length_mesh = (
+        sum(dict_length_tri.values()) / 3
+    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+
+    # Index interfaces :
+    keys_t = np.array(sorted(dict_areas.keys()))
+    nb_zones = np.amax(keys_t) + 1
+    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
+    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
+
+    # Index angles :
+    keys_angles = np.array(list(dict_rad.keys()))
+    keys_angles = -np.sort(-keys_angles, axis=1)
+    ka = np.amax(keys_angles)
+    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
+    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
+    keys_angles = keys_angles[index]
+
+    # MX = B
+    # x : structure : [0,nm[ : tensions
+    nm = len(keys_t)
+    nj = len(keys_angles)
+    vector_b = np.zeros(3 * nj + 1)
+    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    matrix_m = np.zeros((3 * nj + 1, nm))
+
+    # CLASSICAL
+    # YOUNG-DUPRÉ
+    for i, key in enumerate(linear_keys_angles):
+        c = key // ka**2
+        b = (key - (c * (ka**2))) // ka
+        a = key % ka
+
+        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
+        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
+        angle_c = dict_rad[(a, c, b)]
+        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
+        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
+        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
+
+        factor = dict_length_tri[(a, b, c)] / total_length_mesh
+        matrix_m[3 * i, idx_tab] = 1 / np.sin(angle_c) * factor
+        matrix_m[3 * i, idx_tbc] = -1 / np.sin(angle_a) * factor
+
+        matrix_m[3 * i + 1, idx_tab] = 1 / np.sin(angle_c) * factor
+        matrix_m[3 * i + 1, idx_tac] = -1 / np.sin(angle_b) * factor
+
+        matrix_m[3 * i + 2, idx_tbc] = 1 / np.sin(angle_a) * factor
+        matrix_m[3 * i + 2, idx_tac] = -1 / np.sin(angle_b) * factor
+
+    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
+
+    return (matrix_m, vector_b)
+
+
+def _infer_tension_inv_lami(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using inverse Lamy method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_inv_lami(dict_rad, dict_areas, dict_length, mean_tension)
+    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    dict_tensions = {}
+    interface_keys = np.array(sorted(dict_areas.keys()))
+    nm = len(interface_keys)
+    for i in range(nm):
+        dict_tensions[tuple(interface_keys[i])] = x[i]
+
+    return (x, dict_tensions, resid)
+
+
+def _build_matrix_tension_inv_lami(
+    dict_rad: dict[tuple[int, int, int], float],
+    dict_areas: dict[tuple[int, int], float],
+    dict_length_tri: dict[tuple[int, int, int], float],
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+
+    Args:
+        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
+        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
+        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], NDArray[np.float64]]:
+            - M
+            - B
+    """
+    total_length_mesh = (
+        sum(dict_length_tri.values()) / 3
+    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+
+    # Index interfaces :
+    keys_t = np.array(sorted(dict_areas.keys()))
+    nb_zones = np.amax(keys_t) + 1
+    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
+    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
+
+    # Index angles :
+    keys_angles = np.array(list(dict_rad.keys()))
+    keys_angles = -np.sort(-keys_angles, axis=1)
+    ka = np.amax(keys_angles)
+    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
+    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
+    keys_angles = keys_angles[index]
+
+    # MX = B
+    # x : structure : [0,nm[ : tensions
+    nm = len(keys_t)
+    nj = len(keys_angles)
+    vector_b = np.zeros(3 * nj + 1)
+    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    matrix_m = np.zeros((3 * nj + 1, nm))
+
+    # CLASSICAL
+    # YOUNG-DUPRÉ
+    for i, key in enumerate(linear_keys_angles):
+        c = key // ka**2
+        b = (key - (c * (ka**2))) // ka
+        a = key % ka
+
+        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
+        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
+        angle_c = dict_rad[(a, c, b)]
+        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
+        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
+        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
+
+        factor = dict_length_tri[(a, b, c)] / total_length_mesh
+        matrix_m[3 * i, idx_tab] = np.sin(angle_a) * factor
+        matrix_m[3 * i, idx_tbc] = -np.sin(angle_c) * factor
+
+        matrix_m[3 * i + 1, idx_tab] = np.sin(angle_b) * factor
+        matrix_m[3 * i + 1, idx_tac] = -np.sin(angle_c) * factor
+
+        matrix_m[3 * i + 2, idx_tbc] = np.sin(angle_b) * factor
+        matrix_m[3 * i + 2, idx_tac] = -np.sin(angle_a) * factor
+
+    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
+
+    return (matrix_m, vector_b)
+
+
+def _infer_tension_lami_log(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using log Lamy method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
+    dict_areas = mesh.compute_areas_interfaces()
+    matrix_m, vector_b = _build_matrix_tension_lami_log(dict_rad, dict_areas, dict_length, mean_tension)
+    x_log, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
+    x = np.exp(x_log)
+    dict_tensions = {}
+    key_interface = np.array(sorted(dict_areas.keys()))
+    nm = len(key_interface)
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
+
+    return (x, dict_tensions, resid)
+
+
+def _build_matrix_tension_lami_log(
+    dict_rad: dict[tuple[int, int, int], float],
+    dict_areas: dict[tuple[int, int], float],
+    dict_length_tri: dict[tuple[int, int, int], float],
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Get matrix M and vector B of system MX=B to solve to get relative tensions.
+
+    Args:
+        dict_rad (dict[tuple[int, int, int], float]): Mean angles in radian at one side of a trijunction.
+        dict_areas (dict[tuple[int, int], float]): Area of interfaces.
+        dict_length_tri (dict[tuple[int, int, int], float]): Length of trijunctions.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], NDArray[np.float64]]:
+            - M
+            - B
+    """
+    total_length_mesh = (
+        sum(dict_length_tri.values()) / 3
+    )  # total length of all the junctions on the mesh (on which are evaluated the surface tensions)
+
+    # Index interfaces :
+    keys_t = np.array(sorted(dict_areas.keys()))
+    nb_zones = np.amax(keys_t) + 1
+    linear_keys_t = keys_t[:, 0] * nb_zones + keys_t[:, 1]
+    reverse_map_t = dict(zip(linear_keys_t, np.arange(len(linear_keys_t)), strict=False))
+
+    # Index angles :
+    keys_angles = np.array(list(dict_rad.keys()))
+    keys_angles = -np.sort(-keys_angles, axis=1)
+    ka = np.amax(keys_angles)
+    linear_keys_angles = keys_angles[:, 0] * ka**2 + keys_angles[:, 1] * ka + keys_angles[:, 2]
+    linear_keys_angles, index = np.unique(linear_keys_angles, return_index=True)
+    keys_angles = keys_angles[index]
+
+    # MX = B
+    # x : structure : [0,nm[ : tensions
+    nm = len(keys_t)
+    nj = len(keys_angles)
+    vector_b = np.zeros(3 * nj + 1)
+    vector_b[-1] = nm * np.log(mean_tension)  # Sum of tensions = number of membrane <=> mean of tensions = 1
+    matrix_m = np.zeros((3 * nj + 1, nm))
+
+    # CLASSICAL
+    # YOUNG-DUPRÉ
+    for i, key in enumerate(linear_keys_angles):
+        c = key // ka**2
+        b = (key - (c * (ka**2))) // ka
+        a = key % ka
+
+        angle_b = dict_rad[(a, b, c)]  # O_b = abc angle
+        angle_a = dict_rad[(b, a, c)]  # O_a = cab angle
+        angle_c = dict_rad[(a, c, b)]
+        idx_tab = reverse_map_t[min(a, b) * nb_zones + max(a, b)]
+        idx_tbc = reverse_map_t[min(b, c) * nb_zones + max(b, c)]
+        idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
+
+        factor = dict_length_tri[(a, b, c)] / total_length_mesh
+        matrix_m[3 * i, idx_tab] = 1 * factor
+        matrix_m[3 * i, idx_tbc] = -1 * factor
+        vector_b[3 * i] = (np.log(np.sin(angle_c)) - np.log(np.sin(angle_a))) * factor
+
+        matrix_m[3 * i + 1, idx_tab] = 1 * factor
+        matrix_m[3 * i + 1, idx_tac] = -1 * factor
+        vector_b[3 * i + 1] = (np.log(np.sin(angle_c)) - np.log(np.sin(angle_b))) * factor
+
+        matrix_m[3 * i + 2, idx_tbc] = 1 * factor
+        matrix_m[3 * i + 2, idx_tac] = -1 * factor
+        vector_b[3 * i + 2] = (np.log(np.sin(angle_a)) - np.log(np.sin(angle_b))) * factor
+
+    matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
+
+    return (matrix_m, vector_b)
+
+
+def _infer_tension_variational_yd(
+    mesh: "DcelData",
+    mean_tension: float = 1,
+) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+    """Infer tensions using Variational Young-Dupré method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+            - array of relative tensions
+            - map interface id (label 1, label 2) -> tension on this interface
+            - residuals of the least square method.
+    """
+    area_derivatives, volume_derivatives = mesh.compute_area_derivatives(), mesh.compute_volume_derivatives()
+
+    matrix_m, vector_b, nm = _build_matrix_discrete(area_derivatives, volume_derivatives, mesh.materials)
+
+    f_g, f_p, g_g, g_p = _extract_submatrices(matrix_m, nm)
+
+    mat_t = f_g - f_p @ (np.linalg.inv(g_p)) @ g_g
+
+    mat_inference: NDArray[np.float64] = np.zeros((nm + 1, nm))
+    mat_inference[:nm, :nm] = mat_t
+    mat_inference[nm:] = 1
+    b_inf = np.zeros(nm + 1)
+    b_inf[-1] = nm * mean_tension  # Matthieu Perez: added mean_tension for consistency ?
+    x, resid, rank, sigma = linalg.lstsq(mat_inference, b_inf)
+
+    dict_tensions = {}
+
+    key_interface = np.array(list(area_derivatives.keys()))
+    nm = len(key_interface)
+
+    for i in range(nm):
+        dict_tensions[tuple(key_interface[i])] = x[i]
+
+    return (x, dict_tensions, resid)
+
+
+def _build_matrix_discrete(
     area_derivatives: dict[tuple[int, int], NDArray[np.float64]],
     volume_derivatives: dict[int, NDArray[np.float64]],
     materials: list[int],
@@ -843,284 +1084,10 @@ def _extract_submatrices(
     return (f_g, f_p, g_g, g_p)
 
 
-def infer_tension_projection_yd(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using projection Young-Dupré method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_projection_yd(dict_rad, dict_areas, dict_length, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interfaces = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interfaces)
-    for i in range(nm):
-        dict_tensions[tuple(key_interfaces[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_symmetrical_yd(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using Symmetrical Young-Dupré method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_symmetrical_yd(dict_rad, dict_areas, dict_length, mean_tension)
-    tensions, residuals, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interfaces = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interfaces)
-    for i in range(nm):
-        dict_tensions[tuple(key_interfaces[i])] = tensions[i]
-
-    return (tensions, dict_tensions, residuals)
-
-
-def infer_tension_cotan(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using cotangents method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_cotan(dict_rad, dict_areas, dict_length, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interface = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interface)
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_inv_cotan(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using inverse cotangents method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_inv_cotan(dict_rad, dict_areas, dict_length, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interface = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interface)
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_lamy(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using Lamy method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_lamy(dict_rad, dict_areas, dict_length, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interface = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interface)
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_inv_lamy(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using inverse Lamy method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_inv_lamy(dict_rad, dict_areas, dict_length, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    interface_keys = np.array(sorted(dict_areas.keys()))
-    nm = len(interface_keys)
-    for i in range(nm):
-        dict_tensions[tuple(interface_keys[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_lamy_log(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using log Lamy method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_lamy_log(dict_rad, dict_areas, dict_length, mean_tension)
-    x_log, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    x = np.exp(x_log)
-    dict_tensions = {}
-    key_interface = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interface)
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_variational_yd(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using Variational Young-Dupré method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    area_derivatives, volume_derivatives = mesh.compute_area_derivatives(), mesh.compute_volume_derivatives()
-
-    matrix_m, vector_b, nm = build_matrix_discrete(area_derivatives, volume_derivatives, mesh.materials)
-
-    f_g, f_p, g_g, g_p = _extract_submatrices(matrix_m, nm)
-
-    mat_t = f_g - f_p @ (np.linalg.inv(g_p)) @ g_g
-
-    mat_inference: NDArray[np.float64] = np.zeros((nm + 1, nm))
-    mat_inference[:nm, :nm] = mat_t
-    mat_inference[nm:] = 1
-    b_inf = np.zeros(nm + 1)
-    b_inf[-1] = nm * mean_tension  # Matthieu Perez: added mean_tension for consistency ?
-    x, resid, rank, sigma = linalg.lstsq(mat_inference, b_inf)
-
-    dict_tensions = {}
-
-    key_interface = np.array(list(area_derivatives.keys()))
-    nm = len(key_interface)
-
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
-def infer_tension_equilibrium(
-    mesh: "DcelData",
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-    """Infer tensions using Equilibrium method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
-            - array of relative tensions
-            - map interface id (label 1, label 2) -> tension on this interface
-            - residuals of the least square method.
-    """
-    dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_equilibrium_tensions(mesh, dict_areas, mean_tension)
-    x, resid, rank, sigma = linalg.lstsq(matrix_m, vector_b)
-    dict_tensions = {}
-    key_interface = np.array(sorted(dict_areas.keys()))
-    nm = len(key_interface)
-    for i in range(nm):
-        dict_tensions[tuple(key_interface[i])] = x[i]
-
-    return (x, dict_tensions, resid)
-
-
 ###RESIDUAL STUFF
 
 
-def build_matrix_tension_validity(
+def _build_matrix_tension_validity(
     dict_rad: dict[tuple[int, int, int], float],
     dict_areas: dict[tuple[int, int], float],
     mean_tension: float = 1,
@@ -1208,7 +1175,7 @@ def compute_residual_junctions_dict(
     """
     dict_rad, _, dict_length = mesh.compute_angles_tri(unique=False)
     dict_areas = mesh.compute_areas_interfaces()
-    matrix_m, vector_b = build_matrix_tension_validity(
+    matrix_m, vector_b = _build_matrix_tension_validity(
         dict_rad,
         dict_areas,
         mean_tension=1,
@@ -1239,3 +1206,25 @@ def compute_residual_junctions_dict(
         dict_residuals[(a, b, c)] = array_resid[3 * i + 0] + array_resid[3 * i + 1] + array_resid[3 * i + 2]
 
     return dict_residuals
+
+
+# def infer_forces_variational_lt(mesh: "DcelData"):
+#     # TODO
+#     return None
+
+
+def _compute_z(phi1: float, phi2: float, phi3: float) -> tuple[float, float, float]:
+    z1 = np.sin(phi1) / (1 - np.cos(phi1))
+    z2 = np.sin(phi2) / (1 - np.cos(phi2))
+    z3 = np.sin(phi3) / (1 - np.cos(phi3))
+    return (z1, z2, z3)
+
+
+def _factors_z(z1: float, z2: float, z3: float) -> tuple[float, float, float, float, float, float]:
+    f1 = z2 * z3
+    f2 = z1 * z3
+    f3 = z1 * z2
+    s1 = z1 * (z2 + z3) / 2
+    s2 = z2 * (z1 + z3) / 2
+    s3 = z3 * (z1 + z2) / 2
+    return (f1, f2, f3, s1, s2, s3)
