@@ -106,12 +106,12 @@ One infers relative tensions by inverting mechanical equilibrium at each tri-mat
     - `mean_tension` has to be defined as one only infers ratios between tensions, you can set it to 1 for instance.
     - `mode` is the formula used to infer the tensions from contact angles at each junction. It has to be choosen among: `YD` (Young-Dupré with cosines only), `Eq`, `Projection_YD` (Young-Dupré with cosines and sines),  `cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)), `inv_cotan` (inverse of the cotangent formula), `Lamy` ([Lamy's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)), `inv_Lamy` (inverse of the Lamy's relation), `Lamy_Log` (logarithm of the Lamy's relation), `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641))
 
-- `infer_pressures(Mesh,dict_tensions,mode='Variational', P0 = 0)`: 
+- `infer_pressures(mesh, dict_tensions, mode=PressureComputationMethod.Variational, base_pressure = 0)`: 
 We infer pressures relative to the exterior pressure $P_0$ by inverting normal force balance at each interface
-    - `Mesh` is a `DcelData` object.
-    -  `dict_tensions` is the dictionnary obtained with `infer_tension`.
-    - `P0` has to be defined as one only pressures relative to the exterior.
-    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), `Laplace` (Laplace's law).
+    - `mesh` is a `DcelData` object.
+    - `dict_tensions` is the dictionnary obtained with `infer_tensions`. It relates interfaces between cells to tensions.
+    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), `Laplace` (Laplace's law) or `WeightedLaplace` (Laplace's law with weight on curvature by area).
+    - `base_pressure` is the reference exterior pressure. All pressures inside cells are computed relative to this one.
 
 #### 3 - Visualize
 

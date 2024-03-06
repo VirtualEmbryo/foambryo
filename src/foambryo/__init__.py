@@ -5,4 +5,4 @@ from .force_viewer import (
     plot_valid_junctions,
 )
 from .tension_inference import infer_forces, infer_tension
-from .pressure_inference import infer_pressure
+from .pressure_inference import infer_pressures_and_residuals

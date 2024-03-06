@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy import linalg
 
-from .pressure_inference import infer_pressure
+from .pressure_inference import infer_pressures_and_residuals
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
@@ -37,7 +37,9 @@ def infer_forces(
             - map of cell id (0 = exterior) -> pressure in this cell.
     """
     _, dict_tensions, _ = infer_tension(mesh, mean_tension=mean_tension, mode=mode_tension)
-    _, dict_pressures, _ = infer_pressure(mesh, dict_tensions, mode=mode_pressure, base_pressure=base_pressure)
+    _, dict_pressures, _ = infer_pressures_and_residuals(
+        mesh, dict_tensions, mode=mode_pressure, base_pressure=base_pressure
+    )
     return (dict_tensions, dict_pressures)
 
 

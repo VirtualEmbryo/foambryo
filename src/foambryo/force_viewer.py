@@ -31,7 +31,7 @@ from foambryo.plotting_utilities import (
 from foambryo.tension_inference import (
     compute_residual_junctions_dict,
     infer_forces,
-    infer_pressure,
+    infer_pressures_and_residuals,
     infer_tension,
 )
 
@@ -64,7 +64,7 @@ def plot_force_inference(
     if dict_tensions is None:
         dict_tensions, dict_pressure = infer_forces(mesh)
     if dict_pressure is None:
-        dict_pressure = infer_pressure(mesh, dict_tensions)
+        dict_pressure = infer_pressures_and_residuals(mesh, dict_tensions)
 
     nx_graph = mesh.compute_networkx_graph()
     nx.set_edge_attributes(nx_graph, dict_tensions, "tension")
@@ -1078,7 +1078,9 @@ def plot_valid_junctions(
     mesh: "DcelData",
     dict_tensions: dict[tuple[int, int], float] | None = None,
 ) -> None:
-    """Plot which trijunctions are considered valid or not.
+    """Valid junctions are plotted in green, and unstable junctions are plotted in red.
+
+    This is used to assess the validity of the inference
 
     Args:
         mesh (DcelData): Mesh to analyze.

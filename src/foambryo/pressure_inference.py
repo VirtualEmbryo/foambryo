@@ -3,6 +3,7 @@
 Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
+from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
@@ -13,7 +14,70 @@ if TYPE_CHECKING:
     from foambryo.dcel import DcelData
 
 
-def _infer_pressure_laplace(
+class PressureComputationMethod(Enum):
+    """Describe all pressure inference methods.
+
+    Variational: uses variational formulatio (see our [paper](https://doi.org/10.1101/2023.04.12.536641)),
+    Laplace: uses Laplace's law,
+    WeightedLaplace: uses Laplace's law and wieghts curvature by area.
+    """
+
+    Variational = 0
+    Laplace = 1
+    WeightedLaplace = 2
+
+
+def infer_pressures(
+    mesh: "DcelData",
+    dict_tensions: dict[tuple[int, int], float],
+    mode: PressureComputationMethod = PressureComputationMethod.Variational,
+    base_pressure: float = 0,
+) -> dict[int, float]:
+    """Infer pressure forces on each cell of a mesh using Laplace or Variational method.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        dict_tensions (dict[tuple[int, int], float]): Map interface -> tensions
+        mode (PressureComputationMethod, optional): Computation method. Defaults to Variational.
+        base_pressure (float, optional): Base pressure for exterior. Defaults to 0.
+
+
+    Returns:
+        dict[int, float]: map cell id (0 = exterior) to pressure in cell.
+    """
+    _, dict_pressures, _ = infer_pressures_and_residuals(mesh, dict_tensions, mode, base_pressure)
+    return dict_pressures
+
+
+def infer_pressures_and_residuals(
+    mesh: "DcelData",
+    dict_tensions: dict[tuple[int, int], float],
+    mode: PressureComputationMethod = PressureComputationMethod.Variational,
+    base_pressure: float = 0,
+) -> tuple[NDArray[np.float64], dict[int, float], NDArray[np.float64] | Literal[0]]:
+    """Infer pressure forces on each cell of a mesh using Laplace or Variational method. Get residuals too.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        dict_tensions (dict[tuple[int, int], float]): Map interface -> tensions
+        mode (PressureComputationMethod, optional): Computation method. Defaults to Variational.
+        base_pressure (float, optional): Base pressure for exterior. Defaults to 0.
+
+    Returns:
+        tuple[NDArray[np.float64], dict[int, float], NDArray[np.float64]]:
+            - array of relative pressures ("Laplace") or of tensions ("Variational").
+            - map cell id (0 = exterior) -> pressure
+            - residuals of the least square method or 0 if mode is "Variational"
+    """
+    if mode == PressureComputationMethod.Laplace:
+        return _infer_pressures_laplace(mesh, dict_tensions, base_pressure, weighted=False)
+    elif mode == PressureComputationMethod.WeightedLaplace:
+        return _infer_pressures_laplace(mesh, dict_tensions, base_pressure, weighted=True)
+    else:  # mode == PressureComputationMethod.Variational:
+        return _infer_pressures_variational(mesh, dict_tensions, base_pressure)
+
+
+def _infer_pressures_laplace(
     mesh: "DcelData",
     dict_tensions: dict[tuple[int, int], float],
     base_pressure: float = 0,
@@ -53,7 +117,7 @@ def _infer_pressure_laplace(
     return (relative_pressures, dict_pressures, residuals)
 
 
-def _infer_pressure_variational(
+def _infer_pressures_variational(
     mesh: "DcelData",
     dict_tensions: dict[tuple[int, int], float],
     base_pressure: float = 0,
@@ -103,37 +167,6 @@ def _infer_pressure_variational(
         dict_pressures[key] = relative_pressures[i] + base_pressure
 
     return (x, dict_pressures, 0)
-
-
-def infer_pressure(
-    mesh: "DcelData",
-    dict_tensions: dict[tuple[int, int], float],
-    mode: Literal["Variational"] | Literal["Laplace"] = "Variational",
-    base_pressure: float = 0,
-    weighted: bool = False,
-) -> tuple[NDArray[np.float64], dict[int, float], NDArray[np.float64] | Literal[0]]:
-    """Infer pressure forces on each cell of a mesh using Laplace method.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        dict_tensions (dict[tuple[int, int], float]): Map interface -> tensions
-        mode (Literal["Variational"] | Literal["Laplace"], optional): Computation method. Defaults to "Variational".
-        base_pressure (float, optional): Base pressure for exterior. Defaults to 0.
-        weighted (bool, optional): Curvature weighted by area ? For "Laplace" mode. Defaults to False.
-
-    Returns:
-        tuple[NDArray[np.float64], dict[int, float], NDArray[np.float64]]:
-            - array of relative pressures ("Laplace") or of tensions ("Variational").
-            - map cell id (0 = exterior) -> pressure
-            - residuals of the least square method or 0 if mode is "Variational"
-    """
-    if mode == "Laplace":
-        return _infer_pressure_laplace(mesh, dict_tensions, base_pressure, weighted=weighted)
-    elif mode == "Variational":
-        return _infer_pressure_variational(mesh, dict_tensions, base_pressure)
-    else:
-        print("Unimplemented method")
-        return None
 
 
 def _build_matrix_laplace(
