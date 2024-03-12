@@ -3,6 +3,7 @@
 Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
+
 from typing import TYPE_CHECKING
 
 import networkx as nx
@@ -87,17 +88,14 @@ def plot_force_inference(
         show=False,
         name_values="Surface Tensions",
     )
-    ps_mesh = view_pressures_on_mesh(
+    ps_mesh = _view_pressures_on_mesh(
         mesh,
         dict_pressure,
         ps_mesh=ps_mesh,
         alpha=alpha,
-        clean_before=False,
-        clean_after=False,
-        show=False,
         scattered=scattered,
     )
-    plot_stress_tensor(
+    _plot_stress_tensor(
         mesh,
         nx_graph,
         dict_tensions,
@@ -106,7 +104,7 @@ def plot_force_inference(
         clean_after=False,
         show=False,
     )
-    display_embryo_graph_forces(
+    _display_embryo_graph_forces(
         nx_graph,
         alpha=alpha,
         clean_before=False,
@@ -128,29 +126,26 @@ def plot_force_inference(
             show=False,
             name_values="Sphere fit residual",
         )
-        view_area_derivatives(
+        _view_area_derivatives(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
         )
-        view_volume_derivatives(
+        _view_volume_derivatives(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
         )
-        view_mean_curvature_cotan(
+        _view_mean_curvature_cotan(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -164,24 +159,61 @@ def plot_force_inference(
         #     show=False,
         #     scattered=scattered,
         # )
-        view_gaussian_curvature(
+        _view_gaussian_curvature(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
         )
-        view_discrepancy_of_principal_curvatures(
+        _view_discrepancy_of_principal_curvatures(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
         )
+
+    ps.show()
+
+
+def plot_pressure_inference(
+    mesh: "DcelData",
+    dict_pressure: dict[int, float] | None = None,
+    alpha: float = 0.05,
+    scattered: bool = False,
+    scatter_coeff: float = 0.2,
+) -> None:
+    """Polyscope plot of a mesh with tensions and pressures shown.
+
+    Args:
+        mesh (DcelData): Mesh to analyze.
+        dict_pressure (dict[int, float] | None, optional):
+            Pressures in the mesh cells (computed if None). Defaults to None.
+        alpha (float, optional): Quantile to filter extreme values. Defaults to 0.05.
+        scattered (bool, optional): Scatter cells. Defaults to False.
+        scatter_coeff (float, optional): How much to scatter cells. Defaults to 0.2.
+    """
+    ps.remove_all_structures()
+
+    if dict_pressure is None:
+        _, dict_pressure = infer_forces(mesh)
+
+    nx_graph = mesh.compute_networkx_graph()
+    nx.set_node_attributes(nx_graph, dict_pressure, "pressure")
+
+    if scattered:
+        mesh.compute_scattered_arrays(coeff=scatter_coeff)
+        nx_graph = update_graph_with_scattered_values(nx_graph, mesh)
+
+    _view_pressures_on_mesh(
+        mesh,
+        dict_pressure,
+        alpha=alpha,
+        scattered=scattered,
+    )
 
     ps.show()
 
@@ -231,7 +263,7 @@ def plot_tension_inference(
         name_values="Surface Tensions",
     )
 
-    display_embryo_graph_forces(
+    _display_embryo_graph_forces(
         nx_graph,
         alpha=alpha,
         clean_before=False,
@@ -252,7 +284,7 @@ def plot_tension_inference(
             show=False,
             name_values="Sphere fit residual",
         )
-        view_area_derivatives(
+        _view_area_derivatives(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
@@ -261,7 +293,7 @@ def plot_tension_inference(
             show=False,
             scattered=scattered,
         )
-        view_volume_derivatives(
+        _view_volume_derivatives(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
@@ -270,7 +302,7 @@ def plot_tension_inference(
             show=False,
             scattered=scattered,
         )
-        view_mean_curvature_cotan(
+        _view_mean_curvature_cotan(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
@@ -288,7 +320,7 @@ def plot_tension_inference(
         #     show=False,
         #     scattered=scattered,
         # )
-        view_gaussian_curvature(
+        _view_gaussian_curvature(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
@@ -297,7 +329,7 @@ def plot_tension_inference(
             show=False,
             scattered=scattered,
         )
-        view_discrepancy_of_principal_curvatures(
+        _view_discrepancy_of_principal_curvatures(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
@@ -310,7 +342,7 @@ def plot_tension_inference(
     ps.show()
 
 
-def view_pressures_on_mesh(
+def _view_pressures_on_mesh(
     mesh: "DcelData",
     dict_pressures: tuple[int, float],
     alpha: float = 0.05,
@@ -356,8 +388,8 @@ def view_pressures_on_mesh(
     pressures /= np.amax(pressures)
     pressures = 1 - pressures
     # ps_mesh = view_faces_values_on_embryo(Mesh,pressures,ps_mesh = ps_mesh,name_values = "Pressures Cells",colormap = cm.magma,clean_before = clean_before, clean_after=clean_after,show=show,adapt_values=False,scattered = False)  # noqa: E501
-
     if ps_mesh is None:
+        ps.init()
         ps_mesh = ps.register_surface_mesh("Embryo", v, f[:, [0, 1, 2]])
     ps_mesh.set_color((0.3, 0.6, 0.8))  # rgb triple on [0,1]
     colors_face = cm.magma(pressures)[:, :3]
@@ -436,7 +468,7 @@ def view_pressures_on_mesh(
 ###
 
 
-def view_area_derivatives(
+def _view_area_derivatives(
     mesh: "DcelData",
     alpha: bool = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -485,7 +517,7 @@ def view_area_derivatives(
     return ps_mesh
 
 
-def view_volume_derivatives(
+def _view_volume_derivatives(
     mesh: "DcelData",
     alpha: bool = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -534,7 +566,7 @@ def view_volume_derivatives(
     return ps_mesh
 
 
-def view_mean_curvature_cotan(
+def _view_mean_curvature_cotan(
     mesh: "DcelData",
     alpha: bool = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -577,7 +609,7 @@ def view_mean_curvature_cotan(
     return ps_mesh
 
 
-def view_gaussian_curvature(
+def _view_gaussian_curvature(
     mesh: "DcelData",
     alpha: bool = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -620,7 +652,7 @@ def view_gaussian_curvature(
     return ps_mesh
 
 
-def view_discrepancy_of_principal_curvatures(
+def _view_discrepancy_of_principal_curvatures(
     mesh: "DcelData",
     alpha: bool = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -675,7 +707,7 @@ def view_discrepancy_of_principal_curvatures(
 ###
 
 
-def plot_stress_tensor(  # noqa: C901
+def _plot_stress_tensor(  # noqa: C901
     mesh: "DcelData",
     nx_graph: nx.Graph,
     dict_tensions: dict[tuple[int, int], float],
@@ -931,49 +963,7 @@ def plot_stress_tensor(  # noqa: C901
         ps.remove_all_structures()
 
 
-def display_embryo_graph(
-    mesh: "DcelData",
-    clean_before: bool = True,
-    clean_after: bool = True,
-    show: bool = True,
-) -> None:
-    """Show the embryo as a graph.
-
-    Args:
-        mesh (DcelData): Mesh to analyze.
-        clean_before (bool, optional): Clean polyscope viewer before this function. Defaults to True.
-        clean_after (bool, optional): Clean polyscope viewer before this function. Defaults to True.
-        show (bool, optional): Show polyscope viewer. Defaults to True.
-    """
-    ps.init()
-    if clean_before:
-        ps.remove_all_structures()
-
-    nx_graph = mesh.compute_networkx_graph()
-    edges_for_plotting = []
-    for edge in list(nx_graph.edges):
-        if edge[0] == 0 or edge[1] == 1:
-            continue
-        edges_for_plotting.append(np.array(edge) - 1)
-    edges_for_plotting = np.array(edges_for_plotting)
-    centroids_for_plotting = np.array([a[1] for a in nx_graph.nodes.data("centroid")])[1:]
-    ps.register_point_cloud("Nodes", centroids_for_plotting, color=[0, 0, 0], radius=0.07)
-    ps.register_curve_network(
-        "Edges",
-        centroids_for_plotting,
-        edges_for_plotting,
-        color=[0.5, 0.5, 0.5],
-        radius=0.02,
-    )
-
-    if show:
-        ps.show()
-
-    if clean_after:
-        ps.remove_all_structures()
-
-
-def display_embryo_graph_forces(
+def _display_embryo_graph_forces(
     nx_graph: nx.Graph,
     alpha: float = 0.05,
     clean_before: bool = True,

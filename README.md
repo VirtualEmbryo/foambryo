@@ -41,11 +41,15 @@ Linux: Ubuntu 16.04, CentOS 7 and Manjaro 22.0
 
 ### Installation
 
-We recommend to install **foambryo** from the PyPI repository directly
+We recommend to install **foambryo** from the PyPI repository directly.
 ```shell
 pip install foambryo
 ```
+To use the foambryo viewers, use instead:
 
+```shell
+pip install "foambryo[viewing]"
+```
 For developers, you may also install **foambryo** by cloning the source code and installing from the local directory
 ```shell
 git clone https://github.com/VirtualEmbryo/foambryo.git
@@ -54,20 +58,20 @@ pip install pathtopackage/foambryo
 
 ### Quick start example 
 
+
+
 Load an instance segmentation, reconstruct its multimaterial mesh, infer and visualize the forces with Polyscope
 
 ```py
-from dw3d import GeometryReconstruction3D
-from foambryo import DcelData, plot_force_inference, plot_tension_inference
+from foambryo import dcel_mesh_from_segmentation_mask
+from foambryo.viewing import plot_force_inference, plot_tension_inference
 
 # Load the labels
 import skimage.io as io
 segmentation = io.imread("Segmentation.tif")
 
 # Reconstruct a multimaterial mesh from segmentation
-dw = GeometryReconstruction3D(segmentation)
-points, triangles, labels = dw.return_mesh()
-mesh = DcelData(points, triangles, labels)
+mesh = dcel_mesh_from_segmentation_mask(segmentation_mask)  # DCEL mesh ready for force inference !
 
 # Infer and view the forces
 plot_force_inference(mesh)
@@ -75,6 +79,8 @@ plot_force_inference(mesh)
 #Or just the tensions
 plot_tension_inference(mesh)
 ```
+
+See [the introductory notebook](Examples/Example.ipynb) for further details.
 
 ### Physical model
 We consider a tissue constituted of cells i. 
@@ -93,60 +99,32 @@ The two main laws underlying mechanical force balance are:
 
 ### API and Documentation
 
-#### 1 - Loading a multimaterial mesh
-The first step is to load your multimaterial mesh into a `DcelData` object via the builder `DcelData(Verts, Faces_multimaterial)`. 
-    - `Verts` is a V x 3 Numpy array of vertex positions, where V is the number of vertices.
-    - `Faces_multimaterial` is a F x 5 numpy array of F faces (triangles) and labels, where at each row the 3 first indices refers to the indices of the three vertices of that triangle and the 2 last refer to a given interface label. An interface label is made of two indices referring to the two materials (e.g. cells) lying on each of its side, 0 being the exterior by convention.
+See [the introductory notebook](Examples/Example.ipynb) to understand the API.
 
-#### 2 - Infer tensions and pressures
-Then the second step is to use this `mesh` object to infer the relative surface tensions and cell pressures
-- `infer_tensions(mesh, mean_tension=1,mode=TensionsComputationMethod.YoungDupre)`: 
-One infers relative tensions by inverting mechanical equilibrium at each tri-material/cellular junction
-    - `mesh` is a `DcelData` object.
-    - `mean_tension` as one only infers ratios between tensions, it has to be given. You can set it to 1 for instance.
-    - `mode` is the formula used to infer the tensions from contact angles at each junction. It can be: 
-        - `YoungDupre` (Young-Dupré with cosines only),
-        - `ProjectionYoungDupre` (Young-Dupré with cosines and sines),
-        - `Equilibrium`,
-        - `Cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)),
-        - `InvCotan` (inverse of the cotangent formula),
-        - `Lami` ([Lami's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)),
-        - `InvLami` (inverse of the Lami's relation),
-        - `LogLami` (logarithm of the Lami's relation),
-        - `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)).
+#### Infer tensions and pressures
 
-- `infer_pressures(mesh, dict_tensions, mode=PressureComputationMethod.Variational, base_pressure = 0)`: 
-We infer pressures relative to the exterior pressure $P_0$ by inverting normal force balance at each interface
-    - `mesh` is a `DcelData` object.
-    - `dict_tensions` is the dictionnary obtained with `infer_tensions`. It relates interfaces between cells to tensions.
-    - `mode` is the formula used to infer the pressures. It has to be choosen among: `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), `Laplace` (Laplace's law) or `WeightedLaplace` (Laplace's law with weight on curvature by area).
-    - `base_pressure` is the reference exterior pressure. All pressures inside cells are computed relative to this one.
+The notebook shows how to create a mesh and how foambryo compute forces on the mesh.
 
-#### 3 - Visualize
+We recall that the forces are relative, this is why you need to give the mean tension and base pressure.
 
-The viewer part of the package is built around several functions, each of them taking as an entry a `Mesh` object: 
-- `plot_tension_inference(Mesh,dict_tensions=None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions by inverting Young-Dupré relations
-    - `Mesh` is a `DcelData` object
-    - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
-    - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
-    - `scalar_quantities`: plot of vertex volume and area derivatives, of mean, Gaussian curvatures, and principal curvatures discrepancy. Can be quite long for big meshes
-    - `scattered`: scattered view of the mesh
-    - `scatter_coeff`: amount of displacement if scattered is activated
+- `base_pressure`: reference exterior pressure. All pressures inside cells are computed relative to this one.
+- `mean_tension`: as one only infers ratios between tensions, it has to be given. You can set it to 1 for instance.
 
- 
-- `plot_force_inference(Mesh,dict_tensions = None, dict_pressure = None,alpha = 0.05, scalar_quantities = False, scattered = False, scatter_coeff=0.2)`: Which plots surface tensions, pressures and principal directions of the stress tensor
-    - `Mesh` is a `DcelData` object
-    - `dict_tensions` is the dictionnary obtained with `infer_tension`, and is computed automatically if unspecified. 
-    - `dict_pressure` is the dictionnary obtained with `infer_pressure`, and is computed automatically if unspecified. 
-    - `alpha` : p_value threshold when displaying values: Values beyond the alpha and 1-alpha quantiles are clipped 
-    - `scalar_quantities`: plot of vertex volume and area derivatives, of mean, gaussian curvatures, and principal curvatures discrepancy. Can be quite long for big meshes
-    - `scattered`: scattered view of the mesh
-    - `scatter_coeff`: amount of displacement if scattered is activated
- 
-- `plot_valid_junctions(Mesh)`: Valid junctions are plotted in green, and unstable junctions are plotted in red. This is used to assess the validity of the inference
-    - `Mesh` is a `DcelData` object
+Foambryo has several strategies to compute tensions:
+- `YoungDupre` (Young-Dupré with cosines only),
+- `ProjectionYoungDupre` (Young-Dupré with cosines and sines),
+- `Equilibrium`,
+- `Cotan` (cotangent formula, see [Yamamoto et al. 2023](https://doi.org/10.1101/2023.03.07.531437)),
+- `InvCotan` (inverse of the cotangent formula),
+- `Lami` ([Lami's theorem](https://en.wikipedia.org/wiki/Lami%27s_theorem)),
+- `InvLami` (inverse of the Lami's relation),
+- `LogLami` (logarithm of the Lami's relation),
+- `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)).
 
-
+And also to compute pressures:
+- `Variational` (variational formulation, see our [paper](https://doi.org/10.1101/2023.04.12.536641)), 
+- `Laplace` (Laplace's law)
+- `WeightedLaplace` (Laplace's law with weight on curvature by area).
 
 ---
 ### Biological examples
@@ -180,7 +158,7 @@ To see the code of each of these use-cases, please load the associated jupyter n
 
 ### Credits, contact, citations
 If you use this tool, please cite the associated preprint: 
-Do not hesitate to contact Sacha Ichbiah and Hervé Turlier for practical questions and applications. 
+Do not hesitate to contact Matthieu Perez and Hervé Turlier for practical questions and applications. 
 We hope that **foambryo** could help biologists and physicists to shed light on the mechanical aspects of early development.
 
 

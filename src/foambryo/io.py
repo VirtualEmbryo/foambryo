@@ -13,7 +13,7 @@ Matthieu Perez 2024.
 from pathlib import Path
 
 import numpy as np
-from dw3d import default_mesh_reconstruction_algorithm
+from dw3d import get_default_mesh_reconstruction_algorithm
 from dw3d.io import load_meshio_mesh, load_rec
 from numpy.typing import NDArray
 
@@ -32,12 +32,11 @@ def dcel_mesh_from_segmentation_mask(segmentation_mask: NDArray[np.uint]) -> Dce
         DcelData: The mesh reconstructed from the segmentation and ready for force inference.
     """
     # Get a mesh reconstruction algorithm
-    mesh_reconstruction_algorithm = default_mesh_reconstruction_algorithm()
+    mesh_reconstruction_algorithm = get_default_mesh_reconstruction_algorithm()
 
     # Reconstruct a multimaterial mesh from the mask using the mesh reconstruction algorithm
-    mesh_reconstruction_algorithm.construct_mesh_from_segmentation_mask(segmentation_mask)
-
-    return DcelData(*mesh_reconstruction_algorithm.mesh)
+    points, triangles, labels = mesh_reconstruction_algorithm.construct_mesh_from_segmentation_mask(segmentation_mask)
+    return DcelData(points, triangles, labels)
 
 
 # For consistency
@@ -76,4 +75,10 @@ def dcel_mesh_from_file(filename: str | Path) -> DcelData:
     if filename.suffix in (".rec", ".arec"):
         return DcelData(*load_rec(filename))
     else:
-        return DcelData(*load_meshio_mesh(filename))
+        points, triangles, labels = load_meshio_mesh(filename)
+
+        # ensure endian and type
+        points = points.astype(np.float64)
+        triangles = triangles.astype(np.int64)
+        labels = labels.astype(np.int64)
+        return DcelData(points, triangles, labels)

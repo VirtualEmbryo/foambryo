@@ -3,6 +3,7 @@
 Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
+
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 

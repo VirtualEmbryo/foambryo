@@ -3,6 +3,7 @@
 Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
+
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
 
