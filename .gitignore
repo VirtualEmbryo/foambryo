@@ -1,0 +1,11 @@
+data/
+*egg-info/
+Examples/*.rec
+Examples/*.vtk
+Examples/*.tif
+Examples/*.npy
+Examples/*.py
+dist/
+.ipynb_checkpoints/
+imgui.ini
+.polyscope.ini
