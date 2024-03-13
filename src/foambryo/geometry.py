@@ -5,6 +5,7 @@ computation of trijunction mean angles and lengths, interfaces/regions areas, re
 Sacha Ichbiah, Sept 2021.
 Matthieu Perez, 2024.
 """
+
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -14,6 +15,8 @@ from tqdm import tqdm
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
+
+torch.use_deterministic_algorithms(True)
 
 
 def _find_key_multiplier(num_points: int) -> int:
