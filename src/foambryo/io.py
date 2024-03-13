@@ -20,19 +20,25 @@ from numpy.typing import NDArray
 from foambryo.dcel import DcelData
 
 
-def dcel_mesh_from_segmentation_mask(segmentation_mask: NDArray[np.uint]) -> DcelData:
+def dcel_mesh_from_segmentation_mask(
+    segmentation_mask: NDArray[np.uint],
+    min_distance: int = 5,
+    print_info: bool = False,
+) -> DcelData:
     """Obtain a DcelData mesh from a segmentation mask using Delaunay-Watershed 3D.
 
     The default mesh reconstruction algorithm is used.
 
     Args:
         segmentation_mask (NDArray[np.uint]): Instance segmentation image.
+        min_distance (int, optional): minimum distance between points of the output mesh. Defaults to 5.
+        print_info (bool, optional): print mesh construction details. Defaults to False.
 
     Returns:
         DcelData: The mesh reconstructed from the segmentation and ready for force inference.
     """
     # Get a mesh reconstruction algorithm
-    mesh_reconstruction_algorithm = get_default_mesh_reconstruction_algorithm()
+    mesh_reconstruction_algorithm = get_default_mesh_reconstruction_algorithm(min_distance, print_info)
 
     # Reconstruct a multimaterial mesh from the mask using the mesh reconstruction algorithm
     points, triangles, labels = mesh_reconstruction_algorithm.construct_mesh_from_segmentation_mask(segmentation_mask)
