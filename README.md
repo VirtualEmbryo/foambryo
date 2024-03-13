@@ -50,7 +50,9 @@ To use the foambryo viewers, use instead:
 ```shell
 pip install "foambryo[viewing]"
 ```
-For developers, you may also install **foambryo** by cloning the source code and installing from the local directory
+For developers, you may also install **foambryo** by cloning the source code and installing from the local directory.
+
+First, make sure you have the LFS git extension, as there are some large data alongside the source code, necessary to run the example notebook.
 ```shell
 git clone https://github.com/VirtualEmbryo/foambryo.git
 pip install pathtopackage/foambryo
