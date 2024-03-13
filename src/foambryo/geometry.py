@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from tqdm import tqdm
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
@@ -263,7 +262,7 @@ def compute_area_derivative_dict(
         list_indices_faces_per_vertices_y[(a, b)][i_y].append(i)
         list_indices_faces_per_vertices_z[(a, b)][i_z].append(i)
 
-    for key in tqdm(area_derivatives.keys()):
+    for key in area_derivatives:
         for iv in range(len(points)):
             area_derivatives[key][iv] = np.vstack(
                 (
@@ -341,7 +340,7 @@ def compute_volume_derivative_dict(mesh: "DcelData") -> dict[int, NDArray[np.flo
         list_indices_faces_per_vertices_neg_y[b][i_y].append(i)
         list_indices_faces_per_vertices_neg_z[b][i_z].append(i)
 
-    for n in tqdm(materials):
+    for n in materials:
         for iv in range(len(points)):
             volumes_derivatives[n][iv] = np.vstack(
                 (
