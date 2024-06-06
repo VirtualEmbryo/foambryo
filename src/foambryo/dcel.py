@@ -417,7 +417,7 @@ class DcelData:
         Returns:
             NDArray[np.float64]: normal for every vertex
         """
-        return compute_vertex_normals(self.v, self.f)
+        return compute_vertex_normals(self.v, self.f[:, :3])
 
     def compute_verts_faces_interfaces(
         self,
