@@ -158,9 +158,10 @@ class HalfEdge:
 
     def return_vector(self) -> NDArray[np.float64]:
         """Return a normalized vector from origin to destination."""
-        xo, yo = self.origin.x, self.origin.y
-        xt, yt = self.destination.x, self.destination.y
-        vect = np.array([xt - xo, yt - yo])
+        origin = np.array([self.origin.x, self.origin.y, self.origin.z])
+        destination = np.array([self.destination.x, self.destination.y, self.destination.z])
+
+        vect = destination - origin
         vect /= np.linalg.norm(vect)
         return vect
 
@@ -557,8 +558,8 @@ def build_lists(
     for i in range(len(triangles_and_labels)):
         a, b, c, _, _ = triangles_and_labels[i]
         halfedge_list.append(HalfEdge(origin=vertices_list[a], destination=vertices_list[b], key=3 * i + 0))
-        halfedge_list.append(HalfEdge(origin=vertices_list[c], destination=vertices_list[a], key=3 * i + 1))
-        halfedge_list.append(HalfEdge(origin=vertices_list[b], destination=vertices_list[c], key=3 * i + 2))
+        halfedge_list.append(HalfEdge(origin=vertices_list[b], destination=vertices_list[c], key=3 * i + 1))
+        halfedge_list.append(HalfEdge(origin=vertices_list[c], destination=vertices_list[a], key=3 * i + 2))
 
     for i in range(len(triangles_and_labels)):
         index = 3 * i
@@ -575,7 +576,7 @@ def build_lists(
     for i in range(len(triangles_and_labels)):
         faces_list.append(
             Face(
-                outer_component=halfedge_list[i + 3],
+                outer_component=halfedge_list[3 * i],
                 material_1=triangles_and_labels[i, 3],
                 material_2=triangles_and_labels[i, 4],
                 key=i,
