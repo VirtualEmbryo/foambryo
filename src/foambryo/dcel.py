@@ -592,6 +592,9 @@ def build_lists(
     # find twins
     triangles = triangles_and_labels.copy()[:, [0, 1, 2]]
     edges = np.hstack((triangles, triangles)).reshape(-1, 2)
+    temp = edges[1::3].copy()
+    edges[1::3] = edges[2::3]
+    edges[2::3] = temp
     edges = np.sort(edges, axis=1)
     key_mult = _find_key_multiplier(np.amax(triangles))
     keys = edges[:, 1] * key_mult + edges[:, 0]
