@@ -1,4 +1,5 @@
-data/
+data/*
+!data/alternative_link_to_data
 *egg-info/
 Examples/*.rec
 Examples/*.vtk
