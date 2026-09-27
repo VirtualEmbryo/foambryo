@@ -1,0 +1,2140 @@
+{
+  "n_records": 486,
+  "n_present": 486,
+  "degradation_by_condition": {
+    "equilibrium": {
+      "v0_3": {
+        "YoungDupre": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.16154336700390076,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.1615287374013663,
+            "rho_free_p2_median": 0.5559544111236735,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.13582858257106395,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.13581946039369905,
+            "rho_free_p2_median": 0.5647359283183576,
+            "degradation_vs_baseline": 0.8408180731294533
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.12363994279987782,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.12361651979667174,
+            "rho_free_p2_median": 0.5517358061104777,
+            "degradation_vs_baseline": 0.7653668800706147
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.14675764078487702,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.14673061182975403,
+            "rho_free_p2_median": 0.5662831120717008,
+            "degradation_vs_baseline": 0.9084720933254615
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2302054924771486,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.23017258576460484,
+            "rho_free_p2_median": 0.3993731598724034,
+            "degradation_vs_baseline": 1.4250383457192017
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.40459877094387187,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.4045841413413374,
+            "rho_free_p2_median": 0.47864620888959636,
+            "degradation_vs_baseline": 2.504583001133696
+          }
+        },
+        "YoungDupreLocal": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.1305976184580858,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.12951658441231853,
+            "rho_free_p2_median": 0.5559544111236735,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.1892907824026314,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.18900693974959154,
+            "rho_free_p2_median": 0.5647359283183576,
+            "degradation_vs_baseline": 1.449419864140805
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.23637879146232957,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.2360396554989532,
+            "rho_free_p2_median": 0.5517358061104777,
+            "degradation_vs_baseline": 1.8099778101098631
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.24847625351200303,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.24787381820314366,
+            "rho_free_p2_median": 0.5662831120717008,
+            "degradation_vs_baseline": 1.9026093771514632
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.239319701032252,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.2386560631033715,
+            "rho_free_p2_median": 0.3993731598724034,
+            "degradation_vs_baseline": 1.832496670749472
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.38971496927099136,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.38896306398353303,
+            "rho_free_p2_median": 0.47864620888959636,
+            "degradation_vs_baseline": 2.984089402794639
+          }
+        },
+        "ForceBalanceKKT": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.13159320555920878,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.10497172041363115,
+            "rho_free_p2_median": 0.5559544111236735,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.1306806430235386,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.09468626155542795,
+            "rho_free_p2_median": 0.5647359283183576,
+            "degradation_vs_baseline": 0.9930652761911816
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.21087694666776216,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.17070791594936305,
+            "rho_free_p2_median": 0.5517358061104777,
+            "degradation_vs_baseline": 1.6024911451289223
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.16899792740841424,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.1217805451575227,
+            "rho_free_p2_median": 0.5662831120717008,
+            "degradation_vs_baseline": 1.2842450846170448
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.24832069207056728,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.23558882711539236,
+            "rho_free_p2_median": 0.3993731598724034,
+            "degradation_vs_baseline": 1.8870327766188382
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.5901936151716719,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.5774617502164969,
+            "rho_free_p2_median": 0.47864620888959636,
+            "degradation_vs_baseline": 4.484985472187782
+          }
+        }
+      },
+      "a3_a5": {
+        "YoungDupre": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.09851841122197882,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.09848855359595837,
+            "rho_free_p2_median": 0.9912215334494282,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.151049372759409,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.15101729762565874,
+            "rho_free_p2_median": 0.9912419076260245,
+            "degradation_vs_baseline": 1.533209588805375
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2187558344664401,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.2187467122890752,
+            "rho_free_p2_median": 0.9899575359325131,
+            "degradation_vs_baseline": 2.2204563771693984
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.14793146890815048,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.1479080459049444,
+            "rho_free_p2_median": 0.9924319902421338,
+            "degradation_vs_baseline": 1.501561658103028
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.18904065345359636,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.1890107958275759,
+            "rho_free_p2_median": 0.9403326745462961,
+            "degradation_vs_baseline": 1.9188357902733069
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2815588455292168,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.2815354225260107,
+            "rho_free_p2_median": 0.8189884659156984,
+            "degradation_vs_baseline": 2.857931243885131
+          }
+        },
+        "YoungDupreLocal": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.19917939029155696,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.19359119141799,
+            "rho_free_p2_median": 0.9912215334494282,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2240712532258003,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.22346881791694093,
+            "rho_free_p2_median": 0.9912419076260245,
+            "degradation_vs_baseline": 1.1249720811867476
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.4012939829719995,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.4010101403189596,
+            "rho_free_p2_median": 0.9899575359325131,
+            "degradation_vs_baseline": 2.014736476422531
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.17752129873148798,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.1769188634226286,
+            "rho_free_p2_median": 0.9924319902421338,
+            "degradation_vs_baseline": 0.8912633906130244
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.24404726439997487,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.24346492216730892,
+            "rho_free_p2_median": 0.9403326745462961,
+            "degradation_vs_baseline": 1.225263638184356
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.3525734348464607,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.35182152955900237,
+            "rho_free_p2_median": 0.8189884659156984,
+            "degradation_vs_baseline": 1.770130103974949
+          }
+        },
+        "ForceBalanceKKT": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.6342000080061663,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.6213923151006828,
+            "rho_free_p2_median": 0.9912215334494282,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.6953243342472147,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.6738596476280169,
+            "rho_free_p2_median": 0.9912419076260245,
+            "degradation_vs_baseline": 1.0963802041460304
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.7657308274528887,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.7255617967344896,
+            "rho_free_p2_median": 0.9899575359325131,
+            "degradation_vs_baseline": 1.2073964329647935
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.7047367133664824,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.6919290204609989,
+            "rho_free_p2_median": 0.9924319902421338,
+            "degradation_vs_baseline": 1.11122154599473
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.6986513238573611,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.6723758980312275,
+            "rho_free_p2_median": 0.9403326745462961,
+            "degradation_vs_baseline": 1.101626166883568
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.5691544081903684,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.556346715284885,
+            "rho_free_p2_median": 0.8189884659156984,
+            "degradation_vs_baseline": 0.8974367723199944
+          }
+        }
+      },
+      "offset_excluded_linkcheck": {
+        "YoungDupre": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.11628828512074028,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.11625842749471983,
+            "rho_free_p2_median": 0.7634704949495089,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.11405211022745296,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.11401920351490918,
+            "rho_free_p2_median": 0.7729701998635349,
+            "degradation_vs_baseline": 0.9807704199011488
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.17426020741994935,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.17422730070740558,
+            "rho_free_p2_median": 0.862483503158262,
+            "degradation_vs_baseline": 1.498519023124451
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.1986835656335057,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.19865370800748525,
+            "rho_free_p2_median": 0.8064553132954441,
+            "degradation_vs_baseline": 1.708543258912243
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.19815301380099104,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.19812104904970892,
+            "rho_free_p2_median": 0.6660535458885276,
+            "degradation_vs_baseline": 1.7039808747308631
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.32969072687121326,
+            "e_inference_median": 2.7283381473434888e-05,
+            "e_meshing_median": 0.3296673038680072,
+            "rho_free_p2_median": 0.7256607428427875,
+            "degradation_vs_baseline": 2.835115562405109
+          }
+        },
+        "YoungDupreLocal": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.1333349598013444,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.13305111714830456,
+            "rho_free_p2_median": 0.7634704949495089,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.20076751817974098,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.20030373579237742,
+            "rho_free_p2_median": 0.7729701998635349,
+            "degradation_vs_baseline": 1.5057380185876552
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.25298805131208774,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.25264891534871137,
+            "rho_free_p2_median": 0.862483503158262,
+            "degradation_vs_baseline": 1.897387239543285
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.22170204341688,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.22123826102951644,
+            "rho_free_p2_median": 0.8064553132954441,
+            "degradation_vs_baseline": 1.662745042614432
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2576694221974786,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.25706698688861923,
+            "rho_free_p2_median": 0.6660535458885276,
+            "degradation_vs_baseline": 1.9324970928958165
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.3180332479035713,
+            "e_inference_median": 0.0005823422326659568,
+            "e_meshing_median": 0.31745090567090534,
+            "rho_free_p2_median": 0.7256607428427875,
+            "degradation_vs_baseline": 2.3852202631433546
+          }
+        },
+        "ForceBalanceKKT": {
+          "baseline": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.34636064382176757,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.32489595720256964,
+            "rho_free_p2_median": 0.7634704949495089,
+            "degradation_vs_baseline": 1.0
+          },
+          "dilate1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.2970056584900595,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.26937102028130894,
+            "rho_free_p2_median": 0.7729701998635349,
+            "degradation_vs_baseline": 0.8575040605447498
+          },
+          "erode1": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.3867028534773421,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.3652381668581442,
+            "rho_free_p2_median": 0.862483503158262,
+            "degradation_vs_baseline": 1.116474577510989
+          },
+          "boundary_noise": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.35164098891359497,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.33017630229439704,
+            "rho_free_p2_median": 0.8064553132954441,
+            "degradation_vs_baseline": 1.015245222533264
+          },
+          "downsample2": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.31838131857247925,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.2931962531377131,
+            "rho_free_p2_median": 0.6660535458885276,
+            "degradation_vs_baseline": 0.9192190979305198
+          },
+          "downsample4": {
+            "n_cases": 9,
+            "n_present": 9,
+            "e_total_median": 0.41314139244412595,
+            "e_inference_median": 0.021464686619197912,
+            "e_meshing_median": 0.38575574282164754,
+            "rho_free_p2_median": 0.7256607428427875,
+            "degradation_vs_baseline": 1.1928069768132283
+          }
+        }
+      }
+    }
+  },
+  "method_ranking_by_condition": {
+    "equilibrium": {
+      "v0_3": {
+        "baseline": {
+          "ranking": [
+            "YoungDupreLocal",
+            "ForceBalanceKKT",
+            "YoungDupre"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "dilate1": {
+          "ranking": [
+            "ForceBalanceKKT",
+            "YoungDupre",
+            "YoungDupreLocal"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        },
+        "erode1": {
+          "ranking": [
+            "YoungDupre",
+            "ForceBalanceKKT",
+            "YoungDupreLocal"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        },
+        "boundary_noise": {
+          "ranking": [
+            "YoungDupre",
+            "ForceBalanceKKT",
+            "YoungDupreLocal"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        },
+        "downsample2": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        },
+        "downsample4": {
+          "ranking": [
+            "YoungDupreLocal",
+            "YoungDupre",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        }
+      },
+      "a3_a5": {
+        "baseline": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "dilate1": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "erode1": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "boundary_noise": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "downsample2": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "downsample4": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        }
+      },
+      "offset_excluded_linkcheck": {
+        "baseline": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "dilate1": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "erode1": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "boundary_noise": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "downsample2": {
+          "ranking": [
+            "YoungDupre",
+            "YoungDupreLocal",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": true,
+          "n_methods": 3
+        },
+        "downsample4": {
+          "ranking": [
+            "YoungDupreLocal",
+            "YoungDupre",
+            "ForceBalanceKKT"
+          ],
+          "matches_baseline_order": false,
+          "n_methods": 3
+        }
+      }
+    }
+  },
+  "instability_spatial_summary": {
+    "equilibrium": {
+      "v0_3": {
+        "baseline": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 26.325220487215304
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 45.84140885149933
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 85.2666712573083
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 10,
+                "fraction_unstable": 0.16393442622950818,
+                "median_length": 26.325220487215304
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 4,
+                "fraction_unstable": 0.06349206349206349,
+                "median_length": 45.84140885149933
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 1,
+                "fraction_unstable": 0.014925373134328358,
+                "median_length": 85.2666712573083
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 11,
+                "fraction_unstable": 0.18032786885245902,
+                "median_length": 26.325220487215304
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 6,
+                "fraction_unstable": 0.09523809523809523,
+                "median_length": 45.84140885149933
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 9,
+                "fraction_unstable": 0.13432835820895522,
+                "median_length": 85.2666712573083
+              }
+            ]
+          }
+        },
+        "dilate1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 1,
+                "fraction_unstable": 0.01639344262295082,
+                "median_length": 28.428678715446697
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 47.24947290747622
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.92474493772363
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 6,
+                "fraction_unstable": 0.09836065573770492,
+                "median_length": 28.428678715446697
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 3,
+                "fraction_unstable": 0.047619047619047616,
+                "median_length": 47.24947290747622
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.92474493772363
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 10,
+                "fraction_unstable": 0.16393442622950818,
+                "median_length": 28.428678715446697
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 6,
+                "fraction_unstable": 0.09523809523809523,
+                "median_length": 47.24947290747622
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 7,
+                "fraction_unstable": 0.1044776119402985,
+                "median_length": 75.92474493772363
+              }
+            ]
+          }
+        },
+        "erode1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 2,
+                "fraction_unstable": 0.034482758620689655,
+                "median_length": 30.49646222358386
+              },
+              {
+                "bin": 1,
+                "n": 59,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 43.79501018730305
+              },
+              {
+                "bin": 2,
+                "n": 66,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 102.61125101654832
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 11,
+                "fraction_unstable": 0.1896551724137931,
+                "median_length": 30.49646222358386
+              },
+              {
+                "bin": 1,
+                "n": 59,
+                "n_unstable": 8,
+                "fraction_unstable": 0.13559322033898305,
+                "median_length": 43.79501018730305
+              },
+              {
+                "bin": 2,
+                "n": 66,
+                "n_unstable": 13,
+                "fraction_unstable": 0.19696969696969696,
+                "median_length": 102.61125101654832
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 10,
+                "fraction_unstable": 0.1724137931034483,
+                "median_length": 30.49646222358386
+              },
+              {
+                "bin": 1,
+                "n": 59,
+                "n_unstable": 22,
+                "fraction_unstable": 0.3728813559322034,
+                "median_length": 43.79501018730305
+              },
+              {
+                "bin": 2,
+                "n": 66,
+                "n_unstable": 30,
+                "fraction_unstable": 0.45454545454545453,
+                "median_length": 102.61125101654832
+              }
+            ]
+          }
+        },
+        "boundary_noise": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 1,
+                "fraction_unstable": 0.017241379310344827,
+                "median_length": 32.25646031348347
+              },
+              {
+                "bin": 1,
+                "n": 60,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 52.92378389714782
+              },
+              {
+                "bin": 2,
+                "n": 64,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 89.11350616386837
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 16,
+                "fraction_unstable": 0.27586206896551724,
+                "median_length": 32.25646031348347
+              },
+              {
+                "bin": 1,
+                "n": 60,
+                "n_unstable": 5,
+                "fraction_unstable": 0.08333333333333333,
+                "median_length": 52.92378389714782
+              },
+              {
+                "bin": 2,
+                "n": 64,
+                "n_unstable": 6,
+                "fraction_unstable": 0.09375,
+                "median_length": 89.11350616386837
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 58,
+                "n_unstable": 15,
+                "fraction_unstable": 0.25862068965517243,
+                "median_length": 32.25646031348347
+              },
+              {
+                "bin": 1,
+                "n": 60,
+                "n_unstable": 8,
+                "fraction_unstable": 0.13333333333333333,
+                "median_length": 52.92378389714782
+              },
+              {
+                "bin": 2,
+                "n": 64,
+                "n_unstable": 10,
+                "fraction_unstable": 0.15625,
+                "median_length": 89.11350616386837
+              }
+            ]
+          }
+        },
+        "downsample2": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 55,
+                "n_unstable": 4,
+                "fraction_unstable": 0.07272727272727272,
+                "median_length": 18.502508184387295
+              },
+              {
+                "bin": 1,
+                "n": 58,
+                "n_unstable": 3,
+                "fraction_unstable": 0.05172413793103448,
+                "median_length": 20.66886208610973
+              },
+              {
+                "bin": 2,
+                "n": 63,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 38.24240916370885
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 55,
+                "n_unstable": 9,
+                "fraction_unstable": 0.16363636363636364,
+                "median_length": 18.502508184387295
+              },
+              {
+                "bin": 1,
+                "n": 58,
+                "n_unstable": 5,
+                "fraction_unstable": 0.08620689655172414,
+                "median_length": 20.66886208610973
+              },
+              {
+                "bin": 2,
+                "n": 63,
+                "n_unstable": 5,
+                "fraction_unstable": 0.07936507936507936,
+                "median_length": 38.24240916370885
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 55,
+                "n_unstable": 6,
+                "fraction_unstable": 0.10909090909090909,
+                "median_length": 18.502508184387295
+              },
+              {
+                "bin": 1,
+                "n": 58,
+                "n_unstable": 11,
+                "fraction_unstable": 0.1896551724137931,
+                "median_length": 20.66886208610973
+              },
+              {
+                "bin": 2,
+                "n": 63,
+                "n_unstable": 10,
+                "fraction_unstable": 0.15873015873015872,
+                "median_length": 38.24240916370885
+              }
+            ]
+          }
+        },
+        "downsample4": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 41,
+                "n_unstable": 7,
+                "fraction_unstable": 0.17073170731707318,
+                "median_length": 11.19433067353333
+              },
+              {
+                "bin": 1,
+                "n": 43,
+                "n_unstable": 5,
+                "fraction_unstable": 0.11627906976744186,
+                "median_length": 12.571475311571605
+              },
+              {
+                "bin": 2,
+                "n": 49,
+                "n_unstable": 5,
+                "fraction_unstable": 0.10204081632653061,
+                "median_length": 20.744152541382775
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 41,
+                "n_unstable": 11,
+                "fraction_unstable": 0.2682926829268293,
+                "median_length": 11.19433067353333
+              },
+              {
+                "bin": 1,
+                "n": 43,
+                "n_unstable": 9,
+                "fraction_unstable": 0.20930232558139536,
+                "median_length": 12.571475311571605
+              },
+              {
+                "bin": 2,
+                "n": 49,
+                "n_unstable": 8,
+                "fraction_unstable": 0.16326530612244897,
+                "median_length": 20.744152541382775
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 41,
+                "n_unstable": 28,
+                "fraction_unstable": 0.6829268292682927,
+                "median_length": 11.19433067353333
+              },
+              {
+                "bin": 1,
+                "n": 43,
+                "n_unstable": 32,
+                "fraction_unstable": 0.7441860465116279,
+                "median_length": 12.571475311571605
+              },
+              {
+                "bin": 2,
+                "n": 49,
+                "n_unstable": 38,
+                "fraction_unstable": 0.7755102040816326,
+                "median_length": 20.744152541382775
+              }
+            ]
+          }
+        }
+      },
+      "a3_a5": {
+        "baseline": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015873015873015872,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 3,
+                "fraction_unstable": 0.046875,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 73.92474072806479
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 7,
+                "fraction_unstable": 0.1111111111111111,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 5,
+                "fraction_unstable": 0.078125,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 73.92474072806479
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 45,
+                "fraction_unstable": 0.7142857142857143,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 54,
+                "fraction_unstable": 0.84375,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 65,
+                "fraction_unstable": 0.9154929577464789,
+                "median_length": 73.92474072806479
+              }
+            ]
+          }
+        },
+        "dilate1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015873015873015872,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 3,
+                "fraction_unstable": 0.046153846153846156,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.7603506186979
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 4,
+                "fraction_unstable": 0.06349206349206349,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 8,
+                "fraction_unstable": 0.12307692307692308,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.7603506186979
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 48,
+                "fraction_unstable": 0.7619047619047619,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 49,
+                "fraction_unstable": 0.7538461538461538,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 64,
+                "fraction_unstable": 0.8888888888888888,
+                "median_length": 75.7603506186979
+              }
+            ]
+          }
+        },
+        "erode1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 6,
+                "fraction_unstable": 0.1,
+                "median_length": 36.92810804873717
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 3,
+                "fraction_unstable": 0.047619047619047616,
+                "median_length": 58.872247484486486
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 3,
+                "fraction_unstable": 0.04477611940298507,
+                "median_length": 91.81596669849654
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 22,
+                "fraction_unstable": 0.36666666666666664,
+                "median_length": 36.92810804873717
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 25,
+                "fraction_unstable": 0.3968253968253968,
+                "median_length": 58.872247484486486
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 20,
+                "fraction_unstable": 0.29850746268656714,
+                "median_length": 91.81596669849654
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 36,
+                "fraction_unstable": 0.6,
+                "median_length": 36.92810804873717
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 50,
+                "fraction_unstable": 0.7936507936507936,
+                "median_length": 58.872247484486486
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 65,
+                "fraction_unstable": 0.9701492537313433,
+                "median_length": 91.81596669849654
+              }
+            ]
+          }
+        },
+        "boundary_noise": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015625,
+                "median_length": 45.70549017328646
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.85856337361224
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 5,
+                "fraction_unstable": 0.08196721311475409,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 5,
+                "fraction_unstable": 0.078125,
+                "median_length": 45.70549017328646
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 1,
+                "fraction_unstable": 0.014492753623188406,
+                "median_length": 75.85856337361224
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 49,
+                "fraction_unstable": 0.8032786885245902,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 57,
+                "fraction_unstable": 0.890625,
+                "median_length": 45.70549017328646
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 66,
+                "fraction_unstable": 0.9565217391304348,
+                "median_length": 75.85856337361224
+              }
+            ]
+          }
+        },
+        "downsample2": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 3,
+                "fraction_unstable": 0.045454545454545456,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 48.937731710625
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 6,
+                "fraction_unstable": 0.09375,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 12,
+                "fraction_unstable": 0.18181818181818182,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 1,
+                "fraction_unstable": 0.014084507042253521,
+                "median_length": 48.937731710625
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 34,
+                "fraction_unstable": 0.53125,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 50,
+                "fraction_unstable": 0.7575757575757576,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 64,
+                "fraction_unstable": 0.9014084507042254,
+                "median_length": 48.937731710625
+              }
+            ]
+          }
+        },
+        "downsample4": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 14,
+                "fraction_unstable": 0.23333333333333334,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 10,
+                "fraction_unstable": 0.15873015873015872,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 8,
+                "fraction_unstable": 0.11764705882352941,
+                "median_length": 22.287010778465362
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 20,
+                "fraction_unstable": 0.3333333333333333,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 18,
+                "fraction_unstable": 0.2857142857142857,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 20,
+                "fraction_unstable": 0.29411764705882354,
+                "median_length": 22.287010778465362
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 31,
+                "fraction_unstable": 0.5166666666666667,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 50,
+                "fraction_unstable": 0.7936507936507936,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 62,
+                "fraction_unstable": 0.9117647058823529,
+                "median_length": 22.287010778465362
+              }
+            ]
+          }
+        }
+      },
+      "offset_excluded_linkcheck": {
+        "baseline": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 2,
+                "fraction_unstable": 0.031746031746031744,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 2,
+                "fraction_unstable": 0.03125,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 73.92474072806479
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 7,
+                "fraction_unstable": 0.1111111111111111,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 5,
+                "fraction_unstable": 0.078125,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 73.92474072806479
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 18,
+                "fraction_unstable": 0.2857142857142857,
+                "median_length": 29.72590438754061
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 31,
+                "fraction_unstable": 0.484375,
+                "median_length": 42.253582134004496
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 29,
+                "fraction_unstable": 0.4084507042253521,
+                "median_length": 73.92474072806479
+              }
+            ]
+          }
+        },
+        "dilate1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015873015873015872,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 2,
+                "fraction_unstable": 0.03076923076923077,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.7603506186979
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 5,
+                "fraction_unstable": 0.07936507936507936,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 8,
+                "fraction_unstable": 0.12307692307692308,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.7603506186979
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 63,
+                "n_unstable": 21,
+                "fraction_unstable": 0.3333333333333333,
+                "median_length": 29.15677474307278
+              },
+              {
+                "bin": 1,
+                "n": 65,
+                "n_unstable": 27,
+                "fraction_unstable": 0.4153846153846154,
+                "median_length": 43.467088433235034
+              },
+              {
+                "bin": 2,
+                "n": 72,
+                "n_unstable": 28,
+                "fraction_unstable": 0.3888888888888889,
+                "median_length": 75.7603506186979
+              }
+            ]
+          }
+        },
+        "erode1": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 5,
+                "fraction_unstable": 0.08333333333333333,
+                "median_length": 36.43264717932446
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015873015873015872,
+                "median_length": 60.461797651799266
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 2,
+                "fraction_unstable": 0.029850746268656716,
+                "median_length": 89.55429818971274
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 14,
+                "fraction_unstable": 0.23333333333333334,
+                "median_length": 36.43264717932446
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 17,
+                "fraction_unstable": 0.2698412698412698,
+                "median_length": 60.461797651799266
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 10,
+                "fraction_unstable": 0.14925373134328357,
+                "median_length": 89.55429818971274
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 22,
+                "fraction_unstable": 0.36666666666666664,
+                "median_length": 36.43264717932446
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 41,
+                "fraction_unstable": 0.6507936507936508,
+                "median_length": 60.461797651799266
+              },
+              {
+                "bin": 2,
+                "n": 67,
+                "n_unstable": 45,
+                "fraction_unstable": 0.6716417910447762,
+                "median_length": 89.55429818971274
+              }
+            ]
+          }
+        },
+        "boundary_noise": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 2,
+                "fraction_unstable": 0.03278688524590164,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 44.313596588923055
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.85856337361224
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 7,
+                "fraction_unstable": 0.11475409836065574,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 4,
+                "fraction_unstable": 0.0625,
+                "median_length": 44.313596588923055
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 75.85856337361224
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 61,
+                "n_unstable": 22,
+                "fraction_unstable": 0.36065573770491804,
+                "median_length": 28.62827488256607
+              },
+              {
+                "bin": 1,
+                "n": 64,
+                "n_unstable": 27,
+                "fraction_unstable": 0.421875,
+                "median_length": 44.313596588923055
+              },
+              {
+                "bin": 2,
+                "n": 69,
+                "n_unstable": 44,
+                "fraction_unstable": 0.6376811594202898,
+                "median_length": 75.85856337361224
+              }
+            ]
+          }
+        },
+        "downsample2": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 1,
+                "fraction_unstable": 0.015625,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 3,
+                "fraction_unstable": 0.045454545454545456,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 42.93468317863563
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 7,
+                "fraction_unstable": 0.109375,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 12,
+                "fraction_unstable": 0.18181818181818182,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 0,
+                "fraction_unstable": 0.0,
+                "median_length": 42.93468317863563
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 64,
+                "n_unstable": 18,
+                "fraction_unstable": 0.28125,
+                "median_length": 13.690026303805674
+              },
+              {
+                "bin": 1,
+                "n": 66,
+                "n_unstable": 31,
+                "fraction_unstable": 0.4696969696969697,
+                "median_length": 23.678148579428743
+              },
+              {
+                "bin": 2,
+                "n": 71,
+                "n_unstable": 47,
+                "fraction_unstable": 0.6619718309859155,
+                "median_length": 42.93468317863563
+              }
+            ]
+          }
+        },
+        "downsample4": {
+          "YoungDupre": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 11,
+                "fraction_unstable": 0.18333333333333332,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 11,
+                "fraction_unstable": 0.1746031746031746,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 9,
+                "fraction_unstable": 0.1323529411764706,
+                "median_length": 22.287010778465362
+              }
+            ]
+          },
+          "YoungDupreLocal": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 18,
+                "fraction_unstable": 0.3,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 19,
+                "fraction_unstable": 0.30158730158730157,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 14,
+                "fraction_unstable": 0.20588235294117646,
+                "median_length": 22.287010778465362
+              }
+            ]
+          },
+          "ForceBalanceKKT": {
+            "n_cases_with_instability_data": 9,
+            "bins": [
+              {
+                "bin": 0,
+                "n": 60,
+                "n_unstable": 28,
+                "fraction_unstable": 0.4666666666666667,
+                "median_length": 8.767179879253405
+              },
+              {
+                "bin": 1,
+                "n": 63,
+                "n_unstable": 44,
+                "fraction_unstable": 0.6984126984126984,
+                "median_length": 11.921543634003804
+              },
+              {
+                "bin": 2,
+                "n": 68,
+                "n_unstable": 52,
+                "fraction_unstable": 0.7647058823529411,
+                "median_length": 22.287010778465362
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

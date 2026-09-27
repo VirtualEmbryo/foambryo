@@ -1,0 +1,225 @@
+{
+  "coverage": {
+    "n_covered": 499,
+    "n_mesh_interfaces": 499
+  },
+  "effective_tensions_gauge_summary": {
+    "least_squares": {
+      "abs_deviation_max": 0.17054438973986852,
+      "abs_deviation_median": 0.024154123531329397,
+      "abs_deviation_p95": 0.06915122670528673,
+      "iqr": 0.0350089205575006,
+      "max": 1.0694891573356913,
+      "median": 1.0200943710245032,
+      "min": 0.7553165140030581,
+      "n": 499,
+      "n_near_half": 0,
+      "n_near_one": 459,
+      "n_near_two": 0,
+      "spread": 0.3141726433326332
+    },
+    "mean_one": {
+      "abs_deviation_max": 0.18348161373171834,
+      "abs_deviation_median": 0.0229332125794679,
+      "abs_deviation_p95": 0.07919453375981604,
+      "iqr": 0.03489682630225854,
+      "max": 1.0660647846709046,
+      "median": 1.0168281543867008,
+      "min": 0.7528980834784723,
+      "n": 499,
+      "n_near_half": 0,
+      "n_near_one": 453,
+      "n_near_two": 0,
+      "spread": 0.3131667011924323
+    },
+    "median_one": {
+      "abs_deviation_max": 0.19273374006078414,
+      "abs_deviation_median": 0.010582151985955468,
+      "abs_deviation_p95": 0.10856117088290719,
+      "iqr": 0.03431929589253613,
+      "max": 1.0484217810765681,
+      "median": 1.0,
+      "min": 0.740437880511464,
+      "n": 499,
+      "n_near_half": 0,
+      "n_near_one": 409,
+      "n_near_two": 0,
+      "spread": 0.30798390056510416
+    }
+  },
+  "folder": "165LumenA_AllEqu_Base1B_pTEiup_ICMup_mTo3_pTEmTEsplit15_pTEoup_V2_mTEo_inversion",
+  "hold_last_value_group": 9,
+  "integrity": {
+    "dangling_vertex_reference": false,
+    "edge_region_count_histogram": {
+      "2": 76777,
+      "3": 1451,
+      "4": 1534
+    },
+    "intact": true,
+    "n_boundary_edges": 0,
+    "n_degenerate_faces": 0,
+    "n_duplicate_faces": 0,
+    "n_edges": 79762,
+    "n_faces": 54681,
+    "n_malformed_triple_line_edges": 0,
+    "n_nonmanifold_interface_edges": 0,
+    "n_quadjunction_edges": 1534,
+    "n_triple_line_edges": 1451,
+    "n_unreferenced_vertices": 0,
+    "n_vertices": 25248
+  },
+  "methods": {
+    "BayesianMAP": {
+      "gauge_matching_scale": 2.3902281636382625,
+      "tension_relative_error": {
+        "mean": 0.5808263127903849,
+        "median": 0.573737130851257,
+        "n": 499,
+        "p95": 0.6128649477173979
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 0.030001327760937443,
+        "median": 0.026975832235067276,
+        "n": 499,
+        "p95": 0.07465889490255313
+      },
+      "wall_time_s": 4.073457875056192
+    },
+    "ForceBalanceKKT": {
+      "gauge_matching_scale": 0.9386773547094186,
+      "tension_relative_error": {
+        "mean": 0.07166870569845764,
+        "median": 0.08356868234858816,
+        "n": 499,
+        "p95": 0.09799283739679028
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 0.02755288628241746,
+        "median": 0.024686194266527073,
+        "n": 499,
+        "p95": 0.07100199946982019
+      },
+      "wall_time_s": 3.712006790796295
+    },
+    "Variational": {
+      "gauge_matching_scale": 0.9386773547094186,
+      "tension_relative_error": {
+        "mean": 0.07166870569845941,
+        "median": 0.08356868234860837,
+        "n": 499,
+        "p95": 0.09799283739679544
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 0.02755288628242181,
+        "median": 0.0246861942665344,
+        "n": 499,
+        "p95": 0.07100199946982581
+      },
+      "wall_time_s": 1.1460673748515546
+    },
+    "VariationalRouteP": {
+      "gauge_matching_scale": 0.9386773681696067,
+      "tension_relative_error": {
+        "mean": 0.07988298441686563,
+        "median": 0.0945014597691396,
+        "n": 499,
+        "p95": 0.11946280464468048
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 0.04383747954347107,
+        "median": 0.040465725357943655,
+        "n": 499,
+        "p95": 0.10304307620267981
+      },
+      "wall_time_s": 0.16071595787070692
+    },
+    "VariationalRouteQ": {
+      "gauge_matching_scale": 0.9386773547094186,
+      "tension_relative_error": {
+        "mean": 0.07166870569845941,
+        "median": 0.08356868234860837,
+        "n": 499,
+        "p95": 0.09799283739679544
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 0.02755288628242181,
+        "median": 0.0246861942665344,
+        "n": 499,
+        "p95": 0.07100199946982581
+      },
+      "wall_time_s": 1.1181706669740379
+    },
+    "YoungDupre": {
+      "gauge_matching_scale": 0.9386773547094162,
+      "tension_relative_error": {
+        "mean": 1.5607742682821832,
+        "median": 1.000000000000904,
+        "n": 499,
+        "p95": 3.4581179247616016
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 1.491976606376774,
+        "median": 1.0000000000008484,
+        "n": 499,
+        "p95": 3.1847343405978523
+      },
+      "wall_time_s": 0.14541766699403524
+    },
+    "YoungDupreLocal": {
+      "gauge_matching_scale": 0.9386773547094237,
+      "tension_relative_error": {
+        "mean": 1.603957327358021,
+        "median": 1.0000000000001041,
+        "n": 499,
+        "p95": 3.7980997298649286
+      },
+      "tension_relative_error_matched_gauge": {
+        "mean": 1.534969387492883,
+        "median": 1.0000000000000977,
+        "n": 499,
+        "p95": 3.503867562061611
+      },
+      "wall_time_s": 0.1327992498409003
+    }
+  },
+  "n_cells": 166,
+  "n_interfaces": 499,
+  "n_junctions": 380,
+  "pressures_available": false,
+  "residual_localisation": {
+    "fraction_interface_interior": 0.09528415516426787,
+    "fraction_quadjunction": 0.8242261565471096,
+    "fraction_triple_line": 0.08048968828862284,
+    "interior_over_triple_line": 0.30842558087283084,
+    "interior_residual_per_vertex": 0.001671788318125156,
+    "n_interface_interior_vertices": 22595,
+    "n_quadjunction_vertices": 1582,
+    "n_triple_line_vertices": 1071,
+    "top_1pct_vertex_share": 0.9660736147282127,
+    "triple_line_residual_per_vertex": 0.005420394486715624
+  },
+  "rho": 0.08113493689160887,
+  "rho_free": 0.07426289591969744,
+  "sigma_gauge": 0.02122768933500033,
+  "sigma_soft": 0.11133558437588825,
+  "soft_mode_fractions": [
+    0.8109874340212375,
+    0.0,
+    0.18901256597876306
+  ],
+  "stage": 14,
+  "tensions_only": true,
+  "valence": {
+    "n_edges": 79762,
+    "n_two_material_valence4": 0,
+    "n_valence_ge4": 1534,
+    "total_length_valence_ge4": 56.774180930278185,
+    "two_material_valence4_region_pairs": [],
+    "valence_histogram": {
+      "2": 76777,
+      "3": 1451,
+      "4": 1534
+    }
+  }
+}

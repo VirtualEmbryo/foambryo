@@ -6,7 +6,23 @@ Examples/*.vtk
 Examples/*.tif
 Examples/*.npy
 Examples/*.py
+# ... except the examples that are part of the package's documentation and must travel with it.
+# `Examples/*.py` exists to keep users' own scratch scripts out of the repository; a committed
+# example is not scratch.
+!Examples/second_order_angle_reading.py
+!Examples/refusing_folded_trijunction_wedges.py
+!Examples/default_junction_relocation.py
 dist/
+build/
 .ipynb_checkpoints/
 imgui.ini
 .polyscope.ini
+__pycache__/
+.pytest_cache/
+AGENTS.md
+CLAUDE.md
+scratch_*.py
+*_scratch.py
+# Generated dw3d-variant-comparison artefacts (meshes, PNGs): regenerable, large, not a
+# baseline number -- see foambryo_benchmarks/dw3d_variant_comparison.py's own docstring.
+foambryo_benchmarks/outputs/

@@ -4,6 +4,7 @@ Sacha Ichbiah 2021
 Matthieu Perez 2024
 """
 
+from collections.abc import Mapping
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
@@ -11,8 +12,73 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy import linalg
 
+from foambryo.tension_inference import _build_matrix_discrete_sparse
+
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
+
+
+class UndeterminedTensionError(ValueError):
+    """A pressure inference was handed an interface tension that is not a finite number.
+
+    Every pressure method solves for the cell pressures from the interface tensions, and the
+    default variational method couples every cell to every tension, so a single non-finite
+    tension makes nearly every inferred pressure non-finite: measured on five real embryo
+    timepoints with one to four closed interfaces, all but one cell's pressure came back
+    non-finite each time (54 of 55 cells up to 71 of 72). Such a field carries no usable value, so
+    the pressure inference refuses it rather than returning it.
+
+    The usual cause is not a numerical failure. An interface with no triple line at all -- a closed
+    surface, such as an engulfed cell or a sealed lumen, or a fragment that a segmentation left
+    inside another cell -- has no angle from which its tension could be measured, and
+    `foambryo.infer_tensions` reports it as `float("nan")` by design. The other tensions of such a
+    mesh remain valid; use `foambryo.infer_tensions_by_junction_component` to see which interfaces
+    are undetermined and which component each determined tension belongs to.
+
+    Subclasses `ValueError`, so code that already caught the generic error the least-squares
+    solve raised on a non-finite input keeps working.
+
+    Attributes:
+        interfaces: the interfaces whose tension is not finite, sorted.
+    """
+
+    def __init__(self, interfaces: tuple[tuple[int, int], ...]) -> None:
+        """Build the error and its message from the offending interfaces.
+
+        Args:
+            interfaces (tuple[tuple[int, int], ...]): the interfaces whose tension is not finite.
+        """
+        self.interfaces = tuple(sorted(interfaces))
+        shown = ", ".join(str(key) for key in self.interfaces[:8])
+        if len(self.interfaces) > 8:
+            shown += f", ... ({len(self.interfaces)} in total)"
+        message = (
+            f"{len(self.interfaces)} interface tension(s) are not finite: {shown}. Pressures are "
+            "not inferred, because the pressure solve couples the cells through the tensions and "
+            "one non-finite tension makes nearly every pressure non-finite. An interface with no "
+            "triple line (a closed surface) has no measurable tension and is reported as nan by "
+            "infer_tensions; use infer_tensions_by_junction_component to see which interfaces are "
+            "undetermined. The other tensions remain valid."
+        )
+        super().__init__(message)
+
+
+def _require_finite_tensions(dict_tensions: Mapping[tuple[int, int], float]) -> None:
+    """Refuse a tension map holding any value that is not a finite number.
+
+    Checks every value of the map, because the default variational method consumes every one of
+    them. Adds no floating-point operation to the solve: where every tension is finite, the
+    inferred pressures are bitwise what they were without the check.
+
+    Args:
+        dict_tensions (Mapping[tuple[int, int], float]): interface -> tension.
+
+    Raises:
+        UndeterminedTensionError: naming every interface whose tension is `nan` or infinite.
+    """
+    nonfinite = tuple(key for key, value in dict_tensions.items() if not np.isfinite(value))
+    if nonfinite:
+        raise UndeterminedTensionError(nonfinite)
 
 
 class PressureComputationMethod(Enum):
@@ -45,6 +111,11 @@ def infer_pressures(
 
     Returns:
         dict[int, float]: map cell id (0 = exterior) to pressure in cell.
+
+    Raises:
+        UndeterminedTensionError: if any tension in `dict_tensions` is not a finite number -- for
+            example the `nan` that `infer_tensions` reports for an interface with no triple line.
+            See `UndeterminedTensionError`.
     """
     _, dict_pressures, _ = infer_pressures_and_residuals(mesh, dict_tensions, mode, base_pressure)
     return dict_pressures
@@ -69,7 +140,14 @@ def infer_pressures_and_residuals(
             - array of relative pressures ("Laplace") or of tensions ("Variational").
             - map cell id (0 = exterior) -> pressure
             - residuals of the least square method or 0 if mode is "Variational"
+
+    Raises:
+        UndeterminedTensionError: if any tension in `dict_tensions` is not a finite number -- for
+            example the `nan` that `infer_tensions` reports for an interface with no triple line.
+            Checked before any method runs; where every tension is finite the result is bitwise
+            unchanged by the check.
     """
+    _require_finite_tensions(dict_tensions)
     if mode == PressureComputationMethod.Laplace:
         return _infer_pressures_laplace(mesh, dict_tensions, base_pressure, weighted=False)
     elif mode == PressureComputationMethod.WeightedLaplace:
@@ -138,9 +216,7 @@ def _infer_pressures_variational(
             - map cell id (0 = exterior) -> pressure
             - 0 (no residuals)
     """
-    area_derivatives, volume_derivatives = mesh.compute_area_derivatives(), mesh.compute_volume_derivatives()
-
-    matrix_m, _, nm = _build_matrix_discrete(area_derivatives, volume_derivatives, mesh.materials)
+    matrix_m, _, nm, _keys = _build_matrix_discrete_sparse(mesh)
 
     f_g, f_p, g_g, g_p = _extract_submatrices(matrix_m, nm)
 
@@ -240,80 +316,6 @@ def _build_matrix_laplace(
     x = pM@B"""
 
     return (matrix_m, vector_b)
-
-
-def _build_matrix_discrete(
-    area_derivatives: dict[tuple[int, int], NDArray[np.float64]],
-    volume_derivatives: dict[tuple[int, int], NDArray[np.float64]],
-    materials: NDArray[np.int64],
-    mean_tension: float = 1,
-) -> tuple[NDArray[np.float64], NDArray[np.float64], int]:
-    """Return matrix M and vector B and number of interfaces in mesh. MX = B can be solved to get relative pressures.
-
-    Args:
-        area_derivatives (dict[tuple[int, int], NDArray[np.float64]]): Derivative of areas wrt vertices.
-        volume_derivatives (dict[tuple[int, int], NDArray[np.float64]]): Derivative of volumes wrt vertices.
-        materials (NDArray[np.int64]): Labels of cells.
-        mean_tension (float, optional): Mean tension of interfaces. Defaults to 1.
-
-    Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64], int]: M, B, and number of interfaces.
-    """
-    interfaces = np.array(list(area_derivatives.keys()))
-    kt = np.amax(interfaces) + 1
-    keys_t = interfaces[:, 0] + interfaces[:, 1] * kt
-    reverse_map_t = dict(zip(keys_t, np.arange(len(keys_t)), strict=False))
-
-    # MX = B
-    # x : structure : ([0,nm[ : tensions) ([nm:nm+nc] : pressions) : (ya,yb,yc,yd...p0,p1,p2..pnc)
-    nm = len(interfaces)
-    nc = len(materials) - 1
-    vector_b = np.zeros(nm + nc + 1)
-    vector_b[-1] = nm * mean_tension  # Sum of tensions = number of membrane <=> mean of tensions = mean_tensions
-    matrix_m = np.zeros((nm + nc + 1, nm + nc))
-    # print("n_j",nj,"\nn_m",nm,"\nn_c",nc,"\nNumber of unknowns ",nm+nc+1)
-
-    ###DISCRETE
-    ###YOUNG-DUPRÉ
-    ###EQUATIONS
-
-    for i, tup_l in enumerate(area_derivatives.keys()):
-        a_l, b_l = tup_l
-
-        for tup_m in area_derivatives:
-            a_m, b_m = tup_m
-            key_m = a_m + b_m * kt
-            idx_tm = reverse_map_t[key_m]
-            matrix_m[i, idx_tm] = np.sum(area_derivatives[tup_m] * area_derivatives[tup_l])
-
-        for n, key_n in enumerate(materials[1:]):
-            matrix_m[i, nm + n] = -np.sum(volume_derivatives[key_n] * area_derivatives[tup_l])
-
-    off = nm
-
-    ###DISCRETE
-    ###LAPLACE
-    ###EQUATIONS
-    for i, key_i in enumerate(materials[1:]):
-        for tup in area_derivatives:
-            a, b = tup
-            key = a + b * kt
-            idx_tk = reverse_map_t[key]
-            matrix_m[off + i, idx_tk] = np.sum(area_derivatives[(a, b)] * volume_derivatives[key_i])
-
-        for n, key_n in enumerate(materials[1:]):
-            matrix_m[off + i, nm + n] = -np.sum(volume_derivatives[key_n] * volume_derivatives[key_i])
-
-    off += nc
-
-    lines_sum = np.sum(matrix_m, axis=1)
-    for i in range(len(matrix_m) - 1):
-        if lines_sum[i] != 0:
-            matrix_m[i] /= lines_sum[i]
-
-    matrix_m[off, :nm] = 1  # Enforces mean of tensions = mean_tensions (see B[-1])
-
-    return (matrix_m, vector_b, nm)
 
 
 def _extract_submatrices(

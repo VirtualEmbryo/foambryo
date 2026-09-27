@@ -1,0 +1,1293 @@
+{
+  "c4_3_rho_free_prediction_test": {
+    "BayesianMAP": {
+      "error_median": 0.01685931353335158,
+      "error_range": [
+        0.0012521533785342259,
+        0.11161558031357945
+      ],
+      "n": 114,
+      "n_cohort_72": 72,
+      "n_dataset_42": 42,
+      "rho_free_range": [
+        0.0006646223952952093,
+        0.4899226935880316
+      ],
+      "spearman_p": 0.057854522965998405,
+      "spearman_r": 0.17819071379969545
+    },
+    "ForceBalanceKKT": {
+      "error_median": 0.014573335808672937,
+      "error_range": [
+        0.001424391890242573,
+        0.11208700449533612
+      ],
+      "n": 114,
+      "n_cohort_72": 72,
+      "n_dataset_42": 42,
+      "rho_free_range": [
+        0.0006646223952952093,
+        0.4899226935880316
+      ],
+      "spearman_p": 0.22023727215732333,
+      "spearman_r": 0.11570488934970677
+    },
+    "Variational": {
+      "error_median": 0.014573335808671668,
+      "error_range": [
+        0.0014243918902401217,
+        0.11208700449533779
+      ],
+      "n": 114,
+      "n_cohort_72": 72,
+      "n_dataset_42": 42,
+      "rho_free_range": [
+        0.0006646223952952093,
+        0.4899226935880316
+      ],
+      "spearman_p": 0.22023727215732333,
+      "spearman_r": 0.11570488934970677
+    },
+    "YoungDupre": {
+      "error_median": 0.031862514704914593,
+      "error_range": [
+        5.75224001829192e-06,
+        0.13384083623142165
+      ],
+      "n": 114,
+      "n_cohort_72": 72,
+      "n_dataset_42": 42,
+      "rho_free_range": [
+        0.0006646223952952093,
+        0.4899226935880316
+      ],
+      "spearman_p": 4.552777629383406e-24,
+      "spearman_r": 0.7750380714771733
+    },
+    "YoungDupreLocal": {
+      "error_median": 0.031650121859064184,
+      "error_range": [
+        8.314146794880537e-05,
+        0.08300938512760657
+      ],
+      "n": 114,
+      "n_cohort_72": 72,
+      "n_dataset_42": 42,
+      "rho_free_range": [
+        0.0006646223952952093,
+        0.4899226935880316
+      ],
+      "spearman_p": 7.567655146464616e-23,
+      "spearman_r": 0.761745455723682
+    }
+  },
+  "c4_4_hold_last_value_spread": {
+    "165LumenA_AllEqu_Base1B_pTEiup_ICMup_mTo3_pTEmTEsplit15_pTEoup_V2_Y27": {
+      "6": {
+        "BayesianMAP": {
+          "cv": 0.9461214018257262,
+          "max": 0.0189098232079346,
+          "median": 0.003838902159551166,
+          "min": 0.0012521533785342259,
+          "n": 12,
+          "spread": 0.017657669829400372,
+          "stages": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0045555973393146265
+        },
+        "ForceBalanceKKT": {
+          "cv": 0.8873187387106412,
+          "max": 0.020053723347433272,
+          "median": 0.004366911401230088,
+          "min": 0.001424391890242573,
+          "n": 12,
+          "spread": 0.0186293314571907,
+          "stages": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.004821377898185245
+        },
+        "Variational": {
+          "cv": 0.8873187387107053,
+          "max": 0.020053723347434195,
+          "median": 0.004366911401234252,
+          "min": 0.0014243918902401217,
+          "n": 12,
+          "spread": 0.018629331457194073,
+          "stages": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.004821377898185613
+        },
+        "YoungDupre": {
+          "cv": 0.032336107884609847,
+          "max": 0.03329648907931107,
+          "median": 0.032222095085190125,
+          "min": 0.030192606110172084,
+          "n": 12,
+          "spread": 0.0031038829691389866,
+          "stages": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0010289353382397842
+        },
+        "YoungDupreLocal": {
+          "cv": 0.053858792329743756,
+          "max": 0.03516211761687718,
+          "median": 0.033231977636063705,
+          "min": 0.0297905573540274,
+          "n": 12,
+          "spread": 0.005371560262849781,
+          "stages": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0017782591866781527
+        }
+      }
+    },
+    "165LumenA_AllEqu_Base1B_pTEiup_ICMup_mTo3_pTEmTEsplit15_pTEoup_V2_mTEo_inversion": {
+      "9": {
+        "BayesianMAP": {
+          "cv": 0.43774056048121734,
+          "max": 0.026975832235067276,
+          "median": 0.012292806798382822,
+          "min": 0.0054528444482877525,
+          "n": 9,
+          "spread": 0.021522987786779524,
+          "stages": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0059500867799102365
+        },
+        "ForceBalanceKKT": {
+          "cv": 0.5845957890183209,
+          "max": 0.024686194266527073,
+          "median": 0.009042504869312573,
+          "min": 0.002552572644423331,
+          "n": 9,
+          "spread": 0.022133621622103743,
+          "stages": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.006167607254117668
+        },
+        "Variational": {
+          "cv": 0.5845957890186683,
+          "max": 0.0246861942665344,
+          "median": 0.009042504869334111,
+          "min": 0.002552572644405644,
+          "n": 9,
+          "spread": 0.022133621622128757,
+          "stages": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.006167607254122245
+        },
+        "YoungDupre": {
+          "cv": 0.03610642888015587,
+          "max": 0.05627510819696202,
+          "median": 0.05173141625343006,
+          "min": 0.05061009828748381,
+          "n": 9,
+          "spread": 0.005665009909478214,
+          "stages": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0019083307352892908
+        },
+        "YoungDupreLocal": {
+          "cv": 0.03903344354051859,
+          "max": 0.05508304702465738,
+          "median": 0.049954444028861615,
+          "min": 0.04905747424658957,
+          "n": 9,
+          "spread": 0.0060255727780678114,
+          "stages": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0019933964142602907
+        }
+      }
+    },
+    "90LumenA_AllEqu_Base1B_pTEidown_mToup": {
+      "10": {
+        "BayesianMAP": {
+          "cv": 0.748617548738717,
+          "max": 0.05664159868824488,
+          "median": 0.014630037533109656,
+          "min": 0.010138015587014156,
+          "n": 8,
+          "spread": 0.04650358310123072,
+          "stages": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.01436666097046349
+        },
+        "ForceBalanceKKT": {
+          "cv": 0.9458946093255365,
+          "max": 0.05342428995457309,
+          "median": 0.010354247760446546,
+          "min": 0.006802030180133427,
+          "n": 8,
+          "spread": 0.04662225977443966,
+          "stages": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.014564566895082459
+        },
+        "Variational": {
+          "cv": 0.9458946093261498,
+          "max": 0.05342428995459508,
+          "median": 0.01035424776044647,
+          "min": 0.006802030180123836,
+          "n": 8,
+          "spread": 0.04662225977447125,
+          "stages": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.014564566895091568
+        },
+        "YoungDupre": {
+          "cv": 0.021667444808021415,
+          "max": 0.07009124236571625,
+          "median": 0.06812472140457367,
+          "min": 0.06537329067536637,
+          "n": 8,
+          "spread": 0.0047179516903498725,
+          "stages": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.0014704213362453846
+        },
+        "YoungDupreLocal": {
+          "cv": 0.07944610332814504,
+          "max": 0.06935816014207091,
+          "median": 0.0663838505394797,
+          "min": 0.05174198905613625,
+          "n": 8,
+          "spread": 0.017616171085934662,
+          "stages": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.005127285984678494
+        }
+      }
+    },
+    "90LumenC_AllEqu_Base1B_pTEidown_ICMdown_mTo08_pTEmTEsplit14_pTEICMup_CN03+ICM+ap": {
+      "7": {
+        "BayesianMAP": {
+          "cv": 0.6913246321524477,
+          "max": 0.11161558031357945,
+          "median": 0.03104817833361895,
+          "min": 0.01673627856072333,
+          "n": 11,
+          "spread": 0.09487930175285611,
+          "stages": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.03220281181723422
+        },
+        "ForceBalanceKKT": {
+          "cv": 0.7153946318626078,
+          "max": 0.11208700449533612,
+          "median": 0.03041004404689999,
+          "min": 0.01510810097998885,
+          "n": 11,
+          "spread": 0.09697890351534727,
+          "stages": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.03323162816823265
+        },
+        "Variational": {
+          "cv": 0.7153946318626278,
+          "max": 0.11208700449533779,
+          "median": 0.03041004404689333,
+          "min": 0.01510810097998821,
+          "n": 11,
+          "spread": 0.09697890351534957,
+          "stages": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.03323162816823348
+        },
+        "YoungDupre": {
+          "cv": 0.19263049286451647,
+          "max": 0.05819881042414543,
+          "median": 0.037128848086571686,
+          "min": 0.03291552367043607,
+          "n": 11,
+          "spread": 0.02528328675370936,
+          "stages": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.007631831153313198
+        },
+        "YoungDupreLocal": {
+          "cv": 0.2607595615444959,
+          "max": 0.07480090458088161,
+          "median": 0.038574860262904055,
+          "min": 0.035111813566434724,
+          "n": 11,
+          "spread": 0.039689091014446884,
+          "stages": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "std": 0.011445678564367253
+        }
+      }
+    }
+  },
+  "c4_5_scaling_report": {
+    "n_cells_range": [
+      91,
+      166
+    ],
+    "n_interfaces_range": [
+      433,
+      760
+    ],
+    "per_method": {
+      "BayesianMAP": {
+        "error_median": 0.01330592816490149,
+        "log_log_slope_time_vs_n_interfaces": 2.4301589036103466,
+        "n": 72,
+        "wall_time_max_s": 12.552145084133372,
+        "wall_time_median_s": 3.7438602085458115
+      },
+      "ForceBalanceKKT": {
+        "error_median": 0.011000289723954091,
+        "log_log_slope_time_vs_n_interfaces": 2.411663393964451,
+        "n": 72,
+        "wall_time_max_s": 10.302962957881391,
+        "wall_time_median_s": 3.203996291384101
+      },
+      "Variational": {
+        "error_median": 0.011000289723959434,
+        "log_log_slope_time_vs_n_interfaces": 2.4061399553942753,
+        "n": 72,
+        "wall_time_max_s": 4.199532084167004,
+        "wall_time_median_s": 1.158404250512831
+      },
+      "YoungDupre": {
+        "error_median": 0.03896362402503438,
+        "log_log_slope_time_vs_n_interfaces": 0.8105289717189602,
+        "n": 72,
+        "wall_time_max_s": 0.7233717911876738,
+        "wall_time_median_s": 0.4292877080151811
+      },
+      "YoungDupreLocal": {
+        "error_median": 0.04002433415607882,
+        "log_log_slope_time_vs_n_interfaces": 1.041747421781532,
+        "n": 72,
+        "wall_time_max_s": 0.7024085421580821,
+        "wall_time_median_s": 0.4138155415421352
+      }
+    }
+  },
+  "c4_5_sigma_soft_report": {
+    "n": 72,
+    "rho_free_max": 0.4899226935880316,
+    "rho_free_median": 0.09818732847073952,
+    "rho_free_min": 0.037470746245905816,
+    "sigma_soft_max": 0.22891473143677615,
+    "sigma_soft_median": 0.16028763175248276,
+    "sigma_soft_min": 0.10606636129645912
+  },
+  "c4_5_valence_persistence": {
+    "165LumenA_AllEqu_Base1B_pTEiup_ICMup_mTo3_pTEmTEsplit15_pTEoup_V2_Y27": {
+      "groups": {
+        "6": {
+          "constant": false,
+          "n_valence_ge4_values": [
+            318,
+            319,
+            316,
+            317,
+            319,
+            317,
+            316,
+            315,
+            314,
+            312,
+            314,
+            312
+          ]
+        }
+      },
+      "per_stage": [
+        {
+          "group": 0,
+          "n_cells": 166,
+          "n_interfaces": 756,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 335,
+          "stage": 0
+        },
+        {
+          "group": 1,
+          "n_cells": 166,
+          "n_interfaces": 755,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 333,
+          "stage": 1
+        },
+        {
+          "group": 2,
+          "n_cells": 166,
+          "n_interfaces": 755,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 327,
+          "stage": 2
+        },
+        {
+          "group": 3,
+          "n_cells": 166,
+          "n_interfaces": 755,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 330,
+          "stage": 3
+        },
+        {
+          "group": 4,
+          "n_cells": 166,
+          "n_interfaces": 755,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 328,
+          "stage": 4
+        },
+        {
+          "group": 5,
+          "n_cells": 166,
+          "n_interfaces": 754,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 327,
+          "stage": 5
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 759,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 318,
+          "stage": 6
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 758,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 319,
+          "stage": 7
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 758,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 316,
+          "stage": 8
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 758,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 317,
+          "stage": 9
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 758,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 319,
+          "stage": 10
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 317,
+          "stage": 11
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 316,
+          "stage": 12
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 315,
+          "stage": 13
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 314,
+          "stage": 14
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 312,
+          "stage": 15
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 314,
+          "stage": 16
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 760,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 312,
+          "stage": 17
+        }
+      ],
+      "total_two_material_valence4": 0
+    },
+    "165LumenA_AllEqu_Base1B_pTEiup_ICMup_mTo3_pTEmTEsplit15_pTEoup_V2_mTEo_inversion": {
+      "groups": {
+        "9": {
+          "constant": false,
+          "n_valence_ge4_values": [
+            1516,
+            1515,
+            1514,
+            1532,
+            1533,
+            1534,
+            1550,
+            1553,
+            1558
+          ]
+        }
+      },
+      "per_stage": [
+        {
+          "group": 0,
+          "n_cells": 166,
+          "n_interfaces": 756,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 335,
+          "stage": 0
+        },
+        {
+          "group": 1,
+          "n_cells": 166,
+          "n_interfaces": 754,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 329,
+          "stage": 1
+        },
+        {
+          "group": 2,
+          "n_cells": 166,
+          "n_interfaces": 752,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 338,
+          "stage": 2
+        },
+        {
+          "group": 3,
+          "n_cells": 166,
+          "n_interfaces": 752,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 343,
+          "stage": 3
+        },
+        {
+          "group": 4,
+          "n_cells": 166,
+          "n_interfaces": 750,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 360,
+          "stage": 4
+        },
+        {
+          "group": 5,
+          "n_cells": 166,
+          "n_interfaces": 736,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 449,
+          "stage": 5
+        },
+        {
+          "group": 6,
+          "n_cells": 166,
+          "n_interfaces": 700,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 632,
+          "stage": 6
+        },
+        {
+          "group": 7,
+          "n_cells": 166,
+          "n_interfaces": 604,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1037,
+          "stage": 7
+        },
+        {
+          "group": 8,
+          "n_cells": 166,
+          "n_interfaces": 498,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1548,
+          "stage": 8
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 498,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1516,
+          "stage": 9
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1515,
+          "stage": 10
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1514,
+          "stage": 11
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1532,
+          "stage": 12
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1533,
+          "stage": 13
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1534,
+          "stage": 14
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1550,
+          "stage": 15
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1553,
+          "stage": 16
+        },
+        {
+          "group": 9,
+          "n_cells": 166,
+          "n_interfaces": 499,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 1558,
+          "stage": 17
+        }
+      ],
+      "total_two_material_valence4": 0
+    },
+    "90LumenA_AllEqu_Base1B_pTEidown_mToup": {
+      "groups": {
+        "10": {
+          "constant": false,
+          "n_valence_ge4_values": [
+            148,
+            148,
+            164,
+            145,
+            141,
+            155,
+            146,
+            144
+          ]
+        }
+      },
+      "per_stage": [
+        {
+          "group": 0,
+          "n_cells": 91,
+          "n_interfaces": 445,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 145,
+          "stage": 0
+        },
+        {
+          "group": 1,
+          "n_cells": 91,
+          "n_interfaces": 444,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 139,
+          "stage": 1
+        },
+        {
+          "group": 2,
+          "n_cells": 91,
+          "n_interfaces": 445,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 133,
+          "stage": 2
+        },
+        {
+          "group": 3,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 151,
+          "stage": 3
+        },
+        {
+          "group": 4,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 143,
+          "stage": 4
+        },
+        {
+          "group": 5,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 146,
+          "stage": 5
+        },
+        {
+          "group": 6,
+          "n_cells": 91,
+          "n_interfaces": 441,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 151,
+          "stage": 6
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 150,
+          "stage": 7
+        },
+        {
+          "group": 8,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 150,
+          "stage": 8
+        },
+        {
+          "group": 9,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 150,
+          "stage": 9
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 440,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 148,
+          "stage": 10
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 439,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 148,
+          "stage": 11
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 440,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 164,
+          "stage": 12
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 440,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 145,
+          "stage": 13
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 440,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 141,
+          "stage": 14
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 440,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 155,
+          "stage": 15
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 439,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 146,
+          "stage": 16
+        },
+        {
+          "group": 10,
+          "n_cells": 91,
+          "n_interfaces": 438,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 144,
+          "stage": 17
+        }
+      ],
+      "total_two_material_valence4": 0
+    },
+    "90LumenC_AllEqu_Base1B_pTEidown_ICMdown_mTo08_pTEmTEsplit14_pTEICMup_CN03+ICM+ap": {
+      "groups": {
+        "7": {
+          "constant": false,
+          "n_valence_ge4_values": [
+            146,
+            114,
+            111,
+            108,
+            110,
+            112,
+            113,
+            108,
+            108,
+            122,
+            106
+          ]
+        }
+      },
+      "per_stage": [
+        {
+          "group": 0,
+          "n_cells": 91,
+          "n_interfaces": 434,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 156,
+          "stage": 0
+        },
+        {
+          "group": 1,
+          "n_cells": 91,
+          "n_interfaces": 434,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 127,
+          "stage": 1
+        },
+        {
+          "group": 2,
+          "n_cells": 91,
+          "n_interfaces": 433,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 119,
+          "stage": 2
+        },
+        {
+          "group": 3,
+          "n_cells": 91,
+          "n_interfaces": 436,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 128,
+          "stage": 3
+        },
+        {
+          "group": 4,
+          "n_cells": 91,
+          "n_interfaces": 436,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 125,
+          "stage": 4
+        },
+        {
+          "group": 5,
+          "n_cells": 91,
+          "n_interfaces": 434,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 112,
+          "stage": 5
+        },
+        {
+          "group": 6,
+          "n_cells": 91,
+          "n_interfaces": 439,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 158,
+          "stage": 6
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 146,
+          "stage": 7
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 114,
+          "stage": 8
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 441,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 111,
+          "stage": 9
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 108,
+          "stage": 10
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 441,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 110,
+          "stage": 11
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 112,
+          "stage": 12
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 113,
+          "stage": 13
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 108,
+          "stage": 14
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 108,
+          "stage": 15
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 443,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 122,
+          "stage": 16
+        },
+        {
+          "group": 7,
+          "n_cells": 91,
+          "n_interfaces": 442,
+          "n_two_material_valence4": 0,
+          "n_valence_ge4": 106,
+          "stage": 17
+        }
+      ],
+      "total_two_material_valence4": 0
+    }
+  },
+  "c4_6_interface_set_attribution": {
+    "has_per_key": false,
+    "per_variant": {
+      "a1b": {
+        "invented_max": 1,
+        "invented_median": 0.0,
+        "invented_total": 4,
+        "missed_max": 4,
+        "missed_median": 0.0,
+        "missed_total": 8,
+        "n_cases": 42,
+        "n_cases_with_invented_interface": 4,
+        "n_cases_with_missed_interface": 5
+      },
+      "a3_a5": {
+        "invented_max": 1,
+        "invented_median": 0.0,
+        "invented_total": 7,
+        "missed_max": 5,
+        "missed_median": 0.0,
+        "missed_total": 6,
+        "n_cases": 42,
+        "n_cases_with_invented_interface": 7,
+        "n_cases_with_missed_interface": 2
+      },
+      "offset_excluded_linkcheck": {
+        "invented_max": 1,
+        "invented_median": 0.0,
+        "invented_total": 7,
+        "missed_max": 5,
+        "missed_median": 0.0,
+        "missed_total": 6,
+        "n_cases": 42,
+        "n_cases_with_invented_interface": 7,
+        "n_cases_with_missed_interface": 2
+      },
+      "v0_3": {
+        "invented_max": 1,
+        "invented_median": 0.0,
+        "invented_total": 5,
+        "missed_max": 4,
+        "missed_median": 0.0,
+        "missed_total": 7,
+        "n_cases": 42,
+        "n_cases_with_invented_interface": 5,
+        "n_cases_with_missed_interface": 2
+      }
+    }
+  }
+}

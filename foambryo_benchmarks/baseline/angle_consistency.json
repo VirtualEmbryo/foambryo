@@ -1,0 +1,206 @@
+{
+  "dataset": {
+    "000": {
+      "angles": {
+        "angle_deviation_max_deg": 0.8790001984318919,
+        "angle_deviation_median_deg": 0.18584677899627433,
+        "error_over_noise_equivalent": 0.021990829596302632,
+        "n_draws": 20,
+        "n_triple_lines": 21,
+        "wedge_sum_max_error_deg": 1.0177774980683254e-13,
+        "young_dupre_error_exact_neumann_angles": 5.5555864220608135e-06,
+        "young_dupre_error_iid_noise_of_same_size": 0.0013577383098599873,
+        "young_dupre_error_measured_angles": 2.9857791808502922e-05
+      },
+      "group": "equilibrium",
+      "resolution": {
+        "edges_per_triple_line_median": 13.599482427650216,
+        "edges_per_triple_line_min": 5.1820271083930125,
+        "interface_diameters_in_edges_median": 14.89438977161117,
+        "mean_edge_length": 0.029042641152917402
+      },
+      "young_dupre_error_via_public_api": 2.9857791808502922e-05
+    },
+    "008": {
+      "angles": {
+        "angle_deviation_max_deg": 0.3706815995266168,
+        "angle_deviation_median_deg": 0.02677499522066367,
+        "error_over_noise_equivalent": 0.07792686112837688,
+        "n_draws": 20,
+        "n_triple_lines": 3,
+        "wedge_sum_max_error_deg": 5.088887490341627e-14,
+        "young_dupre_error_exact_neumann_angles": 1.1930933724327889e-15,
+        "young_dupre_error_iid_noise_of_same_size": 0.0003468931295300646,
+        "young_dupre_error_measured_angles": 2.7032292731277398e-05
+      },
+      "group": "equilibrium",
+      "resolution": {
+        "edges_per_triple_line_median": 29.238599403452852,
+        "edges_per_triple_line_min": 21.832952383085313,
+        "interface_diameters_in_edges_median": 35.1390422635622,
+        "mean_edge_length": 0.029087485931633076
+      },
+      "young_dupre_error_via_public_api": 2.7032292731277398e-05
+    },
+    "011": {
+      "angles": {
+        "angle_deviation_max_deg": 3.433969472891419,
+        "angle_deviation_median_deg": 0.33277838829842254,
+        "error_over_noise_equivalent": 0.006747563628963788,
+        "n_draws": 20,
+        "n_triple_lines": 45,
+        "wedge_sum_max_error_deg": 1.0177774980683254e-13,
+        "young_dupre_error_exact_neumann_angles": 5.8823183404291175e-06,
+        "young_dupre_error_iid_noise_of_same_size": 0.002405683012674795,
+        "young_dupre_error_measured_angles": 1.6232499199140476e-05
+      },
+      "group": "equilibrium",
+      "resolution": {
+        "edges_per_triple_line_median": 9.967286745640399,
+        "edges_per_triple_line_min": 0.7295911196357355,
+        "interface_diameters_in_edges_median": 13.600845431955559,
+        "mean_edge_length": 0.028831127069791344
+      },
+      "young_dupre_error_via_public_api": 1.6232499199140476e-05
+    },
+    "031": {
+      "angles": {
+        "angle_deviation_max_deg": 3.397193327651392,
+        "angle_deviation_median_deg": 0.5937455854214128,
+        "error_over_noise_equivalent": 0.005154688561567042,
+        "n_draws": 20,
+        "n_triple_lines": 4,
+        "wedge_sum_max_error_deg": 0.0,
+        "young_dupre_error_exact_neumann_angles": 1.078586514867465e-15,
+        "young_dupre_error_iid_noise_of_same_size": 0.005136343612246973,
+        "young_dupre_error_measured_angles": 2.6476251666327418e-05
+      },
+      "group": "equilibrium",
+      "resolution": {
+        "edges_per_triple_line_median": 45.29142837735196,
+        "edges_per_triple_line_min": 25.925044210871732,
+        "interface_diameters_in_edges_median": 37.07143650219787,
+        "mean_edge_length": 0.029125988740739243
+      },
+      "young_dupre_error_via_public_api": 2.6476251666327418e-05
+    },
+    "044": {
+      "angles": {
+        "angle_deviation_max_deg": 4.9207159920411,
+        "angle_deviation_median_deg": 0.4026721713715366,
+        "error_over_noise_equivalent": 0.005248880139275387,
+        "n_draws": 20,
+        "n_triple_lines": 30,
+        "wedge_sum_max_error_deg": 1.0177774980683254e-13,
+        "young_dupre_error_exact_neumann_angles": 2.6308602479269113e-15,
+        "young_dupre_error_iid_noise_of_same_size": 0.0036719666580571236,
+        "young_dupre_error_measured_angles": 1.9273712863557453e-05
+      },
+      "group": "equilibrium",
+      "resolution": {
+        "edges_per_triple_line_median": 12.808013503063846,
+        "edges_per_triple_line_min": 0.4675334648062067,
+        "interface_diameters_in_edges_median": 14.456279376030572,
+        "mean_edge_length": 0.029199870706740915
+      },
+      "young_dupre_error_via_public_api": 1.9273712863557453e-05
+    }
+  },
+  "doublet": {
+    "16": {
+      "angles": {
+        "angle_deviation_max_deg": 7.7190881976897785,
+        "angle_deviation_median_deg": 3.8595440988449656,
+        "error_over_noise_equivalent": 1.6459729200616657,
+        "n_draws": 20,
+        "n_triple_lines": 1,
+        "wedge_sum_max_error_deg": 0.0,
+        "young_dupre_error_exact_neumann_angles": 2.220446049250313e-16,
+        "young_dupre_error_iid_noise_of_same_size": 0.025062519608584577,
+        "young_dupre_error_measured_angles": 0.04125222858424471
+      },
+      "resolution": {
+        "edges_per_triple_line_median": 32.775073374377,
+        "edges_per_triple_line_min": 32.775073374377,
+        "interface_diameters_in_edges_median": 18.475277169158893,
+        "mean_edge_length": 0.1913984115134303
+      }
+    },
+    "24": {
+      "angles": {
+        "angle_deviation_max_deg": 5.100535068950702,
+        "angle_deviation_median_deg": 2.5502675344754273,
+        "error_over_noise_equivalent": 1.6114461040439794,
+        "n_draws": 20,
+        "n_triple_lines": 1,
+        "wedge_sum_max_error_deg": 0.0,
+        "young_dupre_error_exact_neumann_angles": 2.220446049250313e-16,
+        "young_dupre_error_iid_noise_of_same_size": 0.016578255580468937,
+        "young_dupre_error_measured_angles": 0.026714965366992027
+      },
+      "resolution": {
+        "edges_per_triple_line_median": 49.21684836249671,
+        "edges_per_triple_line_min": 49.21684836249671,
+        "interface_diameters_in_edges_median": 27.756898386091514,
+        "mean_edge_length": 0.1275721752813028
+      }
+    },
+    "32": {
+      "angles": {
+        "angle_deviation_max_deg": 3.807399463689543,
+        "angle_deviation_median_deg": 1.9036997318448479,
+        "error_over_noise_equivalent": 1.5947000057773701,
+        "n_draws": 20,
+        "n_triple_lines": 1,
+        "wedge_sum_max_error_deg": 0.0,
+        "young_dupre_error_exact_neumann_angles": 2.220446049250313e-16,
+        "young_dupre_error_iid_noise_of_same_size": 0.012382097850557827,
+        "young_dupre_error_measured_angles": 0.01974573151382053
+      },
+      "resolution": {
+        "edges_per_triple_line_median": 65.66264333848848,
+        "edges_per_triple_line_min": 65.66264333848848,
+        "interface_diameters_in_edges_median": 37.03812221196369,
+        "mean_edge_length": 0.09565046416929834
+      }
+    },
+    "64": {
+      "angles": {
+        "angle_deviation_max_deg": 1.8896552288963724,
+        "angle_deviation_median_deg": 0.9448276144483007,
+        "error_over_noise_equivalent": 1.5702252848859337,
+        "n_draws": 20,
+        "n_triple_lines": 1,
+        "wedge_sum_max_error_deg": 0.0,
+        "young_dupre_error_exact_neumann_angles": 2.220446049250313e-16,
+        "young_dupre_error_iid_noise_of_same_size": 0.006150699213765376,
+        "young_dupre_error_measured_angles": 0.009657983425182426
+      },
+      "resolution": {
+        "edges_per_triple_line_median": 131.4556850006419,
+        "edges_per_triple_line_min": 131.4556850006419,
+        "interface_diameters_in_edges_median": 74.16189502017492,
+        "mean_edge_length": 0.04779218564670582
+      }
+    },
+    "8": {
+      "angles": {
+        "angle_deviation_max_deg": 15.78065431438165,
+        "angle_deviation_median_deg": 7.890327157190863,
+        "error_over_noise_equivalent": 1.7647210461226839,
+        "n_draws": 20,
+        "n_triple_lines": 1,
+        "wedge_sum_max_error_deg": 5.088887490341627e-14,
+        "young_dupre_error_exact_neumann_angles": 2.220446049250313e-16,
+        "young_dupre_error_iid_noise_of_same_size": 0.05089460270200419,
+        "young_dupre_error_measured_angles": 0.0898147765222792
+      },
+      "resolution": {
+        "edges_per_triple_line_median": 16.349967410924968,
+        "edges_per_triple_line_min": 16.349967410924968,
+        "interface_diameters_in_edges_median": 9.192470146362426,
+        "mean_edge_length": 0.3818289142487608
+      }
+    }
+  }
+}

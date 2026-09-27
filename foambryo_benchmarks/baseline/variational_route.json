@@ -1,0 +1,4909 @@
+{
+  "records": [
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999944447383469,
+        "max_relative_error_matched_gauge": 0.11280204007379255,
+        "mean_inferred_tension": 0.9999999997060959,
+        "median_relative_error_matched_gauge": 0.012864456779911066,
+        "p95_relative_error_matched_gauge": 0.04666833741257921,
+        "wall_time_s": 0.06828912487253547
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999944444444442,
+        "max_relative_error_matched_gauge": 0.11291423553385802,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.012807692905488369,
+        "p95_relative_error_matched_gauge": 0.04685024550868762,
+        "wall_time_s": 0.07554500014521182
+      },
+      "case": "000",
+      "conditioning": {
+        "cond_gram_mtm": 725270.5746644309,
+        "cond_operator_m": 851.6281903901883,
+        "cond_route_p_solved": 1005967.8520796829,
+        "cond_route_q_solved": 24.368683306390167,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 80.98418227955561,
+        "row_normalisation_divisor_max": 0.07793365811264588,
+        "row_normalisation_divisor_min": -0.018383982183670832
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.383290267011197e-05,
+        "relative_at_smallest_tension": 0.00013766519823788545,
+        "smallest_tension": 0.3632
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.0003690536704501479,
+        "median_abs": 0.00013777466423359197,
+        "median_relative_to_truth": 0.00017190740566166318
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000042,
+        "max_relative_error_matched_gauge": 0.10594431183813077,
+        "mean_inferred_tension": 0.9999999999999959,
+        "median_relative_error_matched_gauge": 0.0472179270636094,
+        "p95_relative_error_matched_gauge": 0.09270827214713764,
+        "wall_time_s": 0.06468108296394348
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.10594480644093296,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.04721738225089254,
+        "p95_relative_error_matched_gauge": 0.09270849762178177,
+        "wall_time_s": 0.07041458296589553
+      },
+      "case": "001",
+      "conditioning": {
+        "cond_gram_mtm": 554409870.6569794,
+        "cond_operator_m": 23545.909624796554,
+        "cond_route_p_solved": 167399953.9787654,
+        "cond_route_q_solved": 28.029404236309812,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 447.9869165558097,
+        "row_normalisation_divisor_max": 0.0633745482284501,
+        "row_normalisation_divisor_min": -0.04201467710742134
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 6.86907542244814e-05,
+        "relative_at_smallest_tension": 0.000150195253829979,
+        "smallest_tension": 0.3329
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 1.4125603038372958e-06,
+        "median_abs": 6.92292976528508e-07,
+        "median_relative_to_truth": 6.203667796013344e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000032224183,
+        "max_relative_error_matched_gauge": 0.04331399673053245,
+        "mean_inferred_tension": 0.9999999967775817,
+        "median_relative_error_matched_gauge": 0.010978275016387132,
+        "p95_relative_error_matched_gauge": 0.040080424559117915,
+        "wall_time_s": 0.05258958297781646
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.04335084008563814,
+        "mean_inferred_tension": 0.9999999999999999,
+        "median_relative_error_matched_gauge": 0.010988445867985228,
+        "p95_relative_error_matched_gauge": 0.040114600663872846,
+        "wall_time_s": 0.05301512498408556
+      },
+      "case": "002",
+      "conditioning": {
+        "cond_gram_mtm": 401580.0100114856,
+        "cond_operator_m": 633.7034085493304,
+        "cond_route_p_solved": 47029.744617303826,
+        "cond_route_q_solved": 9.836312840677426,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 10.54997116033445,
+        "row_normalisation_divisor_max": 0.06513670261009988,
+        "row_normalisation_divisor_min": -0.027812366176318545
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.420475643179206e-05,
+        "relative_at_smallest_tension": 9.182736455463729e-05,
+        "smallest_tension": 0.5445
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 2.0061206855048752e-05,
+        "median_abs": 1.347027585651972e-05,
+        "median_relative_to_truth": 1.017085159809704e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000004364256,
+        "max_relative_error_matched_gauge": 0.11168962766385376,
+        "mean_inferred_tension": 0.9999999995635745,
+        "median_relative_error_matched_gauge": 0.01897429884457223,
+        "p95_relative_error_matched_gauge": 0.10271460141008215,
+        "wall_time_s": 0.06649599992670119
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.11172352154946576,
+        "mean_inferred_tension": 0.9999999999999998,
+        "median_relative_error_matched_gauge": 0.018993272258816165,
+        "p95_relative_error_matched_gauge": 0.1027364409935735,
+        "wall_time_s": 0.06790608307346702
+      },
+      "case": "003",
+      "conditioning": {
+        "cond_gram_mtm": 721700.6036842748,
+        "cond_operator_m": 849.5296367474006,
+        "cond_route_p_solved": 553881.4262226268,
+        "cond_route_q_solved": 15.29572494208182,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 41.99788844808223,
+        "row_normalisation_divisor_max": 0.07565130769803244,
+        "row_normalisation_divisor_min": -0.022750448924298533
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.488531801247812e-05,
+        "relative_at_smallest_tension": 0.00014108352144469527,
+        "smallest_tension": 0.3544
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 8.134091275313615e-05,
+        "median_abs": 3.0394296734126414e-05,
+        "median_relative_to_truth": 3.23047020367213e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000001070373,
+        "max_relative_error_matched_gauge": 0.05838625999294525,
+        "mean_inferred_tension": 0.9999999998929627,
+        "median_relative_error_matched_gauge": 0.021300491885688527,
+        "p95_relative_error_matched_gauge": 0.03896176583627256,
+        "wall_time_s": 0.07427949993871152
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999999,
+        "max_relative_error_matched_gauge": 0.05844110476102782,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.021464686619196274,
+        "p95_relative_error_matched_gauge": 0.038895489605338,
+        "wall_time_s": 0.08703533397056162
+      },
+      "case": "004",
+      "conditioning": {
+        "cond_gram_mtm": 1757188.9294907374,
+        "cond_operator_m": 1325.590030710005,
+        "cond_route_p_solved": 9943851.78008909,
+        "cond_route_q_solved": 22.294262456172643,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 594.7202685252876,
+        "row_normalisation_divisor_max": 0.05334922312894204,
+        "row_normalisation_divisor_min": -0.026115383940923713
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.262603936427745e-05,
+        "relative_at_smallest_tension": 9.505703422053231e-05,
+        "smallest_tension": 0.526
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.00044184978924843854,
+        "median_abs": 2.7804722408875104e-05,
+        "median_relative_to_truth": 2.7798824123176298e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000560084265941,
+        "max_relative_error_matched_gauge": 0.027570834261221634,
+        "mean_inferred_tension": 0.999933995270227,
+        "median_relative_error_matched_gauge": 0.010537077509264114,
+        "p95_relative_error_matched_gauge": 0.02548471180724328,
+        "wall_time_s": 0.06476470897905529
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999900000000003,
+        "max_relative_error_matched_gauge": 0.06775262408184984,
+        "mean_inferred_tension": 0.9999999999999998,
+        "median_relative_error_matched_gauge": 0.015681942046817395,
+        "p95_relative_error_matched_gauge": 0.05032998565479565,
+        "wall_time_s": 0.06255816691555083
+      },
+      "case": "005",
+      "conditioning": {
+        "cond_gram_mtm": 2303.6338681665293,
+        "cond_operator_m": 47.996185975210906,
+        "cond_route_p_solved": 669.1221108974331,
+        "cond_route_q_solved": 12.74324763992949,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 24.31230724592635,
+        "row_normalisation_divisor_max": 0.06724548227110805,
+        "row_normalisation_divisor_min": -0.016348006357389526
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.9800796812749006e-05,
+        "relative_at_smallest_tension": 0.0001240079365079365,
+        "smallest_tension": 0.4032
+      },
+      "group": "non_equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.016201297655677294,
+        "median_abs": 0.004872320229353799,
+        "median_relative_to_truth": 0.0046985131876847094
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000023521,
+        "max_relative_error_matched_gauge": 0.0617553252297214,
+        "mean_inferred_tension": 0.9999999999976478,
+        "median_relative_error_matched_gauge": 0.0127346800903951,
+        "p95_relative_error_matched_gauge": 0.049700843793699795,
+        "wall_time_s": 0.06903862487524748
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999999,
+        "max_relative_error_matched_gauge": 0.06176220761012153,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.012731864955174484,
+        "p95_relative_error_matched_gauge": 0.04970654154073769,
+        "wall_time_s": 0.08109574997797608
+      },
+      "case": "006",
+      "conditioning": {
+        "cond_gram_mtm": 7620495.708715998,
+        "cond_operator_m": 2760.5245350208693,
+        "cond_route_p_solved": 46205505.07830775,
+        "cond_route_q_solved": 27.537277652373554,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 433.6582191336395,
+        "row_normalisation_divisor_max": 0.06239355810749786,
+        "row_normalisation_divisor_min": -0.0164828687899067
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.1101231539680106e-05,
+        "relative_at_smallest_tension": 0.00010936132983377078,
+        "smallest_tension": 0.4572
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 1.6752180456380827e-05,
+        "median_abs": 3.3249184060446524e-06,
+        "median_relative_to_truth": 4.400351234624298e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999923076923428,
+        "max_relative_error_matched_gauge": 0.12032606045767796,
+        "mean_inferred_tension": 0.9999999999999649,
+        "median_relative_error_matched_gauge": 0.037595924083188084,
+        "p95_relative_error_matched_gauge": 0.1191499835495426,
+        "wall_time_s": 0.0655459170229733
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999923076923075,
+        "max_relative_error_matched_gauge": 0.12033068752329239,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.03759658845207673,
+        "p95_relative_error_matched_gauge": 0.11915307694147201,
+        "wall_time_s": 0.07222058391198516
+      },
+      "case": "007",
+      "conditioning": {
+        "cond_gram_mtm": 163490653.53012237,
+        "cond_operator_m": 12786.346374666486,
+        "cond_route_p_solved": 341425907.6009461,
+        "cond_route_q_solved": 30.428856117007452,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 360.4735002953862,
+        "row_normalisation_divisor_max": 0.08254543693101671,
+        "row_normalisation_divisor_min": -0.018628473010053395
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.49195939268709e-05,
+        "relative_at_smallest_tension": 0.00017550017550017552,
+        "smallest_tension": 0.2849
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 1.79592140725493e-06,
+        "median_abs": 6.721238046125677e-07,
+        "median_relative_to_truth": 6.038305674356013e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000162,
+        "max_relative_error_matched_gauge": 0.08476751303069921,
+        "mean_inferred_tension": 0.9999999999999839,
+        "median_relative_error_matched_gauge": 0.051592313694408795,
+        "p95_relative_error_matched_gauge": 0.07864956558862883,
+        "wall_time_s": 0.05901312502101064
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.08476888856017491,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.051592585254471246,
+        "p95_relative_error_matched_gauge": 0.07865067226322713,
+        "wall_time_s": 0.06238912511616945
+      },
+      "case": "008",
+      "conditioning": {
+        "cond_gram_mtm": 160178440.6020445,
+        "cond_operator_m": 12656.162122817863,
+        "cond_route_p_solved": 621653199.7506795,
+        "cond_route_q_solved": 28.016155416210804,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 140.08289840679257,
+        "row_normalisation_divisor_max": 0.07892519752240541,
+        "row_normalisation_divisor_min": -0.021404462221935962
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.6849379245725e-05,
+        "relative_at_smallest_tension": 0.00011452130096197894,
+        "smallest_tension": 0.4366
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 7.042710915561301e-07,
+        "median_abs": 3.9000347584750017e-07,
+        "median_relative_to_truth": 3.5268842966395173e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000255,
+        "max_relative_error_matched_gauge": 0.03147765872828913,
+        "mean_inferred_tension": 0.9999999999999746,
+        "median_relative_error_matched_gauge": 0.01470631208518522,
+        "p95_relative_error_matched_gauge": 0.028462380876668216,
+        "wall_time_s": 0.05701566603966057
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.03147804736085398,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.014706362009843689,
+        "p95_relative_error_matched_gauge": 0.0284627028065046,
+        "wall_time_s": 0.05852812482044101
+      },
+      "case": "009",
+      "conditioning": {
+        "cond_gram_mtm": 221641087.77795386,
+        "cond_operator_m": 14887.615273483041,
+        "cond_route_p_solved": 65688026.21189029,
+        "cond_route_q_solved": 11.0505035820286,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 13.649228774375867,
+        "row_normalisation_divisor_max": 0.04658484035649996,
+        "row_normalisation_divisor_min": -0.009878682695554173
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.840505348758411e-05,
+        "relative_at_smallest_tension": 7.110352673492605e-05,
+        "smallest_tension": 0.7032
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 2.732864196053342e-07,
+        "median_abs": 7.853754668829538e-08,
+        "median_relative_to_truth": 6.619012990643414e-08
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.000007142926882,
+        "max_relative_error_matched_gauge": 0.05710032828288288,
+        "mean_inferred_tension": 0.9999999999302615,
+        "median_relative_error_matched_gauge": 0.019281139846275136,
+        "p95_relative_error_matched_gauge": 0.05636506519334179,
+        "wall_time_s": 0.07050050003454089
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000071428571427,
+        "max_relative_error_matched_gauge": 0.05709848889723125,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.019251049182274466,
+        "p95_relative_error_matched_gauge": 0.056409633130441866,
+        "wall_time_s": 0.07337966584600508
+      },
+      "case": "010",
+      "conditioning": {
+        "cond_gram_mtm": 1218051.8409446767,
+        "cond_operator_m": 1103.6538591913384,
+        "cond_route_p_solved": 843270.1367149141,
+        "cond_route_q_solved": 18.281771750566172,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 30.313635626996543,
+        "row_normalisation_divisor_max": 0.0742018258272173,
+        "row_normalisation_divisor_min": -0.01846418728094013
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.1313628899835795e-05,
+        "relative_at_smallest_tension": 9.940357852882704e-05,
+        "smallest_tension": 0.503
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 9.385810092177316e-05,
+        "median_abs": 3.9982788256121005e-05,
+        "median_relative_to_truth": 4.4961082024733446e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000058835144408,
+        "max_relative_error_matched_gauge": 0.11961226125527365,
+        "mean_inferred_tension": 0.9999999988385073,
+        "median_relative_error_matched_gauge": 0.03771720513629656,
+        "p95_relative_error_matched_gauge": 0.0981723398374269,
+        "wall_time_s": 0.07771399989724159
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.000005882352941,
+        "max_relative_error_matched_gauge": 0.11982841636427588,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.03757624004507626,
+        "p95_relative_error_matched_gauge": 0.09808390809046699,
+        "wall_time_s": 0.1023366660811007
+      },
+      "case": "011",
+      "conditioning": {
+        "cond_gram_mtm": 564231.2727356285,
+        "cond_operator_m": 751.1532950982461,
+        "cond_route_p_solved": 301732.7369469833,
+        "cond_route_q_solved": 27.678073419006857,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 56.369150422034686,
+        "row_normalisation_divisor_max": 0.047649146870395745,
+        "row_normalisation_divisor_min": -0.022049330602814745
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.345021112833396e-05,
+        "relative_at_smallest_tension": 0.00011671335200746966,
+        "smallest_tension": 0.4284
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          2,
+          10
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          10
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          4,
+          9
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          5,
+          9
+        ],
+        [
+          5,
+          10
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.00041470885010430614,
+        "median_abs": 9.697193486402078e-05,
+        "median_relative_to_truth": 0.00012190096120093794
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000062,
+        "max_relative_error_matched_gauge": 0.07148206917981689,
+        "mean_inferred_tension": 0.9999999999999939,
+        "median_relative_error_matched_gauge": 0.013934496814618709,
+        "p95_relative_error_matched_gauge": 0.06504776941253464,
+        "wall_time_s": 0.061275291023775935
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.07148224810855909,
+        "mean_inferred_tension": 0.9999999999999998,
+        "median_relative_error_matched_gauge": 0.013934085651315762,
+        "p95_relative_error_matched_gauge": 0.06504791487709999,
+        "wall_time_s": 0.06849779188632965
+      },
+      "case": "012",
+      "conditioning": {
+        "cond_gram_mtm": 283070942.0949886,
+        "cond_operator_m": 16824.71205834096,
+        "cond_route_p_solved": 66287707.53263446,
+        "cond_route_q_solved": 18.55381787618044,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 34.76176145439084,
+        "row_normalisation_divisor_max": 0.07304425366983507,
+        "row_normalisation_divisor_min": -0.05746009893165814
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.1250512505125055e-05,
+        "relative_at_smallest_tension": 7.960515841426525e-05,
+        "smallest_tension": 0.6281
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 6.769335934020404e-07,
+        "median_abs": 4.7338346220726635e-07,
+        "median_relative_to_truth": 4.2162711833926086e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.999994444794443,
+        "max_relative_error_matched_gauge": 0.09090352214645965,
+        "mean_inferred_tension": 0.9999999996499993,
+        "median_relative_error_matched_gauge": 0.03788918093542788,
+        "p95_relative_error_matched_gauge": 0.080150690157068,
+        "wall_time_s": 0.06534345890395343
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999944444444443,
+        "max_relative_error_matched_gauge": 0.09101593913051496,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.038011293033698636,
+        "p95_relative_error_matched_gauge": 0.08021571168479627,
+        "wall_time_s": 0.07453433307819068
+      },
+      "case": "013",
+      "conditioning": {
+        "cond_gram_mtm": 1088679.6948738322,
+        "cond_operator_m": 1043.3981478047,
+        "cond_route_p_solved": 1709103.823126328,
+        "cond_route_q_solved": 22.217313618783717,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 69.68722750546509,
+        "row_normalisation_divisor_max": 0.05601091689455996,
+        "row_normalisation_divisor_min": -0.01663069052157823
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.901240013723472e-05,
+        "relative_at_smallest_tension": 0.00010943313635368791,
+        "smallest_tension": 0.4569
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.00012996273976861872,
+        "median_abs": 6.882220826814889e-05,
+        "median_relative_to_truth": 6.690231944741538e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000197289,
+        "max_relative_error_matched_gauge": 0.027422878675943514,
+        "mean_inferred_tension": 0.9999999999802712,
+        "median_relative_error_matched_gauge": 0.023979876233728308,
+        "p95_relative_error_matched_gauge": 0.027078578431721994,
+        "wall_time_s": 0.052144707879051566
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.027426336608905904,
+        "mean_inferred_tension": 0.9999999999999999,
+        "median_relative_error_matched_gauge": 0.02398145597428912,
+        "p95_relative_error_matched_gauge": 0.027081848545444227,
+        "wall_time_s": 0.050709249917417765
+      },
+      "case": "014",
+      "conditioning": {
+        "cond_gram_mtm": 13086837.161857216,
+        "cond_operator_m": 3617.5733802918803,
+        "cond_route_p_solved": 2175210.633415127,
+        "cond_route_q_solved": 10.670413727647285,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 8.460081448896034,
+        "row_normalisation_divisor_max": 0.04637902866388757,
+        "row_normalisation_divisor_min": -0.008627868661872476
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.065856129685917e-05,
+        "relative_at_smallest_tension": 6.06354596167839e-05,
+        "smallest_tension": 0.8246
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 2.8514115207878277e-06,
+        "median_abs": 1.5592039335210472e-06,
+        "median_relative_to_truth": 1.579740560811598e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0006377106923077,
+        "max_relative_error_matched_gauge": 0.06738742098267864,
+        "mean_inferred_tension": 0.9993626957234438,
+        "median_relative_error_matched_gauge": 0.025427389229395983,
+        "p95_relative_error_matched_gauge": 0.06319141780735037,
+        "wall_time_s": 0.059162208111956716
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.05160400496561392,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.020526877193729278,
+        "p95_relative_error_matched_gauge": 0.04849629218842545,
+        "wall_time_s": 0.05496370792388916
+      },
+      "case": "015",
+      "conditioning": {
+        "cond_gram_mtm": 2071.0538256229434,
+        "cond_operator_m": 45.50883239133958,
+        "cond_route_p_solved": 204.10497291982085,
+        "cond_route_q_solved": 11.320161512014874,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 11.100434156985207,
+        "row_normalisation_divisor_max": 0.056618604071563064,
+        "row_normalisation_divisor_min": -0.02118584138497903
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.6287724495463804e-05,
+        "relative_at_smallest_tension": 7.458233890214797e-05,
+        "smallest_tension": 0.6704
+      },
+      "group": "non_equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.010581202097840192,
+        "median_abs": 0.0052935331009271724,
+        "median_relative_to_truth": 0.004900512035666702
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000883729,
+        "max_relative_error_matched_gauge": 0.07101253953933775,
+        "mean_inferred_tension": 0.9999999999116272,
+        "median_relative_error_matched_gauge": 0.007559580050337317,
+        "p95_relative_error_matched_gauge": 0.06149979699595577,
+        "wall_time_s": 0.06308387499302626
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.07101653783303276,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.007554207768327193,
+        "p95_relative_error_matched_gauge": 0.06150248453529224,
+        "wall_time_s": 0.06735408306121826
+      },
+      "case": "016",
+      "conditioning": {
+        "cond_gram_mtm": 2197444.1042944463,
+        "cond_operator_m": 1482.377854710483,
+        "cond_route_p_solved": 666232.211064712,
+        "cond_route_q_solved": 18.485773107595747,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 15.247004214743363,
+        "row_normalisation_divisor_max": 0.0637875418968789,
+        "row_normalisation_divisor_min": -0.02437403636801928
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.452860025083156e-05,
+        "relative_at_smallest_tension": 0.00012051096649795132,
+        "smallest_tension": 0.4149
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 2.0131170445414348e-05,
+        "median_abs": 3.5487422618829534e-06,
+        "median_relative_to_truth": 3.937209875692758e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000055556813863,
+        "max_relative_error_matched_gauge": 0.040728171878323415,
+        "mean_inferred_tension": 0.9999999998741702,
+        "median_relative_error_matched_gauge": 0.011880763937034518,
+        "p95_relative_error_matched_gauge": 0.03914707376674406,
+        "wall_time_s": 0.0693870410323143
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000055555555558,
+        "max_relative_error_matched_gauge": 0.0407029614632745,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.01188572403404917,
+        "p95_relative_error_matched_gauge": 0.039176920769165666,
+        "wall_time_s": 0.07612154097296298
+      },
+      "case": "017",
+      "conditioning": {
+        "cond_gram_mtm": 1704600.0364404425,
+        "cond_operator_m": 1305.6033228115448,
+        "cond_route_p_solved": 780194.3975148197,
+        "cond_route_q_solved": 16.46036474619196,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 23.94382001197375,
+        "row_normalisation_divisor_max": 0.04146184096623721,
+        "row_normalisation_divisor_min": -0.013295155719639743
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.317169139150317e-05,
+        "relative_at_smallest_tension": 0.00010421008753647353,
+        "smallest_tension": 0.4798
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 6.247703052908449e-05,
+        "median_abs": 1.8240423750925938e-05,
+        "median_relative_to_truth": 2.0013612271446833e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000391132787134,
+        "max_relative_error_matched_gauge": 0.030871073591223493,
+        "mean_inferred_tension": 0.999960888251075,
+        "median_relative_error_matched_gauge": 0.007348264577833269,
+        "p95_relative_error_matched_gauge": 0.024457510744304398,
+        "wall_time_s": 0.0681928750127554
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999996,
+        "max_relative_error_matched_gauge": 0.0509736155908048,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.012269215727481422,
+        "p95_relative_error_matched_gauge": 0.047171621980012186,
+        "wall_time_s": 0.07364254188723862
+      },
+      "case": "018",
+      "conditioning": {
+        "cond_gram_mtm": 2716.6603453074404,
+        "cond_operator_m": 52.12159192990501,
+        "cond_route_p_solved": 1864.2885955550166,
+        "cond_route_q_solved": 13.623526999373254,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 38.19926920177085,
+        "row_normalisation_divisor_max": 0.052999408194601805,
+        "row_normalisation_divisor_min": -0.015551809625620694
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.2224775433465635e-05,
+        "relative_at_smallest_tension": 9.496676163342831e-05,
+        "smallest_tension": 0.5265
+      },
+      "group": "non_equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.018345617173119,
+        "median_abs": 0.00773220727032925,
+        "median_relative_to_truth": 0.007967399451902179
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999666682794333,
+        "max_relative_error_matched_gauge": 0.022662857755303734,
+        "mean_inferred_tension": 0.9999999983871796,
+        "median_relative_error_matched_gauge": 0.018039808968120047,
+        "p95_relative_error_matched_gauge": 0.022200552876585365,
+        "wall_time_s": 0.052275291876867414
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999666666666666,
+        "max_relative_error_matched_gauge": 0.02267388352275185,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.018062079631226937,
+        "p95_relative_error_matched_gauge": 0.022212703133599358,
+        "wall_time_s": 0.05451220809482038
+      },
+      "case": "019",
+      "conditioning": {
+        "cond_gram_mtm": 1570571.5054507148,
+        "cond_operator_m": 1253.224443345993,
+        "cond_route_p_solved": 373478.5701322185,
+        "cond_route_q_solved": 9.680613974475861,
+        "row_normalisation_changes_sign": false,
+        "row_normalisation_divisor_abs_ratio": 6.301011740840441,
+        "row_normalisation_divisor_max": 0.0342123980889929,
+        "row_normalisation_divisor_min": 0.005429667408369181
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.96524329692155e-05,
+        "relative_at_smallest_tension": 5.5586436909394114e-05,
+        "smallest_tension": 0.8995
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 2.0032461464647433e-05,
+        "median_abs": 1.1102947820251785e-05,
+        "median_relative_to_truth": 1.1025767448114981e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000010316383,
+        "max_relative_error_matched_gauge": 0.07470148167672898,
+        "mean_inferred_tension": 0.9999999989683617,
+        "median_relative_error_matched_gauge": 0.024801620339902755,
+        "p95_relative_error_matched_gauge": 0.05152848969739541,
+        "wall_time_s": 0.0726016671396792
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.07493944724199925,
+        "mean_inferred_tension": 0.9999999999999998,
+        "median_relative_error_matched_gauge": 0.02480031744127342,
+        "p95_relative_error_matched_gauge": 0.0515574135743692,
+        "wall_time_s": 0.08080812497064471
+      },
+      "case": "020",
+      "conditioning": {
+        "cond_gram_mtm": 494477.9733371237,
+        "cond_operator_m": 703.1912779152334,
+        "cond_route_p_solved": 1277208.3015393403,
+        "cond_route_q_solved": 17.95445353687068,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 165.50624393612344,
+        "row_normalisation_divisor_max": 0.060219365868734165,
+        "row_normalisation_divisor_min": -0.04810156138402559
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.377500537750054e-05,
+        "relative_at_smallest_tension": 9.067827348567283e-05,
+        "smallest_tension": 0.5514
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.0003656327558827499,
+        "median_abs": 0.000130115012894505,
+        "median_relative_to_truth": 0.0001492386320675471
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000397586501988,
+        "max_relative_error_matched_gauge": 0.02507427299159585,
+        "mean_inferred_tension": 0.9999602429304886,
+        "median_relative_error_matched_gauge": 0.009633146938921748,
+        "p95_relative_error_matched_gauge": 0.023519924049574634,
+        "wall_time_s": 0.06465554190799594
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.03839855845636872,
+        "mean_inferred_tension": 0.9999999999999998,
+        "median_relative_error_matched_gauge": 0.011957636180255351,
+        "p95_relative_error_matched_gauge": 0.03252075961715667,
+        "wall_time_s": 0.07153100008144975
+      },
+      "case": "021",
+      "conditioning": {
+        "cond_gram_mtm": 2056.995700883229,
+        "cond_operator_m": 45.354114486817934,
+        "cond_route_p_solved": 12027.848414687704,
+        "cond_route_q_solved": 12.10935402445742,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 218.81159868197574,
+        "row_normalisation_divisor_max": 0.05941540708447582,
+        "row_normalisation_divisor_min": -0.017188181616226515
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.514672686230249e-05,
+        "relative_at_smallest_tension": 0.00010645092612305727,
+        "smallest_tension": 0.4697
+      },
+      "group": "non_equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.0218892875657255,
+        "median_abs": 0.0068080556993109775,
+        "median_relative_to_truth": 0.00830759209342717
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000071428572226,
+        "max_relative_error_matched_gauge": 0.441933693501935,
+        "mean_inferred_tension": 0.9999999999999203,
+        "median_relative_error_matched_gauge": 0.04582014675517749,
+        "p95_relative_error_matched_gauge": 0.24793263710212196,
+        "wall_time_s": 0.07290512486360967
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000071428571427,
+        "max_relative_error_matched_gauge": 0.4419341360552469,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.04582065596110371,
+        "p95_relative_error_matched_gauge": 0.24793374446344252,
+        "wall_time_s": 0.07037120894528925
+      },
+      "case": "022",
+      "conditioning": {
+        "cond_gram_mtm": 131306519.85698512,
+        "cond_operator_m": 11458.905698871937,
+        "cond_route_p_solved": 56731329.55990804,
+        "cond_route_q_solved": 20.108174968852047,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 63.76953067570633,
+        "row_normalisation_divisor_max": 0.08439475463944714,
+        "row_normalisation_divisor_min": -0.016190199439967235
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.961607249314416e-05,
+        "relative_at_smallest_tension": 0.0006711409395973155,
+        "smallest_tension": 0.0745
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 1.1975377589568126e-06,
+        "median_abs": 7.402669157108299e-07,
+        "median_relative_to_truth": 5.867950436519458e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999923077885868,
+        "max_relative_error_matched_gauge": 0.024616920958597237,
+        "mean_inferred_tension": 0.9999999999037202,
+        "median_relative_error_matched_gauge": 0.013815150421619304,
+        "p95_relative_error_matched_gauge": 0.023646661612960414,
+        "wall_time_s": 0.06485762493684888
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999923076923078,
+        "max_relative_error_matched_gauge": 0.024629238694616765,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.013861113863922752,
+        "p95_relative_error_matched_gauge": 0.023659167227948016,
+        "wall_time_s": 0.07152266707271338
+      },
+      "case": "023",
+      "conditioning": {
+        "cond_gram_mtm": 2267885.3513625367,
+        "cond_operator_m": 1505.949983081651,
+        "cond_route_p_solved": 1431529.3307268135,
+        "cond_route_q_solved": 19.624469549455515,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 27.10013190297989,
+        "row_normalisation_divisor_max": 0.03944696903650683,
+        "row_normalisation_divisor_min": -0.015798015745725372
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.505395287381634e-05,
+        "relative_at_smallest_tension": 7.700600646850455e-05,
+        "smallest_tension": 0.6493
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 4.70393359444099e-05,
+        "median_abs": 1.3764134144889084e-05,
+        "median_relative_to_truth": 1.4565656797054529e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000004208358,
+        "max_relative_error_matched_gauge": 0.053635463775460204,
+        "mean_inferred_tension": 0.9999999995791643,
+        "median_relative_error_matched_gauge": 0.03029328101759028,
+        "p95_relative_error_matched_gauge": 0.05130124549967321,
+        "wall_time_s": 0.05243279202841222
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.05365246356326968,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.03030041063680249,
+        "p95_relative_error_matched_gauge": 0.05131725827062296,
+        "wall_time_s": 0.05135358404368162
+      },
+      "case": "024",
+      "conditioning": {
+        "cond_gram_mtm": 1751795.0564022628,
+        "cond_operator_m": 1323.553949176281,
+        "cond_route_p_solved": 161826.0863683475,
+        "cond_route_q_solved": 10.751541535485178,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 14.850227750706738,
+        "row_normalisation_divisor_max": 0.07187613473843438,
+        "row_normalisation_divisor_min": -0.032652580167911435
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.8790007806401256e-05,
+        "relative_at_smallest_tension": 7.880220646178094e-05,
+        "smallest_tension": 0.6345
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 1.0786365365111905e-05,
+        "median_abs": 7.306433768672349e-06,
+        "median_relative_to_truth": 7.129619212209553e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000071429210953,
+        "max_relative_error_matched_gauge": 0.1199872564651136,
+        "mean_inferred_tension": 0.9999999999360482,
+        "median_relative_error_matched_gauge": 0.013659271487090069,
+        "p95_relative_error_matched_gauge": 0.08131005533927796,
+        "wall_time_s": 0.06388320797123015
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000071428571427,
+        "max_relative_error_matched_gauge": 0.11999920114221135,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.013655607303645435,
+        "p95_relative_error_matched_gauge": 0.08129463358787109,
+        "wall_time_s": 0.0710261669009924
+      },
+      "case": "025",
+      "conditioning": {
+        "cond_gram_mtm": 1361493.5765045516,
+        "cond_operator_m": 1166.8305689163444,
+        "cond_route_p_solved": 1849100.9184697936,
+        "cond_route_q_solved": 17.11254919035804,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 67.94558841572527,
+        "row_normalisation_divisor_max": 0.07853138041049977,
+        "row_normalisation_divisor_min": -0.02315968807912271
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.02815768302494e-05,
+        "relative_at_smallest_tension": 0.00016350555918901244,
+        "smallest_tension": 0.3058
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 3.361456302464205e-05,
+        "median_abs": 1.7684020588604188e-05,
+        "median_relative_to_truth": 1.783171527155529e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000166666673485,
+        "max_relative_error_matched_gauge": 0.07976518553095632,
+        "mean_inferred_tension": 0.9999999999993182,
+        "median_relative_error_matched_gauge": 0.028265130330917425,
+        "p95_relative_error_matched_gauge": 0.07227422948082203,
+        "wall_time_s": 0.06334575009532273
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000166666666666,
+        "max_relative_error_matched_gauge": 0.07977091771902031,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.028267097250104456,
+        "p95_relative_error_matched_gauge": 0.0722792388963174,
+        "wall_time_s": 0.06630291719920933
+      },
+      "case": "026",
+      "conditioning": {
+        "cond_gram_mtm": 50106872.19016419,
+        "cond_operator_m": 7078.620783969757,
+        "cond_route_p_solved": 8101670.303043941,
+        "cond_route_q_solved": 14.326118265030233,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 34.1353201560468,
+        "row_normalisation_divisor_max": 0.10080923010374218,
+        "row_normalisation_divisor_min": -0.033590908817308196
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.577916132576451e-05,
+        "relative_at_smallest_tension": 0.00012777919754663943,
+        "smallest_tension": 0.3913
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 3.0627080825906816e-06,
+        "median_abs": 2.491180635777468e-06,
+        "median_relative_to_truth": 2.425143084233906e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999900000000068,
+        "max_relative_error_matched_gauge": 0.22034052270586432,
+        "mean_inferred_tension": 0.9999999999999932,
+        "median_relative_error_matched_gauge": 0.004522700168819026,
+        "p95_relative_error_matched_gauge": 0.1314645845971802,
+        "wall_time_s": 0.06667524995282292
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.99999,
+        "max_relative_error_matched_gauge": 0.22034028616151533,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.0045221852524299725,
+        "p95_relative_error_matched_gauge": 0.13146422796927212,
+        "wall_time_s": 0.07209291588515043
+      },
+      "case": "027",
+      "conditioning": {
+        "cond_gram_mtm": 171461344.2830316,
+        "cond_operator_m": 13094.324828534258,
+        "cond_route_p_solved": 159313414.57364532,
+        "cond_route_q_solved": 17.31876897312655,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 57.30578348782495,
+        "row_normalisation_divisor_max": 0.09137890633876353,
+        "row_normalisation_divisor_min": -0.022585008754638345
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.949514947535142e-05,
+        "relative_at_smallest_tension": 0.0003201024327784891,
+        "smallest_tension": 0.1562
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 8.535121462927009e-07,
+        "median_abs": 3.701692576907334e-07,
+        "median_relative_to_truth": 4.5881896807119893e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000100003905743,
+        "max_relative_error_matched_gauge": 0.1099273906304958,
+        "mean_inferred_tension": 0.9999999996094298,
+        "median_relative_error_matched_gauge": 0.011389391403510304,
+        "p95_relative_error_matched_gauge": 0.07172513726666566,
+        "wall_time_s": 0.061301124980673194
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.00001,
+        "max_relative_error_matched_gauge": 0.11009037663977532,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.011391804178165113,
+        "p95_relative_error_matched_gauge": 0.07182515762877609,
+        "wall_time_s": 0.06526366691105068
+      },
+      "case": "028",
+      "conditioning": {
+        "cond_gram_mtm": 1107129.3098809978,
+        "cond_operator_m": 1052.2021240712095,
+        "cond_route_p_solved": 822462.1201973887,
+        "cond_route_q_solved": 12.847159412205128,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 56.209600060214854,
+        "row_normalisation_divisor_max": 0.07348851246296234,
+        "row_normalisation_divisor_min": -0.012157910238596508
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.731264193792582e-05,
+        "relative_at_smallest_tension": 0.0001575795776867318,
+        "smallest_tension": 0.3173
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 5.1715460744394814e-05,
+        "median_abs": 1.3196270045812142e-05,
+        "median_relative_to_truth": 1.1130533155072266e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000409,
+        "max_relative_error_matched_gauge": 0.01834207497679238,
+        "mean_inferred_tension": 0.9999999999999591,
+        "median_relative_error_matched_gauge": 0.010391514160574315,
+        "p95_relative_error_matched_gauge": 0.017547018895170574,
+        "wall_time_s": 0.05693554179742932
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.018342169585813466,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.010391548531264765,
+        "p95_relative_error_matched_gauge": 0.017547107480358596,
+        "wall_time_s": 0.05752745899371803
+      },
+      "case": "029",
+      "conditioning": {
+        "cond_gram_mtm": 115309914.99134555,
+        "cond_operator_m": 10738.245411616554,
+        "cond_route_p_solved": 13732255.9675657,
+        "cond_route_q_solved": 9.379109784415224,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 8.585791336364581,
+        "row_normalisation_divisor_max": 0.05207433980100588,
+        "row_normalisation_divisor_min": -0.025614652083258974
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.9173878835562556e-05,
+        "relative_at_smallest_tension": 6.845564074479737e-05,
+        "smallest_tension": 0.7304
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 6.910242900115549e-08,
+        "median_abs": 4.3059600995931646e-08,
+        "median_relative_to_truth": 3.437069045013701e-08
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999931034981778,
+        "max_relative_error_matched_gauge": 0.2775364940761554,
+        "mean_inferred_tension": 0.9999999999500976,
+        "median_relative_error_matched_gauge": 0.040180835167428645,
+        "p95_relative_error_matched_gauge": 0.17678365589903833,
+        "wall_time_s": 0.07914249994792044
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999931034482757,
+        "max_relative_error_matched_gauge": 0.27752674048195447,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.040169030718398044,
+        "p95_relative_error_matched_gauge": 0.1765759639642022,
+        "wall_time_s": 0.09068866702727973
+      },
+      "case": "030",
+      "conditioning": {
+        "cond_gram_mtm": 2913517.0818954883,
+        "cond_operator_m": 1706.9027745655033,
+        "cond_route_p_solved": 1204940.4234501442,
+        "cond_route_q_solved": 26.230095579595062,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 51.56964563793194,
+        "row_normalisation_divisor_max": 0.07012850709643256,
+        "row_normalisation_divisor_min": -0.028291453978354413
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.836057645807138e-05,
+        "relative_at_smallest_tension": 0.00029638411381149973,
+        "smallest_tension": 0.1687
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          3,
+          9
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          9
+        ],
+        [
+          5,
+          9
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 9.074325613100953e-05,
+        "median_abs": 4.0643671851747776e-05,
+        "median_relative_to_truth": 4.631237016136226e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000000067,
+        "max_relative_error_matched_gauge": 0.3510273482598621,
+        "mean_inferred_tension": 0.9999999999999934,
+        "median_relative_error_matched_gauge": 0.017643977286062613,
+        "p95_relative_error_matched_gauge": 0.2704064248621232,
+        "wall_time_s": 0.06303270813077688
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999998,
+        "max_relative_error_matched_gauge": 0.35102614736828003,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.01764411334362724,
+        "p95_relative_error_matched_gauge": 0.2704055989579318,
+        "wall_time_s": 0.06467991694808006
+      },
+      "case": "031",
+      "conditioning": {
+        "cond_gram_mtm": 315714556.90364563,
+        "cond_operator_m": 17768.358335726894,
+        "cond_route_p_solved": 51885513.84706628,
+        "cond_route_q_solved": 14.9937768643684,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 53.91948216737215,
+        "row_normalisation_divisor_max": 0.12126763296896534,
+        "row_normalisation_divisor_min": -0.035934607355476274
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.5593398075958605e-05,
+        "relative_at_smallest_tension": 0.00044523597506678544,
+        "smallest_tension": 0.1123
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 5.062059944549446e-07,
+        "median_abs": 2.943755663120662e-07,
+        "median_relative_to_truth": 2.76671287632612e-07
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000045455111086,
+        "max_relative_error_matched_gauge": 0.20064114780770012,
+        "mean_inferred_tension": 0.9999999999434371,
+        "median_relative_error_matched_gauge": 0.04843706795038153,
+        "p95_relative_error_matched_gauge": 0.10106398456551907,
+        "wall_time_s": 0.07833870896138251
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000045454545454,
+        "max_relative_error_matched_gauge": 0.2006927951772917,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.04833739490613989,
+        "p95_relative_error_matched_gauge": 0.1009715586084129,
+        "wall_time_s": 0.0878843329846859
+      },
+      "case": "032",
+      "conditioning": {
+        "cond_gram_mtm": 1731818.0481915935,
+        "cond_operator_m": 1315.9855805258806,
+        "cond_route_p_solved": 3073234.8928507757,
+        "cond_route_q_solved": 24.63444247781622,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 170.58859260375033,
+        "row_normalisation_divisor_max": 0.0783670849231901,
+        "row_normalisation_divisor_min": -0.03187195603930635
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.334186803221849e-05,
+        "relative_at_smallest_tension": 0.00017367141368530742,
+        "smallest_tension": 0.2879
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.00028276741076083134,
+        "median_abs": 0.00010522576814692153,
+        "median_relative_to_truth": 9.37945443160376e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000605522,
+        "max_relative_error_matched_gauge": 0.12525206029415792,
+        "mean_inferred_tension": 0.9999999999394479,
+        "median_relative_error_matched_gauge": 0.020300614235237144,
+        "p95_relative_error_matched_gauge": 0.04815325989251116,
+        "wall_time_s": 0.07414899999275804
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0,
+        "max_relative_error_matched_gauge": 0.12534151953425726,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.020291971438959427,
+        "p95_relative_error_matched_gauge": 0.04817066423669203,
+        "wall_time_s": 0.08442616718821228
+      },
+      "case": "033",
+      "conditioning": {
+        "cond_gram_mtm": 1763027.0208636343,
+        "cond_operator_m": 1327.7902774371462,
+        "cond_route_p_solved": 7588098.860587854,
+        "cond_route_q_solved": 20.193159584698062,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 396.2259817736925,
+        "row_normalisation_divisor_max": 0.06639936312055274,
+        "row_normalisation_divisor_min": -0.015381031140748902
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.617346365576902e-05,
+        "relative_at_smallest_tension": 0.00015743073047858944,
+        "smallest_tension": 0.3176
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 3.7326408117266396e-05,
+        "median_abs": 1.5488755209291938e-05,
+        "median_relative_to_truth": 1.6335200442053213e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000023993108,
+        "max_relative_error_matched_gauge": 0.02635563772737893,
+        "mean_inferred_tension": 0.9999999976006896,
+        "median_relative_error_matched_gauge": 0.016853964416145565,
+        "p95_relative_error_matched_gauge": 0.026160091287092034,
+        "wall_time_s": 0.055874374927952886
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.026420718070700858,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.016883175900580742,
+        "p95_relative_error_matched_gauge": 0.02622122353788487,
+        "wall_time_s": 0.060077917063608766
+      },
+      "case": "034",
+      "conditioning": {
+        "cond_gram_mtm": 629234.9354498461,
+        "cond_operator_m": 793.2433015533281,
+        "cond_route_p_solved": 236106.00678518377,
+        "cond_route_q_solved": 10.807928452238476,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 12.807184770449542,
+        "row_normalisation_divisor_max": 0.03869350573566394,
+        "row_normalisation_divisor_min": -0.008453475107123269
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.879238838741156e-05,
+        "relative_at_smallest_tension": 6.42921435000643e-05,
+        "smallest_tension": 0.7777
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 5.061298300146344e-05,
+        "median_abs": 3.44246916041957e-05,
+        "median_relative_to_truth": 2.9211484435175258e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000100002297334,
+        "max_relative_error_matched_gauge": 0.020388921708745688,
+        "mean_inferred_tension": 0.9999999997702689,
+        "median_relative_error_matched_gauge": 0.010926989988019092,
+        "p95_relative_error_matched_gauge": 0.020166702511642497,
+        "wall_time_s": 0.058639375027269125
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.00001,
+        "max_relative_error_matched_gauge": 0.020395285979469175,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.010938577871133646,
+        "p95_relative_error_matched_gauge": 0.02019266104587318,
+        "wall_time_s": 0.061224792152643204
+      },
+      "case": "035",
+      "conditioning": {
+        "cond_gram_mtm": 814214.4707672436,
+        "cond_operator_m": 902.3383349862246,
+        "cond_route_p_solved": 597703.1731563079,
+        "cond_route_q_solved": 12.557377813159636,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 20.833551982062406,
+        "row_normalisation_divisor_max": 0.052244437816714485,
+        "row_normalisation_divisor_min": -0.016103539000129476
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.817419789960497e-05,
+        "relative_at_smallest_tension": 6.700616456714018e-05,
+        "smallest_tension": 0.7462
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 3.8463385413245454e-05,
+        "median_abs": 1.3117361951309192e-05,
+        "median_relative_to_truth": 1.1324216730297876e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.000000000152368,
+        "max_relative_error_matched_gauge": 0.14053369413615102,
+        "mean_inferred_tension": 0.999999999847632,
+        "median_relative_error_matched_gauge": 0.023579498032103345,
+        "p95_relative_error_matched_gauge": 0.10200342846992291,
+        "wall_time_s": 0.0720438330899924
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999996,
+        "max_relative_error_matched_gauge": 0.14052901028383186,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.023512602841165454,
+        "p95_relative_error_matched_gauge": 0.10189111275331092,
+        "wall_time_s": 0.08307016687467694
+      },
+      "case": "036",
+      "conditioning": {
+        "cond_gram_mtm": 939422.2745756503,
+        "cond_operator_m": 969.23798654911,
+        "cond_route_p_solved": 2677643.7259616125,
+        "cond_route_q_solved": 22.275223583009666,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 280.43942735162017,
+        "row_normalisation_divisor_max": 0.08473663387009708,
+        "row_normalisation_divisor_min": -0.022716139601316958
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.052546483427647e-05,
+        "relative_at_smallest_tension": 0.00016572754391779913,
+        "smallest_tension": 0.3017
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.00011323074792657373,
+        "median_abs": 4.811438638718801e-05,
+        "median_relative_to_truth": 5.2218782708039956e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999941177678315,
+        "max_relative_error_matched_gauge": 0.05890803973405195,
+        "mean_inferred_tension": 0.9999999998792264,
+        "median_relative_error_matched_gauge": 0.02576166187240752,
+        "p95_relative_error_matched_gauge": 0.05338936033223117,
+        "wall_time_s": 0.07345808297395706
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999941176470586,
+        "max_relative_error_matched_gauge": 0.05887244044748442,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.025768019016248964,
+        "p95_relative_error_matched_gauge": 0.05341383823252716,
+        "wall_time_s": 0.07912575011141598
+      },
+      "case": "037",
+      "conditioning": {
+        "cond_gram_mtm": 2121369.906712246,
+        "cond_operator_m": 1456.4923297561872,
+        "cond_route_p_solved": 4810298.612316729,
+        "cond_route_q_solved": 18.382068235150793,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 61.899503727366195,
+        "row_normalisation_divisor_max": 0.043185195469597044,
+        "row_normalisation_divisor_min": -0.014298293974910982
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.468066491688539e-05,
+        "relative_at_smallest_tension": 7.639419404125287e-05,
+        "smallest_tension": 0.6545
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 4.575874954282355e-05,
+        "median_abs": 8.763322785432237e-06,
+        "median_relative_to_truth": 6.382826246812187e-06
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999904762663762,
+        "max_relative_error_matched_gauge": 0.1773442321770447,
+        "mean_inferred_tension": 0.9999999999240992,
+        "median_relative_error_matched_gauge": 0.03679596643333654,
+        "p95_relative_error_matched_gauge": 0.17069665990382338,
+        "wall_time_s": 0.07567258295603096
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999904761904761,
+        "max_relative_error_matched_gauge": 0.1773750441883936,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.03676347735957891,
+        "p95_relative_error_matched_gauge": 0.17057453550564355,
+        "wall_time_s": 0.08853979199193418
+      },
+      "case": "038",
+      "conditioning": {
+        "cond_gram_mtm": 2435262.7557158987,
+        "cond_operator_m": 1560.5328435622596,
+        "cond_route_p_solved": 4447876.065214874,
+        "cond_route_q_solved": 22.960908281123928,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 244.6936319834248,
+        "row_normalisation_divisor_max": 0.0806523462450929,
+        "row_normalisation_divisor_min": -0.02072319698759359
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.02108857200241e-05,
+        "relative_at_smallest_tension": 0.00023234200743494425,
+        "smallest_tension": 0.2152
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 5.995211672787937e-05,
+        "median_abs": 2.57669928228621e-05,
+        "median_relative_to_truth": 2.6550224443958886e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 0.9999956522704497,
+        "max_relative_error_matched_gauge": 0.37071252827116186,
+        "mean_inferred_tension": 0.9999999999034628,
+        "median_relative_error_matched_gauge": 0.01845456395295603,
+        "p95_relative_error_matched_gauge": 0.09429211753601999,
+        "wall_time_s": 0.0714478341396898
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.999995652173913,
+        "max_relative_error_matched_gauge": 0.37053145735891146,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.01840735051402085,
+        "p95_relative_error_matched_gauge": 0.09427279000033223,
+        "wall_time_s": 0.08076541707850993
+      },
+      "case": "039",
+      "conditioning": {
+        "cond_gram_mtm": 1784437.6793653779,
+        "cond_operator_m": 1335.8284617887514,
+        "cond_route_p_solved": 2486087.587941488,
+        "cond_route_q_solved": 20.177957943847034,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 189.67690506109633,
+        "row_normalisation_divisor_max": 0.09010334404912826,
+        "row_normalisation_divisor_min": -0.01900822403022174
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.768262445164982e-05,
+        "relative_at_smallest_tension": 0.0005643340857787811,
+        "smallest_tension": 0.0886
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 8.713278263006163e-05,
+        "median_abs": 3.0430745845189122e-05,
+        "median_relative_to_truth": 3.738465599435833e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000000830105,
+        "max_relative_error_matched_gauge": 0.10337957597694561,
+        "mean_inferred_tension": 0.9999999999169895,
+        "median_relative_error_matched_gauge": 0.02328587669902917,
+        "p95_relative_error_matched_gauge": 0.08851219440362726,
+        "wall_time_s": 0.07613183301873505
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000000000000002,
+        "max_relative_error_matched_gauge": 0.10340254982189236,
+        "mean_inferred_tension": 0.9999999999999999,
+        "median_relative_error_matched_gauge": 0.023186910651915194,
+        "p95_relative_error_matched_gauge": 0.08853203885023131,
+        "wall_time_s": 0.08707591705024242
+      },
+      "case": "040",
+      "conditioning": {
+        "cond_gram_mtm": 1489986.8947807585,
+        "cond_operator_m": 1220.6501934484425,
+        "cond_route_p_solved": 612631.8963948224,
+        "cond_route_q_solved": 18.611846563401933,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 39.8692699713225,
+        "row_normalisation_divisor_max": 0.03963329408770153,
+        "row_normalisation_divisor_min": -0.014083947694322118
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.1361068310220854e-05,
+        "relative_at_smallest_tension": 0.00015137753557372088,
+        "smallest_tension": 0.3303
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.00010939706847978847,
+        "median_abs": 1.256297526786021e-05,
+        "median_relative_to_truth": 1.8046971724124346e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000166669874526,
+        "max_relative_error_matched_gauge": 0.11029751868173097,
+        "mean_inferred_tension": 0.9999999996792194,
+        "median_relative_error_matched_gauge": 0.017129804825620022,
+        "p95_relative_error_matched_gauge": 0.09376028900128586,
+        "wall_time_s": 0.06818625004962087
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000166666666663,
+        "max_relative_error_matched_gauge": 0.11032425905618078,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.01715266021502415,
+        "p95_relative_error_matched_gauge": 0.09383045662509326,
+        "wall_time_s": 0.08364179194904864
+      },
+      "case": "041",
+      "conditioning": {
+        "cond_gram_mtm": 840009.4792722631,
+        "cond_operator_m": 916.52031033881,
+        "cond_route_p_solved": 2996126.44817257,
+        "cond_route_q_solved": 20.864040420877455,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 260.6983848159404,
+        "row_normalisation_divisor_max": 0.06937803230477585,
+        "row_normalisation_divisor_min": -0.018189112308083955
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.681428772061233e-05,
+        "relative_at_smallest_tension": 0.00016512549537648613,
+        "smallest_tension": 0.3028
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 0.00011784028744066255,
+        "median_abs": 7.829870472347844e-05,
+        "median_relative_to_truth": 7.061313019664122e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.000003225831194,
+        "max_relative_error_matched_gauge": 0.18199934749855876,
+        "mean_inferred_tension": 0.9999999999752578,
+        "median_relative_error_matched_gauge": 0.03734781667751484,
+        "p95_relative_error_matched_gauge": 0.09830068068725008,
+        "wall_time_s": 0.07584800012409687
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.000003225806452,
+        "max_relative_error_matched_gauge": 0.18202096864943437,
+        "mean_inferred_tension": 0.9999999999999999,
+        "median_relative_error_matched_gauge": 0.03735776354511149,
+        "p95_relative_error_matched_gauge": 0.0982541545536924,
+        "wall_time_s": 0.09245112515054643
+      },
+      "case": "042",
+      "conditioning": {
+        "cond_gram_mtm": 2892072.8798395176,
+        "cond_operator_m": 1700.60956125544,
+        "cond_route_p_solved": 28575441.300070472,
+        "cond_route_q_solved": 19.972667684470274,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 1324.5358253131758,
+        "row_normalisation_divisor_max": 0.0609009628285105,
+        "row_normalisation_divisor_min": -0.015067244450863352
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.103603143819537e-05,
+        "relative_at_smallest_tension": 0.0002303086135421465,
+        "smallest_tension": 0.2171
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          9
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "operator_better": false,
+      "route_shift": {
+        "max_abs": 4.058649234561784e-05,
+        "median_abs": 1.5602057834351868e-05,
+        "median_relative_to_truth": 1.6482638680346717e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000044563326118,
+        "max_relative_error_matched_gauge": 0.18581418720181778,
+        "mean_inferred_tension": 0.9999923178951706,
+        "median_relative_error_matched_gauge": 0.030115857730487586,
+        "p95_relative_error_matched_gauge": 0.09431990972886713,
+        "wall_time_s": 0.08397458284161985
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999967741935482,
+        "max_relative_error_matched_gauge": 0.185141335331219,
+        "mean_inferred_tension": 1.0000000000000002,
+        "median_relative_error_matched_gauge": 0.02267185906006929,
+        "p95_relative_error_matched_gauge": 0.09096196330891924,
+        "wall_time_s": 0.102378792129457
+      },
+      "case": "043",
+      "conditioning": {
+        "cond_gram_mtm": 3571.2245739453033,
+        "cond_operator_m": 59.75972367694861,
+        "cond_route_p_solved": 4743.645564103809,
+        "cond_route_q_solved": 25.58791830590329,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 128.06335939613092,
+        "row_normalisation_divisor_max": 0.07358951190831589,
+        "row_normalisation_divisor_min": -0.021091497294183997
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.006508460999299e-05,
+        "relative_at_smallest_tension": 0.0002853881278538813,
+        "smallest_tension": 0.1752
+      },
+      "group": "non_equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          3,
+          9
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          9
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          9
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.04688194445824445,
+        "median_abs": 0.01392657854549495,
+        "median_relative_to_truth": 0.014088464427352579
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000000004818506,
+        "max_relative_error_matched_gauge": 0.16678080414927746,
+        "mean_inferred_tension": 0.9999999995181493,
+        "median_relative_error_matched_gauge": 0.038280251702474816,
+        "p95_relative_error_matched_gauge": 0.09961400922085857,
+        "wall_time_s": 0.07068791682831943
+      },
+      "Operator": {
+        "gauge_matching_scale": 0.9999999999999999,
+        "max_relative_error_matched_gauge": 0.16696042424356475,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.03818623242988871,
+        "p95_relative_error_matched_gauge": 0.09970901009272831,
+        "wall_time_s": 0.08252054103650153
+      },
+      "case": "044",
+      "conditioning": {
+        "cond_gram_mtm": 595214.0513498648,
+        "cond_operator_m": 771.5011674272496,
+        "cond_route_p_solved": 456284.3013878596,
+        "cond_route_q_solved": 24.639413309546487,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 34.87227664844334,
+        "row_normalisation_divisor_max": 0.07579511093265032,
+        "row_normalisation_divisor_min": -0.020278129555643155
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 4.9236829148202856e-05,
+        "relative_at_smallest_tension": 0.0001895375284306293,
+        "smallest_tension": 0.2638
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.00024366224545580017,
+        "median_abs": 8.901004028982751e-05,
+        "median_relative_to_truth": 9.970008081568316e-05
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.0000045497452295,
+        "max_relative_error_matched_gauge": 0.1862781489376993,
+        "mean_inferred_tension": 0.9999999957093357,
+        "median_relative_error_matched_gauge": 0.0379791542704647,
+        "p95_relative_error_matched_gauge": 0.10640313584624302,
+        "wall_time_s": 0.0702354998793453
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000045454545456,
+        "max_relative_error_matched_gauge": 0.1852963599825594,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.036746468283384265,
+        "p95_relative_error_matched_gauge": 0.10591851875550726,
+        "wall_time_s": 0.08027987508103251
+      },
+      "case": "045",
+      "conditioning": {
+        "cond_gram_mtm": 205439.48590840324,
+        "cond_operator_m": 453.25432806414904,
+        "cond_route_p_solved": 97872.36876507617,
+        "cond_route_q_solved": 39.68221935817942,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 142.59300855592417,
+        "row_normalisation_divisor_max": 0.07455128307999041,
+        "row_normalisation_divisor_min": -0.018472149991832432
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.170363476552402e-05,
+        "relative_at_smallest_tension": 0.00021872265966754156,
+        "smallest_tension": 0.2286
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 0.006416778665888856,
+        "median_abs": 0.0008695112697908736,
+        "median_relative_to_truth": 0.001426316372861766
+      }
+    },
+    {
+      "Gram": {
+        "gauge_matching_scale": 1.000016666890599,
+        "max_relative_error_matched_gauge": 0.05087570910187535,
+        "mean_inferred_tension": 0.9999999997760712,
+        "median_relative_error_matched_gauge": 0.024543230506243373,
+        "p95_relative_error_matched_gauge": 0.0477236626951572,
+        "wall_time_s": 0.0592716250102967
+      },
+      "Operator": {
+        "gauge_matching_scale": 1.0000166666666666,
+        "max_relative_error_matched_gauge": 0.050869911642612495,
+        "mean_inferred_tension": 1.0,
+        "median_relative_error_matched_gauge": 0.024529409346676558,
+        "p95_relative_error_matched_gauge": 0.04771372806150972,
+        "wall_time_s": 0.059371666982769966
+      },
+      "case": "046",
+      "conditioning": {
+        "cond_gram_mtm": 1954988.7952556764,
+        "cond_operator_m": 1398.2091385339404,
+        "cond_route_p_solved": 254790.81091748553,
+        "cond_route_q_solved": 16.24529328537651,
+        "row_normalisation_changes_sign": true,
+        "row_normalisation_divisor_abs_ratio": 15.056654330619839,
+        "row_normalisation_divisor_max": 0.07084293279290081,
+        "row_normalisation_divisor_min": -0.0182981551110334
+      },
+      "ground_truth_precision_floor": {
+        "half_ulp_absolute": 5e-05,
+        "relative_at_median_tension": 5.159426271798576e-05,
+        "relative_at_smallest_tension": 0.00019275250578257516,
+        "smallest_tension": 0.2594
+      },
+      "group": "equilibrium",
+      "interfaces": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "operator_better": true,
+      "route_shift": {
+        "max_abs": 3.24501751873818e-05,
+        "median_abs": 9.145146960987116e-06,
+        "median_relative_to_truth": 1.4071808032111232e-05
+      }
+    }
+  ],
+  "summary": {
+    "equilibrium": {
+      "Gram": {
+        "median_of_case_medians": 0.020800553060462836,
+        "median_wall_time_s": 0.06658562493976206,
+        "worst_case": 0.051592313694408795
+      },
+      "Operator": {
+        "median_of_case_medians": 0.020878329029077852,
+        "median_wall_time_s": 0.0721567498985678,
+        "worst_case": 0.051592585254471246
+      },
+      "cases": [
+        "000",
+        "001",
+        "002",
+        "003",
+        "004",
+        "006",
+        "007",
+        "008",
+        "009",
+        "010",
+        "011",
+        "012",
+        "013",
+        "014",
+        "016",
+        "017",
+        "019",
+        "020",
+        "022",
+        "023",
+        "024",
+        "025",
+        "026",
+        "027",
+        "028",
+        "029",
+        "030",
+        "031",
+        "032",
+        "033",
+        "034",
+        "035",
+        "036",
+        "037",
+        "038",
+        "039",
+        "040",
+        "041",
+        "042",
+        "044",
+        "045",
+        "046"
+      ],
+      "cond_gram_mtm_median": 1760107.9751771858,
+      "cond_route_p_median": 2012155.7759424604,
+      "cond_route_q_median": 18.582832219791186,
+      "n_cases": 42,
+      "note": "cases at mechanical equilibrium \u2014 the usable dataset for accuracy claims (gate G1); includes 004, kept with its integrity flag",
+      "operator_better_on_n_cases": 20,
+      "ratio_operator_over_gram": 1.0037391298389489,
+      "route_shift_max_abs": 0.006416778665888856,
+      "route_shift_median_abs": 1.3617205000704402e-05,
+      "row_normalisation_changes_sign_on_n_cases": 41,
+      "row_normalisation_divisor_abs_ratio_range": [
+        6.301011740840441,
+        1324.5358253131758
+      ]
+    },
+    "non_equilibrium": {
+      "Gram": {
+        "median_of_case_medians": 0.010537077509264114,
+        "median_wall_time_s": 0.06476470897905529,
+        "worst_case": 0.030115857730487586
+      },
+      "Operator": {
+        "median_of_case_medians": 0.015681942046817395,
+        "median_wall_time_s": 0.07153100008144975,
+        "worst_case": 0.02267185906006929
+      },
+      "cases": [
+        "005",
+        "015",
+        "018",
+        "021",
+        "043"
+      ],
+      "cond_gram_mtm_median": 2303.6338681665293,
+      "cond_route_p_median": 1864.2885955550166,
+      "cond_route_q_median": 12.74324763992949,
+      "n_cases": 5,
+      "note": "5 cases NOT at mechanical equilibrium (005, 015, 018, 021, 043) \u2014 negative control, excluded from every accuracy claim (gate G1)",
+      "operator_better_on_n_cases": 2,
+      "ratio_operator_over_gram": 1.4882629489087422,
+      "route_shift_max_abs": 0.04688194445824445,
+      "route_shift_median_abs": 0.0068080556993109775,
+      "row_normalisation_changes_sign_on_n_cases": 5,
+      "row_normalisation_divisor_abs_ratio_range": [
+        11.100434156985207,
+        218.81159868197574
+      ]
+    }
+  }
+}
