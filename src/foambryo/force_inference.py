@@ -30,8 +30,21 @@ def infer_forces(
 
     Returns:
         tuple[dict[tuple[int, int], float], dict[int, float]]:
-            - map of interface id (label 1, label 2) -> tensions on this interface.
+            - map of interface id (label 1, label 2) -> tensions on this interface. An
+              interface with no triple line at all is undetermined and reported as
+              `float("nan")`; a fragmented triple-junction graph blends per-component
+              gauges that are not on the same scale (see
+              `foambryo.tension_inference.infer_tensions`'s return value, and
+              `foambryo.tension_inference.infer_tensions_by_junction_component` for the
+              per-component alternative).
             - map of cell id (0 = exterior) -> pressure in this cell.
+
+    Raises:
+        UndeterminedTensionError: if any inferred tension is not finite, which is the case on a
+            mesh with an interface that has no triple line. The pressure solve couples every
+            cell to every tension, so such a tension would make nearly every pressure non-finite;
+            pressures are refused instead. Call `infer_tensions` for the tensions alone, and
+            `infer_tensions_by_junction_component` to see which interfaces are undetermined.
     """
     dict_tensions = infer_tensions(mesh, mean_tension=mean_tension, mode=mode_tension)
     dict_pressures = infer_pressures(

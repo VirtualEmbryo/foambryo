@@ -1,0 +1,172 @@
+{
+  "case": "014",
+  "effective_tensions": {
+    "gauge_factors": {
+      "least_squares_scale": 0.9985254553977635,
+      "mean_gamma_eff": 1.0,
+      "mean_gamma_nominal": 1.0,
+      "mean_one_scale": 1.0,
+      "median_one_scale": 0.9991131438245424
+    },
+    "gauges": {
+      "least_squares": {
+        "abs_deviation_max": 0.023798318704053467,
+        "abs_deviation_median": 0.022179419500196418,
+        "abs_deviation_p95": 0.023636428783667764,
+        "iqr": 0.02566599475006459,
+        "max": 1.0224715496455892,
+        "median": 0.9976399069312923,
+        "min": 0.9711395601454602,
+        "n": 3,
+        "n_near_half": 0,
+        "n_near_one": 3,
+        "n_near_two": 0,
+        "per_key": {
+          "0,1": 0.9711395601454602,
+          "0,2": 0.9976399069312923,
+          "1,2": 1.0224715496455892
+        },
+        "spread": 0.05133198950012896
+      },
+      "mean_one": {
+        "abs_deviation_max": 0.023669697046620475,
+        "abs_deviation_median": 0.022615757167706363,
+        "abs_deviation_p95": 0.023564303058729065,
+        "iqr": 0.02570389629159764,
+        "max": 1.0239814559742861,
+        "median": 0.9991131438245424,
+        "min": 0.972573663391091,
+        "n": 3,
+        "n_near_half": 0,
+        "n_near_one": 3,
+        "n_near_two": 0,
+        "per_key": {
+          "0,1": 0.972573663391091,
+          "0,2": 0.9991131438245424,
+          "1,2": 1.0239814559742861
+        },
+        "spread": 0.05140779258319517
+      },
+      "median_one": {
+        "abs_deviation_max": 0.024566811320127724,
+        "abs_deviation_median": 0.02190388115769526,
+        "abs_deviation_p95": 0.024300518303884477,
+        "iqr": 0.025726712185173195,
+        "max": 1.0248903863425813,
+        "median": 1.0,
+        "min": 0.9734369619722347,
+        "n": 3,
+        "n_near_half": 0,
+        "n_near_one": 3,
+        "n_near_two": 0,
+        "per_key": {
+          "0,1": 0.9734369619722347,
+          "0,2": 1.0,
+          "1,2": 1.0248903863425813
+        },
+        "spread": 0.05145342437034661
+      }
+    }
+  },
+  "geometry": {
+    "bounding_box_max": [
+      1.149806479053865,
+      1.2695820740129966,
+      1.0715373550287501
+    ],
+    "bounding_box_min": [
+      -0.20166759712499951,
+      -0.15618040698967026,
+      -0.05259809163561923
+    ],
+    "interface_areas": {
+      "0,1": 3.1919300460212483,
+      "0,2": 1.885490544495354,
+      "1,2": 0.6651570362191406
+    },
+    "mean_edge_length": 0.02931307913297444,
+    "min_interface_area": 0.6651570362191406,
+    "min_interface_area_fraction": 0.11582900214049631,
+    "signed_cell_volumes": {
+      "0": -0.9999999999976227,
+      "1": 0.6329999999989965,
+      "2": 0.3669999999986262
+    },
+    "total_interface_area": 5.742577626735743,
+    "triple_line_lengths": {
+      "0,1,2": 2.8032648491109957
+    }
+  },
+  "integrity": {
+    "dangling_vertex_reference": false,
+    "edge_region_count_histogram": {
+      "2": 24840,
+      "3": 84
+    },
+    "intact": true,
+    "n_boundary_edges": 0,
+    "n_degenerate_faces": 0,
+    "n_duplicate_faces": 0,
+    "n_edges": 24924,
+    "n_faces": 16644,
+    "n_malformed_triple_line_edges": 0,
+    "n_nonmanifold_interface_edges": 0,
+    "n_quadjunction_edges": 0,
+    "n_triple_line_edges": 84,
+    "n_unreferenced_vertices": 0,
+    "n_vertices": 8283
+  },
+  "mask": {
+    "border_cells": [],
+    "border_labels": [
+      0
+    ],
+    "mask_labels": [
+      0,
+      1,
+      2
+    ],
+    "mask_shape": [
+      158,
+      200,
+      190
+    ],
+    "n_border_cells": 0
+  },
+  "n_cells": 2,
+  "n_interfaces": 3,
+  "n_junctions": 1,
+  "nominal_tensions": {
+    "0,1": 0.8246,
+    "0,2": 1.1884,
+    "1,2": 0.987
+  },
+  "residual_localisation": {
+    "fraction_interface_interior": 0.029198844408205832,
+    "fraction_quadjunction": 0.0,
+    "fraction_triple_line": 0.9708011555917941,
+    "interior_over_triple_line": 0.014040455333690584,
+    "interior_residual_per_vertex": 0.0005511239414617052,
+    "n_interface_interior_vertices": 8199,
+    "n_quadjunction_vertices": 0,
+    "n_triple_line_vertices": 84,
+    "top_1pct_vertex_share": 0.9604776506584205,
+    "triple_line_residual_per_vertex": 0.039252568977536165
+  },
+  "rho": 0.04348390126478051,
+  "rho_free": 0.0030206962635604268,
+  "sigma_gauge": 0.0011420662914147102,
+  "sigma_soft": 0.7821994226593801,
+  "singular_values": [
+    0.0011420662914147102,
+    0.78219942265938,
+    0.9893984360485977,
+    1.1788018345968616,
+    1.4211543647231264
+  ],
+  "soft_mode_fractions": [
+    0.4817759808534585,
+    0.0,
+    0.5182240191465421
+  ]
+}

@@ -1,13 +1,17 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+# torch is dev-only: it backs the autodiff gradient-check test, not the runtime path.
+dev = ["pytest>=8", "ruff>=0.6", "torch>=2.2.0"]
 
 
 [tool.ruff]
 # Enable the pycodestyle (`E`) and Pyflakes (`F`) rules by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
-select = [
+lint.select = [
     "E",
     "F",
     "W",
@@ -37,11 +41,11 @@ select = [
     "PERF",
     "RUF",
 ]
-ignore = ["S101", "ANN10"]
+lint.ignore = ["S101", "ANN10"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
+lint.fixable = ["ALL"]
+lint.unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -68,11 +72,21 @@ exclude = [
     "venv",
     "*.pyi",
 ]
-per-file-ignores = {}
 
 line-length = 120
 
 target-version = "py311"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Test functions are not a public API: they are collected and called by pytest, never
+# imported by a caller who needs a signature or a docstring. Their names are the
+# documentation (`test_doublet_predicted_angles_match_direct_point_classification`), and
+# their arguments are fixtures injected by pytest rather than parameters a caller
+# chooses. Annotating and docstringing all of them would add ~130 lines of noise without
+# adding information, so these four API-documentation rules are disabled here and *only*
+# here. Everything else in the configured rule set — including every correctness and
+# simplification rule — still applies to tests.
+"tests/**" = ["ANN001", "ANN201", "ANN202", "D103", "D104"]

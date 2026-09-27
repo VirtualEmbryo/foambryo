@@ -1,2 +1,3 @@
-Please download the data from this link if git-LFS is not working properly:
+Example data for the notebooks in Examples/ (segmentation masks and meshes, about 590 MB), not stored in
+the repository. Download them from this link and unzip the archive into this data/ folder:
 https://www.dropbox.com/scl/fo/fanim64m3dwy6in9dkq6v/AGnqONanjcZUMEtvFNFy9wo?rlkey=mx7ffzbea3v93rsqrkdr9ok1q&dl=1

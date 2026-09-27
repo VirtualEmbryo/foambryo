@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article in preferred-citation."
+type: software
+title: "foambryo"
+abstract: "Tension inference for 3D cell assemblies."
+authors:
+  - given-names: Sacha
+    family-names: Ichbiah
+  - given-names: Matthieu
+    family-names: Perez
+  - given-names: Hervé
+    family-names: Turlier
+version: 0.5.0
+license: GPL-3.0-or-later
+repository-code: "https://github.com/VirtualEmbryo/foambryo"
+url: "https://pypi.org/project/foambryo/"
+preferred-citation:
+  type: article
+  title: "Embryo mechanics cartography: inference of 3D force atlases from fluorescence microscopy"
+  authors:
+    - given-names: Sacha
+      family-names: Ichbiah
+    - given-names: Fabrice
+      family-names: Delbary
+    - given-names: Alex
+      family-names: McDougall
+    - given-names: Rémi
+      family-names: Dumollard
+    - given-names: Hervé
+      family-names: Turlier
+  journal: "Nature Methods"
+  volume: 20
+  issue: 12
+  start: 1989
+  end: 1999
+  year: 2023
+  month: 12
+  doi: "10.1038/s41592-023-02084-7"
+  issn: "1548-7105"

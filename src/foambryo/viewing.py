@@ -10,19 +10,15 @@ import networkx as nx
 import numpy as np
 import polyscope as ps
 from matplotlib import cm
-from numpy.linalg import eig
 from numpy.typing import NDArray
 
+from foambryo._cell_stress import cell_mean_stress_tensors, split_principal_stresses
 from foambryo.curvature import (
     compute_curvature_vertices_cotan,
     compute_gaussian_curvature_vertices,
     compute_sphere_fit_residues_dict,
 )
-from foambryo.dcel import (
-    compute_faces_areas,
-    compute_normal_faces,
-    update_graph_with_scattered_values,
-)
+from foambryo.dcel import update_graph_with_scattered_values
 from foambryo.force_inference import infer_forces
 from foambryo.plotting_utilities import (
     plot_trijunctions,
@@ -288,7 +284,6 @@ def plot_tension_inference(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -297,7 +292,6 @@ def plot_tension_inference(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -306,7 +300,6 @@ def plot_tension_inference(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -324,7 +317,6 @@ def plot_tension_inference(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -333,7 +325,6 @@ def plot_tension_inference(
             mesh,
             alpha=alpha,
             ps_mesh=ps_mesh,
-            clean_before=False,
             clean_after=False,
             show=False,
             scattered=scattered,
@@ -707,7 +698,7 @@ def _view_discrepancy_of_principal_curvatures(
 ###
 
 
-def _plot_stress_tensor(  # noqa: C901
+def _plot_stress_tensor(
     mesh: "DcelData",
     nx_graph: nx.Graph,
     dict_tensions: dict[tuple[int, int], float],
@@ -723,103 +714,37 @@ def _plot_stress_tensor(  # noqa: C901
         mesh (DcelData): Mesh to analyze.
         nx_graph (nx.Graph): Graph from mesh with data
         dict_tensions (dict[tuple[int, int], float]): Map interface to tension.
-        dict_pressure (dict[int, float]): Map cell to volume.
+        dict_pressure (dict[int, float]): Map cell to pressure.
         clean_before (bool, optional): Clean viewer before this function. Defaults to True.
         clean_after (bool, optional): Clean viewer after this function. Defaults to True.
         show (bool, optional): Show viewer. Defaults to True.
         lumen_materials (int | list[int], optional): Materials considered exterior. Defaults to 0.
     """
-    # Formula from G. K. BATCHELOR, J Fluid Mech, 1970
+    # Formula from G. K. BATCHELOR, J Fluid Mech, 1970 -- see foambryo._cell_stress.
     if isinstance(lumen_materials, int):
         lumen_materials = [lumen_materials]
 
     volumes = mesh.compute_volumes_cells()
+    cells = [c for c in mesh.materials[1 : mesh.n_materials] if nx_graph.nodes.data("volume")[c] > 0]
+    mean_stresses = cell_mean_stress_tensors(
+        mesh,
+        dict_tensions,
+        dict_pressure,
+        volumes,
+        cells,
+        lumen_materials=lumen_materials,
+    )
 
-    membrane_in_contact_with_cells = {key: [] for key in mesh.materials}
-
-    for key in dict_tensions:
-        a, b = key
-        membrane_in_contact_with_cells[a].append(key)
-        membrane_in_contact_with_cells[b].append(key)
-
-    dict_faces_membrane = dict(zip(dict_tensions.keys(), [[] for i in range(len(dict_tensions.keys()))], strict=False))
-    for i, face in enumerate(mesh.f):
-        a, b = face[3:]
-        dict_faces_membrane[(a, b)].append(i)
-
-    areas_triangles = compute_faces_areas(mesh.v, mesh.f)
-    normals_triangles = compute_normal_faces(mesh.v, mesh.f)
-    delta = np.identity(3)
-
-    def _tensor_normal_normal(x: NDArray[np.float64]) -> NDArray[np.float64]:
-        return delta - np.tensordot(x, x, axes=0)
-
-    tensordot_normal_triangles = np.array(list(map(_tensor_normal_normal, normals_triangles)))
-
-    for i in range(len(tensordot_normal_triangles)):
-        tensordot_normal_triangles[i] *= areas_triangles[i]
-
-    stress_vectors = np.zeros((mesh.n_materials - 1, 3, 3))
+    # Tension-positive convention: negative principal values are compressive, non-negative ones
+    # tensile. Column k of each array is the k-th principal axis scaled by its principal value.
     compression_vectors = np.zeros((mesh.n_materials - 1, 3, 3))
-    # compression_dots = []
-    delta = np.identity(3)
+    tension_vectors = np.zeros((mesh.n_materials - 1, 3, 3))
     for i in range(1, mesh.n_materials):
         c = mesh.materials[i]
-        if nx_graph.nodes.data("volume")[c] <= 0:
+        if c not in mean_stresses:
             continue
-        mean_stress = np.zeros((3, 3))
-        p = dict_pressure[c]
-        v = volumes[c]
-        mean_stress += -p * delta
-
-        for m in membrane_in_contact_with_cells[c]:
-            a, b = m
-
-            # lumen_materials is by default 0
-            # A membrane in contact with the exterior medium (i.e in lumen_materials) is counted once.
-            # A membrane in contact with another cell is counted twice, thus we have to divide its surface tension by 2
-            # See Supplementary Note for further explanations
-            t = dict_tensions[m] if a in lumen_materials or b in lumen_materials else dict_tensions[m] / 2
-
-            dotsum = 0
-            for nt in dict_faces_membrane[m]:
-                dotsum += tensordot_normal_triangles[nt]
-            if a == c:  # we need to reverse the triangle !
-                sign = -1
-            elif b == c:
-                sign = 1
-
-            mean_stress += t / (v) * sign * dotsum
-
-        vals, vects = eig(mean_stress)
-
-        stress_vectors[i - 1] = vects.copy()
-        compression_vectors[i - 1] = vects.copy()
-
-        if vals[0] < 0:
-            stress_vectors[i - 1, :, 0] *= vals[0]
-            compression_vectors[i - 1, :, 0] *= 0
-        else:
-            stress_vectors[i - 1, :, 0] *= 0
-            compression_vectors[i - 1, :, 0] *= vals[0]
-
-        if vals[1] < 0:
-            stress_vectors[i - 1, :, 1] *= vals[1]
-            compression_vectors[i - 1, :, 1] *= 0
-        else:
-            stress_vectors[i - 1, :, 1] *= 0
-            compression_vectors[i - 1, :, 2] *= vals[1]
-
-        if vals[2] < 0:
-            stress_vectors[i - 1, :, 2] *= vals[2]
-            compression_vectors[i - 1, :, 2] *= 0
-        else:
-            stress_vectors[i - 1, :, 2] *= 0
-            compression_vectors[i - 1, :, 2] *= vals[2]
-
-        # if vals[0]>0 or vals[1]>0 or vals[2]>0 :
-        #    compression_dots.append(G.nodes.data('centroid')[c])
-    # compression_dots = np.array(compression_dots)
+        axes = split_principal_stresses(mean_stresses[c])
+        compression_vectors[i - 1], tension_vectors[i - 1] = axes.compression, axes.tension
 
     ###
     # PLOTING
@@ -844,118 +769,25 @@ def _plot_stress_tensor(  # noqa: C901
 
     ps_cloud = ps.register_point_cloud("Stress tensors principal directions", centroids, color=(0, 0, 0), radius=0.004)
 
-    # For extensile stress:
-    vecs_0 = stress_vectors[:, :, 0][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
-    vecs_1 = stress_vectors[:, :, 1][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
-    vecs_2 = stress_vectors[:, :, 2][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
+    # Compression in red, tension in teal; each axis drawn both ways from the cell centroid.
+    has_volume = np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0
     radius = 0.005
     length = 0.1
-    color = (0.2, 0.5, 0.5)
-    # basic visualization
-
-    ps_cloud.add_vector_quantity(
-        "principal_axes_0",
-        vecs_0,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-    ps_cloud.add_vector_quantity(
-        "principal_axes_0_down",
-        -vecs_0,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-    ps_cloud.add_vector_quantity(
-        "principal_axes_1",
-        vecs_1,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-    ps_cloud.add_vector_quantity(
-        "principal_axes_1_down",
-        -vecs_1,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-    ps_cloud.add_vector_quantity(
-        "principal_axes_2",
-        vecs_2,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-    ps_cloud.add_vector_quantity(
-        "principal_axes_2_down",
-        -vecs_2,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=color,
-    )
-
-    # For compressive stress:
-    vecs_comp_0 = compression_vectors[:, :, 0][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
-    vecs_comp_1 = compression_vectors[:, :, 1][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
-    vecs_comp_2 = compression_vectors[:, :, 2][np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0]
-    red = (0.7, 0.0, 0.0)
-
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_0",
-        vecs_comp_0,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_0_down",
-        -vecs_comp_0,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_1",
-        vecs_comp_1,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_1_down",
-        -vecs_comp_1,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_2",
-        vecs_comp_2,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
-    ps_cloud.add_vector_quantity(
-        "compressive_stress__axes_2_down",
-        -vecs_comp_2,
-        enabled=True,
-        radius=radius,
-        length=length,
-        color=red,
-    )
+    for name, vectors, color in (
+        ("compression", compression_vectors, (0.7, 0.0, 0.0)),
+        ("tension", tension_vectors, (0.2, 0.5, 0.5)),
+    ):
+        for k in range(3):
+            axis = vectors[:, :, k][has_volume]
+            for suffix, sign in (("", 1), ("_down", -1)):
+                ps_cloud.add_vector_quantity(
+                    f"{name}_axes_{k}{suffix}",
+                    sign * axis,
+                    enabled=True,
+                    radius=radius,
+                    length=length,
+                    color=color,
+                )
 
     if show:
         ps.show()

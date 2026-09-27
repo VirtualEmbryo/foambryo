@@ -18,17 +18,17 @@ from numpy.typing import NDArray
 from foambryo.curvature import compute_curvature_interfaces
 from foambryo.geometry import (
     compute_angles_tri,
-    compute_area_derivative_autodiff,
+    compute_angles_tri_with_report,
     compute_area_derivative_dict,
     compute_areas_cells,
     compute_areas_faces,
     compute_areas_interfaces,
-    compute_length_derivative_autodiff,
+    compute_length_derivative_dict,
     compute_length_trijunctions,
     compute_volume_cells,
-    compute_volume_derivative_autodiff_dict,
     compute_volume_derivative_dict,
 )
+from foambryo.second_order_angle_reading import CHORD_READING, AngleReadingReport
 
 
 def separate_faces_dict(
@@ -369,15 +369,103 @@ def compute_scattered_arrays(mesh: "DcelData", coeff: float) -> None:
     mesh.cluster_idx_scattered = all_faces_cluster_idx
 
 
+def _normalize_label_order(triangles_and_labels: NDArray[np.int64]) -> NDArray[np.int64]:
+    """Enforce `material_1 < material_2` on every triangle, flipping winding to match.
+
+    Rows are `(v0, v1, v2, material_1, material_2)`. Where `material_1 > material_2`, the
+    two labels are swapped *and* the last two vertices are exchanged, which reverses the
+    triangle's right-hand-rule normal. Both halves are necessary: they are what keeps the
+    orientation convention below intact while making the label columns sorted.
+
+    Why the convention matters
+    --------------------------
+    `foambryo.geometry.compute_volume_cells` accumulates `+det([v0, v1, v2])` into
+    `material_1` and `-det(...)` into `material_2`. By the divergence theorem that sum is
+    a region's true enclosed volume only if every one of its faces is wound outward *from
+    that region* — so a triangle's normal must point away from `material_1` and into
+    `material_2`. `dw3d` produces meshes in exactly this form
+    (`labeled_mesh_from_labeled_graph` sorts the labels and then reorients the triangles
+    to match), and so do the `benchmarking-dataset` `.rec` ground-truth meshes.
+
+    What this function can and cannot detect
+    ----------------------------------------
+    Note carefully that sorted label columns are *not* the invariant, and checking
+    sortedness on the input would catch nothing: all 47 `benchmarking-dataset` `.rec`
+    meshes store roughly half their rows with `material_1 > material_2` and are perfectly
+    valid, because their winding is tied to the *first-listed* label. This function
+    normalises them correctly.
+
+    The real invariant is the tie between label order and winding, and it is not
+    checkable from the labels alone. A mesh from another source (Simba, a hand-written
+    file, a mesh whose label columns were sorted by a tool that did not reorient the
+    triangles) can present sorted labels with the opposite winding; this function will
+    then leave it untouched and `compute_volume_cells` will silently report *negative*
+    volumes for its cells. Measured on `benchmarking-dataset/000_mesh.rec`: sorting the
+    label columns without reorienting turns 5 of its 6 cell volumes negative, while
+    `material_1 < material_2` holds throughout.
+
+    That failure is geometric, so detecting it needs geometry, not a label comparison:
+    use `foambryo.validation.mesh_io.require_label_orientation_convention`, which checks
+    the sign of every bounded cell's volume. Run it once on any new mesh source.
+
+    Args:
+        triangles_and_labels (NDArray[np.int64]): Rows of
+            `(v0, v1, v2, material_1, material_2)`, shape `(nf, 5)`.
+
+    Returns:
+        NDArray[np.int64]: The same array, modified in place, with every row satisfying
+            `material_1 < material_2`.
+
+    Raises:
+        ValueError: If any triangle carries the same material on both sides. Such a face
+            is not an interface: it would contribute `+det` and `-det` to one and the same
+            cell (cancelling out) and would register a spurious `(m, m)` interface key.
+            Previously it was accepted silently.
+    """
+    degenerate = triangles_and_labels[:, 3] == triangles_and_labels[:, 4]
+    if degenerate.any():
+        n_degenerate = int(degenerate.sum())
+        first = int(np.flatnonzero(degenerate)[0])
+        material = int(triangles_and_labels[first, 3])
+        message = (
+            f"{n_degenerate} triangle(s) carry the same material on both sides "
+            f"(first: triangle {first}, material {material} on both sides). Such a face "
+            f"is not an interface and would cancel out of that cell's volume."
+        )
+        raise ValueError(message)
+
+    swap = triangles_and_labels[:, 3] > triangles_and_labels[:, 4]
+    triangles_and_labels[swap] = triangles_and_labels[swap][:, [0, 2, 1, 4, 3]]
+
+    # Post-condition: the rest of foambryo (compute_volume_cells, compute_areas_cells,
+    # every tension-matrix builder, every interface key) assumes this holds.
+    if not bool((triangles_and_labels[:, 3] < triangles_and_labels[:, 4]).all()):
+        message = "internal error: label normalisation failed to establish material_1 < material_2"
+        raise AssertionError(message)
+
+    return triangles_and_labels
+
+
 class DcelData:
     """DCEL Graph containing faces, half-edges and vertices."""
 
     def __init__(self, points: NDArray[np.float64], triangles: NDArray[np.int64], labels: NDArray[np.int64]) -> None:
-        """Take a multimaterial mesh as input."""
+        """Take a multimaterial mesh as input.
+
+        Args:
+            points (NDArray[np.float64]): Mesh vertex positions, shape `(nv, 3)`.
+            triangles (NDArray[np.int64]): Triangles as vertex indices, shape `(nf, 3)`.
+            labels (NDArray[np.int64]): The two materials each triangle separates, shape
+                `(nf, 2)`. A triangle's stored winding must put its right-hand-rule
+                normal on the *second* label's side, i.e. point outward from the first —
+                see `_normalize_label_order` for why, and for what goes wrong silently
+                when a mesh from an outside source violates it.
+
+        Raises:
+            ValueError: If any triangle carries the same material on both sides.
+        """
         triangles_and_labels = np.hstack((triangles, labels), dtype=np.int64)
-        for i, f in enumerate(triangles_and_labels):
-            if f[3] > f[4]:
-                triangles_and_labels[i] = triangles_and_labels[i, [0, 2, 1, 4, 3]]
+        triangles_and_labels = _normalize_label_order(triangles_and_labels)
         points, triangles_and_labels = remove_unused_vertices(points, triangles_and_labels)
         self.v = points
         self.f = triangles_and_labels
@@ -468,46 +556,118 @@ class DcelData:
     def compute_area_derivatives_slow(
         self,
     ) -> dict[tuple[int, int], NDArray[np.float64]]:
-        """Compute dict that maps interface (label1, label2) to array of change of area per point."""
+        """Compute dict that maps interface (label1, label2) to array of change of area per point.
+
+        Alias of :meth:`compute_area_derivatives`, kept for backward compatibility. Since the
+        sparse-assembly work both return the closed-form (float64) derivative — the ``_slow`` name predates that
+        being the default.
+        """
         return compute_area_derivative_dict(self)
 
     def compute_area_derivatives(self) -> dict[tuple[int, int], NDArray[np.float64]]:
-        """Compute dict that maps interface (label1, label2) to array of change of area per point."""
-        return compute_area_derivative_autodiff(self)
+        """Compute dict that maps interface (label1, label2) to array of change of area per point.
+
+        Closed-form float64 derivative (the current default; the former float32 autodiff path
+        lives in :mod:`foambryo._autodiff_derivatives` as a gradient check). The variational
+        solve itself uses the sparse operator :func:`foambryo.geometry.compute_area_derivative_sparse`;
+        this dict form is kept for callers that want a per-interface field (e.g. viewing).
+        """
+        return compute_area_derivative_dict(self)
 
     def compute_volumes_cells(self) -> dict[int, float]:
         """Compute map cell number -> volume."""
         return compute_volume_cells(self)
 
     def compute_volume_derivatives_slow(self) -> dict[int, NDArray[np.float64]]:
-        """Compute map cell number -> derivative of volume wrt to each point."""
+        """Compute map cell number -> derivative of volume wrt to each point.
+
+        Alias of :meth:`compute_volume_derivatives`, kept for backward compatibility (see
+        :meth:`compute_area_derivatives_slow`).
+        """
         return compute_volume_derivative_dict(self)
 
     def compute_volume_derivatives(self) -> dict[int, NDArray[np.float64]]:
-        """Compute map cell number -> derivative of volume wrt to each point."""
-        return compute_volume_derivative_autodiff_dict(self)
+        """Compute map cell number -> derivative of volume wrt to each point.
 
-    def compute_length_derivatives(self) -> dict[tuple[int, int], NDArray[np.float64]]:
-        """Compute map trijunction edge (V1, V2) -> change of length wrt to points."""
-        return compute_length_derivative_autodiff(self)
+        Closed-form float64 derivative (the current default; see :meth:`compute_area_derivatives`).
+        """
+        return compute_volume_derivative_dict(self)
+
+    def compute_length_derivatives(self) -> dict[tuple[int, int, int], NDArray[np.float64]]:
+        """Compute map trijunction (id reg 1, id reg 2, id reg 3) -> change of length wrt points.
+
+        Closed-form float64 derivative (the current default; the former autodiff path lives in
+        :mod:`foambryo._autodiff_derivatives`).
+        """
+        return compute_length_derivative_dict(self)
 
     def compute_angles_junctions(
         self,
         unique: bool = True,
+        *,
+        reading: str = CHORD_READING,
     ) -> dict[tuple[int, int, int], float]:
-        """Compute a map trijunction (id reg 1, id reg 2, id reg 3) to mean angle in radians."""
-        return compute_angles_tri(self, unique=unique)[0]
+        """Compute a map trijunction (id reg 1, id reg 2, id reg 3) to mean angle in radians.
+
+        Args:
+            unique (bool, optional): Count each geometric edge once. Defaults to True.
+            reading (str, optional): angle reading, one of
+                `foambryo.second_order_angle_reading.ANGLE_READINGS`. Keyword-only.
+                Defaults to `"chord"`. See :func:`foambryo.geometry.compute_angles_tri`.
+
+        Returns:
+            dict[tuple[int, int, int], float]: mean angle in radians, by wedge key.
+        """
+        return compute_angles_tri(self, unique=unique, reading=reading)[0]
 
     def compute_angles_tri(
         self,
         unique: bool = True,
+        *,
+        reading: str = CHORD_READING,
     ) -> tuple[
         dict[tuple[int, int, int], float],
         dict[tuple[int, int, int], float],
         dict[tuple[int, int, int], float],
     ]:
-        """Compute three maps trijunction (id reg 1, id reg 2, id reg 3) to mean angle, mean angle (deg), length."""
-        return compute_angles_tri(self, unique=unique)
+        """Compute three maps trijunction (id reg 1, id reg 2, id reg 3) to mean angle, mean angle (deg), length.
+
+        Args:
+            unique (bool, optional): Count each geometric edge once. Defaults to True.
+            reading (str, optional): angle reading, one of
+                `foambryo.second_order_angle_reading.ANGLE_READINGS`. Keyword-only.
+                Defaults to `"chord"`, which is bit-identical to the historical behaviour.
+                See :func:`foambryo.geometry.compute_angles_tri`.
+
+        Returns:
+            tuple[dict, dict, dict]: mean angle (rad), mean angle (deg) and accumulated length.
+        """
+        return compute_angles_tri(self, unique=unique, reading=reading)
+
+    def compute_angles_tri_with_report(
+        self,
+        unique: bool = True,
+        *,
+        reading: str = CHORD_READING,
+    ) -> tuple[
+        dict[tuple[int, int, int], float],
+        dict[tuple[int, int, int], float],
+        dict[tuple[int, int, int], float],
+        AngleReadingReport,
+    ]:
+        """:meth:`compute_angles_tri`, plus the reading's coverage report.
+
+        Args:
+            unique (bool, optional): Count each geometric edge once. Defaults to True.
+            reading (str, optional): angle reading, one of
+                `foambryo.second_order_angle_reading.ANGLE_READINGS`. Keyword-only.
+                Defaults to `"chord"`.
+
+        Returns:
+            tuple[dict, dict, dict, AngleReadingReport]: mean angle (rad), mean angle (deg),
+                accumulated length, and which trijunction faces the reading actually covered.
+        """
+        return compute_angles_tri_with_report(self, unique=unique, reading=reading)
 
     def compute_curvatures_interfaces(self, weighted: bool = True) -> dict[tuple[int, int], float]:
         """Compute the mean curvature on the interfaces of the mesh."""
