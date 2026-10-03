@@ -5,7 +5,7 @@
 
 **foambryo** is a python package developed to infer relative surface tensions and cell pressures from the 3D geometry of cells in foam-like clusters, such as early-embryos, tissues or organoids.
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.0/Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.1/Images_github_repo/Window_76_cells.png" alt="drawing" width="650"/>
 
 It was developed by Sacha Ichbiah during his PhD in [Turlier Lab](https://www.turlierlab.com), and is maintained by Matthieu Perez and Hervé Turlier. For support, please open an issue.
 If you use our library in your work please cite the [article](https://doi.org/10.1038/s41592-023-02084-7):
@@ -16,8 +16,8 @@ If you are interested in inferring tensions in 2D, please look at the [foambryo2
 ### What's new in 0.5.0
 
 0.5.0 is the first release on PyPI since 0.3.5. In short (the full list is in the
-[CHANGELOG](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/CHANGELOG.md), and what can mislead you is in the
-[release notes](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/RELEASE_NOTES.md)):
+[CHANGELOG](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/CHANGELOG.md), and what can mislead you is in the
+[release notes](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/RELEASE_NOTES.md)):
 
 - **Meshes reconstructed from a mask are different**: delaunay-watershed 0.5.0 moves every mesh's
   trijunction vertices onto the junction curves the mask gives, and `dcel_mesh_from_segmentation_mask`
@@ -97,12 +97,12 @@ plot_force_inference(mesh)
 plot_tension_inference(mesh)
 ```
 
-See [the introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/Examples/Example.ipynb) for further details.
+See [the introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/Examples/Example.ipynb) for further details.
 
 ### Physical model
 We consider a tissue constituted of cells i. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.0/Images_github_repo/Equilibrium.png" alt="drawing" width="175"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.1/Images_github_repo/Equilibrium.png" alt="drawing" width="175"/>
 
 They minimize, under conservation of volume, an energy
 $\mathcal{E}=\sum_{i<j}\gamma_{ij}A_{ij}$, where $A_{ij}$ is the area of the interface between the cells i and j.
@@ -116,7 +116,7 @@ The two main laws underlying mechanical force balance are:
 
 ### API and Documentation
 
-See [the introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/Examples/Example.ipynb) to understand the API.
+See [the introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/Examples/Example.ipynb) to understand the API.
 
 #### Infer tensions and pressures
 
@@ -244,7 +244,7 @@ any mesh whose elements are already much smaller than the interface's radius of 
    cannot repair a mesh whose junction line is in the wrong place.
 
 A runnable side-by-side comparison on one benchmark case:
-[`Examples/second_order_angle_reading.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/Examples/second_order_angle_reading.py).
+[`Examples/second_order_angle_reading.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/Examples/second_order_angle_reading.py).
 
 #### Declining a folded trijunction observation: `refusal`
 
@@ -307,7 +307,7 @@ each surviving one belongs to.
 a non-default `angle_reading`.
 
 A runnable comparison of the three policies on one benchmark case:
-[`Examples/refusing_folded_trijunction_wedges.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.0/Examples/refusing_folded_trijunction_wedges.py).
+[`Examples/refusing_folded_trijunction_wedges.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.5.1/Examples/refusing_folded_trijunction_wedges.py).
 
 And also to compute pressures:
 - `Variational` (variational formulation, see our [article](https://doi.org/10.1038/s41592-023-02084-7)),
@@ -320,13 +320,13 @@ And also to compute pressures:
 *Phallusia mammillata* is a solitary marine tunicate of the ascidian class known for its stereotypical development. As the embryo develops freely, without any constraint, we can do a full force inference and infer its tensions, pressures and stresses.
 We use segmentation data from [Guignard, L., Fiúza, U. et al.](https://www.science.org/doi/10.1126/science.aar5663)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.0/Images_github_repo/Ascidians.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.1/Images_github_repo/Ascidians.png" alt="drawing" width="900"/>
 
 
 #### *C. elegans* early embryo
 *Caenorhabditis elegans* is a widely studied model organism, with one of the most reproducible development. The embryo of this earthworm is developing within a shell. As the shell shape and mechanics is unknown, the pressures are not accessible. However we can still use Young-Dupré relationships to retrieve surface tensions at cell membranes. Here we use segmentation data from [Cao, J., Guan, G., Ho, V.W.S. et al.](https://doi.org/10.1038/s41467-020-19863-x)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.0/Images_github_repo/CElegans.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.1/Images_github_repo/CElegans.png" alt="drawing" width="900"/>
 
 #### Plotting scalar quantities on surface meshes
 
@@ -334,12 +334,12 @@ Gaussian and mean curvatures can be plotted on our meshes, and may be useful to 
 We can also plot the vertex area and volume derivatives, that appear in our variational formulas, the difference between the two principal curvatures and the residual of the best sphere-fit that can be used to detect non-spherical constant-mean-curvature surfaces.
 They can be obtained by putting the option `scalar_quantities = True` when viewing the forces. 
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.0/Images_github_repo/scalar_quantities.png" alt="drawing" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.5.1/Images_github_repo/scalar_quantities.png" alt="drawing" width="900"/>
 
 - Gaussian Curvature is computed using the angle defect formula.
 - Mean Curvature is computed using the cotan formula.
 
-The notebooks in the [`Examples`](https://github.com/VirtualEmbryo/foambryo/tree/v0.5.0/Examples) folder show how to run the inference and the viewers.
+The notebooks in the [`Examples`](https://github.com/VirtualEmbryo/foambryo/tree/v0.5.1/Examples) folder show how to run the inference and the viewers.
 
 ---
 

@@ -504,7 +504,7 @@ def check_label_orientation_convention(
     label columns are neither necessary nor sufficient — so this checks its geometric
     consequence instead: every bounded cell must enclose a positive volume.
 
-    Use this once on any mesh from a source other than `dw3d` (Simba, a hand-written
+    Use this once on any mesh from a source other than `dw3d` (a simulation, a hand-written
     `.rec`, or a mesh whose label columns were sorted by a tool that did not reorient the
     triangles). Without it the failure is silent: `compute_volume_cells` simply returns
     negative volumes and everything downstream consumes them.

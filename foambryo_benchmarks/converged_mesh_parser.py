@@ -1,4 +1,5 @@
-"""Parser for the Simba/LosTopos `multitensions.opt` optimisation-stage tension files.
+"""Parser for the `multitensions.opt` optimisation-stage tension files of the simulator that
+generated the dataset.
 
 Used by the converged-mesh-cohort benchmark (`foambryo_benchmarks/run_converged_cohort.py`).
 Semantics are **fixed by the generator's C++ source**, not inferred, and are hand-verified

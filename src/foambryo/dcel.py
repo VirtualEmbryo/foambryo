@@ -396,7 +396,7 @@ def _normalize_label_order(triangles_and_labels: NDArray[np.int64]) -> NDArray[n
     normalises them correctly.
 
     The real invariant is the tie between label order and winding, and it is not
-    checkable from the labels alone. A mesh from another source (Simba, a hand-written
+    checkable from the labels alone. A mesh from another source (a simulation, a hand-written
     file, a mesh whose label columns were sorted by a tool that did not reorient the
     triangles) can present sorted labels with the opposite winding; this function will
     then leave it untouched and `compute_volume_cells` will silently report *negative*

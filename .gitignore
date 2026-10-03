@@ -19,8 +19,6 @@ imgui.ini
 .polyscope.ini
 __pycache__/
 .pytest_cache/
-AGENTS.md
-CLAUDE.md
 scratch_*.py
 *_scratch.py
 # Generated dw3d-variant-comparison artefacts (meshes, PNGs): regenerable, large, not a

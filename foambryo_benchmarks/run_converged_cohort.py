@@ -2,7 +2,7 @@
 r"""The converged-mesh-cohort work: tensions-only benchmark, ground-truth meshes.
 
 `converged-meshes/` holds 4 folders x 18 optimisation-stage meshes (90-165 cells) from the
-same LosTopos/Simba generator as `benchmarking-dataset`, but run with `conjugate_gradient`
+same simulator that generated `benchmarking-dataset`, but run with `conjugate_gradient`
 at `optimization-tolerance 1e-9` (`benchmarking-dataset`'s 47 cases used gradient descent).
 Each folder carries **tensions only** (`multitensions.opt`, parsed by
 `foambryo_benchmarks.converged_mesh_parser`) -- there are no ground-truth pressures, and none can be

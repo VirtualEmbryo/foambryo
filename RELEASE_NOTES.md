@@ -1,3 +1,13 @@
+# Release notes — 0.5.1
+
+**0.5.1 is 0.5.0 as tagged on GitHub, published again.** The 0.5.0 wheel and source archive on PyPI were
+built from an earlier snapshot of the release: their licence metadata says CC BY-NC-SA 4.0 instead of
+GPL-3.0-or-later, and the force viewer is the version before its fixes (it crashes with numpy 2). Install 0.5.1
+(`pip install --upgrade foambryo delaunay-watershed-3d`); 0.5.0 is withdrawn from PyPI (yanked).
+Inference is unchanged: every tension and pressure 0.5.1 infers is the one 0.5.0 infers. Only the
+version, the author metadata (the Turlier lab) and the README's links (to the 0.5.1 tag) differ, and two
+stray bytecode files are gone from the repository. The 0.5.0 notes below apply to 0.5.1 as they are.
+
 # Release notes — 0.5.0
 
 `foambryo` and `delaunay-watershed-3d` ship together as 0.5.0; this foambryo requires

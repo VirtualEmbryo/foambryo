@@ -284,7 +284,7 @@ def assert_png_sane(path: Path, min_bytes: int = 4096) -> dict:
 
 
 def write_rec(path: Path, points: NDArray, triangles: NDArray, labels: NDArray) -> dict:
-    """Write a binary `.rec` (the format Simba-Viewer and the dataset itself use) and verify it.
+    """Write a binary `.rec` (the format the dataset itself uses) and verify it.
 
     Binary rather than text to match `benchmarking-dataset/*_mesh.rec` exactly (checked: the
     dataset's own files are binary), since that is the variant known to open. The file is read

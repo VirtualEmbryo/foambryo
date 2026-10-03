@@ -2,6 +2,20 @@
 
 User-facing changes only, organised by what a user experiences.
 
+## 0.5.1
+
+**0.5.1 republishes 0.5.0 as tagged on GitHub.** The 0.5.0 wheel and source archive on PyPI were built
+from an earlier snapshot of the release: their licence metadata says CC BY-NC-SA 4.0 instead of
+GPL-3.0-or-later (and the package page shows the old licence section), the force viewer is the version
+before the fixes listed below under "The force viewer works with numpy 2 and draws each cell's stress
+correctly" (it crashes with numpy 2), and two docstrings cite the preprints instead of the published
+articles. Install 0.5.1 instead; 0.5.0 is withdrawn from PyPI (yanked).
+
+Nothing else changes: the code is 0.5.0's. The package metadata names the Turlier lab as author, the
+README's links point to the 0.5.1 tag, and two Python 3.8 bytecode files that the repository tracked
+under `src/__pycache__/` (never part of the package) are removed. foambryo 0.5.1 still requires `delaunay-watershed-3d>=0.5.0`; with
+0.5.0 withdrawn, pip installs delaunay-watershed-3d 0.5.1.
+
 ## 0.5.0
 
 **New licence: from 0.5.0, `foambryo` is licensed under the GNU General Public License, version 3
