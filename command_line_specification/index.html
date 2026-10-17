@@ -1,0 +1,3312 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../user-guide/viewers/">
+      
+      
+        <link rel="next" href="../examples/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Command line - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-foambryo-command-behavioural-specification-version-1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Command line
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-installation-and-invocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Installation and invocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-foambryo-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. foambryo mesh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. foambryo mesh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The mask
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-mesh-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The mesh file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-foambryo-infer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. foambryo infer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. foambryo infer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Output files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-existing-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Existing outputs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-when-the-library-refuses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 When the library refuses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4b-foambryo-infer-over-seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4b. foambryo infer-over-seeds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-runjson-schema-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. run.json, schema 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-foambryo-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. foambryo view
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. foambryo view">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-colour-bars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Colour bars
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-results-of-infer-and-of-infer-over-seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Results of infer and of infer-over-seeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-length-scale-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The length scale bar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-from-a-mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 From a mask
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-messages-and-exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Messages and exit codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-equals-what-the-acceptance-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What equals what (the acceptance tests)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-possible-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Possible extensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-every-message-verbatim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Every message, verbatim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-changes-since-the-first-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Changes since the first version
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-installation-and-invocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Installation and invocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-foambryo-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. foambryo mesh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. foambryo mesh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The mask
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-mesh-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The mesh file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-foambryo-infer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. foambryo infer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. foambryo infer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Output files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-existing-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Existing outputs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-when-the-library-refuses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 When the library refuses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4b-foambryo-infer-over-seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4b. foambryo infer-over-seeds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-runjson-schema-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. run.json, schema 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-foambryo-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. foambryo view
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. foambryo view">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-colour-bars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Colour bars
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-results-of-infer-and-of-infer-over-seeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Results of infer and of infer-over-seeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-length-scale-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The length scale bar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-from-a-mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 From a mask
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-messages-and-exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Messages and exit codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-equals-what-the-acceptance-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What equals what (the acceptance tests)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-possible-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Possible extensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-every-message-verbatim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Every message, verbatim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-changes-since-the-first-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Changes since the first version
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="the-foambryo-command-behavioural-specification-version-1">The <code>foambryo</code> command — behavioural specification, version 1<a class="headerlink" href="#the-foambryo-command-behavioural-specification-version-1" title="Permanent link">&para;</a></h1>
+<p>Version 1, for foambryo 0.7.0 (October 2026; § 11 lists the changes since the first version). The implementation follows this text; where the two disagree, the text is the intent and the code is a defect. § 9 lists possible extensions.</p>
+<p>This specification describes <strong>behaviour only</strong>: commands, options, defaults, files, columns, exit codes and messages. Every number the command writes is a number the library returns for the same options: the command adds file handling and records, and <strong>no default of its own</strong>.</p>
+<h2 id="1-installation-and-invocation">1. Installation and invocation<a class="headerlink" href="#1-installation-and-invocation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pip install foambryo                  the command, .npy / .npz masks
+pip install "foambryo[cli]"           adds tifffile, for .tif / .tiff masks
+pip install "foambryo[viewing]"       adds Polyscope and matplotlib, for `foambryo view`
+</code></pre></div>
+<ul>
+<li>One executable, <code>foambryo</code>, with four sub-commands: <code>mesh</code>, <code>infer</code>, <code>infer-over-seeds</code>, <code>view</code>. There is no <code>foambryo-mesh</code>, <code>foambryo-infer</code>, … : names with a hyphen are not installed, so they cannot collide with other tools of that name on the <code>PATH</code>.</li>
+<li><code>python -m foambryo.cli …</code> is the same program, for a machine where the scripts directory is not on the <code>PATH</code>.</li>
+<li><code>foambryo --version</code> prints <code>foambryo &lt;version&gt; (delaunay-watershed-3d &lt;version&gt;)</code> and exits 0.</li>
+<li><code>foambryo --help</code> and <code>foambryo &lt;sub-command&gt; --help</code> print the help text and exit 0. The help text is part of this interface.</li>
+<li><code>foambryo</code> with no sub-command prints the usage and exits 2.</li>
+</ul>
+<h2 id="2-the-pipeline">2. The pipeline<a class="headerlink" href="#2-the-pipeline" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>mask (.npy/.npz/.tif) --foambryo mesh--&gt; mesh (.rec, spacing recorded) --foambryo infer--&gt; OUTDIR/
+                                                                                            tensions.csv
+                                                                                            pressures.csv
+                                                                                            run.json
+                                                                                            solves.csv (opt.)
+                                                                                            spectra.npz (opt.)
+mesh + OUTDIR --foambryo view--&gt; Polyscope window, and/or a colour-bar image, and/or a figure
+mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed spread), tensions_per_seed.csv, run.json
+</code></pre></div>
+<p>Each step can also start from files made otherwise: <code>infer</code> reads any mesh file foambryo's library reads, and <code>view</code> any mesh with or without results.</p>
+<h2 id="3-foambryo-mesh">3. <code>foambryo mesh</code><a class="headerlink" href="#3-foambryo-mesh" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>foambryo mesh MASK -o MESH.rec [--spacing DZ DY DX] [--spacing-unit UNIT]
+                               [--min-distance N] [--overwrite]
+</code></pre></div>
+<p><strong>What it does.</strong> Reads a segmentation mask and reconstructs its multimaterial mesh <strong>in physical units</strong> with delaunay-watershed-3d's default reconstruction, through that library's entry point for masks with a voxel size (the same call as <code>dw3d.get_default_mesh_reconstruction_algorithm(min_distance).construct_mesh_in_physical_units(mask, spacing, spacing_unit=UNIT, axis_order="zyx")</code>), then writes the <code>.rec</code> file that reconstruction exports itself, whose metadata appendix records the spacing. The same route is <code>foambryo.dcel_mesh_from_segmentation_mask(mask, spacing=...)</code> in Python.</p>
+<ul>
+<li><strong>Cubic voxels</strong> (the three spacings equal, to a relative 1e-6): the mask is meshed as it is and the vertices are multiplied by the spacing.</li>
+<li><strong>Voxels longer along one axis</strong> (a z step larger than the pixel size): the mask is first <strong>resampled to cubic voxels</strong> of the shortest spacing by shape-based interpolation (each label's signed distance interpolated between slices), then meshed, and the vertices are multiplied by the shortest spacing. The reconstruction then handles <code>k</code> times the voxels, <code>k</code> being the longest spacing over the shortest, and <code>--min-distance</code> counts cubic voxels.</li>
+<li><strong>Two different short axes</strong> (three different spacings, or two long and one short) are refused.</li>
+</ul>
+<p><strong>Why resample.</strong> Meshing the native voxels and scaling the mesh afterwards samples the surfaces coarsely along the long axis: the junction triangles come out about <code>k</code> times taller and tilted, and every contact angle read from them is off. Measured on 12 simulated tissues of 90 and 165 cells voxelised at a real cell size and down-sampled along z by <code>k</code>, one meshing seed, as the median over tissues of each mesh's median line-mean contact-angle error minus that of the same tissue meshed at full resolution: resampling first costs +0.83, +0.71 and +1.17 degrees at <code>k</code> = 5/3, 2 and 3; meshing the native voxels costs +1.38, +1.97 and +4.10 degrees (<code>BENCHMARKS.md</code>). The tensions follow. <strong>Nothing was measured above <code>k</code> = 3</strong> at that cell size, so the command warns there (§ 3.4) and builds the mesh anyway. The default angle reading stays: the quadric reading was worse on every route at that cell size.</p>
+<h3 id="31-the-mask">3.1 The mask<a class="headerlink" href="#31-the-mask" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Suffix</th>
+<th>Read with</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.npy</code></td>
+<td><code>numpy.load</code> (no pickles)</td>
+<td>one array</td>
+</tr>
+<tr>
+<td><code>.npz</code></td>
+<td><code>numpy.load</code> (no pickles)</td>
+<td>the array named <code>mask</code>, or else the file's only array other than <code>spacing</code> / <code>spacing_unit</code>; optionally <code>spacing</code> (3 numbers) and <code>spacing_unit</code> (a string)</td>
+</tr>
+<tr>
+<td><code>.tif</code>, <code>.tiff</code></td>
+<td><code>tifffile.imread</code> (<code>foambryo[cli]</code>)</td>
+<td>one 3-D image; <strong>the TIFF's resolution tags are not read</strong> (§ 9, <em>TIFF metadata</em>)</td>
+</tr>
+</tbody>
+</table>
+<p>The array must be <strong>three-dimensional, of an integer type, with no negative value</strong>. Label 0 is the medium (exterior); every other label is a cell. <strong>Axis 0 is z, axis 1 is y, axis 2 is x</strong>: the order in which numpy and tifffile return a z-stack. The array is passed to the reconstruction unchanged (same values, same type).</p>
+<h3 id="32-options">3.2 Options<a class="headerlink" href="#32-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MASK</code></td>
+<td>required</td>
+<td>the mask file</td>
+</tr>
+<tr>
+<td><code>-o</code>, <code>--output MESH.rec</code></td>
+<td>required</td>
+<td>the mesh file to write; the suffix must be <code>.rec</code></td>
+</tr>
+<tr>
+<td><code>--spacing DZ DY DX</code></td>
+<td>from the <code>.npz</code>, else <strong>required</strong></td>
+<td>voxel size along axes 0, 1, 2, each finite and &gt; 0; one axis may be longer than the other two, which must be equal. Give <code>--spacing 1 1 1</code> to keep voxel units</td>
+</tr>
+<tr>
+<td><code>--spacing-unit UNIT</code></td>
+<td>from the <code>.npz</code>, else <code>um</code></td>
+<td>the unit of the spacing: one word of ASCII letters, digits and <code>_ . - / ^</code> (it is written into the file as text; <code>µm</code> is refused, write <code>um</code>)</td>
+</tr>
+<tr>
+<td><code>--min-distance N</code></td>
+<td><code>3</code>, the library's</td>
+<td>minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing, an integer ≥ 1</td>
+</tr>
+<tr>
+<td><code>--overwrite</code></td>
+<td>off</td>
+<td>replace <code>MESH.rec</code> if it exists; without it an existing file is an error</td>
+</tr>
+</tbody>
+</table>
+<p>When both <code>--spacing</code> and the <code>.npz</code> give a spacing and they differ, <strong>the command line wins</strong> and a warning names both values. The same holds for the unit.</p>
+<p>There is deliberately <strong>no default spacing</strong>: microscopy voxels are rarely cubic, and a mesh read in the wrong proportions gives wrong angles, tensions and pressures without any other sign.</p>
+<h3 id="33-the-mesh-file">3.3 The mesh file<a class="headerlink" href="#33-the-mesh-file" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Vertex coordinates are <strong>physical</strong>, in the unit of the spacing: the reconstruction runs on cubic voxels of the shortest spacing <code>h</code> (the mask itself when its voxels are cubic, its resampling otherwise), and <code>x_physical = x_cubic_voxel × h</code>; the centre of the mask's first voxel is the origin. With cubic voxels the coordinates are bit for bit those of the plain reconstruction multiplied by the spacing, and with <code>--spacing 1 1 1</code> the plain reconstruction's.</li>
+<li><strong>The file is byte for byte delaunay-watershed-3d's own <code>.rec</code> export</strong> of that reconstruction (<code>save_to_rec_mesh</code>).</li>
+<li>Triangles and labels are the reconstruction's. When a cell of the mask reaches a face of the image box, the triangles that close it there (crop faces) are written as the last block of rows and recorded in the appendix, exactly as delaunay-watershed-3d's own <code>.rec</code> export does: every face of the image box is a crop (the library's default).</li>
+<li>Text <code>.rec</code>, with this appendix (keys of delaunay-watershed-3d's <code>.rec</code> appendix, version 1):</li>
+</ul>
+<div class="highlight"><pre><span></span><code># rec-appendix 1
+# written_by = &lt;delaunay-watershed-3d version&gt;
+# coordinate_frame = physical
+# axis_order = zyx
+# spacing = &lt;DZ&gt; &lt;DY&gt; &lt;DX&gt;
+# source_shape = &lt;n0&gt; &lt;n1&gt; &lt;n2&gt;              the mask's own shape, before resampling
+# resampling = shape
+# resampled_spacing = &lt;h&gt;                     the shortest spacing
+# spacing_unit = &lt;UNIT&gt;
+# physical_image_faces = none                 only when a cell reaches the image box
+# crop_faces = &lt;first row&gt; &lt;count&gt;            only when a cell reaches the image box
+</code></pre></div>
+<p><code>spacing</code> is the mask's own voxel size: the coordinates are already scaled by it, so a reader must not scale them again. foambryo's <code>dcel_mesh_from_file</code> reads it as the mesh's <code>source_spacing</code>, which changes no number. (The first version of this specification also wrote <code>crop_offset = 0 0 0</code>; delaunay-watershed-3d's export does not, and the key is optional.)</p>
+<h3 id="34-messages">3.4 Messages<a class="headerlink" href="#34-messages" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Once the spacing is accepted, before the reconstruction, one line on standard output reports what it will meet (<code>foambryo.segmentation_masks.segmentation_mask_report</code>, the report the napari plugin shows; the mask is not changed): <code>mask, for information (nothing is changed): &lt;C&gt; cells; &lt;B&gt; touch the image box (cut cells); &lt;S&gt; in several pieces; &lt;H&gt; pieces of medium enclosed by the tissue; &lt;N&gt; smaller than 5% of the median cell (&lt;V&gt; voxels)</code>. Pieces are connected through shared voxel faces. It is information, not a warning: neither command repairs a segmentation, and pieces and small labels are reconstructed as they are.</li>
+<li>On success, one line on standard output: <code>wrote MESH.rec: &lt;P&gt; points, &lt;T&gt; triangles, &lt;C&gt; cells (&lt;K&gt; cut by the image boundary)</code>.</li>
+<li><strong>Anisotropic voxels</strong>: whenever the voxels are not cubic, a warning (<code>AnisotropicVoxelSpacingWarning</code>) says that the mask is resampled to cubic voxels, of which size, how many times the voxels that is, and that <code>--min-distance</code> counts cubic voxels (§ 10).</li>
+<li><strong>Above <code>k</code> = 3</strong>, delaunay-watershed-3d's own <code>UnmeasuredAnisotropyWarning</code> is relayed as well: the accuracy was measured up to a ratio of 3 only. The mesh is built and the exit code is 0 (§ 9, <em>Anisotropic voxels</em>).</li>
+<li>Warnings raised by the reconstruction (for example the coarse-spacing warning at <code>--min-distance 5</code> or more) are relayed (§ 7).</li>
+</ul>
+<h2 id="4-foambryo-infer">4. <code>foambryo infer</code><a class="headerlink" href="#4-foambryo-infer" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>foambryo infer MESH -o OUTDIR [--tension-method METHOD] [--pressure-method METHOD | --no-pressures]
+                              [--mean-tension T] [--base-pressure P]
+                              [--solver auto|dense|sparse] [--diagnostics none|basic|spectrum]
+                              [--overwrite]
+</code></pre></div>
+<p><strong>What it does.</strong> Reads a mesh with <code>foambryo.dcel_mesh_from_file(MESH)</code> and infers the tensions then the pressures, exactly as <code>foambryo.infer_forces</code> does with the same options, then writes the results and a run record. With <code>--no-pressures</code> it infers the tensions only: <code>infer_forces</code>' first call, <code>foambryo.infer_tensions</code>, with the same options.</p>
+<h3 id="41-options">4.1 Options<a class="headerlink" href="#41-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default (the library's)</th>
+<th>Library argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MESH</code></td>
+<td>required</td>
+<td>any file <code>dcel_mesh_from_file</code> reads: <code>.rec</code> / <code>.arec</code> from delaunay-watershed-3d, or a file meshio reads with <code>label1</code> / <code>label2</code> cell data (<code>.vtk</code>, <code>.vtu</code>, …)</td>
+</tr>
+<tr>
+<td><code>-o</code>, <code>--output OUTDIR</code></td>
+<td>required</td>
+<td>created if missing (with its parents)</td>
+</tr>
+<tr>
+<td><code>--tension-method</code></td>
+<td><code>young-dupre</code></td>
+<td><code>mode_tension</code>; one of <code>young-dupre</code>, <code>projection-young-dupre</code>, <code>equilibrium</code>, <code>cotan</code>, <code>inv-cotan</code>, <code>lami</code>, <code>inv-lami</code>, <code>log-lami</code>, <code>variational</code>, <code>force-balance</code>, <code>force-balance-soft-row</code>, <code>force-balance-map</code>, <code>young-dupre-local</code> (the order of <code>--help</code>)</td>
+</tr>
+<tr>
+<td><code>--pressure-method</code></td>
+<td><code>variational</code></td>
+<td><code>mode_pressure</code>; one of <code>variational</code>, <code>laplace</code>, <code>weighted-laplace</code></td>
+</tr>
+<tr>
+<td><code>--mean-tension</code></td>
+<td><code>1</code></td>
+<td><code>mean_tension</code>, a finite number</td>
+</tr>
+<tr>
+<td><code>--base-pressure</code></td>
+<td><code>0</code></td>
+<td><code>base_pressure</code>, a finite number (the medium's pressure)</td>
+</tr>
+<tr>
+<td><code>--no-pressures</code></td>
+<td>off</td>
+<td>the tensions only (<code>infer_tensions(mesh, mean_tension=…, mode=…, solver=…, diagnostics=…)</code>): no pressure solve, no <code>pressures.csv</code>; <code>--pressure-method</code> or <code>--base-pressure</code> given with it is refused (exit 2), even at its default value, since it would not be used</td>
+</tr>
+<tr>
+<td><code>--solver</code></td>
+<td><code>auto</code></td>
+<td><code>solver</code></td>
+</tr>
+<tr>
+<td><code>--diagnostics</code></td>
+<td><code>none</code></td>
+<td><code>diagnostics</code>: <code>none</code> → <code>False</code>, <code>basic</code> → <code>True</code>, <code>spectrum</code> → <code>"spectrum"</code></td>
+</tr>
+<tr>
+<td><code>--overwrite</code></td>
+<td>off</td>
+<td>see § 4.3</td>
+</tr>
+</tbody>
+</table>
+<p>The method names are the library's enumeration members (<code>TensionComputationMethod</code>, <code>PressureComputationMethod</code>) written in lower case with hyphens between words.</p>
+<h3 id="42-output-files">4.2 Output files<a class="headerlink" href="#42-output-files" title="Permanent link">&para;</a></h3>
+<p><strong><code>tensions.csv</code></strong>: one row per interface of the tension map, sorted by <code>label_1</code> then <code>label_2</code>.</p>
+<div class="highlight"><pre><span></span><code>label_1,label_2,tension
+0,1,0.8731...
+1,2,1.0442...
+</code></pre></div>
+<ul>
+<li><code>label_1 &lt; label_2</code> are the two materials of the interface (0 is the medium).</li>
+<li><code>tension</code> is written with the shortest decimal representation that reads back as the same 64-bit float (Python's <code>repr</code>), so the file holds <strong>exactly</strong> the library's numbers. An undetermined tension is <code>nan</code>.</li>
+<li>An interface made only of crop faces carries no tension and has no row, as in the library's map.</li>
+</ul>
+<p><strong><code>pressures.csv</code></strong>: one row per material, sorted by <code>label</code>, including the medium (0), whose pressure is <code>--base-pressure</code>.</p>
+<div class="highlight"><pre><span></span><code>label,pressure
+0,0.0
+1,0.1234...
+</code></pre></div>
+<ul>
+<li>The same number format. A pressure the library does not report (a cell cut by the crop, or a cell no equation determines) is <code>nan</code>.</li>
+<li><strong>Written only when the pressures were computed</strong>: not with <code>--no-pressures</code>, nor when the library refuses them (§ 4.4).</li>
+</ul>
+<p><strong><code>run.json</code></strong>: the run record, schema 1 (§ 5).</p>
+<p><strong><code>solves.csv</code></strong>: only with <code>--diagnostics basic</code> or <code>spectrum</code>. One row per linear solve, in the order they ran, with the columns</p>
+<div class="highlight"><pre><span></span><code>index,system,solver,n_rows,n_unknowns,rank,residual_norm,condition_number,condition_number_source,seconds,lsqr_istop,lsqr_iterations,spectrum_seconds,spectrum_note,n_singular_values
+0,"tensions YoungDupre, junction-graph component 0",dense lstsq,57,30,30,1.43…e-15,8.21…,…
+</code></pre></div>
+<ul>
+<li><code>index</code> is the solve's position in <code>run.json</code>'s <code>solves</code> and in <code>spectra.npz</code>'s names; the other columns are the scalars of the library's <code>SolveRecord</code> (<code>foambryo.linear_solves</code>), the same values as <code>run.json</code>'s <code>solves</code>: which system, the solver that produced the solution, the rows (equations) and unknowns of the system solved, its numerical rank (dense <code>lstsq</code> only), the residual norm, the condition number and how it was obtained (computed or estimated), the wall time, <code>lsqr</code>'s stop code and iterations (sparse only), the time spent on the spectrum and why a requested spectrum is missing or partial, and how many singular values <code>spectra.npz</code> holds for it.</li>
+<li>A value the solve does not have is an empty field; floats are in the exact format of <code>tensions.csv</code>. The run's warnings are not per solve: they are in <code>run.json</code>'s <code>warnings</code>.</li>
+<li>Written and read by <code>foambryo.results.write_solve_table</code> / <code>read_solve_table</code>, which the napari plugin uses too.</li>
+</ul>
+<p><strong><code>spectra.npz</code></strong>: only with <code>--diagnostics spectrum</code>. One array per solve that recorded singular values, named <code>singular_values_&lt;i&gt;</code>, <code>&lt;i&gt;</code> being the solve's position in <code>run.json</code>'s <code>solves</code> list; the values in decreasing order. On a dense solve these are all the singular values; on a sparse solve the largest and the smallest few, concatenated. The layout is the one <code>foambryo.save_solve_diagnostics</code> writes.</p>
+<p>Units: the tensions are in the units of <code>--mean-tension</code> (relative tensions with the default 1). The pressures are in those units divided by the mesh's length unit: the <code>spacing_unit</code> of a mesh written by <code>foambryo mesh</code>, voxels for a mesh in voxel coordinates, and unknown otherwise. <code>run.json</code> states which.</p>
+<h3 id="43-existing-outputs">4.3 Existing outputs<a class="headerlink" href="#43-existing-outputs" title="Permanent link">&para;</a></h3>
+<p>Without <code>--overwrite</code>, <code>infer</code> refuses to start if <code>OUTDIR</code> already holds any of <code>tensions.csv</code>, <code>pressures.csv</code>, <code>run.json</code>, <code>spectra.npz</code> or <code>solves.csv</code> (<code>foambryo.results.INFER_OUTPUTS</code>). With <code>--overwrite</code>, those five files (and only those) are deleted before the run, so that no file of an earlier run survives beside the new ones. Any other file in <code>OUTDIR</code> is left alone.</p>
+<h3 id="44-when-the-library-refuses">4.4 When the library refuses<a class="headerlink" href="#44-when-the-library-refuses" title="Permanent link">&para;</a></h3>
+<p>On a mesh without crop faces, the pressure solve refuses tensions that are not all finite (an interface with no triple line has the tension <code>nan</code>; the library raises <code>UndeterminedTensionError</code>). Then <code>infer</code> writes <code>tensions.csv</code> and <code>run.json</code> (with <code>"status": "pressures refused"</code> and the library's message), writes no <code>pressures.csv</code>, prints <code>foambryo infer: error: pressures refused: &lt;message&gt; (the tensions were written)</code> and exits 4. Any other refusal by the library (a <code>ValueError</code>, including an option combination the library rejects, such as <code>--solver sparse</code> with a method that has no sparse path, or a malformed triple line) writes <code>run.json</code> with <code>"status": "failed"</code>, prints <code>foambryo infer: error: failed: &lt;message&gt; (...)</code> and exits 4. On a cropped mesh the library accepts undetermined tensions and reports the cut cells' pressures as <code>nan</code> (with a warning): that run is <code>"complete"</code>.</p>
+<h2 id="4b-foambryo-infer-over-seeds">4b. <code>foambryo infer-over-seeds</code><a class="headerlink" href="#4b-foambryo-infer-over-seeds" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>foambryo infer-over-seeds MASK -o OUTDIR [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N]
+                                         [--seeds N] [--combine tensions|angles] [--angle-reading READING]
+                                         [--tension-method METHOD] [--max-workers K] [--overwrite]
+</code></pre></div>
+<p><strong>What it does.</strong> Reconstructs the mask at the dither seeds 0..N−1, each as <code>foambryo mesh</code> would (delaunay-watershed-3d's default reconstruction, resampled to cubic voxels when one axis is longer), infers the tensions of each mesh, and combines them per interface, exactly as <code>foambryo.infer_tensions_over_seeds(mask, seeds=range(N), spacing=..., ...)</code> does. It writes <code>tensions.csv</code>, <code>tensions_per_seed.csv</code> and <code>run.json</code>; <strong>no pressures</strong>, because no single mesh carries them. The spread over seeds is reported as a <strong>lower bound on the error, not an error bar</strong>. N is fixed in advance: seeds are never chosen by their result.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default (the library's)</th>
+<th>Library argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MASK</code></td>
+<td>required</td>
+<td>read as in § 3.1</td>
+</tr>
+<tr>
+<td><code>-o</code>, <code>--output OUTDIR</code></td>
+<td>required</td>
+<td>created if missing</td>
+</tr>
+<tr>
+<td><code>--spacing DZ DY DX</code>, <code>--spacing-unit UNIT</code></td>
+<td>as for <code>mesh</code> (§ 3.2): no default spacing</td>
+<td><code>spacing</code></td>
+</tr>
+<tr>
+<td><code>--min-distance</code></td>
+<td><code>3</code></td>
+<td><code>min_distance</code> (cubic voxels)</td>
+</tr>
+<tr>
+<td><code>--seeds N</code></td>
+<td><code>8</code> (the library's seed list, 0..7)</td>
+<td><code>seeds=range(N)</code></td>
+</tr>
+<tr>
+<td><code>--combine</code></td>
+<td><code>tensions</code></td>
+<td><code>combine</code>: <code>tensions</code> averages the seeds' tensions; <code>angles</code> (<strong>experimental</strong>, <code>young-dupre</code> only) averages their contact angles and infers once, and warns <code>SeedEnsembleExperimentalWarning</code></td>
+</tr>
+<tr>
+<td><code>--angle-reading</code></td>
+<td><code>chord</code></td>
+<td><code>angle_reading</code>; one of <code>chord</code>, <code>quadric</code>, <code>oriented_chord</code>, <code>oriented_quadric</code></td>
+</tr>
+<tr>
+<td><code>--tension-method</code></td>
+<td><code>young-dupre</code></td>
+<td><code>mode</code></td>
+</tr>
+<tr>
+<td><code>--max-workers K</code></td>
+<td><code>1</code></td>
+<td><code>max_workers</code>: K seeds at once, in separate processes, each holding one reconstruction; the result does not depend on it</td>
+</tr>
+<tr>
+<td><code>--overwrite</code></td>
+<td>off</td>
+<td>deletes <code>tensions.csv</code>, <code>tensions_per_seed.csv</code> and <code>run.json</code> (only those) before the run</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>tensions.csv</code></strong>: one row per interface found by at least one seed, sorted by <code>label_1</code> then <code>label_2</code>, with the columns</p>
+<div class="highlight"><pre><span></span><code>label_1,label_2,tension,tension_seed_sd,n_seeds_found,found_by_fewer_than_half_the_seeds
+0,1,0.8731...,0.0412...,8,false
+</code></pre></div>
+<ul>
+<li><code>tension</code>: the ensemble tension (the mean over the seeds that found the interface, or with <code>angles</code> the one solve on the averaged angles); <code>tension_seed_sd</code>: the standard deviation of the seeds' own tensions (<code>nan</code> with fewer than two); both in the exact float format of § 4.2.</li>
+<li><code>n_seeds_found</code>: how many seeds found the interface with a finite tension.</li>
+<li><code>found_by_fewer_than_half_the_seeds</code>: <code>true</code> or <code>false</code>. On synthetic tissues with known geometry most such interfaces do not exist in the true tissue; they are kept, flagged, not removed.</li>
+</ul>
+<p><strong><code>tensions_per_seed.csv</code></strong>: every seed's own tensions, as <code>infer_tensions</code> gives them on that seed's mesh, one row per seed and interface, in the seeds' order and, within a seed, sorted by <code>label_1</code> then <code>label_2</code>; same number format.</p>
+<div class="highlight"><pre><span></span><code>seed,label_1,label_2,tension
+0,0,1,0.8692...
+0,1,2,1.0511...
+1,0,1,0.8774...
+</code></pre></div>
+<p><strong><code>run.json</code></strong>, schema 1 (§ 5), with <code>command</code> = <code>"foambryo infer-over-seeds"</code> and these keys in place of the mesh-related ones:
+* <code>input</code>: <code>path</code>, <code>sha256</code> and <code>bytes</code> of the mask file, its <code>shape</code>, the <code>spacing</code> used, its <code>spacing_unit</code>, and <code>spacing_from</code> (<code>"command line"</code> or the file's name);
+* <code>options</code>: <code>seeds</code> (N), <code>combine</code>, <code>angle_reading</code>, <code>tension_method</code>, <code>min_distance</code>, <code>max_workers</code>;
+* <code>seeds</code>: the seed list, <code>[0, 1, …, N−1]</code>;
+* <code>reconstructions</code>: one object per seed, with <code>seed</code>, <code>points</code>, <code>triangles</code>, <code>crop_faces</code> and <code>seconds</code>;
+* <code>results</code>: <code>tensions</code>, <code>undetermined_tensions</code> and <code>found_by_fewer_than_half_the_seeds</code> (counts);
+* <code>units</code>: <code>tension</code> (relative, each seed gauged to a mean of 1) and <code>length</code> (the spacing's unit).</p>
+<p><code>library_call</code>, <code>status</code> (<code>complete</code> or <code>failed</code>), <code>error</code>, <code>warnings</code> and <code>outputs</code> are as in § 5.</p>
+<h2 id="5-runjson-schema-1">5. <code>run.json</code>, schema 1<a class="headerlink" href="#5-runjson-schema-1" title="Permanent link">&para;</a></h2>
+<p>A JSON object, UTF-8, indented. Non-finite numbers are written as the strings <code>"nan"</code>, <code>"inf"</code>, <code>"-inf"</code> (JSON has no such numbers). <strong>Keys may be added within schema 1; a reader must ignore keys it does not know.</strong> Removing or renaming a key, or changing a key's meaning, makes a new schema number and is announced in the CHANGELOG.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td>string</td>
+<td><code>"foambryo infer"</code></td>
+</tr>
+<tr>
+<td><code>arguments</code></td>
+<td>list of strings</td>
+<td>the arguments after <code>foambryo</code>, as given</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>string</td>
+<td>start of the run, ISO 8601 in UTC (<code>2026-10-10T10:12:00+00:00</code>)</td>
+</tr>
+<tr>
+<td><code>elapsed_seconds</code></td>
+<td>number</td>
+<td>wall time from reading the mesh to writing the last result</td>
+</tr>
+<tr>
+<td><code>versions</code></td>
+<td>object</td>
+<td><code>python</code>, <code>foambryo</code>, <code>delaunay-watershed-3d</code>, <code>numpy</code>, <code>scipy</code> (installed distribution versions)</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td>object</td>
+<td><code>path</code> (as given), <code>sha256</code> (of the file's bytes), <code>bytes</code>, <code>metadata</code> (the <code>.rec</code> appendix as delaunay-watershed-3d reads it, its version under <code>appendix_version</code>; <code>null</code> for a file with no appendix or not a <code>.rec</code>)</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td>object</td>
+<td><code>tension_method</code>, <code>pressure_method</code>, <code>mean_tension</code>, <code>base_pressure</code>, <code>solver</code>, <code>diagnostics</code>: every option, in the command's spelling, defaults included. With <code>--no-pressures</code>, also <code>no_pressures: true</code>, and <code>pressure_method</code> and <code>base_pressure</code> are <code>null</code> (not used); without it there is no <code>no_pressures</code> key</td>
+</tr>
+<tr>
+<td><code>library_call</code></td>
+<td>string</td>
+<td>the equivalent Python call, e.g. <code>infer_forces(mesh, mean_tension=1.0, base_pressure=0.0, mode_tension=TensionComputationMethod.YoungDupre, mode_pressure=PressureComputationMethod.Variational, solver='auto', diagnostics=False)</code>; with <code>--no-pressures</code>, <code>infer_tensions(mesh, mean_tension=1.0, mode=TensionComputationMethod.YoungDupre, solver='auto', diagnostics=False)</code></td>
+</tr>
+<tr>
+<td><code>mesh</code></td>
+<td>object</td>
+<td><code>points</code>, <code>triangles</code>, <code>materials</code> (medium included), <code>crop_faces</code> (count), <code>cut_cells</code> (list of labels)</td>
+</tr>
+<tr>
+<td><code>results</code></td>
+<td>object</td>
+<td><code>tensions</code>, <code>undetermined_tensions</code>, <code>pressures</code>, <code>undetermined_pressures</code> (counts; the pressure counts are <code>null</code> when no pressure was computed, with <code>--no-pressures</code> among other cases)</td>
+</tr>
+<tr>
+<td><code>units</code></td>
+<td>object</td>
+<td><code>tension</code> (<code>relative, gauged to a mean tension of &lt;T&gt;</code>), <code>pressure</code> (<code>tension per &lt;unit&gt;</code>, the unit being the appendix's <code>spacing_unit</code> for physical coordinates, <code>voxel</code> for voxel coordinates, else <code>mesh length unit (not recorded in the mesh file)</code>)</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string</td>
+<td><code>"complete"</code>, <code>"pressures refused"</code> or <code>"failed"</code></td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>string or <code>null</code></td>
+<td>the library's message when <code>status</code> is not <code>"complete"</code></td>
+</tr>
+<tr>
+<td><code>warnings</code></td>
+<td>list</td>
+<td>one object per distinct warning: <code>category</code> (the class name), <code>message</code>, <code>count</code></td>
+</tr>
+<tr>
+<td><code>solves</code></td>
+<td>list or <code>null</code></td>
+<td>with <code>--diagnostics basic</code> or <code>spectrum</code>: one object per linear solve, in the order they ran (the scalars of the library's <code>SolveRecord</code>: <code>system</code>, <code>solver</code>, <code>n_rows</code>, <code>n_unknowns</code>, <code>rank</code>, <code>residual_norm</code>, <code>condition_number</code>, <code>condition_number_source</code>, <code>seconds</code>, …; the same values as <code>solves.csv</code>); <code>null</code> with <code>none</code></td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td>list of strings</td>
+<td>the files written in <code>OUTDIR</code>, <code>run.json</code> included</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-foambryo-view">6. <code>foambryo view</code><a class="headerlink" href="#6-foambryo-view" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>foambryo view MESH [--results OUTDIR] [--colour-bars FILE] [--figure FILE] [--no-show]
+                   [--scale-bar LENGTH | --no-scale-bar] [--scattered [COEFF]]
+                   [--tension-method METHOD] [--pressure-method METHOD | --no-pressures] [--mean-tension T]
+                   [--base-pressure P] [--solver auto|dense|sparse]
+foambryo view MASK [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N] [--scattered [COEFF]]
+                   [--scale-bar LENGTH | --no-scale-bar] [the inference options above]
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MESH</code></td>
+<td>required</td>
+<td>read with <code>dcel_mesh_from_file</code></td>
+</tr>
+<tr>
+<td><code>--results OUTDIR</code></td>
+<td>none</td>
+<td>read what <code>foambryo infer</code> or <code>foambryo infer-over-seeds</code> wrote in <code>OUTDIR</code> (§ 6.2). Without <code>--results</code>, the tensions then the pressures are inferred <strong>exactly as <code>foambryo infer</code> does with the same options</strong> (the inference options below); if the library refuses the pressures, the tensions alone are shown, with a warning; if it refuses the tensions, exit 4</td>
+</tr>
+<tr>
+<td><code>--colour-bars FILE</code></td>
+<td>none</td>
+<td>write the colour bars of what the viewer shows (§ 6.1) to <code>FILE</code>; the format follows the suffix (<code>.png</code>, <code>.pdf</code>, <code>.svg</code>, …). Needs matplotlib. Written before any window opens</td>
+</tr>
+<tr>
+<td><code>--figure FILE</code></td>
+<td>none</td>
+<td>write the window's first view with its colour bars and its scale bar (§ 6.4) to <code>FILE</code> (<code>.png</code>, <code>.pdf</code>, <code>.svg</code>, …). Needs Polyscope and a display. Prints <code>wrote FILE</code></td>
+</tr>
+<tr>
+<td><code>--no-show</code></td>
+<td>off</td>
+<td>do not keep a viewer window open. With <code>--colour-bars</code> alone it runs without a display and without Polyscope installed; with <code>--figure</code>, Polyscope renders the view once and the window closes. Without either, refused (exit 2)</td>
+</tr>
+<tr>
+<td><code>--scale-bar LENGTH</code></td>
+<td>a round length</td>
+<td>the length scale bar's length, in the mesh's unit (§ 6.3)</td>
+</tr>
+<tr>
+<td><code>--no-scale-bar</code></td>
+<td>off</td>
+<td>draw no length scale bar</td>
+</tr>
+<tr>
+<td><code>--scattered [COEFF]</code></td>
+<td>off; <code>COEFF</code> 0.2, the viewer functions' <code>scatter_coeff</code></td>
+<td>open the window exploded: each cell moved by <code>COEFF × (its centroid − the tissue's centroid)</code> (<code>DcelData.compute_scattered_arrays</code>); the panel changes it</td>
+</tr>
+<tr>
+<td><code>--no-pressures</code></td>
+<td>off</td>
+<td>the tensions only (<code>infer_tensions</code>), as <code>foambryo infer --no-pressures</code>; refused with <code>--pressure-method</code>, <code>--base-pressure</code> or <code>--results</code></td>
+</tr>
+<tr>
+<td><code>MASK</code>, <code>--spacing</code>, <code>--spacing-unit</code>, <code>--min-distance</code></td>
+<td>as for <code>mesh</code> (§ 3.2)</td>
+<td>a mask (<code>.npy</code>, <code>.npz</code>, <code>.tif</code>, <code>.tiff</code>) is opened in the window to be reconstructed there (§ 6.5); the three options are refused with a mesh</td>
+</tr>
+<tr>
+<td><code>--tension-method</code>, <code>--pressure-method</code>, <code>--mean-tension</code>, <code>--base-pressure</code>, <code>--solver</code></td>
+<td><code>infer</code>'s (§ 4.1): the library's</td>
+<td>the options of <code>foambryo infer</code>, passed to the same library calls, when the viewer infers. <strong>Refused with <code>--results</code></strong> (exit 2): the values are then read, not inferred. <code>--diagnostics</code> is not an option of <code>view</code>: the window's <em>Export</em> has its own diagnostics choice (§ 6)</td>
+</tr>
+</tbody>
+</table>
+<p>The window is <code>foambryo.viewing.plot_force_inference(mesh, tensions, pressures, ...)</code>, or <code>plot_tension_inference(mesh, tensions, ...)</code> when there are no pressures (an ensemble, <code>--no-pressures</code>, or pressures the library refused). It needs Polyscope and a display (<code>foambryo[viewing]</code>). Its panel, <em>foambryo</em>, shows:</p>
+<ul>
+<li><strong>which values the colours show</strong>: the library call that produced them (<code>inferred by 'foambryo view': infer_forces(mesh, …)</code>), or <code>read from NAME (foambryo infer: &lt;run.json's library_call&gt;)</code>, NAME the results folder's own name, never the path to it;</li>
+<li><strong>the colour bars</strong> of § 6.1, drawn in the window with the library's colours over the library's ranges; an outlined green swatch, <em>undetermined (nan)</em>, when a value is <code>nan</code> (or an interface has no tension), and a glass swatch, <em>crop face</em>, when the mesh has crop faces;</li>
+<li>with tensions and pressures, <strong>colour the surface by</strong> <em>tensions</em> (the default) or <em>pressures</em>. In the tension view an undetermined tension's interface is not filled and its triangles' edges are drawn in the undetermined green (<em>undetermined tensions' outlines</em>, a check box); crop faces are never filled with a value's colour and are drawn as glass, with their edges (<em>crop faces</em>, a check box hides them);</li>
+<li>the <strong>background</strong> (a choice): white (Polyscope's), light grey 0.70, dark grey 0.20, black (<code>BACKGROUND_COLOURS</code>, the napari plugin's choices too) or a custom colour; on a dark background the scale bar, the frame, their labels and the graph view's black nodes are drawn light (the mirror of their grey), on a light one dark; a background set in Polyscope's own menu is followed too. Polyscope tone-maps its background (exposure 1.1, gamma 2.2: 0.20 was shown 0.50): the window gives it <code>(c ** 2.2) / 1.1</code>, which it shows as <code>c</code>;</li>
+<li>the <strong>x, y, z frame</strong> (a check box): three segments along the mesh's columns (z, y, x), from just outside the drawn box's lowest corner (moved out by 10 % of its largest side), of the scale bar's round length, labelled <code>z</code>, <code>y</code>, <code>x</code> at their tips and with their length at the corner, in the window and in saved figures;</li>
+<li><em>flat colours</em>: draws the surface unlit, so that its colours are exactly the bars' (by default the surface is shaded, as any 3-D view);</li>
+<li>the scale bar's check box (§ 6.3);</li>
+<li><strong>Save figure</strong> and <strong>Save colour bars</strong>, each with a file name (default <code>foambryo_figure.png</code>, <code>foambryo_colour_bars.png</code>, in the working directory): PNG, PDF or SVG by the suffix. <strong>The window never overwrites a file</strong>: an existing name gets <code>_2</code>, <code>_3</code>, …; the panel says which file it wrote;</li>
+<li><strong>Explode</strong>: a check box and a coefficient (0 to 1), the scattered view, followed live (each view is prepared on a background thread, the window keeps turning and draws the last one asked for); <strong>Cut</strong>: a scene slice plane normal to z, y or x (the mesh's axes 0, 1, 2), at a position in the mesh's unit along the drawn box, keeping the lower or the higher side (Polyscope keeps the side the plane's normal points to: measured in a real window, 2.6.1);</li>
+<li>a choice of tension method, pressure method or <em>pressures</em> unticked (the tensions only), and solver, and <strong>Recompute</strong>: the library is called again with them (and the same mean tension and base pressure), and the colours and bars follow; then the <code>foambryo infer MESH -o results …</code> line that writes the same numbers. Not for an ensemble. A <em>diagnostics</em> choice (<code>none</code>, <code>basic</code>, <code>spectrum</code>) keeps the solve records for Export;</li>
+<li><strong>Export</strong>, to a folder (default <code>foambryo_export</code>): <code>foambryo infer</code>'s files for the values shown, written by the command's writers, <code>tensions.csv</code>, <code>pressures.csv</code> (when inferred), <code>solves.csv</code> and <code>spectra.npz</code> (with diagnostics), <code>run.json</code> (the command's record, its <code>input</code> the mesh file), and <code>colour_bars.png</code> as <code>--colour-bars</code> writes it; a mesh reconstructed in the window adds its <code>mesh.rec</code>. When the folder holds any of these files, the panel lists them and asks <em>Cancel</em> or <em>Replace</em>; another file is never touched. Values given to the window (<code>--results</code>) are exported with a <code>run.json</code> that says so (<code>values_given_to_the_window</code>). Not for an ensemble (<code>foambryo infer-over-seeds</code> writes its files).</li>
+</ul>
+<p>The coloured surface draws the back of a triangle like its front: the triangles' winding follows the label order, so the outside of a tissue faces away from Polyscope's camera, and Polyscope's default shading of back faces drew every colour about 15 % darker than its bar.</p>
+<h3 id="61-colour-bars">6.1 Colour bars<a class="headerlink" href="#61-colour-bars" title="Permanent link">&para;</a></h3>
+<p><code>foambryo.viewing.save_colour_bars(mesh, dict_tensions, dict_pressures, path, alpha=0.05)</code> writes one image with one bar per quantity. The bars use <strong>the same computation as the viewer's surface colours</strong>, through one shared function:</p>
+<ul>
+<li><strong>Surface tension</strong>: colour map <code>coolwarm</code> (blue for low, light grey for the mean, red for high), over a range <strong>centred on the mean of the finite tensions</strong> of the map (one value per interface; the mean is <code>mean_tension</code>, 1 by default, for every method that meets its gauge exactly) and symmetric around it, its half-width the farther of the <code>alpha</code> and <code>1 − alpha</code> quantiles from the mean (<code>tension_colour_range</code>). Tensions beyond either end are drawn with the end's colour (the viewer clips them). The bar's middle tick is the mean. (Until 0.7.0: <code>jet</code> between the two quantiles.)</li>
+<li><strong>Pressure</strong>: colour map <code>magma</code> reversed (light for low, dark for high) and trimmed to its 10–90 % range (<code>PRESSURE_COLOUR_MAP_RANGE</code>: a fraction <code>x</code> is drawn <code>magma(0.1 + 0.8 x)</code>, so no pressure is black or near-white and none vanishes on a black or a white background; until 0.7.0 the whole map), from 0 to the <code>1 − alpha</code> quantile of the finite pressures <strong>over the mesh's triangles</strong>, each triangle carrying the pressure of the higher-labelled of its two materials (this is how the viewer's surface colours them). Negative pressures are drawn with the colour of 0. <strong>This is the viewer's only pressure scale</strong>: the surface, the graph view's cell nodes and the bar take it from one function, so a pressure has the same colour in all three. (Until this revision the graph view took its own quantile over cells: 5.383 against the surface's 5.472 on benchmark case 000.)</li>
+<li>A swatch labelled "undetermined" when any value is <code>nan</code>: green (<code>UNDETERMINED_COLOR</code>, #1b9e77), outside both maps; a viewer that can draws an undetermined interface as its green outline, without fill, and fills it green otherwise. A "crop face" swatch when the mesh has crop faces: see-through glass with its edges drawn (<code>CROP_FACE_COLOR</code>, <code>CROP_FACE_OPACITY</code>, <code>CROP_FACE_EDGE_COLOR</code>); crop faces carry no value.</li>
+<li>Each bar's two ends are labelled with their values. The function returns them, so they can be checked against the viewer's own range (the viewer prints it as "Extremas …").</li>
+<li>matplotlib only (its non-interactive canvas): no window, no display, no Polyscope.</li>
+<li><code>foambryo view</code> prints <code>wrote FILE: tension &lt;low&gt; to &lt;high&gt;, pressure 0 to &lt;high&gt;</code> (6 significant digits; the pressure part only when there are pressures). No finite tension: exit 4, <code>no colour bar: no tension is finite: there is no colour scale to draw</code>.</li>
+</ul>
+<p><strong>In the window</strong> the same bars are drawn by the panel (ImGui rectangles, flat colours, no interpolation): the colours are those <code>save_colour_bars</code> samples, over the ranges <code>colour_bar_ranges</code> returns. Polyscope draws the surface from the colours, not from the values: its own colour maps would draw <code>nan</code> in their top colour. The graph view (cell nodes, and edges between them) is coloured over the same two ranges. The scattered view (<code>plot_force_inference(..., scattered=True)</code>) colours pressures over its own triangles (each cell's triangles carry that cell's pressure), and its pressure bar says so. <em>Save colour bars</em> in the panel writes <code>save_colour_bars</code>' image whenever the window's bars are its bars (not scattered, not an ensemble), and the panel's own bars otherwise.</p>
+<h3 id="62-results-of-infer-and-of-infer-over-seeds">6.2 Results of <code>infer</code> and of <code>infer-over-seeds</code><a class="headerlink" href="#62-results-of-infer-and-of-infer-over-seeds" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>infer</code>'s results</strong>: <code>OUTDIR/tensions.csv</code> and, if present, <code>OUTDIR/pressures.csv</code>. If <code>OUTDIR/run.json</code> exists, its <code>input.sha256</code> must equal <code>MESH</code>'s: results computed from another mesh are refused (exit 3).</li>
+<li><strong><code>infer-over-seeds</code>' results</strong>, recognised by the columns of <code>tensions.csv</code> (§ 4b): the ensemble tensions are drawn on <code>MESH</code>'s interfaces, matched by label pair (<code>MESH</code> is one reconstruction of the same mask, for example <code>foambryo mesh</code>'s). Their <code>run.json</code> names the mask, not a mesh, so the mesh cannot be checked against it: a warning says how many of the ensemble's interfaces are not on <code>MESH</code> (not drawn) and how many of <code>MESH</code>'s are not in the ensemble (drawn undetermined), and <strong>no interface in common is refused</strong> (exit 3). The colour scale and <code>--colour-bars</code> are taken over the interfaces drawn. The window adds the seeds' spread, <code>tension_seed_sd</code>, as a second surface quantity with its own bar (<code>jet</code>, clipped at the 5 % and 95 % quantiles), and draws the interfaces flagged <code>found_by_fewer_than_half_the_seeds</code> over the surface, as a magenta wireframe (their triangles' edges, so that their own colour stays visible). No pressure is shown: no single mesh carries an ensemble's pressures.</li>
+</ul>
+<h3 id="63-the-length-scale-bar">6.3 The length scale bar<a class="headerlink" href="#63-the-length-scale-bar" title="Permanent link">&para;</a></h3>
+<p>When <code>MESH</code> is a <code>.rec</code> file whose appendix records physical coordinates and their unit (<code>coordinate_frame = physical</code>, <code>spacing_unit</code>; <code>foambryo mesh</code> writes both), the window draws a segment in the scene, under the tissue (along the first coordinate axis, 8 % of the tissue's largest side below it), of length 1, 2 or 5 times a power of ten, the longest at most a quarter of the tissue's largest side (or <code>--scale-bar LENGTH</code>). Its length is written beside it in the window and in saved figures (<code>20 µm</code>; the unit <code>um</code> is written <code>µm</code>). It is exact in 3-D and foreshortened on screen like any length in a perspective view. A mesh without a recorded unit has no scale bar, unless <code>--scale-bar</code> is given: it is then labelled in <code>voxel</code> for a mesh in voxel coordinates, else in <code>mesh units</code>.</p>
+<h3 id="64-figures">6.4 Figures<a class="headerlink" href="#64-figures" title="Permanent link">&para;</a></h3>
+<p>A figure is Polyscope's own rendering of the view, without the user interface (<code>screenshot_to_buffer</code>), and under it, drawn by matplotlib: the colour bars of § 6.1, the swatches of what has no value, and a caption, <code>Values: …</code>, the panel's first line (it names the results folder, never its path). The scale bar's length is written under the segment, where Polyscope's camera projects its ends (in the lower left corner when an end is off the view). <code>--figure</code> writes the first view, framed on <code>MESH</code> (Polyscope's home view); <em>Save figure</em> writes the current one. From Python: <code>plot_force_inference(mesh, ..., save_figure=PATH, show=False)</code>.</p>
+<h3 id="65-from-a-mask">6.5 From a mask<a class="headerlink" href="#65-from-a-mask" title="Permanent link">&para;</a></h3>
+<p><code>foambryo view MASK --spacing DZ DY DX</code> reads the mask and its spacing exactly as <code>foambryo mesh</code> does (the same checks, messages and exit codes; the mask report is printed), then opens the window <strong>on the mask</strong>: its cell voxels as points at <code>index × spacing</code>, one colour per label, the medium left out (strided above three million points). Polyscope's volume grids cannot leave a value out, so the medium would hide the tissue: the points are what lets the cells be seen, and the cut slices them. The panel then offers, top to bottom once there are values:</p>
+<ul>
+<li><strong>Values</strong> (as in § 6, without Recompute);</li>
+<li><strong>Mask and reconstruction</strong>: <em>show the mask</em>, <code>min distance</code>, the estimate (time and memory, <code>foambryo.reconstruction_cost</code>: a fit to measured reconstructions, with its in-sample band, the one the napari plugin gives), <strong>Reconstruct</strong> and <strong>Cancel</strong>. The reconstruction is <code>foambryo.io.reconstruct_mask</code> (<code>foambryo mesh</code>'s call) in a child process: the window keeps drawing (no frame over 1 s on benchmark case 000), shows the elapsed time, and Cancel stops the process and keeps nothing. The mesh is then drawn half transparent over the mask;</li>
+<li><strong>Inference</strong>: <em>one mesh</em> (<code>infer_tensions_then_pressures</code> on the reconstruction, <code>foambryo infer</code>'s call) or <em>seed ensemble</em> (<code>infer_tensions_over_seeds</code> on the mask, <code>foambryo infer-over-seeds</code>' call, with the number of seeds, workers and combination; its progress seed by seed), the tension method, the pressure method or <em>pressures</em> unticked, the solver, the diagnostics (one mesh); <strong>Infer</strong> and <strong>Cancel</strong>, also in a child process; and the command lines that give the same numbers (<code>foambryo mesh …</code> then <code>foambryo infer …</code>, or <code>foambryo infer-over-seeds …</code>). Once values are drawn the mask is hidden (its points would speckle the surface); its check box shows it again.</li>
+</ul>
+<p>With a mask, <code>--results</code>, <code>--figure</code>, <code>--colour-bars</code> and <code>--no-show</code> are refused (exit 2): they need a mesh; <code>foambryo mesh</code> writes it without a window. The values are drawn once prepared in the background: the mask and the reconstruction stay on screen until then.</p>
+<p>From Python, <code>foambryo.viewing.view_mask(mask, spacing, *, spacing_unit="um", min_distance=None, mean_tension, base_pressure, mode_tension, mode_pressure, solver, pressures=True, scattered=False, scatter_coeff=0.2, scale_bar=True, mask_name="mask.npz")</code> opens the same window (every default the library's; <code>min_distance=None</code> is delaunay-watershed-3d's); a mask or spacing the command refuses raises <code>ValueError</code>.</p>
+<h2 id="7-messages-and-exit-codes">7. Messages and exit codes<a class="headerlink" href="#7-messages-and-exit-codes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Errors</strong> go to standard error as one line, <code>foambryo &lt;sub-command&gt;: error: &lt;message&gt;</code>, followed by the exit code below. No Python traceback, except for an unexpected error (code 1).</li>
+<li><strong>Warnings</strong> (the library's, and the command's own) go to standard error as <code>foambryo &lt;sub-command&gt;: warning: &lt;Category&gt;: &lt;message&gt;</code>, once per distinct warning, with <code>(&lt;n&gt; times)</code> appended when it was raised more than once. <code>infer</code> also records them in <code>run.json</code>.</li>
+<li><strong>Results</strong> (the lines naming each file written) go to standard output.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Code</th>
+<th>Meaning</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td>success</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td>unexpected error: a defect, reported with its traceback</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>the command line is invalid or incomplete</td>
+<td>unknown option; a value out of range; <strong>a mask that records no spacing, without <code>--spacing</code></strong>; an output suffix other than <code>.rec</code>; <code>--no-show</code> without <code>--colour-bars</code> or <code>--figure</code>; an inference option of <code>view</code> with <code>--results</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>a file cannot be used as asked</td>
+<td><strong>an input that does not exist</strong>; a file that cannot be read or does not hold what is expected (not 3-D integer labels, no mask array, no <code>label1</code> / <code>label2</code>); results from another mesh; an output that exists without <code>--overwrite</code>; an optional package that is not installed</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>the reconstruction or the inference refused this input</td>
+<td>the library raised its documented refusal (§ 4.4); what was computed before the refusal is written</td>
+</tr>
+</tbody>
+</table>
+<p>The messages the acceptance tests pin:</p>
+<div class="highlight"><pre><span></span><code>foambryo mesh: error: no such file: 'missing.npy'
+foambryo infer: error: no such file: 'missing.rec'
+foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing DZ DY DX (for example --spacing 1 1 1 to keep voxel units)
+</code></pre></div>
+<h2 id="8-what-equals-what-the-acceptance-tests">8. What equals what (the acceptance tests)<a class="headerlink" href="#8-what-equals-what-the-acceptance-tests" title="Permanent link">&para;</a></h2>
+<ol>
+<li><code>infer</code>: <code>tensions.csv</code> and <code>pressures.csv</code>, read back as 64-bit floats, are <strong>bitwise equal</strong> to <code>infer_forces(dcel_mesh_from_file(MESH), …)</code> with the same options, for every tension method, every pressure method, and non-default <code>--mean-tension</code> / <code>--base-pressure</code> / <code>--solver</code> / <code>--diagnostics</code>.</li>
+<li><code>mesh</code>: the arrays of <code>MESH.rec</code> (points, triangles, labels, crop-face mask) have the same SHA-256 as <code>construct_mesh_in_physical_units</code>'s, in the same crop-face row order, and the file is byte for byte that reconstruction's own export; with and without a cell reaching the image box; with cubic voxels of 1 and of 0.5 and with a z step twice the pixel size. With cubic voxels, the points are also those of the plain reconstruction times the spacing. A spacing with two different short axes is refused (exit 2, or 3 from an <code>.npz</code>); above <code>k</code> = 3 both warnings are printed.</li>
+<li><code>run.json</code>: every key of § 5 is present with its type. <code>solves.csv</code> reads back equal to the same run's <code>solves</code>, field by field, floats bitwise. 3b. <code>infer --no-pressures</code>: <code>tensions.csv</code> is bitwise <code>infer_tensions</code> (and <code>infer_forces</code>' tensions) with the same options; no <code>pressures.csv</code>; a pressure option given with it is refused.</li>
+<li>Exit codes and messages: a missing mask, a missing mesh, a mask without spacing.</li>
+<li>Colour bars: the ends of each bar equal the range the viewer prints for the same input; the image is written with no display and with Polyscope absent.</li>
+<li>No defaults of the command differ from the library's (a test reads the library's signatures).</li>
+<li><code>infer-over-seeds</code>: every column of <code>tensions.csv</code>, and every row of <code>tensions_per_seed.csv</code>, read back, equals <code>infer_tensions_over_seeds</code>' result for the same mask, seeds, spacing and options, bitwise for the floats, with cubic voxels, with a z step twice the pixel size, and with <code>--combine angles --angle-reading quadric</code>; <code>run.json</code> lists the seeds; a refused combination writes <code>run.json</code> only and exits 4.</li>
+</ol>
+<p>Synthetic masks and benchmark meshes only.</p>
+<h2 id="9-possible-extensions">9. Possible extensions<a class="headerlink" href="#9-possible-extensions" title="Permanent link">&para;</a></h2>
+<p>None of these is in schema 1; each would be a change to this specification. Requests and comments are welcome on the issue tracker.</p>
+<ul>
+<li><strong>Formats.</strong> Masks are read from <code>.npy</code>, <code>.npz</code> and <code>.tif</code>, meshes from <code>.rec</code>; <code>mesh</code> could also write <code>.vtk</code>.</li>
+<li><strong>TIFF metadata.</strong> <code>mesh</code> does not read the spacing from a TIFF (ImageJ <code>spacing</code> and the resolution tags), because these tags are often missing or wrong and a wrong spacing is silent; it could, for software whose tags are reliable.</li>
+<li><strong>Exit codes.</strong> Codes 2, 3 and 4 tell batch runs why a command stopped; a simpler "0 or not 0" would also do.</li>
+<li><strong>Anisotropic voxels.</strong> The mask is resampled to cubic voxels before meshing (§ 3), with a warning whenever the voxels are not cubic and a second one above <code>k</code> = 3, where the accuracy was not measured. The first warning could become optional for batch runs.</li>
+<li><strong>Options not in schema 1.</strong> Each is a library option already: <code>--angle-reading</code> for <code>infer</code> (<code>infer-over-seeds</code> has it), <code>--sparse-threshold N</code>, a way to declare physical image faces (a coverslip), the wedge-refusal policies, and a table of tensions per junction-graph component.</li>
+<li><strong>A record for <code>mesh</code>.</strong> <code>mesh</code> could also write a JSON record (versions, options, the mask's SHA-256); today the provenance chain starts at the mesh file (its SHA-256 in <code>run.json</code>).</li>
+<li><strong>Preprocessing.</strong> A <code>foambryo preprocess</code> sub-command could expose delaunay-watershed-3d's mask-preprocessing functions.</li>
+<li><strong>Seed ensembles (§ 4b).</strong> <code>infer-over-seeds</code> starts from the mask and writes no pressures. Its per-seed table, <code>tensions_per_seed.csv</code>, is a long table; one column per seed is the alternative. The default N = 8 costs eight reconstructions, each with its memory.</li>
+</ul>
+<h2 id="10-every-message-verbatim">10. Every message, verbatim<a class="headerlink" href="#10-every-message-verbatim" title="Permanent link">&para;</a></h2>
+<p><code>&lt;name&gt;</code> is the file's name, <code>&lt;given&gt;</code> the path as typed. Each error line is prefixed with <code>foambryo &lt;sub-command&gt;: error:</code>; each warning with <code>foambryo &lt;sub-command&gt;: warning: &lt;Category&gt;:</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Code</th>
+<th>Sub-command</th>
+<th>Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">2</td>
+<td>all</td>
+<td>argparse's usage line, then <code>&lt;option&gt;: &lt;reason&gt;</code> (<code>must be a finite number, not '…'</code>, <code>must be greater than 0, not '…'</code>, <code>must be an integer of at least 1, not '…'</code>, <code>must be one ASCII word (letters, digits, _ . - / ^), not '…'</code>, <code>invalid choice: …</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>mesh</td>
+<td><code>&lt;name&gt; records no voxel spacing: give it with --spacing DZ DY DX (for example --spacing 1 1 1 to keep voxel units)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>mesh</td>
+<td><code>the mesh is written as .rec: -o must end in .rec, not '&lt;name&gt;'</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>mesh</td>
+<td><code>--spacing: spacing (&lt;dz&gt;, &lt;dy&gt;, &lt;dx&gt;) has two different fine axes; resample_to_isotropic supports one coarse axis with the other two equal (a z stack)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>view</td>
+<td><code>--no-show needs --colour-bars: there would be nothing to do</code> (with neither <code>--colour-bars</code> nor <code>--figure</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>view</td>
+<td><code>--spacing applies to a mask: &lt;name&gt; is a mesh</code> (and <code>--spacing-unit</code>, <code>--min-distance</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>view</td>
+<td><code>--results needs a mesh: &lt;name&gt; is a mask, reconstructed in the window (run 'foambryo mesh' first to write it without a window)</code> (and <code>--figure</code>, <code>--colour-bars</code>); <code>--no-show: a mask is opened in the window to be reconstructed there (&lt;name&gt;)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>view</td>
+<td><code>--pressure-method applies to the pressures: --no-pressures infers the tensions only</code> (and <code>--base-pressure</code>); <code>--no-pressures applies when 'foambryo view' infers: with --results the values are read from OUTDIR</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2, 3</td>
+<td>view</td>
+<td>with a mask: the mask and spacing messages of <code>mesh</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>view</td>
+<td><code>--&lt;option&gt; applies when 'foambryo view' infers: with --results the values are read from OUTDIR</code> (an inference option with <code>--results</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>all</td>
+<td><code>no such file: '&lt;given&gt;'</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;given&gt; exists: pass --overwrite to replace it</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt;: unsupported mask format '&lt;suffix&gt;'; use .npy, .npz, .tif, .tiff</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>reading a TIFF mask needs tifffile: pip install 'foambryo[cli]'</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>cannot read &lt;name&gt;: &lt;reader's message&gt;</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt; holds a &lt;n&gt;-D array; a mask is 3-D</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt; holds &lt;dtype&gt; values; a mask holds integer labels</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt; holds negative labels; labels are 0 (medium) or positive</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt; holds the arrays [...]: name the mask 'mask'</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt;: 'spacing' must be three finite numbers &gt; 0, not [...]</code> / <code>&lt;name&gt;: 'spacing_unit' must be one ASCII word, not '…'</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>&lt;name&gt;: spacing (…) has two different fine axes; …</code> (the <code>.npz</code>'s spacing, as above)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>mesh</td>
+<td><code>foambryo mesh needs delaunay-watershed-3d 0.7 or later (installed: &lt;version&gt;): pip install -U delaunay-watershed-3d</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>infer, view</td>
+<td><code>cannot read the mesh &lt;name&gt;: &lt;error type&gt;: &lt;reader's message&gt;</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>infer</td>
+<td><code>--pressure-method applies to the pressures: --no-pressures infers the tensions only</code> (and the same for <code>--base-pressure</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>infer</td>
+<td><code>&lt;given&gt; exists and is not a directory</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>infer</td>
+<td><code>&lt;given&gt; already holds tensions.csv, …: pass --overwrite to replace them</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>view</td>
+<td><code>&lt;OUTDIR&gt;/run.json was computed from another mesh (SHA-256 &lt;12 hex&gt;...; &lt;name&gt; is &lt;12 hex&gt;...)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>view</td>
+<td><code>cannot read &lt;OUTDIR&gt;/run.json: …</code>; <code>tensions.csv: expected the header label_1,label_2,tension, found …</code>; <code>… every row must have 3 values</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>view</td>
+<td><code>no interface of &lt;name&gt; is in &lt;OUTDIR&gt;/tensions.csv: the ensemble was computed from another mask</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>view</td>
+<td><code>the colour bars need matplotlib: pip install 'foambryo[viewing]' (…)</code> / <code>the viewer needs Polyscope: pip install 'foambryo[viewing]' (…)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>mesh</td>
+<td><code>the reconstruction refused &lt;name&gt;: &lt;library's message&gt;</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>infer</td>
+<td><code>pressures refused: &lt;library's message&gt; (the tensions were written)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>infer</td>
+<td><code>failed: &lt;library's message&gt; (the tensions were written)</code> or <code>(nothing but run.json was written)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>view</td>
+<td><code>no colour bar: no tension is finite: there is no colour scale to draw</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>view</td>
+<td><code>failed: &lt;library's message&gt;</code> (the library refused the tensions)</td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>mesh</td>
+<td>warning <code>AnisotropicVoxelSpacingWarning: the voxels are &lt;k&gt; times longer along axis &lt;i&gt; (&lt;z, y or x&gt;) than along the other two: the mask is resampled to cubic voxels of &lt;h&gt; &lt;UNIT&gt; by shape-based interpolation before meshing (&lt;k&gt; times the voxels; --min-distance counts cubic voxels)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>mesh</td>
+<td>warning <code>UnmeasuredAnisotropyWarning: voxels &lt;k&gt; times longer along axis &lt;i&gt; than along the other two: the accuracy of meshing after resampling was measured up to a ratio of 3 only (on larger cells the contact-angle error kept growing above it). The mesh is built anyway.</code> (delaunay-watershed-3d's, above <code>k</code> = 3)</td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>mesh</td>
+<td>warning <code>UserWarning: --spacing &lt;dz dy dx&gt; replaces the spacing &lt;name&gt; records, &lt;dz dy dx&gt;</code> (and the same for <code>--spacing-unit</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>view</td>
+<td>warning <code>UserWarning: the pressures are not shown: &lt;library's message&gt;</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>view</td>
+<td>warning <code>UserWarning: &lt;k&gt; interfaces of the ensemble are not on &lt;name&gt; (not drawn); &lt;m&gt; interfaces of &lt;name&gt; are not in the ensemble (drawn undetermined)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2, 3</td>
+<td>infer-over-seeds</td>
+<td>the mask and spacing messages of <code>mesh</code> (missing spacing, unreadable mask, two different short axes)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>infer-over-seeds</td>
+<td><code>&lt;given&gt; exists and is not a directory</code>; <code>&lt;given&gt; already holds tensions.csv, …: pass --overwrite to replace them</code> (the files of § 4b it holds)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>infer-over-seeds</td>
+<td><code>foambryo infer-over-seeds needs delaunay-watershed-3d 0.7 or later (installed: &lt;version&gt;): pip install -U delaunay-watershed-3d</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>infer-over-seeds</td>
+<td><code>failed: &lt;library's message&gt; (nothing but run.json was written)</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">—</td>
+<td>infer-over-seeds</td>
+<td>warning <code>SeedEnsembleExperimentalWarning: combine='angles' is experimental: …</code> (with <code>--combine angles</code>), the <code>AnisotropicVoxelSpacingWarning</code> of <code>mesh</code>, and each seed's own warnings prefixed with <code>seed &lt;s&gt;:</code></td>
+</tr>
+</tbody>
+</table>
+<p>On success each sub-command prints, on standard output, one <code>wrote &lt;path&gt;…</code> line per file written.</p>
+<h2 id="11-changes-since-the-first-version">11. Changes since the first version<a class="headerlink" href="#11-changes-since-the-first-version" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>14 Oct 2026: the text agrees with the command</strong> (§ 2, § 4.1, § 4b, § 6, § 7, § 10): <code>solves.csv</code> in the pipeline, the order of the tension methods, the four values of <code>--angle-reading</code>, <code>--spacing</code> optional for an <code>.npz</code> that records it in <code>view MASK</code>, the window's diagnostics choice, <code>--no-pressures</code> in the choice of window. The warning for interfaces missing from an ensemble now says they are drawn undetermined (it said grey; they are drawn as undetermined values are, since the green outlines).</p>
+</li>
+<li>
+<p><strong>12 Oct 2026: <code>foambryo view MASK</code>, <code>--scattered</code>, <code>--no-pressures</code></strong> (§ 6, § 6.5): the window starts from a mask, reconstructs and infers it in child processes; the panel has explode, cut, the solver and <em>pressures</em>.</p>
+</li>
+<li>
+<p><strong>12 Oct 2026: <code>foambryo infer --no-pressures</code> and <code>solves.csv</code></strong> (§ 4). The tensions only, and the solve diagnostics as a table beside <code>run.json</code>; the mask report of <code>foambryo mesh</code> is worded as information (§ 3.4).</p>
+</li>
+<li>
+<p><strong>11 Oct 2026: <code>foambryo mesh</code> resamples anisotropic masks to cubic voxels</strong> (§ 3), and the viewer has one pressure scale (§ 6.1).</p>
+</li>
+<li><strong>11 Oct 2026: a fourth sub-command, <code>foambryo infer-over-seeds</code> (§ 4b).</strong> Several reconstructions of one mask at fixed dither seeds, with the tensions combined over them, and the three new <code>tensions.csv</code> columns <code>tension_seed_sd</code>, <code>n_seeds_found</code> and <code>found_by_fewer_than_half_the_seeds</code>, and a second table, <code>tensions_per_seed.csv</code>, with every seed's own tensions. <code>run.json</code> gains <code>seeds</code> and <code>reconstructions</code>. Its acceptance test is § 8, item 7, its messages are in § 10, and its possible extensions are in § 9, <em>Seed ensembles</em>.</li>
+<li><strong>12 Oct 2026: the viewer's window</strong> (§ 6): the colour bars drawn in the window, the coloured surface's back faces drawn like its front faces, a length scale bar (§ 6.3), <code>--figure</code> (§ 6.4) and <em>Save figure</em> / <em>Save colour bars</em> in the window, <code>infer</code>'s inference options for <code>view</code> (refused with <code>--results</code>), the results of <code>infer-over-seeds</code> (§ 6.2), and a choice of methods with <em>Recompute</em> in the window. A refused tension inference in <code>view</code> now exits 4 with <code>failed: …</code> (it raised a traceback, exit 1).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

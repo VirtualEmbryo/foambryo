@@ -1,0 +1,3579 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../mesh/">
+      
+      
+        <link rel="next" href="../pressure-inference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tensions - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tensions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tensions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.TensionComputationMethod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TensionComputationMethod
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.VariationalRoute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VariationalRoute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.DegenerateWedgeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DegenerateWedgeWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_and_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_and_residuals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_and_residuals_with_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_and_residuals_with_report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_by_junction_component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_by_junction_component
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.compute_residual_junctions_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_residual_junctions_dict
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.TensionComputationMethod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TensionComputationMethod
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.VariationalRoute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VariationalRoute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.DegenerateWedgeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DegenerateWedgeWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_and_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_and_residuals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_and_residuals_with_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_and_residuals_with_report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.infer_tensions_by_junction_component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_by_junction_component
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.compute_residual_junctions_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_residual_junctions_dict
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tensions">Tensions<a class="headerlink" href="#tensions" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Surface tensions inferred from a multimaterial mesh, by any of the 13 methods of <code>TensionComputationMethod</code>.</p>
+<p>The entry points are <code>infer_tensions</code> (a map interface -&gt; tension), <code>infer_tensions_and_residuals</code>
+(the same, with the solve's residuals), <code>infer_tensions_and_residuals_with_report</code> (plus the angle
+reading's coverage, the entry point to use for anything published) and
+<code>infer_tensions_by_junction_component</code> (each interface's connected piece of the junction graph made
+explicit).</p>
+<p>Conventions shared by every function here:</p>
+<ul>
+<li>an interface is keyed <code>(label_1, label_2)</code> with <code>label_1 &lt; label_2</code>; label 0 is the exterior
+  medium;</li>
+<li>tensions are <strong>relative</strong>: only their ratios are determined by the mesh. They are normalised so
+  that their mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph (see
+  <code>TensionComputationMethod</code> for the methods that normalise otherwise). Pressures computed from them
+  (<code>foambryo.pressure_inference</code>) are in the same tension unit divided by the mesh's length unit;</li>
+<li>an interface whose tension the mesh does not determine is <code>float("nan")</code>, never a number;</li>
+<li>angles are read in radians.</li>
+</ul>
+<p>Sacha Ichbiah 2021
+Matthieu Perez 2024</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.tension_inference.TensionComputationMethod" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TensionComputationMethod</span>
+
+
+<a href="#foambryo.tension_inference.TensionComputationMethod" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Describe the formula used to infer the tensions from contact angles at each junction.</p>
+<p>It can be:
+- YoungDupre (Young-Dupré with cosines only),
+- YoungDupreLocal (the same balance imposed <strong>per trijunctional edge</strong> instead of once per
+  triple line on angles averaged along it — see <code>foambryo.per_edge_tension_inference</code>),
+- ProjectionYoungDupre (Young-Dupré with cosines and sines),
+- Equilibrium,
+- Cotan (cotangent formula, see <a href="https://doi.org/10.1016/j.devcel.2026.04.013">Yamamoto et al. 2026</a>),
+- InvCotan (inverse of the cotangent formula),
+- Lami (<a href="https://en.wikipedia.org/wiki/Lami%27s_theorem">Lami's theorem</a>),
+- InvLami (inverse of the Lami's relation),
+- LogLami (logarithm of the Lami's relation),
+- Variational (variational formulation, see our <a href="https://doi.org/10.1038/s41592-023-02084-7">article</a>),
+- ForceBalance (the unified discrete force-balance operator with the mean-tension
+  normalisation imposed exactly, through a KKT system),
+- ForceBalanceSoftRow (the same operator, with the normalisation as one more least-squares
+  row, so its mean tension is only approximately <code>mean_tension</code>),
+- ForceBalanceMAP (the same operator, with a Gaussian prior; the normalisation is anchored only
+  softly, so its mean tension is deliberately not exactly <code>mean_tension</code>; its relative tensions
+  do not depend on the mesh's length unit or on the value of <code>mean_tension</code>, see
+  <code>foambryo.force_balance_inference._solve_bayesian_map</code>).</p>
+<p><strong>The normalisation.</strong> Only tension ratios are determined by a mesh, so every method fixes the
+overall scale (the "gauge") by one more condition: the tensions are normalised so that their
+mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph. This holds
+exactly for every method but two: <code>YoungDupre</code>, <code>YoungDupreLocal</code>, <code>ProjectionYoungDupre</code>,
+<code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and <code>InvLami</code> meet it in each piece of the junction graph
+(<code>foambryo.junction_graph.solve_gauged_least_squares</code>); <code>LogLami</code> meets it on the geometric
+mean; <code>Equilibrium</code>, <code>Variational</code> (both routes) and <code>ForceBalance</code> meet it over the whole mesh
+at once; <code>ForceBalanceSoftRow</code> (a least-squares row by definition) and <code>ForceBalanceMAP</code> (a
+prior) do not meet it exactly. On a cropped mesh the mean runs over the interfaces whose
+tension is determined. Until 0.6.0 the first group, <code>Equilibrium</code> and the <code>Gram</code> route of
+<code>Variational</code> imposed it as a least-squares row of ones too; that row changed only the overall
+scale of their tensions, never a ratio (see <code>foambryo.junction_graph</code>).</p>
+<p><strong>Cost on large tissues.</strong> <code>Equilibrium</code>, <code>Variational</code> and <code>ForceBalance</code> solve dense systems only: on a
+1 866-cell tissue each took one to two hours with a peak of about 68 GiB, where <code>YoungDupre</code>, the default, takes
+seconds (see the user guide's page on large tissues).</p>
+<p>The three <code>ForceBalance*</code> members are <strong>one estimator under three normalisations</strong>, not
+three physical models; they exist as separate members so that the comparison between the
+three is a regenerable benchmark row rather than a one-off table. See
+<code>foambryo.force_balance_inference</code>.</p>
+<p><strong>Which methods read angles and which invert an operator, and why the distinction now has
+measured consequences.</strong> <code>YoungDupre</code>, <code>YoungDupreLocal</code>, <code>ProjectionYoungDupre</code>, <code>Lami</code>,
+<code>InvLami</code> and <code>LogLami</code> are all built from <em>measured contact angles</em> at triple junctions —
+they read the mesh's local geometry pointwise and never assemble or invert a global
+operator. <code>Cotan</code>, <code>InvCotan</code>, <code>Variational</code> and the three <code>ForceBalance*</code> members instead
+assemble a discrete operator over the whole mesh (an area/volume-gradient system, or its
+force-balance generalisation) and solve or invert it. <code>Equilibrium</code> is a geometric-edge
+balance and does not cleanly fall in either family (see its own note in
+<code>foambryo.validation.force_balance</code>). This split matters because mesh-reconstruction
+quality affects the two families very differently: on <code>dw3d</code>-reconstructed meshes, the
+operator-inverting family's error tracks the mesh's distance from mechanical equilibrium
+(<code>rho_free</code>) far more strongly than the angle-reading family's does, so an operator-
+inverting method can be dramatically more or less accurate depending on which meshing
+pipeline produced its input, while an angle-reading method is comparatively insensitive to
+it. See <code>dw3d</code>'s <code>BENCHMARKS.md</code> and this package's own <code>BENCHMARKS.md</code> for the numbers.</p>
+<p><strong>Degenerate junctions.</strong> <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and <code>LogLami</code> have coefficients that are
+infinite at a wedge of exactly 0 or 180 degrees (<code>1/sin</code>, <code>cot(phi/2)</code>, <code>log sin</code>). Such wedges occur
+on short triple lines whose faces are exactly coplanar (mesh vertices on the voxel lattice). These
+four methods leave such a line's equations out, with a <code>DegenerateWedgeWarning</code>; an interface left
+without any equation is <code>nan</code>. The other methods' coefficients stay finite and bounded there, and
+they are unchanged. See <code>DEGENERATE_WEDGE_TOLERANCE</code>.</p>
+<p><strong>The operator-inverting family is unreliable on reconstructed meshes, measured.</strong> On the
+benchmark cohort's shipped-default reconstructions <code>rho_free</code> -- the distance of the mesh
+from any equilibrium of the force-balance operator -- has median 0.578 against the
+reference meshes' 0.0118 (a factor of about 50), and all 40 equilibrium cases exceed the
+0.2 threshold at which <code>foambryo.uncertainty</code> reports that no surface tensions balance the
+mesh at all. Every <code>ForceBalance*</code> number obtained on a <code>dw3d</code> mesh, including every
+published comparison between reconstruction variants through this family, should be read
+with that floor in mind. See <code>foambryo.force_balance_inference</code>'s module docstring.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.tension_inference.VariationalRoute" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VariationalRoute</span>
+
+
+<a href="#foambryo.tension_inference.VariationalRoute" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Which linear algebra <code>TensionComputationMethod.Variational</code> uses to reach its answer.</p>
+<p>Both routes minimise the <em>same</em> discrete energy gradient; they differ in how, and the choice
+moves published numbers, which is why both are kept.</p>
+<ul>
+<li><code>Gram</code> (<strong>route P</strong>, the original): form the Gram normal equations <code>M^T M</code>, divide every
+  row by <strong>its own row sum</strong>, Schur-eliminate the pressures, then least-squares with the
+  mean-tension normalisation met exactly (<code>foambryo.junction_graph.solve_with_exact_gauge</code>;
+  until 0.6.0 it was a least-squares row of ones). It has no formulation for crop faces.</li>
+<li><code>Operator</code> (<strong>route Q</strong>, the default): minimise <code>||M beta||^2</code> directly through <code>M</code>, with the
+  normalisation eliminated by substitution. <code>M^T M</code> is never formed and there is no row
+  normalisation.</li>
+</ul>
+<p><code>TensionComputationMethod.Variational</code> always takes the default route,
+<code>VARIATIONAL_ROUTE_DEFAULT</code>; <code>Gram</code> is reachable only through the internal
+<code>_infer_tension_variational_yd(mesh, mean_tension, route=VariationalRoute.Gram)</code>.</p>
+<p><strong>The row normalisation is the substantive difference, and it has never been justified.</strong>
+Dividing normal-equation row <code>i</code> by <code>sum_j (M^T M)_ij</code> is not a symmetric preconditioner
+(it destroys the symmetry of the Gram matrix), it is not scale-invariant in any documented
+sense, and it has no derivation in the paper or its Supplementary Note. Measured on
+<code>benchmarking-dataset</code>: the divisors span
+a factor <strong>57-140 within a single mesh and change sign</strong>, so it is a genuine, arbitrary
+reweighting of the physics rows — not a numerical nicety. That is why the two routes give
+different answers at all (~1.4e-4 per tension).</p>
+<p><strong><code>Operator</code> is the default, chosen on measured evidence.</strong> See <code>VARIATIONAL_ROUTE_DEFAULT</code>
+and <code>foambryo_benchmarks/run_variational_route.py</code>. <code>Gram</code> stays reachable so every published
+number remains reproducible.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.tension_inference.DegenerateWedgeWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DegenerateWedgeWarning</span>
+
+
+<a href="#foambryo.tension_inference.DegenerateWedgeWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p>Triple lines with a wedge at 0 or 180 degrees were left out of a method whose coefficients are singular there.</p>
+<p>Emitted by <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and <code>LogLami</code>, once per call, naming how many lines were left
+out and how many interfaces were left without any equation (reported as <code>nan</code>).</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.tension_inference.infer_tensions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">infer_tensions</span>
+
+
+<a href="#foambryo.tension_inference.infer_tensions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Infer the relative surface tension of every interface of a mesh, by the chosen method.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze, in any length unit (the tensions do not depend on it).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The normalisation: the tensions are normalised so that
+their mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph
+(for <code>LogLami</code>, their geometric mean; <code>Equilibrium</code>, <code>Variational</code> and <code>ForceBalance</code>
+normalise the whole mesh at once; <code>ForceBalanceSoftRow</code> meets it only approximately
+and <code>ForceBalanceMAP</code> deliberately not exactly; see <code>TensionComputationMethod</code>).
+Only tension ratios are measured, so this sets the unit of the tensions. Defaults
+to 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>method to infer tensions. Defaults to
+<code>TensionComputationMethod.YoungDupre</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.tension_inference.TensionComputationMethod.YoungDupre">YoungDupre</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which trijunction angle convention the angle-reading
+methods (<code>ANGLE_READING_METHODS</code>) consume, one of
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>: <code>"chord"</code> (the default,
+bit-identical to every published number), <code>"quadric"</code> (the second-order reading),
+<code>"oriented_chord"</code> or <code>"oriented_quadric"</code> (the same readings with reflex wedges
+reported above 180 degrees). Keyword-only. A quadric reading that could not cover
+every trijunction face falls back to the chord there and emits an
+<code>AngleReadingCoverageWarning</code>; use :func:<code>infer_tensions_and_residuals_with_report</code>
+to get the coverage numbers instead of the warning.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="../wedge-refusal/#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which trijunction observations the angle-reading
+methods decline to use, and how -- see <code>foambryo.wedge_refusal</code>. Keyword-only;
+defaults to <code>NO_REFUSAL</code> (refusing nothing), which is <strong>bitwise</strong> the historical
+behaviour. A non-default policy on a method that reads no wedge angle raises rather
+than being ignored. Refusing rows can leave an interface, or a whole mesh, with no
+surviving junction line: those interfaces are reported <code>float("nan")</code>, never a
+number, and how often a policy does that is a number to report beside any accuracy
+it buys.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code> (the default), <code>"dense"</code> or <code>"sparse"</code>: how the linear
+systems are solved (<code>foambryo.linear_solves</code>). <code>"auto"</code> is dense below
+<code>sparse_threshold</code> unknowns and sparse at or above, and bitwise the dense result
+below it. <code>"sparse"</code> raises <code>ValueError</code> for a method with no sparse path
+(<code>Equilibrium</code>, <code>Variational</code>, <code>ForceBalance*</code>). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_threshold</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unknowns (interfaces) at which <code>"auto"</code> goes
+sparse; <code>None</code> (the default) is <code>foambryo.junction_graph.SPARSE_SOLVE_MIN_UNKNOWNS</code>
+(2 000). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>diagnostics</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>False</code> (the default), <code>True</code> or <code>"spectrum"</code>: also
+return a <code>foambryo.linear_solves.SolveDiagnostics</code>, last, with one record per solve
+(solver, shape, rank, residual norm, condition number, time; <code>"spectrum"</code> adds the
+extreme singular values of the sparse solves). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | <span title="tuple">tuple</span>[<span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>], <a class="autorefs autorefs-internal" title="SolveDiagnostics
+
+
+  
+      dataclass
+   (foambryo.linear_solves.SolveDiagnostics)" href="../linear-solves/#foambryo.linear_solves.SolveDiagnostics">SolveDiagnostics</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict[tuple[int, int], float]: map interface <code>(label_1, label_2)</code>, <code>label_1 &lt; label_2</code>,
+label 0 the exterior medium -&gt; relative tension on this interface. An interface whose
+tension the mesh does not determine is <code>float("nan")</code>, never a number: one with no
+triple line at all (a fully closed surface -- an engulfed cell, a sealed lumen), one
+whose every line was refused or left out, or, for <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and
+<code>LogLami</code>, one left without any equation by a degenerate wedge
+(<code>DegenerateWedgeWarning</code>). On a cropped mesh the interfaces made only of crop faces
+(<code>DcelData.crop_interfaces</code>) are absent. If the mesh's triple-junction graph is in
+more than one disconnected piece, or has any undetermined interface, this flat map
+holds tensions normalised separately in each piece, which are not on the same scale
+(a <code>JunctionGraphGaugeWarning</code> is emitted in that case); use
+:func:<code>infer_tensions_by_junction_component</code> to get each interface's piece
+explicitly, and never average or compare tensions across pieces from this map.
+With <code>diagnostics</code> on, the tuple <code>(map, SolveDiagnostics)</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>on an invalid <code>solver</code>, <code>sparse_threshold</code> or <code>diagnostics</code>; on an unknown
+<code>angle_reading</code>; on a non-default <code>angle_reading</code> or <code>refusal</code> with a method outside
+<code>ANGLE_READING_METHODS</code>; on <code>solver="sparse"</code> with <code>Equilibrium</code>, <code>Variational</code> or a
+<code>ForceBalance*</code> member; with <code>YoungDupreLocal</code>, on a quadric reading or on a mesh with
+no trijunctional edge; with <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> or <code>LogLami</code>, if the system
+still holds a non-finite coefficient after the degenerate lines are left out.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MalformedTripleLineError (foambryo.junction_graph.MalformedTripleLineError)" href="../junction-graph/#foambryo.junction_graph.MalformedTripleLineError">MalformedTripleLineError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if a triple line names an interface the mesh does not have
+(<code>foambryo.junction_graph</code>; not expected on a well-formed mesh).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Warns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>JunctionGraphGaugeWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when the junction graph is in several pieces or an interface
+is undetermined (the methods normalised per piece of the junction graph).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>AngleReadingCoverageWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when a quadric reading fell back to the chord on part of
+the mesh.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>DegenerateWedgeWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> or <code>LogLami</code> left out lines with a
+wedge at 0 or 180 degrees.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>SparseSolveFallbackWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when <code>lsqr</code> did not converge on a large system (the dense
+solve runs instead, or <code>lsqr</code>'s last iterate is returned if the dense one cannot fit
+in memory).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>DenseSolveMemoryWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when <code>solver="dense"</code> is forced on a system too large for the
+memory available.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.tension_inference.infer_tensions_and_residuals" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">infer_tensions_and_residuals</span>
+
+
+<a href="#foambryo.tension_inference.infer_tensions_and_residuals" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_and_residuals</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Infer the relative surface tensions by the chosen method, with the solve's residuals.</p>
+<p><code>infer_tensions</code> returns this function's second value. Every argument, warning and exception
+is <code>infer_tensions</code>'s; this function is where its <code>JunctionGraphGaugeWarning</code> and
+<code>AngleReadingCoverageWarning</code> are emitted.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze, in any length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The normalisation: the tensions are normalised so that
+their mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph
+(see :func:<code>infer_tensions</code> for the methods that normalise otherwise). Defaults to 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>method to infer tensions. Defaults to
+<code>TensionComputationMethod.YoungDupre</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.tension_inference.TensionComputationMethod.YoungDupre">YoungDupre</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>; <code>"chord"</code> is the default.
+Keyword-only. See :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="../wedge-refusal/#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which trijunction observations the angle-reading
+methods decline to use, and how -- see <code>foambryo.wedge_refusal</code>. Keyword-only;
+defaults to <code>NO_REFUSAL</code> (refusing nothing), which is <strong>bitwise</strong> the historical
+behaviour. See :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code> (the default), <code>"dense"</code> or <code>"sparse"</code>, as for
+:func:<code>infer_tensions</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_threshold</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unknowns at which <code>"auto"</code> goes sparse; <code>None</code>
+(the default) is <code>foambryo.junction_graph.SPARSE_SOLVE_MIN_UNKNOWNS</code> (2 000).
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>diagnostics</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>False</code> (the default), <code>True</code> or <code>"spectrum"</code>: also
+return a <code>foambryo.linear_solves.SolveDiagnostics</code>, last. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64]]:
+- the relative tensions as an array, in the map's key order (sorted interfaces);
+- map interface <code>(label_1, label_2)</code> -&gt; tension on this interface. See
+  :func:<code>infer_tensions</code>'s return value for the undetermined-interface (<code>nan</code>) and
+  junction-graph (normalised per piece) caveats -- they apply here identically;
+- the squared norm of the residual of the solved equations, without the
+  normalisation (which is met exactly and adds none): a length-1 array, one entry per
+  connected piece of the junction graph when there are several, empty when no
+  interface is determined; in log space for <code>LogLami</code>;
+- with <code>diagnostics</code> on, a fourth value: the <code>SolveDiagnostics</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MalformedTripleLineError (foambryo.junction_graph.MalformedTripleLineError)" href="../junction-graph/#foambryo.junction_graph.MalformedTripleLineError">MalformedTripleLineError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.tension_inference.infer_tensions_and_residuals_with_report" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">infer_tensions_and_residuals_with_report</span>
+
+
+<a href="#foambryo.tension_inference.infer_tensions_and_residuals_with_report" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_and_residuals_with_report</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>:func:<code>infer_tensions_and_residuals</code>, plus which trijunction faces the reading covered.</p>
+<p>The reporting entry point, and the one to use for anything that will be published or
+benchmarked. It emits neither <code>AngleReadingCoverageWarning</code> nor <code>JunctionGraphGaugeWarning</code>:
+the caller holds the coverage report, and can read the junction graph's pieces with
+:func:<code>infer_tensions_by_junction_component</code>. Every other warning is
+:func:<code>infer_tensions</code>'s.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze, in any length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The normalisation: the tensions are normalised so that
+their mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph
+(see :func:<code>infer_tensions</code> for the methods that normalise otherwise). Defaults to 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>method to infer tensions. Defaults to
+<code>TensionComputationMethod.YoungDupre</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.tension_inference.TensionComputationMethod.YoungDupre">YoungDupre</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>; <code>"chord"</code> is the default.
+Keyword-only. See :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="../wedge-refusal/#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which trijunction observations the angle-reading
+methods decline to use, and how -- see <code>foambryo.wedge_refusal</code>. Keyword-only;
+defaults to <code>NO_REFUSAL</code> (refusing nothing), which is <strong>bitwise</strong> the historical
+behaviour. See :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code> (the default), <code>"dense"</code> or <code>"sparse"</code>, as for
+:func:<code>infer_tensions</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_threshold</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unknowns at which <code>"auto"</code> goes sparse; <code>None</code>
+(the default) is <code>foambryo.junction_graph.SPARSE_SOLVE_MIN_UNKNOWNS</code> (2 000).
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>diagnostics</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>False</code> (the default), <code>True</code> or <code>"spectrum"</code>: also
+return a <code>foambryo.linear_solves.SolveDiagnostics</code>, last. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple[NDArray[np.float64], dict[tuple[int, int], float], NDArray[np.float64],
+AngleReadingReport]: the three values :func:<code>infer_tensions_and_residuals</code> returns,
+plus the coverage report. For a method outside <code>ANGLE_READING_METHODS</code>, or for a
+chord reading, the report is the trivial complete-coverage one. With <code>diagnostics</code>
+on, a fifth value: the <code>SolveDiagnostics</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>; in particular if <code>angle_reading</code> is not <code>"chord"</code>
+and <code>mode</code> does not read angles.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MalformedTripleLineError (foambryo.junction_graph.MalformedTripleLineError)" href="../junction-graph/#foambryo.junction_graph.MalformedTripleLineError">MalformedTripleLineError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.tension_inference.infer_tensions_by_junction_component" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">infer_tensions_by_junction_component</span>
+
+
+<a href="#foambryo.tension_inference.infer_tensions_by_junction_component" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_by_junction_component</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentTensionSolution</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ComponentTensionSolution</span><span class="p">,</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Infer tensions with each connected piece of the triple-junction graph made explicit.</p>
+<p>Two interfaces are coupled only when they meet on a triple line. When the graph of these
+couplings falls into several pieces, each piece's tensions are determined only up to their own
+scale: this function normalises each piece separately (its mean tension is <code>mean_tension</code>,
+exactly) and says which interface belongs to which piece, rather than collapsing them into one
+map. See <code>foambryo.junction_graph</code>'s module docstring for the mechanism.</p>
+<p>Use this instead of <code>infer_tensions</code>/<code>infer_tensions_and_residuals</code> whenever a mesh might
+have a disconnected triple-junction graph (12 of the 72 simulator meshes of 91-166 cells in
+<code>BENCHMARKS.md</code> do) or a fully closed interface, and the caller needs to know <em>which</em> interfaces
+are (or are not) on a common scale before comparing or aggregating their tensions. It always reads
+the chord angles; it emits no <code>JunctionGraphGaugeWarning</code>, since the result carries what the warning would say.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze, in any length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The normalisation, applied <strong>per piece</strong>: the tensions of
+each connected piece are normalised so that their mean is <code>mean_tension</code>, exactly (for
+<code>LogLami</code>, their geometric mean). Defaults to 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Which method to use: one of <code>YoungDupre</code>,
+<code>YoungDupreLocal</code>, <code>ProjectionYoungDupre</code>, <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code>, <code>InvLami</code> and
+<code>LogLami</code>. Defaults to <code>YoungDupre</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.tension_inference.TensionComputationMethod.YoungDupre">YoungDupre</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="../wedge-refusal/#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which trijunction observations the estimator declines,
+and how (<code>foambryo.wedge_refusal</code>). Keyword-only; defaults to <code>NO_REFUSAL</code> (refusing
+nothing), which is bitwise the historical behaviour. This is the entry point to prefer
+under a refusal policy: refusing rows can itself split the junction graph, and this
+function hands the caller the resulting pieces and undetermined interfaces rather
+than blending them.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code> (the default), <code>"dense"</code> or <code>"sparse"</code>: how the linear
+systems are solved (<code>foambryo.linear_solves</code>). <code>"auto"</code> is dense below
+<code>sparse_threshold</code> unknowns and sparse at or above, and bitwise the dense result
+below it. Every method accepted here has a sparse path. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_threshold</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unknowns (interfaces of one piece) at which
+<code>"auto"</code> goes sparse; <code>None</code> (the default) is
+<code>foambryo.junction_graph.SPARSE_SOLVE_MIN_UNKNOWNS</code> (2 000). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>diagnostics</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>False</code> (the default), <code>True</code> or <code>"spectrum"</code>: also
+return a <code>foambryo.linear_solves.SolveDiagnostics</code>, last, with one record per solve
+(solver, shape, rank, residual norm, condition number, time; <code>"spectrum"</code> adds the
+extreme singular values of the sparse solves). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>ComponentTensionSolution</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a> | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <a class="autorefs autorefs-internal" title="SolveDiagnostics
+
+
+  
+      dataclass
+   (foambryo.linear_solves.SolveDiagnostics)" href="../linear-solves/#foambryo.linear_solves.SolveDiagnostics">SolveDiagnostics</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>dict_tensions</code> maps every interface <code>(label_1, label_2)</code>,
+<code>label_1 &lt; label_2</code>, to its relative tension, or <code>float("nan")</code> if it is undetermined
+(no surviving triple line); <code>component_of</code> maps every interface to its piece, or
+<code>None</code> if undetermined; <code>gauge_notes</code> states, per piece, the normalisation applied;
+<code>solver_notes</code> which solver ran on each piece. Tensions of different pieces are on
+different scales and must not be compared. On a cropped mesh the crop interfaces are
+absent. With <code>diagnostics</code> on, the tuple <code>(solution, SolveDiagnostics)</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>mode</code> is <code>Equilibrium</code>, <code>Variational</code> or a <code>ForceBalance*</code> member -- these
+methods' coupling structure is not the triple-junction graph (see
+<code>foambryo.junction_graph</code>'s "Scope: which methods"), so this decomposition does
+not apply to them; use <code>infer_tensions(mesh, mean_tension, mode)</code> instead. Also on an
+invalid solver option, and as :func:<code>infer_tensions</code> for the method itself.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MalformedTripleLineError (foambryo.junction_graph.MalformedTripleLineError)" href="../junction-graph/#foambryo.junction_graph.MalformedTripleLineError">MalformedTripleLineError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Warns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>DegenerateWedgeWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>SparseSolveFallbackWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>DenseSolveMemoryWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as :func:<code>infer_tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.tension_inference.compute_residual_junctions_dict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">compute_residual_junctions_dict</span>
+
+
+<a href="#foambryo.tension_inference.compute_residual_junctions_dict" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_residual_junctions_dict</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute residuals on trijunctions.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Inferred tensions.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Quantile to apply. Defaults to 0.05.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>. Keyword-only. Defaults to
+<code>"chord"</code>. Pass the reading the tensions were inferred with, or the residual is
+measured against a different angle convention than the one it is judging.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict[tuple[int, int, int], float]: Map trijunction -&gt; residue. On a cropped mesh
+(<code>foambryo.crop_faces</code>), only the junction lines the tension methods read: the
+edges that touch a crop face are left out of the line means, and a line with no
+other edge is absent.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

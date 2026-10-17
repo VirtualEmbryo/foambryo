@@ -1,0 +1,2746 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../api/validation/">
+      
+      
+        <link rel="next" href="../release-notes/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Changelog - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#070-2026-10-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.7.0 — 2026-10-17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.7.0 — 2026-10-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepared-for-060-4-october-2026-not-published" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prepared for 0.6.0 (4 October 2026, not published)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.5.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meshes-you-reconstruct-with-dw3d-050-are-different-junction-relocation-is-on-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meshes you reconstruct with dw3d 0.5.0 are different: junction relocation is on by default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-second-order-angle-reading-no-longer-depends-on-the-units-a-mesh-is-expressed-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The second-order angle reading no longer depends on the units a mesh is expressed in
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-reading-selectors-that-report-a-folded-wedge-as-folded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two reading selectors that report a folded wedge as folded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anglereadingcoveragewarning-now-says-how-much-was-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingCoverageWarning now says how much was covered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-force-viewer-works-with-numpy-2-and-draws-each-cells-stress-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The force viewer works with numpy 2 and draws each cell's stress correctly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-visible-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User-visible text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pressure-inference-refuses-an-undetermined-tension-instead-of-returning-a-non-finite-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pressure inference refuses an undetermined tension instead of returning a non-finite field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-force-balance-family-now-warns-that-it-is-unreliable-on-reconstructed-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The force-balance family now warns that it is unreliable on reconstructed meshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-angle-reading-methods-can-now-decline-a-folded-trijunction-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The angle-reading methods can now decline a folded trijunction observation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#042" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-a-crash-on-some-real-meshes-in-the-default-tension-inference-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed a crash on some real meshes in the default tension-inference path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-a-performance-regression-the-junctiongraphgaugewarning-check-above-introduced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed a performance regression the JunctionGraphGaugeWarning check above introduced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added-line_coverage_fraction-to-the-second-order-angle-readings-coverage-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added line_coverage_fraction to the second-order angle reading's coverage report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dropped-internal-report-citations-from-user-visible-error-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dropped internal report citations from user-visible error text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corrected-one-measurement-affected-by-the-crash-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrected one measurement affected by the crash fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-note-on-this-releases-published-accuracy-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A note on this release's published accuracy numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-capability-an-opt-in-second-order-trijunction-angle-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New capability — an opt-in second-order trijunction angle reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-in-the-benchmark-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New in the benchmark harness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-behaviour-changes-several-methods-now-give-correct-numbers-instead-of-wrong-or-missing-ones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default behaviour changes — several methods now give correct numbers instead of wrong or missing ones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-corrected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation corrected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#070-2026-10-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.7.0 — 2026-10-17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.7.0 — 2026-10-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepared-for-060-4-october-2026-not-published" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prepared for 0.6.0 (4 October 2026, not published)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.5.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meshes-you-reconstruct-with-dw3d-050-are-different-junction-relocation-is-on-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meshes you reconstruct with dw3d 0.5.0 are different: junction relocation is on by default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-second-order-angle-reading-no-longer-depends-on-the-units-a-mesh-is-expressed-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The second-order angle reading no longer depends on the units a mesh is expressed in
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-reading-selectors-that-report-a-folded-wedge-as-folded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two reading selectors that report a folded wedge as folded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anglereadingcoveragewarning-now-says-how-much-was-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingCoverageWarning now says how much was covered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-force-viewer-works-with-numpy-2-and-draws-each-cells-stress-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The force viewer works with numpy 2 and draws each cell's stress correctly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-visible-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User-visible text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pressure-inference-refuses-an-undetermined-tension-instead-of-returning-a-non-finite-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pressure inference refuses an undetermined tension instead of returning a non-finite field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-force-balance-family-now-warns-that-it-is-unreliable-on-reconstructed-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The force-balance family now warns that it is unreliable on reconstructed meshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-angle-reading-methods-can-now-decline-a-folded-trijunction-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The angle-reading methods can now decline a folded trijunction observation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#042" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-a-crash-on-some-real-meshes-in-the-default-tension-inference-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed a crash on some real meshes in the default tension-inference path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-a-performance-regression-the-junctiongraphgaugewarning-check-above-introduced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed a performance regression the JunctionGraphGaugeWarning check above introduced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added-line_coverage_fraction-to-the-second-order-angle-readings-coverage-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added line_coverage_fraction to the second-order angle reading's coverage report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dropped-internal-report-citations-from-user-visible-error-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dropped internal report citations from user-visible error text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corrected-one-measurement-affected-by-the-crash-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrected one measurement affected by the crash fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-note-on-this-releases-published-accuracy-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A note on this release's published accuracy numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.4.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-capability-an-opt-in-second-order-trijunction-angle-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New capability — an opt-in second-order trijunction angle reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-in-the-benchmark-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New in the benchmark harness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-behaviour-changes-several-methods-now-give-correct-numbers-instead-of-wrong-or-missing-ones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default behaviour changes — several methods now give correct numbers instead of wrong or missing ones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-corrected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation corrected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>User-facing changes only, organised by what a user experiences.</p>
+<h2 id="070-2026-10-17">0.7.0 — 2026-10-17<a class="headerlink" href="#070-2026-10-17" title="Permanent link">&para;</a></h2>
+<p>0.6.0 was prepared (4 October 2026) but not published on PyPI: its changes are part of 0.7.0, listed at the end of this section under "Prepared for 0.6.0". 0.7.0 is the first release on PyPI since 0.5.1.</p>
+<p>Recent work on dw3d and foambryo is part of a collaboration with Alejandro Aguilera Castrejon (Janelia Research Campus, Howard Hughes Medical Institute). We thank him and his Janelia colleagues Adam L. Taylor, Wenhong Li and Francesco Roncato. Adam L. Taylor found the border-triangle winding defect fixed in 0.6.0 and pointed us to the seed-extraction and dense tension-solve bottlenecks on large tissues.</p>
+<ul>
+<li><strong>Documentation.</strong> The README is shorter and points to a user guide in <code>docs/</code> (methods, cropped tissues, anisotropic voxels, large tissues, seed ensembles, viewers), from which a documentation website is built with MkDocs (<code>mkdocs.yml</code>), with an API reference generated from the docstrings. New examples, each runnable on a tissue it generates: <code>anisotropic_voxels.py</code>, <code>cropped_tissue.py</code>, <code>seed_ensembles.py</code>, <code>large_tissue_solvers.py</code>, <code>polyscope_viewer.py</code>; <code>command_line_example.sh</code> now runs every sub-command, <code>--no-pressures</code>, <code>--diagnostics</code> and <code>foambryo view --figure</code>. The docstrings of the public functions were checked against the code: the mean-tension constraint is described as the exact normalisation it now is. No number changes.</li>
+<li><strong>Dependencies: the minimum versions are the oldest with which the test suite passes</strong>, on Python 3.11: <code>delaunay-watershed-3d&gt;=0.7.0</code> (the command's <code>mesh</code> and <code>infer-over-seeds</code> need its physical-units reconstruction), <code>numpy&gt;=2.0.0</code>, <code>scipy&gt;=1.13.0</code>, <code>networkx&gt;=3.2</code>, <code>trimesh&gt;=4.0.0</code>; extras <code>polyscope&gt;=2.6.1</code> (the first with every call the viewer makes), <code>matplotlib&gt;=3.8.4</code>, <code>tifffile&gt;=2023.1.23</code>, <code>torch&gt;=2.3.0</code>. The package metadata now lists the source, documentation, changelog and issue-tracker URLs.</li>
+<li><strong>Fixed: the Laplace pressure methods added <code>base_pressure</code> twice to every cell</strong> (only with a non-zero <code>base_pressure</code>); present since the first version, 0.5.1 included. With <code>Laplace</code> or <code>WeightedLaplace</code>, every cell's pressure came out <code>base_pressure</code> too high, through <code>infer_pressures</code>, <code>infer_forces</code>, <code>foambryo infer --base-pressure</code> and the viewers: the solve pins the medium at <code>base_pressure</code>, so its pressures already include it, and it was added again. The medium's pressure, the differences between cells and the variational method (the default) were right. With the default <code>base_pressure=0</code> every number is unchanged, bitwise.</li>
+<li><strong><code>foambryo.validation.read_rec</code> and <code>read_mesh</code> read text <code>.rec</code> files.</strong> They read only the binary layout, while delaunay-watershed-3d writes <code>.rec</code> files as text by default, and so does <code>foambryo mesh</code>: such a file raised an error. They now tell the two layouts apart from the first bytes and read both, as <code>dw3d.io.load_rec</code> does; a metadata appendix is ignored. Binary files read as before.</li>
+<li><strong><code>foambryo.viewing.plot_valid_junctions</code> no longer fails when no triple line can be judged</strong> (a mesh without triple lines, or one whose every line has a crop interface): it raised numpy's "zero-size array" <code>ValueError</code>. It now shows the mesh alone and says so with a <code>UserWarning</code>. It also no longer fails when every judged line is bad and none is left unjudged (numpy's "need at least one array to concatenate"): it draws the red lines only.</li>
+<li><strong>Error bars refuse a large tissue at once.</strong> <code>infer_tensions_with_uncertainty</code> and <code>compute_inference_diagnostics</code> compute their diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy's LAPACK cannot take past <code>2**31 - 1</code> entries: on a 1 866-cell tissue they failed after about 20 minutes and 55 GiB, for <code>YoungDupre</code> too. They now raise <code>ValueError</code> before building anything, with the operator's size, the limit (<code>foambryo.uncertainty.DENSE_OPERATOR_ENTRY_LIMIT</code>) and what to use instead (<code>infer_tensions</code>; the seed spread of <code>infer_tensions_over_seeds</code>, a lower bound on the error). A mesh of the default reconstruction reaches the limit at about 1 300 cells of real size. A known limitation of 0.7.0; every smaller mesh is unchanged, bitwise.</li>
+<li><strong>A saved figure no longer shows a local path.</strong> <code>foambryo view --results OUTDIR --figure</code> wrote OUTDIR as typed in the caption (<code>Values: read from …</code>), so a figure made with an absolute path showed the folders above the results; the caption and the window's panel now name the results folder alone. No number changes.</li>
+<li><strong>The <code>foambryo</code> command starts without matplotlib.</strong> After <code>pip install foambryo</code> without the <code>viewing</code> extra, every sub-command, <code>--help</code> and <code>--version</code> failed with <code>ModuleNotFoundError: matplotlib</code>, because building the parser of <code>foambryo view</code> read one default value from the viewer's figure module. It no longer does.</li>
+<li><strong>The <code>LineBootstrap</code> calibration note says what was measured, in plain words.</strong> The note stored on every <code>infer_tensions_with_uncertainty</code> result referred to "the per-edge Young-Dupre work"; it now says that resampling whole triple lines changes how much each line weighs against the others, and that changing those weights by a factor of about 4 was measured to change the error of the tensions by two orders of magnitude. No number changes.</li>
+<li><strong>The reconstruction estimate of a small tissue reads "under 1 s"</strong>, not "about under 1 s (under 1 s-under 1 s)": <code>ReconstructionCostEstimate.text()</code>, and so the napari plugin and the viewer's window, say a quantity once when its band adds nothing ("under 1 s and under 1 MiB" for the smallest), and "up to 2 s" when the central value is under a second and the high end is not; the window's seed-ensemble status no longer reads "about under 1 s". Every other estimate reads as before; the estimate itself is unchanged.</li>
+<li><strong><code>foambryo view --results</code> names how an interface missing from an ensemble is drawn</strong>: the warning said "drawn grey"; it now says "drawn undetermined", as they are drawn (a green outline, like any undetermined value).</li>
+<li><strong>Tensions are coloured from blue to red through light grey, centred on the mean tension.</strong> Every front end (the viewer's window, <code>foambryo view --colour-bars</code>, and the napari plugin through <code>foambryo.colour_scales</code>) now colours surface tensions with matplotlib's <code>coolwarm</code> instead of <code>jet</code>: a tension equal to the mean tension (<code>mean_tension</code>, 1 by default) is light grey, lower tensions are blue, higher ones red. The range is symmetric around the mean, its half-width the farther of the 5 % and 95 % quantiles from it (<code>tension_colour_range</code>), so both quantiles stay inside it; the bar's middle tick is the mean. Pressures keep their map. Other quantities the viewer can draw on interfaces (a seed spread, a residual) keep <code>jet</code>. No number changes.</li>
+<li><strong>What has no value no longer looks like one.</strong> An undetermined value (<code>nan</code>) is drawn green (#1b9e77), a colour far from every colour of the tension and pressure maps, on white and on black backgrounds; the former grey sat next to the new map's middle. Crop faces are drawn as see-through glass with their edges, and the coloured surface no longer draws them underneath; the colour bars add a "crop face" swatch when the mesh has crop faces. <code>foambryo.colour_scales</code> gains <code>tension_colour_range</code>, <code>tension_colour_fractions</code>, <code>quantity_colours</code>, <code>TENSION_COLOUR_MAP</code> and the crop-face constants.</li>
+<li><strong>No pressure colour vanishes on a black or a white background.</strong> Pressures keep <code>magma</code>, reversed, but trimmed to its 10–90 % range (a fraction <code>x</code> of the scale is drawn <code>magma(0.1 + 0.8 x)</code>): the whole map ran from black (the highest pressures) to near-white (the lowest), so on napari's black canvas the highest-pressure cells disappeared, and on a white background the lowest. Every front end and the saved colour bars change at once (<code>foambryo.colour_scales.pressure_colours</code>, with the new <code>PRESSURE_COLOUR_MAP</code> and <code>PRESSURE_COLOUR_MAP_RANGE</code>). The scale itself, its ends and every value are unchanged.</li>
+<li><strong>The viewers' backgrounds, in one place: <code>foambryo.colour_scales.BACKGROUND_COLOURS</code></strong> (black, dark grey 0.20, light grey 0.70, white), the choices every front end offers, so that a colour hidden on one background can be seen on another. The light grey is not lighter because the tension map's middle (the mean tension) is light grey.</li>
+<li><strong>A reconstruction's estimate, before it runs: <code>foambryo.reconstruction_cost</code>.</strong> <code>estimate_reconstruction_cost( voxels)</code> gives the wall time and peak memory of <code>foambryo mesh</code>'s reconstruction, each with a band, from the voxels handed to delaunay-watershed-3d (<code>voxels_handed_to_dw3d(shape, spacing)</code>: an anisotropic mask counts its voxels after resampling to cubic voxels). Power laws fitted to seven sets of measured reconstructions, from aggregates of 2 to 10 cells to a 1 866-cell tissue, on one machine; the band is the largest in-sample ratio, not a validated interval. Front ends that reconstruct (the viewer started from a mask, the napari plugin) read it from here.</li>
+<li><strong>The force viewer draws a mesh with an interface made only of crop faces.</strong> Its stress tensors used to fail on such a mesh with a <code>KeyError</code>.</li>
+<li><strong>Exploding the view keeps the graph on the cells.</strong> Each explode used to add the cells' displacements to the mesh's own cell centroids (<code>mesh.centroids</code>), so a second explode, or a second plot of the same mesh, drew the graph's nodes, its edges and the stress tensors' crosses further and further from their cells (after 24 coefficients, the farthest node was 4.6 from its cell on a benchmark tissue 1.4 across, and 1 490 on a 90-cell tissue 340 across). Every node now sits at its exploded cell's barycentre, for every coefficient, and <code>mesh.centroids</code> is never changed. The sphere-fit residuals drawn on an exploded surface are those of the unexploded mesh, bitwise (they were fitted to translated vertices, a 1e-12 relative difference). No inferred number changes: tensions, pressures and stress tensors were and remain bitwise the same after an explode.</li>
+<li><strong>The viewer's window: a choice of background.</strong> The panel offers white (Polyscope's), light grey, dark grey and black (<code>foambryo.colour_scales.BACKGROUND_COLOURS</code>, the napari plugin's choices too), or a custom colour; on a dark background the scale bar, the frame, their labels and the graph view's black nodes are drawn light. A background set in Polyscope's own menu is followed too. Polyscope tone-maps its background (a grey of 0.2 was shown 0.5): the window hands it the value it shows as the colour chosen.</li>
+<li><strong>The viewer's window: tensions first, live explode, a frame, Export, and <code>view_mask</code>.</strong> When tensions and pressures are both inferred, the surface shows the tensions first (the panel switches to the pressures). An undetermined tension's interface is drawn as its green outline, without fill; crop faces as edged glass, which the panel can hide. Moving the explode coefficient redraws the exploded view at once: the window prepares each view on a background thread and keeps turning, also on large tissues. An optional x, y, z frame (three segments of a round length in the mesh's unit, labelled) can be shown and is written in saved figures. <em>Export</em> writes, in a folder, <code>foambryo infer</code>'s files for the values shown, with the command's writers: <code>tensions.csv</code>, <code>pressures.csv</code> (when inferred), <code>solves.csv</code> with diagnostics (a new <em>diagnostics</em> choice), <code>run.json</code>, and <code>colour_bars.png</code> as <code>foambryo view --colour-bars</code> writes it; it asks <em>Replace</em> or <em>Cancel</em> when the folder holds foambryo's files and never touches another file. <code>foambryo.viewing.view_mask(mask, spacing, ...)</code> opens from Python the window <code>foambryo view MASK</code> opens, with the same options and defaults.</li>
+<li>
+<p><strong>The viewer starts from a mask, and explodes and cuts the tissue.</strong> <code>foambryo view MASK --spacing DZ DY DX</code> opens the segmentation in the Polyscope window (its cells in one colour each), reconstructs it there as <code>foambryo mesh</code> does and infers as <code>foambryo infer</code> or <code>foambryo infer-over-seeds</code> does: each step runs in a separate process, so the window stays responsive, shows the elapsed time and an estimate, and can cancel it. In every viewer window the panel now explodes the tissue (the scattered view, with its coefficient; <code>foambryo view --scattered [COEFF]</code>) and cuts it with a plane normal to z, y or x, and offers the tensions only (<code>foambryo view --no-pressures</code>) and the solver, with the <code>foambryo infer</code> command line that gives the numbers shown.</p>
+</li>
+<li>
+<p><strong>The viewer's window shows its scales and the library's options.</strong> <code>foambryo view</code> and the Polyscope viewer functions now draw, in a panel of the window, the colour bars of what is shown (the library's own colours over the library's ranges), which call produced the colours, and a length scale bar under the tissue when the mesh records its unit. <em>Save figure</em> writes the view with its bars and scale bar, <em>Save colour bars</em> the bars (PNG, PDF or SVG; a click never overwrites a file); from the command, <code>foambryo view MESH --figure FILE</code>, and from Python <code>plot_force_inference(..., save_figure=PATH)</code>. The viewer functions and <code>foambryo view</code> take <code>infer</code>'s options (<code>mode_tension</code>, <code>mode_pressure</code>, <code>mean_tension</code>, <code>base_pressure</code>, <code>solver</code>; the same defaults), with the same numbers bit for bit as <code>foambryo infer</code>, and the panel can switch the methods and recompute. <code>foambryo view --results</code> also reads what <code>foambryo infer-over-seeds</code> wrote: the ensemble tensions on the mesh, the seed spread, and the interfaces found by fewer than half of the seeds. <strong>Colours are brighter</strong>: Polyscope drew every coloured surface about 15 % darker than its colour bar (it shades the back of a triangle darker, and the outside of a tissue is the back of its triangles); the surface now draws both sides alike. A refused tension inference in <code>foambryo view</code> exits 4 with the library's message instead of a traceback.</p>
+</li>
+<li>
+<p><strong><code>foambryo infer --no-pressures</code>: the tensions only.</strong> When the pressures are not needed, the command makes only the first of <code>infer_forces</code>' two calls, <code>infer_tensions</code> with the same options (bitwise the same tensions), writes no <code>pressures.csv</code>, and <code>run.json</code> says that the pressures were not computed. In Python, <code>infer_tensions_then_pressures(..., with_pressures=False)</code> does the same.</p>
+</li>
+<li><strong>The solve diagnostics as a table, <code>solves.csv</code>.</strong> With <code>--diagnostics basic</code> or <code>spectrum</code>, <code>foambryo infer</code> also writes one row per linear solve (which system, the solver used, equations and unknowns, rank, residual, condition number, iterations), the values <code>run.json</code> records under <code>solves</code>, readable in a spreadsheet; <code>foambryo.results.write_solve_table</code> / <code>read_solve_table</code> write and read it. <code>--overwrite</code> deletes it with the other outputs.</li>
+<li>
+<p><strong><code>foambryo mesh</code>'s mask report is information.</strong> The line printed before the reconstruction now begins <code>mask, for information (nothing is changed):</code>; segmentations are reconstructed as they are.</p>
+</li>
+<li>
+<p><strong>What the <code>foambryo</code> command does is public, for other front ends.</strong> A front end such as a napari plugin can now give the command's numbers and write its files by calling the functions the command calls, rather than a copy of them:</p>
+</li>
+<li><code>foambryo.segmentation_masks</code>: <code>read_segmentation_mask</code> and <code>check_segmentation_mask</code> (the command's mask reading and checks, with its messages), and <code>segmentation_mask_report</code>, which counts what a reconstruction will meet without changing the mask: the cells, those touching the image box (they become cut cells), those in several pieces, the pieces of medium the tissue encloses, and the labels below 5 % of the median cell;</li>
+<li><code>reconstruct_mask(mask, spacing)</code>: <code>foambryo mesh</code>'s reconstruction, returned as a <code>MaskReconstruction</code> that holds the mesh's arrays and the bytes of its <code>.rec</code> file, so it pickles to the size of the mesh and writes <code>foambryo mesh</code>'s file byte for byte; its <code>mesh()</code> gives bitwise the numbers of <code>dcel_mesh_from_segmentation_mask(mask, spacing=spacing)</code>;</li>
+<li><code>infer_tensions_then_pressures</code>: <code>infer_forces</code>, bitwise, returning an <code>InferenceOutcome</code> that keeps the tensions when the pressure solve refuses them, as <code>foambryo infer</code> does;</li>
+<li><code>foambryo.results</code> (the tables, the run record and its builders, the methods' command-line spellings, the warning counts) and <code>foambryo.colour_scales</code> (the viewer's colour scales and bars);</li>
+<li><code>infer_tensions_over_seeds(progress=...)</code>, called once per seed, and <code>PressureComputationMethod.has_crop_face_formulation</code>, which says which pressure methods a cropped mesh accepts (only <code>Variational</code>).</li>
+</ul>
+<p>The command now calls these functions; its tests pass unchanged, and every number and file is what it was.</p>
+<ul>
+<li><strong>Tensions from several reconstructions: <code>infer_tensions_over_seeds</code>.</strong> delaunay-watershed-3d dithers its tessellation points with a seed, and another seed gives slightly different tensions: about 5 % from seed to seed on the benchmarking dataset, 13–14 % on tissues with cells of real size, 21 % on a 110-cell and a 1 866-cell tissue. The new function reconstructs a mask at a fixed list of seeds (0 to 7 by default), infers each mesh's tensions and averages them per interface. It returns the ensemble tension, the standard deviation over the seeds (absolute, and relative to the tension), how many seeds found each interface, a flag for the interfaces found by fewer than half of them, and each seed's own tensions and reconstruction record. Against ground truth, 8 seeds lowered the median relative tension error from 0.152 to 0.123 on synthetic tissues with cells of real size (12 of 12 lower) and from 0.077 to 0.064 on the benchmarking dataset (35 of 42 lower), both against a single seed on average. Against one reconstruction at the default seed, which is what <code>infer_tensions</code> returns, the benchmark's median fell from 0.078 to 0.064, lower on 23 of the 42 cases.</li>
+<li>The seed spread is a lower bound on the error, not an error bar: a single seed's ±1 SD interval held the truth for about half of the interfaces.</li>
+<li><code>seeds=[42]</code> reproduces <code>infer_tensions</code> on <code>dcel_mesh_from_segmentation_mask</code>'s mesh bit for bit.</li>
+<li><code>max_workers</code> runs seeds in parallel processes, without changing the result.</li>
+<li><code>combine="angles"</code> (averaging the contact angles, then one <code>YoungDupre</code> solve) is experimental and warns with <code>SeedEnsembleExperimentalWarning</code>.</li>
+</ul>
+<p>Every existing function is unchanged.
+- <strong><code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and <code>LogLami</code> no longer break on a degenerate junction.</strong> A triple line whose wedge angle is exactly 0 or 180 degrees (two films lying in one plane, on short lines of meshes whose vertices sit on the voxel lattice) gives these four methods infinite coefficients: <code>1/sin</code>, <code>cot(phi/2)</code>, <code>log sin</code>. On a 1 866-cell tissue this made all four systems non-finite: <code>lsqr</code> ran to its iteration limit and the dense fallback ran on <code>nan</code>. On 5 of 484 embryo frames, <code>InvCotan</code> and <code>Lami</code> returned tensions the data did not determine (a row ~1e15 times the others). Such a line's equations are now left out, with a <code>DegenerateWedgeWarning</code> naming how many lines were left out and how many interfaces were left without any equation (reported as <code>nan</code>). These four methods also refuse to solve a system that still holds a non-finite coefficient. A wedge counts as degenerate within <code>DEGENERATE_WEDGE_TOLERANCE</code> = <code>sqrt(8 eps)</code> (4.2e-8 rad) of 0 or 180 degrees, the rounding of the angle reading itself. The other nine methods are unchanged. <strong>On every mesh without such a line, every number is bitwise what it was.</strong>
+- <strong>Cropped tissues are supported.</strong> A tissue imaged in part has cells the image boundary cuts, and the mesh closes them with <strong>crop faces</strong>: triangles on the boundary where the mask's cell reaches it, labelled like contact with the medium although nothing beyond them was observed. Read as medium contact they bias the tensions near the crop and the pressures of the cells they close. A mesh now carries them as a mask, <code>DcelData(..., crop_faces=...)</code>, filled by <code>dcel_mesh_from_segmentation_mask</code> from delaunay-watershed-3d's reconstruction and by <code>dcel_mesh_from_file</code> from <code>.rec</code> and <code>.vtk</code> files that record them. Then:
+  - <strong>tensions</strong>: a crop face, and every junction edge and vertex that touches it, enters no equation, in all 13 methods; the rest of a junction line that ends on the crop still counts. An interface made only of crop faces is absent from the tension map. An interface left with no equation is <code>nan</code>, as before;
+  - <strong>pressures</strong>: the cells the crop cuts (<code>DcelData.cut_cells</code>) are solved for and reported as <code>nan</code>, with a <code>CutCellPressureWarning</code> naming them; the other cells' pressures are reported as usual. Undetermined tensions are accepted there instead of raising <code>UndeterminedTensionError</code>. <code>infer_force_balance</code> follows the same rule;
+  - <strong>viewers</strong>: crop faces are drawn as their own surface, "Crop faces", and cut cells grey, like any cell whose pressure is not reported;
+  - the Laplace pressure methods, <code>compute_inference_diagnostics</code> and <code>infer_tensions_with_uncertainty</code> have no formulation for crop faces yet and raise <code>ValueError</code> on a cropped mesh, rather than read the crop as medium.</p>
+<p>Measured on 433 plane crops of the 47 benchmark tissues (<code>YoungDupre</code>, gauge-matched relative error of the tensions of the interfaces that touch the crop, median over the 42 equilibrium cases): 13 %, 33 % and 40 % error with 10 %, 25 % and 40 % of the tissue cropped away when crop faces were read as medium contact, 10 %, 9 % and 12 % now; every one of the 13 methods improves at 25 % and 40 %, and <code>LogLami</code> no longer fails on 25 of the crops. The cut cells' pressures, reported until now, had 15 % to 46 % error. <strong>On a mesh without crop faces every number is bitwise what it was.</strong>
+- <strong>A file that looks cropped but records no crop faces warns.</strong> A <code>.rec</code> or <code>.vtk</code> file written before crop faces were recorded reads them as medium contact; when its mesh has large flat patches of medium-contact triangles on its own bounding box, <code>dcel_mesh_from_file</code> emits an <code>UnrecordedCropFacesWarning</code>. Re-export such meshes with a current delaunay-watershed-3d.
+- The wedge-refusal policies (<code>refusal=</code>) combine with the crop: a crop edge is always excluded from its line's mean, and the policy acts on the rest of the line. <code>RefusalReport</code> counts the crop edges apart (<code>n_edges_touching_crop</code>, <code>length_touching_crop</code>).
+- <strong>Very large tissues: sparse pressure solves, a solver option, and solve diagnostics.</strong>
+  - <strong>Sparse solves at tissue scale.</strong> Above 2 000 unknowns the Laplace and weighted-Laplace pressures are now assembled sparse and solved by <code>lsqr</code> (columns scaled to unit norm, on the cells connected to the exterior), the variational pressures by a sparse direct solve of a cells × cells system, and the Young-Dupré tension system is assembled sparse. Before, these allocated dense matrices whatever the size: some 120 GB for the Young-Dupré system and as much for the variational pressure at 10 000 cells. The undetermined cells (<code>nan</code>, <code>UndeterminedPressureWarning</code>) are the same on both paths.
+  - <strong><code>solver="auto" | "dense" | "sparse"</code> and <code>sparse_threshold</code></strong> on <code>infer_tensions*</code>, <code>infer_pressures*</code> and <code>infer_forces</code>. <code>"auto"</code> (the default) is dense below the threshold and sparse above; <code>"dense"</code> and <code>"sparse"</code> force a path. A forced dense solve too large for the memory available warns first (<code>DenseSolveMemoryWarning</code>). A sparse solve that does not converge falls back to the dense one, as before, unless the dense one cannot fit in memory: then it warns and returns <code>lsqr</code>'s last iterate instead of exhausting the machine.
+  - <strong><code>diagnostics=True | "spectrum"</code></strong> returns, last, a <code>SolveDiagnostics</code>: per solve, the solver, the shape, the rank, the residual norm, the condition number and the time; <code>"spectrum"</code> adds the extreme singular values of the sparse systems. <code>save_solve_diagnostics</code> writes them to JSON and NPZ.</p>
+<p>Measured, forced sparse against forced dense, on 1 694 meshes (the 47 benchmark tissues and 94 rotated copies, 141 of the resolution sweep, 492 embryo timepoints, 4 converged foams, 915 cropped meshes and a 110-cell tissue): the same undetermined cells everywhere, and pressures within 1e-9 of their scale on every pair but three, all on converged foam meshes where the <em>dense</em> solve is the inaccurate one (a null direction kept by <code>lstsq</code>; the sparse result matches an independent SVD solution to 2e-11). On a 1 866-cell tissue: pressures within 6e-12 of their scale. <strong>With the default arguments every output below the threshold is bitwise what it was</strong> (checked on the same 1 694 meshes).
+- <strong>The mean-tension constraint is exact.</strong> For the angle-reading methods (<code>YoungDupre</code>, <code>YoungDupreLocal</code>, <code>ProjectionYoungDupre</code>, <code>Lami</code>, <code>InvLami</code>), the cotangent ones (<code>Cotan</code>, <code>InvCotan</code>), <code>Equilibrium</code> and the <code>Gram</code> route of <code>Variational</code>, it was a least-squares row of ones. Because their force-balance equations are homogeneous, that row's weight only changed the overall scale of the solution: <strong>tension ratios are unchanged</strong> (to 1e-12 of their scale on 15 891 of 16 025 method-mesh pairs of 1 694 test meshes; within 6e-9 on 102 badly conditioned ones, where the new values are the exact constrained solution and the old ones were off by the soft row's rounding; and changed only where the data do not determine them: <code>InvCotan</code> and <code>Lami</code> on 10 frames with a degenerate wedge, <code>Equilibrium</code> on 2 rank-deficient frames). The overall scale of the returned tensions changes by one factor per mesh: for <code>YoungDupre</code> by 3e-6 typically and up to 1.4 % (on small benchmark tissues and crops), for <code>YoungDupreLocal</code> up to 12 %, for <code>InvCotan</code> up to 8 %; for <code>Equilibrium</code> by 10 % typically, and on some small tissues its mean was as low as 0.1 of <code>mean_tension</code> (measured on 1 694 test meshes). Every component's mean is now exactly <code>mean_tension</code>. Pressures computed from those tensions scale by the same factor. The row of ones also made these systems badly conditioned (condition number 2.8e7 against 311 on a 1 866-cell tissue's Young-Dupré system), which limited the sparse solver's accuracy: sparse and dense tensions now agree to 1.5e-11 of their scale there, against 1e-6 before. <code>LogLami</code> (whose constraint, on the geometric mean, was already exact), <code>ForceBalance</code> (exact, by its KKT system), <code>ForceBalanceSoftRow</code> (a soft row by definition) and the default <code>Variational</code> route are unchanged.
+- <strong>Laplace pressures: the exterior's pressure is pinned exactly, and cells left undetermined no longer disturb the others.</strong> The pin is eliminated instead of solved as a row, and only the cells connected to the exterior are solved, on both the dense and the sparse path. On meshes where some cells are undetermined, the dense solve used to keep a null direction and move the other cells' pressures by up to 9e-5 of their scale (found on converged foams); the cropped variational pressure, up to 1.7e-4. Both now agree with an independent SVD solution to 3e-14. Elsewhere the pressures are unchanged to 1e-12.
+- <strong>The angle-propagation uncertainty differentiates the exact-gauge solve.</strong> The <code>YoungDupre</code> interval of <code>infer_tensions_with_uncertainty</code> (<code>UncertaintyModel.AnglePropagation</code>) propagated the angle errors through the old soft-row system. It now differentiates the solve that produces the tensions, so the propagated error of the mean tension is exactly zero, as the gauge allows no freedom there. The standard errors change by a median 7e-8 relative on the 42 equilibrium benchmark cases and 2e-6 on real embryo meshes (up to 4e-4 on one frame); the measured calibration (<code>error/std</code> 0.015) is unchanged to the digits reported. The propagation is also computed in blocks from one factorisation instead of one dense matrix per wedge, so it now runs on large tissues.
+- <strong>A command line: <code>foambryo mesh</code>, <code>foambryo infer</code>, <code>foambryo infer-over-seeds</code>, <code>foambryo view</code></strong> (see "Command line" in the README). <code>foambryo mesh MASK --spacing DZ DY DX -o MESH.rec</code> reconstructs a mask's mesh with delaunay-watershed's default reconstruction and writes it in physical units, the spacing recorded in the file; the spacing has no default. A mask with anisotropic voxels takes the route below (resampled to cubic voxels first), and the command says so. <code>foambryo infer MESH -o OUTDIR</code> writes <code>tensions.csv</code>, <code>pressures.csv</code> and a run record, <code>run.json</code> (schema 1: versions, every option, the mesh file's SHA-256, the date, the warnings), and <code>spectra.npz</code> with <code>--diagnostics spectrum</code>. <strong>Its defaults are the library's</strong>, and its tables hold exactly <code>infer_forces</code>'s numbers for the same options (tested bitwise for every method). <code>foambryo view</code> opens the viewer and writes the colour bars, also without a display (<code>--no-show</code>). <code>foambryo infer-over-seeds MASK -o OUTDIR --seeds N</code> runs <code>infer_tensions_over_seeds</code> (seeds 0..N−1, <code>--combine tensions|angles</code>) and writes <code>tensions.csv</code> with three more columns, <code>tension_seed_sd</code>, <code>n_seeds_found</code> and <code>found_by_fewer_than_half_the_seeds</code>, <code>tensions_per_seed.csv</code> with every seed's own tensions, and <code>run.json</code> with the seed list. TIFF masks need the new <code>cli</code> extra, <code>pip install "foambryo[cli]"</code> (<code>tifffile</code>); <code>.npy</code> and <code>.npz</code> masks need nothing more.
+- <strong>Masks with anisotropic voxels: <code>dcel_mesh_from_segmentation_mask(mask, spacing=(dz, dy, dx))</code>.</strong> With a voxel size, the mask goes through delaunay-watershed-3d's <code>construct_mesh_in_physical_units</code> (0.7.0): resampled to cubic voxels of the shortest spacing by shape-based interpolation when one axis is longer, meshed, and returned in the spacing's unit. Measured on 12 simulated tissues of 90 and 165 cells voxelised at a real cell size and down-sampled along z by 5/3, 2 and 3 (one seed), as the median over tissues of each mesh's median line-mean contact-angle error minus that of the same tissue meshed at full resolution: resampling first costs +0.83, +0.71 and +1.17 degrees, against +1.38, +1.97 and +4.10 for meshing the native voxels and scaling the mesh (<code>BENCHMARKS.md</code>). The default angle reading stays the default: the quadric reading was worse at that cell size. Above 3 it was not measured, and delaunay-watershed-3d warns. The mesh records its source voxel size, <code>DcelData.source_spacing</code>, also read from a <code>.rec</code> file in physical units by <code>dcel_mesh_from_file</code>; it changes no number. <strong>Without <code>spacing</code>, every mesh and every number is bitwise what it was.</strong>
+- <strong>The viewer's graph view colours pressures on the surface's scale.</strong> Its cell nodes took the top of their pressure scale as a quantile over cells, the surface (and the colour bars) over triangles: one pressure got two slightly different colours (5.383 against 5.472 on benchmark case 000). All three now share one scale. Every other colour of the viewer is bitwise unchanged.
+- <strong>Colour bars for the viewer: <code>foambryo.viewing.save_colour_bars</code>.</strong> Writes the tension and pressure scales of the viewer's surface colours as an image, with their end values (the range the viewer prints), computed by the same functions as the viewer; matplotlib only, no display, no Polyscope. The viewer's colours are bitwise unchanged.
+- <strong>The angle-propagation error bars include the residual's term, and say how often they hold.</strong> The <code>YoungDupre</code> interval of <code>infer_tensions_with_uncertainty</code> (<code>UncertaintyModel.AnglePropagation</code>) is now the full first-order derivative of the solve (the term in the physics residual was dropped before), checked against finite differences. The standard errors grow by a median 3 % on reconstructions of the benchmark tissues and 21-23 % on reconstructions of real-size 90- and 165-cell tissues. <strong>They are not a calibrated interval:</strong> measured on 2 400 reconstructions with ground truth, one reconstruction's <code>+- std</code> contains the true tension for 26-54 % of interfaces (nominal 68 %) and <code>+- 2 std</code> for 48-79 % (nominal 95 %), because the error is mostly the reconstruction's bias, which no propagated scatter measures. No single scale factor, nor the spread over reconstruction seeds, nor their combination, calibrates it across tissue types. Its calibration note now says so; read it as a lower bound.</p>
+<h3 id="prepared-for-060-4-october-2026-not-published">Prepared for 0.6.0 (4 October 2026, not published)<a class="headerlink" href="#prepared-for-060-4-october-2026-not-published" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>ForceBalanceMAP</code> no longer depends on the mesh's length unit, nor on the value of <code>mean_tension</code>.</strong> Its noise scale is now the surface-tension block's row scale times <code>mean_tension</code>, and its pressure prior follows the inverse of the operator's own length scale, the scalings under which its objective does not depend on the length unit. Rescaling a mesh used to move the relative tensions by up to 43 % on reconstructed meshes in voxel units (cases 001, 016 and 046 at scales 0.25 to 4) and by up to 1.6e-3 on the benchmark's reference meshes, and changing <code>mean_tension</code> by up to 1.7e-2; both now change them by rounding only. At a mesh's own scale and <code>mean_tension = 1</code> the estimate changes: on the 45 shipped-default reconstructions that have a simulation truth, the median of the per-case median relative tension error falls from 0.177 to 0.120 (better on 35, worse on 10); on the 47 reference meshes the per-case median error changes by at most 8.1e-6 (larger on 40 of them).</li>
+<li><strong>A methods note in the documentation</strong> (<code>docs/methods-note.md</code>): what foambryo computes and how to read its results, in a few pages — the unknowns and their conventions, the angle-based and force-balance tension methods, the pressures, the diagnostics and error bars, and cropped tissues. The docstrings that cited an undistributed note now say what the code computes, or point to this note or to the 2023 method paper.</li>
+<li><strong><code>rho_free</code>'s docstrings say what it is</strong> (in <code>effective_surface_tensions</code>, <code>ForceBalanceResult.rho</code> and <code>InferenceDiagnostics</code>): the residual ratio at the gauged minimiser of <code>||M beta||</code>, close to but not strictly the lowest ratio any tensions reach. No number the code computes changes.</li>
+<li><strong>The agreement tests of <code>foambryo.validation</code> run wherever the tests do.</strong> They compare the force-balance operator with an independent reference implementation of the same algorithms, now part of the test tree (<code>tests/reference/</code>, shipped in the source distribution); before, 15 of them skipped wherever a private copy was absent.</li>
+<li><strong>Large tissues: tension systems of 2 000 unknowns or more are solved with sparse least squares</strong> (<code>junction_graph.solve_gauged_least_squares</code>, <code>SPARSE_SOLVE_MIN_UNKNOWNS = 2000</code>). Below that size the dense solve is unchanged and results are bitwise identical (every benchmark, embryo and example system tried is below it). Above it, the sparse solve agrees with the dense one to 1.9e-6 of the tension scale on a 1 866-cell tissue, and takes 2.6 s instead of 218 s. <code>ComponentTensionSolution.solver_notes</code> (new, empty by default) records which solver ran on each component; if the sparse solve does not converge, the dense one runs and a <code>SparseSolveFallbackWarning</code> says so.</li>
+<li><strong>Laplace pressures: a cell that no equation determines is now <code>nan</code>, with an <code>UndeterminedPressureWarning</code> naming it,</strong> instead of silently getting the exterior's pressure. An interface all of whose vertices lie on junction lines has no curvature, so no Laplace equation; on coarse meshes of small cells (about a third of the interfaces of real embryo meshes) this can disconnect a cell from the exterior. Every other pressure is unchanged, bitwise, and an infinite curvature is now dropped like a <code>nan</code>. The viewers draw such a cell grey. The variational method (the default) is not affected.</li>
+<li>The package metadata names the Turlier lab as author. Two Python 3.8 bytecode files that were tracked under <code>src/__pycache__/</code> (never part of the package) are removed.</li>
+</ul>
+<h2 id="051">0.5.1<a class="headerlink" href="#051" title="Permanent link">&para;</a></h2>
+<p><strong>0.5.1 republishes the final 0.5.0 (as on GitHub's <code>main</code> since 27 September).</strong> The 0.5.0 wheel and source archive on PyPI were built from an earlier snapshot of the release: their licence metadata says CC BY-NC-SA 4.0 instead of GPL-3.0-or-later (and the package page showed the old licence section), the force viewer is the version before the fixes listed below under "The force viewer works with numpy 2 and draws each cell's stress correctly" (it crashes with numpy 2), and two docstrings cite the preprints instead of the published articles. GitHub's <code>v0.5.0</code> tag points at that same earlier snapshot, and is left as it is. Install 0.5.1; 0.5.0 is withdrawn from PyPI (yanked).</p>
+<p>Nothing else changes: the code is the final 0.5.0's. The package metadata names the Turlier lab as author, the README's links point to the 0.5.1 tag, and two Python 3.8 bytecode files the repository tracked under <code>src/__pycache__/</code> (never part of the package) are gone. foambryo 0.5.1 requires <code>delaunay-watershed-3d&gt;=0.5.0</code>; with 0.5.0 withdrawn, pip installs delaunay-watershed-3d 0.5.1.</p>
+<h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link">&para;</a></h2>
+<p><strong>New licence: from 0.5.0, <code>foambryo</code> is licensed under the GNU General Public License, version 3 or (at your option) any later version</strong> (SPDX <code>GPL-3.0-or-later</code>; the text of version 3 is in <code>License</code>), replacing CC BY-NC-SA 4.0. Commercial use is allowed, under the GPL's conditions (a distributed derivative work must be released under the same licence, with its source). Earlier releases keep the licence they were published under.</p>
+<p>Released together with <code>delaunay-watershed-3d</code> 0.5.0, which foambryo now requires (<code>delaunay-watershed-3d&gt;=0.5.0</code>). See <code>RELEASE_NOTES.md</code> for what to run and the limitations that matter on real data.</p>
+<p><strong>Python 3.11 or later is required.</strong> The package metadata said <code>&gt;=3.6</code>, which was wrong: the source needs 3.10 and its dependency <code>delaunay-watershed-3d</code> 0.5.0 needs 3.11, so <code>pip</code> on an older Python now refuses to install instead of failing later.</p>
+<h3 id="meshes-you-reconstruct-with-dw3d-050-are-different-junction-relocation-is-on-by-default">Meshes you reconstruct with dw3d 0.5.0 are different: junction relocation is on by default<a class="headerlink" href="#meshes-you-reconstruct-with-dw3d-050-are-different-junction-relocation-is-on-by-default" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>dw3d 0.5.0 moves every reconstructed mesh's trijunction vertices onto the trijunction curves the segmentation mask itself gives</strong>, in every reconstruction configuration. Triangles and material labels are unchanged; vertex positions on the trijunction lines move, so every angle and tension foambryo infers from a freshly reconstructed mesh moves too. To reproduce a 0.4 mesh exactly, reconstruct with <code>relocate_junctions=False</code> (or <code>set_junction_relocation(False)</code> on dw3d's factory). Meshes you already have on disk are not affected.</li>
+<li><strong><code>dcel_mesh_from_segmentation_mask</code> now reconstructs at <code>min_distance=3</code> by default, not 5</strong> — dw3d's own default. The mesh is denser and takes longer to build. Pass <code>min_distance=5</code> to get the 0.4 spacing back; at 5 or more dw3d emits <code>CoarseSpacingRelocationWarning</code> once per reconstruction (the effect of relocation on surface-tangent contact angles there lies within the check's own noise, while facet-based angles improve), so the default call no longer warns.</li>
+</ul>
+<h3 id="the-second-order-angle-reading-no-longer-depends-on-the-units-a-mesh-is-expressed-in">The second-order angle reading no longer depends on the units a mesh is expressed in<a class="headerlink" href="#the-second-order-angle-reading-no-longer-depends-on-the-units-a-mesh-is-expressed-in" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>angle_reading="quadric"</code> (and <code>"oriented_quadric"</code>) now gives the same angles whatever the mesh's units.</strong> The fit used to decide whether the two endpoints of the junction edge entered it by the sign of a rounding error, which changes with scale: rescaling one benchmark mesh by 117x moved its line-mean wedge angles by up to 0.14 degrees. The endpoints are now always included, decided by vertex identity. After the repair the same rescaling moves the reading by about 2e-13 degrees, the same rounding level as the chord reading.</li>
+<li><strong>This moves previously published second-order numbers by up to 0.14 degrees.</strong> On a smooth analytic surface over fourteen triangulations the repair moves the reading itself by at most 0.016 degrees (about 0.001 at typical spacings): its value is the invariance, not an accuracy gain.</li>
+<li>The historical behaviour stays reachable, for comparison only, through <code>quadric_angle_rotations(..., junction_endpoints="rounding")</code>; with that and <code>fit_constant_term=False</code> the reading is bit-identical to 0.4.2. The fit still omits a constant term; the docstring now gives the correct reason and what would settle it.</li>
+</ul>
+<h3 id="two-reading-selectors-that-report-a-folded-wedge-as-folded">Two reading selectors that report a folded wedge as folded<a class="headerlink" href="#two-reading-selectors-that-report-a-folded-wedge-as-folded" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>angle_reading="oriented_chord"</code> and <code>"oriented_quadric"</code></strong> report a folded (reflex) trijunction wedge as its oriented angle in <code>[0, 360)</code> degrees instead of reading it as <code>360 - theta</code>. The default reading is unchanged (<code>"chord"</code>).</li>
+</ul>
+<h3 id="anglereadingcoveragewarning-now-says-how-much-was-covered"><code>AngleReadingCoverageWarning</code> now says how much was covered<a class="headerlink" href="#anglereadingcoveragewarning-now-says-how-much-was-covered" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The warning's message now leads with the measured coverage fraction and the number of trijunction lines that were not fully corrected, out of how many</strong>, then lists those lines. When and how often it fires is unchanged: it fired on all 199 meshes it was measured on (154 real embryo timepoints and 45 benchmark cases), so its firing alone tells you nothing -- the numbers in the message are what to read.</li>
+</ul>
+<h3 id="the-force-viewer-works-with-numpy-2-and-draws-each-cells-stress-correctly">The force viewer works with numpy 2 and draws each cell's stress correctly<a class="headerlink" href="#the-force-viewer-works-with-numpy-2-and-draws-each-cells-stress-correctly" title="Permanent link">&para;</a></h3>
+<p>Only the display changes: no inferred tension or pressure moves.</p>
+<ul>
+<li><strong><code>plot_force_inference</code> crashed with numpy 2</strong> (<code>UFuncOutputCastingError</code>, on every mesh tried), which is what <code>pip install</code> gives you. The per-cell stress tensor is symmetric, and is now diagonalised as such, so its principal values are real under every numpy version.</li>
+<li><strong>One principal direction was drawn at the wrong length.</strong> When the second principal value was non-negative, its axis was drawn as a unit vector and the third axis was scaled twice. Fixed.</li>
+<li><strong>A membrane shared by two cells counted with opposite signs in the two cells</strong>, depending only on which cell had the lower label: it pulled on one and pushed on the other. It now counts the same way in both, as in Batchelor's formula for the mean stress. Checked on two cases with a known answer: a single bubble at its Laplace pressure shows no stress, and two mirror-image cells show mirror-image stresses. Cells touching only the exterior were already right.</li>
+<li><strong>The force viewer drew tensile directions as compressive, and compressive ones as tensile.</strong> The stress is tension-positive, so a negative principal value is compression; the viewer drew the negative ones as "principal axes" and the non-negative ones in red as "compressive". Each set is now named and coloured for what it holds — compression in red, tension in teal. The Polyscope vector quantities on the point cloud "Stress tensors principal directions" are renamed, for k = 0, 1, 2: <code>principal_axes_k</code> → <code>compression_axes_k</code>, <code>principal_axes_k_down</code> → <code>compression_axes_k_down</code>, <code>compressive_stress__axes_k</code> → <code>tension_axes_k</code>, <code>compressive_stress__axes_k_down</code> → <code>tension_axes_k_down</code>. The arrows themselves are unchanged; only their names and colours are.</li>
+<li><strong><code>plot_tension_inference(scalar_quantities=True)</code> raised <code>TypeError</code></strong>: it passed an argument (<code>clean_before</code>) that the curvature and derivative views do not take. Fixed; the option shows the same scalar quantities as <code>plot_force_inference(scalar_quantities=True)</code>.</li>
+</ul>
+<h3 id="user-visible-text">User-visible text<a class="headerlink" href="#user-visible-text" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The uncertainty calibration notes no longer name internal development steps; each states its measurement and points to <code>foambryo_benchmarks/run_uncertainty_calibration.py</code>.</li>
+<li><code>BENCHMARKS.md</code> is now self-contained: every number states its population and how it was measured, without citing files that are not distributed. Those numbers were measured on meshes reconstructed with dw3d <strong>before</strong> junction relocation became its default.</li>
+<li>The README and the docstrings cite the published article (Ichbiah et al., <em>Nature Methods</em> 2023, doi:10.1038/s41592-023-02084-7) instead of its preprint, and the <code>Cotan</code> method's published source (Yamamoto et al., <em>Developmental Cell</em> 2026, doi:10.1016/j.devcel.2026.04.013). New <code>CITATION.cff</code>.</li>
+<li>The introductory notebook <code>Examples/Example.ipynb</code> says where to download its data (the link in <code>data/alternative_link_to_data</code>, unzipped into <code>data/</code>) instead of asking for Git LFS, which no file in the repository uses.</li>
+<li><code>Examples/actual.ipynb</code> is removed: a regression check with no explanatory text, which compared floating-point tensions for exact equality. <code>tests/test_golden_master.py</code> makes the same check with a stated tolerance. <code>Examples/reference.ipynb</code> and the two <code>reference_*.txt</code> files it wrote stay.</li>
+</ul>
+<h3 id="pressure-inference-refuses-an-undetermined-tension-instead-of-returning-a-non-finite-field">Pressure inference refuses an undetermined tension instead of returning a non-finite field<a class="headerlink" href="#pressure-inference-refuses-an-undetermined-tension-instead-of-returning-a-non-finite-field" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>infer_pressures</code>, <code>infer_pressures_and_residuals</code> and <code>infer_forces</code> now raise <code>UndeterminedTensionError</code> when any tension they would use is not a finite number</strong>, naming every such interface. <code>UndeterminedTensionError</code> is new, exported from <code>foambryo</code>, and subclasses <code>ValueError</code>.</li>
+</ul>
+<p>Why: an interface with no triple line at all — a closed surface such as an engulfed cell, a sealed lumen, or a fragment a segmentation left inside another cell — has no angle from which its tension can be measured, and <code>infer_tensions</code> reports it as <code>nan</code> (with a <code>JunctionGraphGaugeWarning</code>). The pressure solve couples every cell to every tension, so that one <code>nan</code> used to come back as a pressure field in which nearly every cell was non-finite, without any warning from the pressure stage. Measured on five real embryo timepoints carrying one to four such interfaces, all but one cell's pressure was non-finite each time (54 of 55 up to 71 of 72). That field carried no usable value; the pressure inference now says why instead of returning it.</p>
+<p>What does not change: every tension, and every pressure inferred from finite tensions, is <strong>bitwise</strong> what it was — verified on 45 benchmark reconstructions and 149 real embryo timepoints. <code>infer_tensions</code> still returns <code>nan</code> for an undetermined interface and the other tensions of such a mesh remain valid; use <code>infer_tensions_by_junction_component</code> to see which interfaces are undetermined.</p>
+<h3 id="the-force-balance-family-now-warns-that-it-is-unreliable-on-reconstructed-meshes">The force-balance family now warns that it is unreliable on reconstructed meshes<a class="headerlink" href="#the-force-balance-family-now-warns-that-it-is-unreliable-on-reconstructed-meshes" title="Permanent link">&para;</a></h3>
+<p>No behaviour changes and no default moves. What changed is that the estimators say what was measured about them.</p>
+<ul>
+<li><strong><code>infer_force_balance</code>, the <code>ForceBalance*</code> members of <code>TensionComputationMethod</code>, and the <code>rho_free</code> diagnostic now carry the measurement.</strong> On reconstructed meshes <code>rho_free</code> — the distance of a mesh from <strong>any</strong> equilibrium of the force-balance operator, the floor no tension assignment can get below — has median <code>0.578</code> against the reference meshes' <code>0.0118</code>, a factor of about 50, with per-case ratios from 17 to 850 and <strong>every one</strong> of the 40 equilibrium benchmark cases above the <code>0.2</code> threshold at which the diagnostics already reported that no surface tensions balance the mesh. <code>rho</code> at the <code>Kkt</code> solution equals <code>rho_free</code> by construction, so the solve cannot lower it.</li>
+</ul>
+<p>What this means for a user: every <code>ForceBalance*</code> tension and pressure inferred on a reconstructed mesh, and every comparison of one reconstruction against another through this family, stands on that floor. <strong>Read <code>rho</code> before reading the tensions.</strong> The angle-reading family (<code>YoungDupre</code> and relatives) never inverts the operator and is not bounded this way. Whether the family is repairable on reconstructed meshes is an open scientific question and is not addressed here — the method is published and stays, with the warning it needed.</p>
+<h3 id="the-angle-reading-methods-can-now-decline-a-folded-trijunction-observation">The angle-reading methods can now decline a folded trijunction observation<a class="headerlink" href="#the-angle-reading-methods-can-now-decline-a-folded-trijunction-observation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>New <code>refusal</code> keyword on <code>infer_tensions</code>, <code>infer_tensions_and_residuals</code>, <code>infer_tensions_and_residuals_with_report</code>, <code>infer_tensions_by_junction_component</code> and <code>infer_tensions_young_dupre_local</code>, default off.</strong> A folded (reflex) trijunctional edge is one whose interior wedge angle in some region is past a straight angle; the Young-Dupré balance presupposes the opposite, and no angle reading can repair such a row. <code>foambryo.wedge_refusal</code> offers three ways to decline it — <code>ExcludeEdgeFromLineMean</code>, <code>DropLine</code>, <code>DownweightLine</code> — together with <code>reflex_trijunction_edges</code>, which lists a mesh's folded edges from the mesh alone, and <code>refusal_report</code>, which counts what a policy declines in rows and in arclength. With the default <code>NO_REFUSAL</code> every result is <strong>bitwise</strong> what it was before.</li>
+<li><strong>An interface left with no surviving junction line is reported <code>float("nan")</code></strong>, with the existing <code>JunctionGraphGaugeWarning</code>, rather than given the number ordinary least squares would have produced for a quantity nothing constrains. The gauge partition is rebuilt over the surviving lines; a mesh left with no observation at all returns <code>nan</code> everywhere rather than raising. New <code>foambryo.junction_graph.partition_over_surviving_junctions</code>.</li>
+<li>A method that builds no row from a measured wedge angle — <code>Equilibrium</code>, <code>Variational</code>, <code>ForceBalance</code>, <code>ForceBalanceSoftRow</code>, <code>ForceBalanceMAP</code> — <strong>raises</strong> on a non-default policy instead of ignoring it.</li>
+<li><code>compute_angles_tri_with_report</code> gains a <code>skip_edges</code> keyword, which is how a policy declines an edge's contribution; with <code>None</code> (the default) its result is bitwise unchanged.</li>
+<li><strong>No policy is a default, and one of them is a trap.</strong> <code>DropLine</code> removes a whole junction line when any one of its edges is folded, which costs a median 16-76 % of the lines on reconstructed meshes: harmless to <code>YoungDupreLocal</code>, whose row is a single edge, and ruinous to every line-averaged method. See README, <em>Declining a folded trijunction observation</em>, and report the refused share beside any accuracy number.</li>
+</ul>
+<h2 id="042">0.4.2<a class="headerlink" href="#042" title="Permanent link">&para;</a></h2>
+<h3 id="fixed-a-crash-on-some-real-meshes-in-the-default-tension-inference-path">Fixed a crash on some real meshes in the default tension-inference path<a class="headerlink" href="#fixed-a-crash-on-some-real-meshes-in-the-default-tension-inference-path" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>infer_tensions(mesh, mode=YoungDupre)</code> — the default call in the default mode — no longer raises an unhandled <code>KeyError</code> on a mesh with a non-manifold triple-line edge.</strong> <code>dcel_mesh_from_multimaterial_mesh</code> and <code>dcel_mesh_from_file</code> reach the same fixed code path. The edge that used to crash the solver is now excluded from the tension system instead, with a new <code>foambryo.validation.mesh_io.MalformedTripleLineWarning</code> naming how many edges were excluded and why, so this is never silent. On a mesh with no such edge, every affected function is bitwise identical to before (checked on the 42-case equilibrium benchmark cohort — one case, already flagged elsewhere in this project as carrying 2 malformed triple-line edges, is the one exception and now emits the new warning; on that mesh only, the excluded edges' fictitious junction no longer contributes to the tension system, which changes the returned numbers there, by construction).</li>
+<li>A new <code>foambryo.junction_graph.MalformedTripleLineError</code>, carrying the offending edge and region-triple, replaces what used to be a bare <code>KeyError</code> naming an internal dict key, for the (now believed unreachable in practice) case where a genuine inconsistency remains after the exclusion above.</li>
+<li>A new <code>foambryo.junction_graph.JunctionGraphGaugeWarning</code> is emitted from <code>infer_tensions_and_residuals</code> (and so from <code>infer_tensions</code>) whenever a mesh's triple-junction graph is fragmented into more than one gauge component, or has an undetermined (fully closed) interface. Use <code>infer_tensions_by_junction_component</code> to get each interface's own component and gauge instead of the flat, potentially scale-mismatched result these entry points return; that function itself does not emit the warning, since it already hands the caller the information the warning would describe. Does not fire on any of the 42-case equilibrium benchmark cohort (none of those meshes has a fragmented junction graph).</li>
+<li>Docstrings for <code>infer_tensions</code>, <code>infer_tensions_and_residuals</code> and <code>infer_forces</code> now state plainly that an undetermined interface is reported as <code>nan</code>, and that a fragmented junction graph's flat return value blends per-component gauges that are not on the same scale.</li>
+</ul>
+<h3 id="fixed-a-performance-regression-the-junctiongraphgaugewarning-check-above-introduced">Fixed a performance regression the <code>JunctionGraphGaugeWarning</code> check above introduced<a class="headerlink" href="#fixed-a-performance-regression-the-junctiongraphgaugewarning-check-above-introduced" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>infer_tensions_and_residuals</code> (and so <code>infer_tensions</code>) used to recompute the mesh's triple-junction partition a second time, from scratch, purely to decide whether to emit <code>JunctionGraphGaugeWarning</code> — even though the tension solve just above it had already computed the same partition and discarded it. This added a measured <strong>~2x per-call overhead</strong> (median 2.04x, range 1.82x–2.18x across the benchmark cohort) to <code>YoungDupre</code>, <code>YoungDupreLocal</code>, <code>ProjectionYoungDupre</code>, <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code>, <code>InvLami</code> and <code>LogLami</code> (the 8 methods <code>JunctionGraphGaugeWarning</code> applies to). Fixed by reusing the already-computed partition instead of recomputing it. Every tension, residual and warning-emission decision is bitwise identical to before (checked on all 42 equilibrium cases and on the real-embryo frames used to verify the crash fix above); only the wall-clock cost changed.</li>
+</ul>
+<h3 id="added-line_coverage_fraction-to-the-second-order-angle-readings-coverage-report">Added <code>line_coverage_fraction</code> to the second-order angle reading's coverage report<a class="headerlink" href="#added-line_coverage_fraction-to-the-second-order-angle-readings-coverage-report" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>AngleReadingReport.line_coverage_fraction</code>: the fraction of trijunction <em>lines</em> every one of whose faces was corrected by the <code>"quadric"</code> reading, as opposed to the existing <code>coverage_fraction</code>, which is per-<em>face</em> (a line with 2 of 3 faces corrected counts as 2/3 there, but as not-fully-covered here). <code>None</code> on a mesh with no trijunctional edge, mirroring <code>coverage_fraction</code>'s own convention. Included in the coverage warning's message alongside the existing per-face number. A trijunction line with partial coverage is not, by itself, a known source of extra angle error — see the field's own docstring for the measurement this states. Purely additive: every existing field, warning trigger and numeric value of <code>AngleReadingReport</code> is unchanged.</li>
+</ul>
+<h3 id="dropped-internal-report-citations-from-user-visible-error-text">Dropped internal report citations from user-visible error text<a class="headerlink" href="#dropped-internal-report-citations-from-user-visible-error-text" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Two <code>ValueError</code>s (<code>junction_graph.require_single_component_solution</code>, <code>tension_inference.infer_tensions_by_junction_component</code>) and one <code>NotImplementedError</code> (<code>uncertainty.compute_inference_diagnostics</code>) no longer cite internal development reports, which are not distributed with the package and so were a dead reference for anyone reading the error outside this project. No change to when each is raised.</li>
+</ul>
+<h3 id="corrected-one-measurement-affected-by-the-crash-fix">Corrected one measurement affected by the crash fix<a class="headerlink" href="#corrected-one-measurement-affected-by-the-crash-fix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The dataset-audit measurement for one benchmark case (the one already known to carry two non-manifold triple-line edges, see the crash fix above) recorded a triple line's length as <code>0.14288904810756733</code>; with those two edges correctly excluded, it is <code>0.08233713750534329</code> (about 42% shorter) — the two excluded edges were previously being summed into that line's length. No other measurement for that case, or any other case, changes.</li>
+</ul>
+<h3 id="a-note-on-this-releases-published-accuracy-numbers">A note on this release's published accuracy numbers<a class="headerlink" href="#a-note-on-this-releases-published-accuracy-numbers" title="Permanent link">&para;</a></h3>
+<p>The <code>dw3d</code>-meshing accuracy table in <code>BENCHMARKS.md</code> is out of date for reasons unrelated to this release (an unrelated change to how <code>dw3d</code> reconstructs meshes since that table was last measured) and is being re-measured and republished in its own follow-up — this release's fixes do not move any number in that table. Do not read today's <code>BENCHMARKS.md</code> table as reflecting 0.4.2.</p>
+<h2 id="041">0.4.1<a class="headerlink" href="#041" title="Permanent link">&para;</a></h2>
+<p>Release hygiene only. No change to inference behaviour: every default is bitwise identical to 0.4.0 on all 47 benchmark meshes.</p>
+<ul>
+<li><strong>Development artefacts no longer ship or return.</strong> The project's development record is kept in the development repository and has never been part of the packaged distribution; confirmed by building the wheel and listing its contents. Development notes and scratch scripts are now gitignored so they cannot be re-added by accident.</li>
+<li>Internal benchmark filenames and test names that were named after a development phase (e.g. <code>c1_attribution.json</code>, <code>run_c2_robustness.py</code>) are renamed to describe what they measure. This does not change any benchmark's recorded numbers, and <code>foambryo_benchmarks</code> remains a development tool, not part of the installed package.</li>
+<li><code>delaunay-watershed-3d</code>'s three phase-named factory methods (<code>get_v0_3_algorithm</code>/<code>get_a1b_algorithm</code>/<code>get_a3_a5_algorithm</code>) are renamed on that side to describe their mechanism; the old names still work as deprecated aliases until <code>dw3d</code> 0.5.0. Nothing here depends on the old names, so no change is needed in this package.</li>
+</ul>
+<h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link">&para;</a></h2>
+<h3 id="new-capability-an-opt-in-second-order-trijunction-angle-reading">New capability — an opt-in second-order trijunction angle reading<a class="headerlink" href="#new-capability-an-opt-in-second-order-trijunction-angle-reading" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>angle_reading="quadric"</code></strong> on <code>infer_tensions</code>, <code>infer_tensions_and_residuals</code>, <code>infer_tensions_young_dupre_local</code> and <code>compute_residual_junctions_dict</code>, and <code>reading=</code> on <code>compute_angles_tri</code> / <code>compute_trijunction_edges</code> / <code>DcelData.compute_angles_tri</code>. It changes <strong>how a contact angle is measured</strong>, not how tensions are solved for: instead of the angle between two flat triangles — which is the <em>chord</em> to each triangle's far vertex — it fits a generic quadric to the interface's own mesh vertices around the junction and reads that surface's <em>tangent</em>. No vertex moves; no area, volume or interface identity changes.</li>
+</ul>
+<p>On <code>dw3d</code>-reconstructed benchmark meshes this takes the gauge-matched tension contrast from 0.738 to 0.954 (<code>min_distance = 3</code>) and 0.722 to 1.056 (4), and the median per-line junction-angle error from 7.35° to 4.83° and 8.22° to 5.43°, on all eight methods that read angles. Full table, provenance and the residual: <code>BENCHMARKS.md</code>. Worked example: <code>Examples/second_order_angle_reading.py</code>.</p>
+<ul>
+<li>
+<p><strong>Nothing changes unless you ask for it.</strong> <code>"chord"</code> remains the default and is pinned <strong>bitwise</strong> against the previous release's behaviour on all 47 benchmark meshes — every angle, length and tension, digested over raw IEEE-754 bits, by <code>tests/test_second_order_angle_reading.py</code>. If you do not pass <code>angle_reading</code>, no number you have ever computed with this package moves.</p>
+</li>
+<li>
+<p><strong>The fallback is never silent.</strong> The quadric fit is not admissible everywhere; where it is not, that face keeps the chord reading. New <code>AngleReadingReport</code> (from <code>infer_tensions_and_residuals_with_report</code>, <code>compute_angles_tri_with_report</code>, or <code>YoungDupreLocalResult.angle_reading_report</code>) carries the coverage fraction and names every trijunction line that is read with a mixture of the two conventions. The report-less entry points emit an <code>AngleReadingCoverageWarning</code> carrying the same numbers instead.</p>
+</li>
+<li>
+<p><strong>Where it does not help, stated plainly.</strong> On a mesh whose elements are already much smaller than the interface's radius of curvature, the chord deficit is small and this correction over-applies. On the 47 ground-truth simulation meshes in the benchmark it makes the contrast <em>worse</em> on 47 of 47 cases. Use it on reconstructions.</p>
+</li>
+<li>
+<p><strong><code>YoungDupreLocal</code> refuses <code>angle_reading="quadric"</code> outright</strong>, raising <code>ValueError</code> rather than returning a degraded result: its tension error gets <em>worse</em> under the quadric reading even though its angles improve (+0.0290 relative RMS tension error at <code>min_distance=3</code>, +0.97 at 4), because a per-edge balance never performs the along-line average that cancels the correction's per-edge scatter. Use <code>angle_reading="quadric"</code> with a line-averaged method instead (<code>YoungDupre</code>, <code>ProjectionYoungDupre</code>, <code>Lami</code>, <code>InvLami</code>, <code>LogLami</code>), or keep <code>YoungDupreLocal</code> on the default <code>"chord"</code> reading.</p>
+</li>
+<li>
+<p><strong>A method that cannot honour it now says so</strong>: <code>Variational</code>, <code>Equilibrium</code> and the three <code>ForceBalance*</code> members raise <code>ValueError</code> on a non-default <code>angle_reading</code> rather than silently ignoring it.</p>
+</li>
+</ul>
+<h3 id="new-in-the-benchmark-harness">New in the benchmark harness<a class="headerlink" href="#new-in-the-benchmark-harness" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>foambryo_benchmarks.metrics.interface_area_fractions</code>, <code>interface_area_fraction_errors</code> and <code>closer_interface_area_fractions</code>: interface area as a fraction of the mesh's own total, which is scale-invariant and needs no registration between a candidate mesh and its reference.</li>
+</ul>
+<h3 id="default-behaviour-changes-several-methods-now-give-correct-numbers-instead-of-wrong-or-missing-ones">Default behaviour changes — several methods now give correct numbers instead of wrong or missing ones<a class="headerlink" href="#default-behaviour-changes-several-methods-now-give-correct-numbers-instead-of-wrong-or-missing-ones" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>TensionComputationMethod.Equilibrium</code> used to crash on every input.</strong> It now runs and gives a scientifically sensible result. If you were catching the exception, you no longer need to.</li>
+<li><strong><code>Cotan</code> and <code>InvCotan</code> had an operator-precedence bug</strong> that over-weighted short junctions on the diagonal of their linear system. Fixed; both methods' output has changed (previously published results using them, if any, were unaffected — neither was the default).</li>
+<li><strong><code>Variational</code> now solves through a different, better-justified linear-algebra route by default</strong> (routing through the operator directly, <code>VariationalRoute.Operator</code>, rather than forming and row-normalising the Gram matrix). The previous route (<code>VariationalRoute.Gram</code>) remains available for anyone who needs to reproduce a number computed under it.</li>
+<li><strong>A silent aggregation defect is fixed for eight of the nine tension methods</strong> (<code>YoungDupre</code>, <code>ProjectionYoungDupre</code>, <code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code>, <code>InvLami</code>, <code>LogLami</code>, <code>YoungDupreLocal</code>): on a mesh whose triple-junction graph is disconnected — a mesh with a fully engulfed cell or a sealed lumen, or one large enough to genuinely fragment — these methods used to silently drive some interfaces' tensions toward zero while inflating others, with no warning. They now solve per connected component with a per-component gauge, and interfaces with no triple line at all are reported as undetermined (<code>nan</code>) rather than guessed. New: <code>infer_tensions_by_junction_component</code>, for when you want that structure exposed explicitly rather than collapsed into one flat result. This does not affect meshes whose triple-junction graph is already fully connected, which is the common case for the small-to-medium cell counts most users work with.</li>
+<li><strong><code>torch</code> is now an optional dependency.</strong> The closed-form (non-autodiff) derivatives were already the more numerically accurate path and are now the only one installed by default; install <code>foambryo[autodiff]</code> if you specifically need the autodiff cross-check.</li>
+</ul>
+<h3 id="new-capability">New capability<a class="headerlink" href="#new-capability" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Uncertainty intervals on inferred tensions</strong>: <code>infer_tensions_with_uncertainty</code>, with several interval models (<code>UncertaintyModel</code>) and a calibration note on every result stating how conservative or optimistic that model measured as on a 42-case benchmark. <code>ProbeResidual</code> is the recommended default.</li>
+<li><strong>Mesh-level identifiability diagnostics</strong> (<code>compute_inference_diagnostics</code>, <code>InferenceDiagnostics</code>): before trusting a tension inference on a mesh with no ground truth, check <code>rho_free</code> (how far the mesh sits from any mechanical equilibrium) and the operator's singular-value spectrum.</li>
+<li><strong>Per-edge Young–Dupré</strong> (<code>infer_tensions_young_dupre_local</code>, <code>TensionComputationMethod.YoungDupreLocal</code>): imposes the balance once per trijunctional edge instead of once per triple line on line-averaged angles, giving a per-edge residual field usable for diagnostics and a calibrated bootstrap uncertainty. On its own it is <em>less</em> accurate as a point estimate than the line-averaged <code>YoungDupre</code> (averaging first is a noise filter, not a bias); it is kept for the diagnostic it enables, not as a replacement.</li>
+</ul>
+<h3 id="documentation-corrected">Documentation corrected<a class="headerlink" href="#documentation-corrected" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The capillary energy's pressure term has the sign <code>E = Σ γA + Σ tL − Σ pV</code>, not <code>+ΣpV</code>, in <code>foambryo.validation.force_balance</code>'s module docstring — it previously contradicted <code>foambryo.force_balance_inference</code>'s docstring, which had the correct sign. No numerical result was affected: the code was already self-consistent, and this is purely a documentation fix.</li>
+<li>The tension method enum (<code>TensionComputationMethod</code>) now states which methods read measured angles and which invert a global operator, since mesh-reconstruction quality affects the two families very differently — see <code>dw3d</code>'s and this package's <code>BENCHMARKS.md</code>.</li>
+</ul>
+<h3 id="compatibility">Compatibility<a class="headerlink" href="#compatibility" title="Permanent link">&para;</a></h3>
+<p><code>delaunay-watershed-3d</code>'s reconstruction default has reverted to its published (<code>dithered</code>) configuration in this release cycle (see <code>dw3d</code>'s <code>CHANGELOG.md</code>); no code change is required here, but tensions inferred from freshly-reconstructed meshes will differ slightly from ones inferred while <code>dw3d</code>'s revised meshing pipeline was the default, because the mesh itself is different. This is expected and is the change the accuracy finding above concerns.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4071 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../second-order-angle-reading/">
+      
+      
+        <link rel="next" href="../per-edge-tension-inference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Wedge refusal - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wedge-refusal" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Wedge refusal
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--the-three-policies-and-the-unit-each-acts-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three policies, and the unit each acts on
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--underdetermination-is-an-outcome-not-an-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Underdetermination is an outcome, not an error
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--two-reasons-to-decline-an-edge-a-fold-and-the-crop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two reasons to decline an edge: a fold, and the crop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--reading-nothing-but-the-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading nothing but the mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusalPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WedgeRefusalPolicy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WedgeRefusal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WedgeRefusal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusal.refuses_nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refuses_nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.RefusalReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RefusalReport
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.LineAveragedAngles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LineAveragedAngles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.PerEdgeRows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PerEdgeRows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.triple_of_edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        triple_of_edge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.reflex_trijunction_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reflex_trijunction_edges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.resolve_refused_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resolve_refused_edges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.refusal_with_crop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refusal_with_crop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.refusal_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refusal_report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.line_averaged_angles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        line_averaged_angles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.per_edge_rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        per_edge_rows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.all_interfaces_undetermined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        all_interfaces_undetermined
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.require_refusal_is_honoured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_refusal_is_honoured
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--the-three-policies-and-the-unit-each-acts-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three policies, and the unit each acts on
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--underdetermination-is-an-outcome-not-an-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Underdetermination is an outcome, not an error
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--two-reasons-to-decline-an-edge-a-fold-and-the-crop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two reasons to decline an edge: a fold, and the crop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal--reading-nothing-but-the-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading nothing but the mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusalPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WedgeRefusalPolicy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WedgeRefusal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WedgeRefusal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.WedgeRefusal.refuses_nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refuses_nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.RefusalReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RefusalReport
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.LineAveragedAngles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LineAveragedAngles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.PerEdgeRows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PerEdgeRows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.triple_of_edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        triple_of_edge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.reflex_trijunction_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reflex_trijunction_edges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.resolve_refused_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resolve_refused_edges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.refusal_with_crop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refusal_with_crop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.refusal_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        refusal_report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.line_averaged_angles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        line_averaged_angles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.per_edge_rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        per_edge_rows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.all_interfaces_undetermined" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        all_interfaces_undetermined
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.wedge_refusal.require_refusal_is_honoured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_refusal_is_honoured
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="wedge-refusal">Wedge refusal<a class="headerlink" href="#wedge-refusal" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Refusal policies: declining a trijunction observation the mesh's own geometry makes infeasible.</p>
+<p>A <code>WedgeRefusal</code> is passed as <code>refusal=</code> to <code>infer_tensions</code> and its relatives, and to
+<code>infer_tensions_young_dupre_local</code>. Only the methods of <code>foambryo.tension_inference.ANGLE_READING_METHODS</code>
+honour it; the others raise <code>ValueError</code> on any policy but <code>NO_REFUSAL</code>. <code>refusal_report</code> counts
+what a policy declines.</p>
+<h3 id="foambryo.wedge_refusal--the-problem">The problem<a class="headerlink" href="#foambryo.wedge_refusal--the-problem" title="Permanent link">&para;</a></h3>
+<p>At a trijunctional edge three films meet and the three interior wedge angles sum to a full turn.
+A <strong>reflex</strong> wedge is one wider than a straight angle: the surface is locally folded there, the
+three films do not enclose the edge the way a trijunction requires, and the Young-Dupré balance
+every angle-reading estimator in this package imposes has no solution for such a triple. Feeding
+the estimator that row is feeding it an observation that cannot have come from the object being
+measured.</p>
+<p>Two facts make this worth acting on rather than documenting:</p>
+<ul>
+<li><code>foambryo.geometry</code>'s oriented reading can <em>see</em> the fold — but it cannot undo it. The per-edge
+  estimator's rows are built from <code>cos</code> of the wedge, and <code>cos</code> is even about a full turn, so a
+  reflex wedge and its reflection are literally the same row; no reading reaches it.</li>
+<li>The <code>log</code>-of-<code>sin</code> estimator does not merely degrade on such a row, it <strong>fails</strong>: a reflex wedge
+  has a negative oriented sine, and the row's logarithm is not defined.</li>
+</ul>
+<p>So the estimator should refuse the observation. This module is the machinery for that, and it is
+<strong>off by default</strong> — <code>NO_REFUSAL</code> reproduces every existing number bitwise, and which policy (if
+any) should become a default is a separate decision taken on its own evidence.</p>
+<h3 id="foambryo.wedge_refusal--the-three-policies-and-the-unit-each-acts-on">The three policies, and the unit each acts on<a class="headerlink" href="#foambryo.wedge_refusal--the-three-policies-and-the-unit-each-acts-on" title="Permanent link">&para;</a></h3>
+<p>Every angle-reading estimator here builds its rows from one of two observation units: a whole
+<strong>junction line</strong> (the region triple), for the methods that average the wedge angles along the
+line and weight the row by the line's arclength share; or a single <strong>trijunctional edge</strong>, for the
+per-edge method, whose row <em>is</em> one edge. The policies are defined on the unit, so each is one
+intervention with one meaning in both families:</p>
+<ul>
+<li>:attr:<code>WedgeRefusalPolicy.ExcludeEdgeFromLineMean</code> (<code>E</code>) — a refused edge contributes neither
+  its angles nor its length to its line. The line keeps its row, computed from the surviving
+  edges and weighted by their surviving arclength. A line that loses every edge has no mean and
+  therefore no row.</li>
+<li>:attr:<code>WedgeRefusalPolicy.DropLine</code> (<code>D</code>) — a line carrying at least one refused edge loses its
+  row entirely.</li>
+<li>:attr:<code>WedgeRefusalPolicy.DownweightLine</code> (<code>W</code>) — nothing is removed from the measurement: the
+  line's angle means are what they always were, and only its row weight is scaled, by the
+  fraction of its arclength that is not refused. A line with no unrefused arclength has weight
+  zero, which is the same as having no row.</li>
+</ul>
+<p><strong>A refused wedge takes the other two wedges of its own edge with it.</strong> The three are one
+observation of one edge and every row consumes all three; dropping one wedge key and keeping its
+two partners would leave a line's three means computed over different edge subsets and no longer
+summing to a full turn.</p>
+<p>Two consequences follow from the definitions and are asserted as tests rather than assumed
+(<code>tests/test_wedge_refusal.py</code>):</p>
+<ol>
+<li>For the <strong>per-edge</strong> method the unit is one edge, so under <code>E</code> a refused edge's unit is empty
+   and it has no row — <code>E</code> and <code>D</code> are the same intervention there and agree exactly. <code>W</code> is not:
+   it keeps the refused rows and scales every row of their line instead.</li>
+<li>For the <strong>line-averaged</strong> methods <code>E</code> and <code>W</code> give a surviving line the <em>same</em> row weight
+   (<code>E</code>'s surviving arclength over the surviving total; <code>W</code>'s full arclength times the surviving
+   fraction, over that same total). So <code>E</code> and <code>W</code> differ only in the angle a line reports, and
+   <code>D</code> and <code>E</code> only in whether a partly folded line reports at all.</li>
+</ol>
+<h3 id="foambryo.wedge_refusal--underdetermination-is-an-outcome-not-an-error">Underdetermination is an outcome, not an error<a class="headerlink" href="#foambryo.wedge_refusal--underdetermination-is-an-outcome-not-an-error" title="Permanent link">&para;</a></h3>
+<p>Refusing rows can leave an interface with no surviving junction line at all, or split the
+junction graph into pieces that no longer share a gauge. That is handled exactly as
+<code>foambryo.junction_graph</code> already handles a closed interface and a fragmented mesh: the
+partition is rebuilt over the surviving lines
+(<code>junction_graph.partition_over_surviving_junctions</code>), an interface touched by no surviving line
+is reported <code>float("nan")</code> and never a number, a survivor graph in several pieces is
+normalised in each piece, and <code>JunctionGraphGaugeWarning</code> fires unchanged. A mesh all of whose lines are refused
+returns every interface undetermined rather than raising: an empty answer is a result, and it is
+one the caller can count.</p>
+<p><strong>Report the refused counts next to any accuracy number.</strong> A policy that improves an error
+statistic by declining a large share of the data has not improved anything, and
+:func:<code>refusal_report</code> is what makes that visible.</p>
+<h3 id="foambryo.wedge_refusal--two-reasons-to-decline-an-edge-a-fold-and-the-crop">Two reasons to decline an edge: a fold, and the crop<a class="headerlink" href="#foambryo.wedge_refusal--two-reasons-to-decline-an-edge-a-fold-and-the-crop" title="Permanent link">&para;</a></h3>
+<p>A junction edge with a vertex on a crop face (<code>foambryo.crop_faces</code>) is not an observation of the
+tissue either: the tissue beyond the crop was cut away. It is declined for that reason on every
+cropped mesh, whatever the policy, and always edge by edge: it leaves its line's mean and length,
+and the rest of the line still reports. The policy then acts on what remains, as if the crop
+edges were not part of the line: under <code>DropLine</code> a line is dropped when one of its <em>other</em> edges
+is refused, and under <code>DownweightLine</code> its weight is the unrefused fraction of the arclength
+that is not on the crop. The two sets are held apart (<code>WedgeRefusal.crop_edges</code> beside the
+policy's own <code>edges</code>) and counted apart in <code>RefusalReport</code>. On a mesh without crop faces the crop
+set is empty and nothing here changes.</p>
+<h3 id="foambryo.wedge_refusal--reading-nothing-but-the-mesh">Reading nothing but the mesh<a class="headerlink" href="#foambryo.wedge_refusal--reading-nothing-but-the-mesh" title="Permanent link">&para;</a></h3>
+<p>:func:<code>reflex_trijunction_edges</code> takes a mesh and a tolerance. There is no parameter through
+which a reference geometry, a target angle or an expected value could reach it, and the decision
+is therefore available on data that has no reference at all.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.wedge_refusal.WedgeRefusalPolicy" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">WedgeRefusalPolicy</span>
+
+
+<a href="#foambryo.wedge_refusal.WedgeRefusalPolicy" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Which observations an angle-reading estimator declines, and how. See the module docstring.</p>
+<ul>
+<li><code>NoRefusal</code>: <strong>the default.</strong> Nothing is declined and every result is bitwise what it was
+  before this module existed.</li>
+<li><code>ExcludeEdgeFromLineMean</code>: a refused edge leaves its line's angle mean and its line's
+  length; the line still reports, from what survives.</li>
+<li><code>DropLine</code>: a line carrying any refused edge does not report at all.</li>
+<li><code>DownweightLine</code>: every line reports its unchanged mean, with its row weight scaled by the
+  fraction of its arclength that is not refused.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.wedge_refusal.WedgeRefusal" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">WedgeRefusal</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.wedge_refusal.WedgeRefusal" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">WedgeRefusal</span><span class="p">(</span><span class="n">policy</span><span class="p">:</span> <span class="n">WedgeRefusalPolicy</span> <span class="o">=</span> <span class="n">WedgeRefusalPolicy</span><span class="o">.</span><span class="n">NoRefusal</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">GeometricEdge</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">REFLEX_TOLERANCE_DEG</span><span class="p">,</span> <span class="n">crop_edges</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">GeometricEdge</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">())</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A refusal policy together with the set of edges it applies to.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.WedgeRefusal.policy">policy</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusalPolicy (foambryo.wedge_refusal.WedgeRefusalPolicy)" href="#foambryo.wedge_refusal.WedgeRefusalPolicy">WedgeRefusalPolicy</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which of the three interventions to apply. <code>NoRefusal</code> by default, which is the
+shipped behaviour and is bitwise identical to not passing a refusal at all.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.WedgeRefusal.edges">edges</span></code></td>
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.GeometricEdge">GeometricEdge</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the geometric edges to refuse, as <code>(min, max)</code> vertex-key pairs, or <code>None</code> (the
+default) to take them from the mesh itself through
+:func:<code>reflex_trijunction_edges</code>. An explicit set exists so that a caller with its
+own criterion — a control arm that refuses a matched random set, a diagnostic, a flag
+computed upstream — runs through exactly this code path rather than a second copy of
+it. It is never a way to feed in a reference geometry: whatever the caller supplies
+is a set of edge keys, and nothing in this module consults anything else.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.WedgeRefusal.tolerance_deg">tolerance_deg</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>excess past a straight angle above which a wedge is reflex, used only when
+<code>edges</code> is <code>None</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.WedgeRefusal.crop_edges">crop_edges</span></code></td>
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.GeometricEdge">GeometricEdge</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the edges declined because they touch a crop face, excluded from their
+line's mean whatever <code>policy</code> is (see "Two reasons to decline an edge" in the module
+docstring). Filled from the mesh by every estimator (:func:<code>refusal_with_crop</code>); a
+caller leaves it empty.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.wedge_refusal.WedgeRefusal.refuses_nothing" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">refuses_nothing</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.wedge_refusal.WedgeRefusal.refuses_nothing" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">refuses_nothing</span><span class="p">:</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>True when this refusal cannot change any number, so the untouched path is taken.</p>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.wedge_refusal.RefusalReport" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">RefusalReport</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.wedge_refusal.RefusalReport" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">RefusalReport</span><span class="p">(</span><span class="n">policy</span><span class="p">:</span> <span class="n">WedgeRefusalPolicy</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_edges_refused</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_lines</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_lines_without_row</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_lines_downweighted</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">length_total</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">length_refused</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_units</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_units_refused</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_units_used</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">surviving_lines</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Triple</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">n_edges_touching_crop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">length_touching_crop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>How much of a mesh one policy declined, in the units the estimator actually uses.</p>
+<p>Every field is a count or a length, so a caller can put the refused share next to the
+accuracy number it produced. <code>n_units_*</code> are in whichever unit the estimator's rows are —
+lines for the line-averaged methods, edges for the per-edge one — and the edge and line
+counts are always both present so the two families can be compared.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.policy">policy</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusalPolicy (foambryo.wedge_refusal.WedgeRefusalPolicy)" href="#foambryo.wedge_refusal.WedgeRefusalPolicy">WedgeRefusalPolicy</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the policy these counts describe.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_edges">n_edges</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>trijunctional edges the mesh has.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_edges_refused">n_edges_refused</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how many of them the refusal names.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_lines">n_lines</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>junction lines the mesh has.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_lines_without_row">n_lines_without_row</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>lines left with no row at all by this policy.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_lines_downweighted">n_lines_downweighted</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>lines that keep a row whose weight or angle the policy changed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.length_total">length_total</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>total trijunction arclength, summed over geometric edges.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.length_refused">length_refused</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>arclength carried by the refused edges.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_units">n_units</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>rows' observation units before refusal.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_units_refused">n_units_refused</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>units the policy removed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_units_used">n_units_used</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>units that still carry a row. <code>n_units_refused + n_units_used == n_units</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.surviving_lines">surviving_lines</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="foambryo.wedge_refusal.Triple">Triple</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the region triples that still carry a row, sorted.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.n_edges_touching_crop">n_edges_touching_crop</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>edges declined because they touch a crop face (0 without crop
+faces). They are not counted in <code>n_edges_refused</code>, which counts the policy's own.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.RefusalReport.length_touching_crop">length_touching_crop</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>arclength carried by those edges.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.wedge_refusal.LineAveragedAngles" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LineAveragedAngles</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.wedge_refusal.LineAveragedAngles" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">LineAveragedAngles</span><span class="p">(</span><span class="n">dict_rad</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Triple</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">dict_length</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Triple</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">partition</span><span class="p">:</span> <span class="n">JunctionGraphPartition</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">AngleReadingReport</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>The three maps a line-averaged builder consumes, after a refusal policy has been applied.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.LineAveragedAngles.dict_rad">dict_rad</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo.wedge_refusal.Triple">Triple</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>mean wedge angle in radians, keyed by wedge key, over the edges the policy
+left in the line.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.LineAveragedAngles.dict_length">dict_length</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo.wedge_refusal.Triple">Triple</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>accumulated length per wedge key, in the historical <code>unique=False</code>
+convention the builders expect, scaled by the policy's per-line weight factor.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.LineAveragedAngles.partition">partition</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="../junction-graph/#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the junction-graph partition <strong>over the surviving lines</strong>, so an interface
+left with no surviving line is reported undetermined rather than given a number.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.LineAveragedAngles.report">report</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="AngleReadingReport
+
+
+  
+      dataclass
+   (foambryo.second_order_angle_reading.AngleReadingReport)" href="../second-order-angle-reading/#foambryo.second_order_angle_reading.AngleReadingReport">AngleReadingReport</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the angle reading's own coverage report, unchanged.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.wedge_refusal.PerEdgeRows" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PerEdgeRows</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.wedge_refusal.PerEdgeRows" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PerEdgeRows</span><span class="p">(</span><span class="n">keep</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">weight_scale</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">surviving_lines</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">Triple</span><span class="p">],</span> <span class="n">n_refused</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Which of a mesh's trijunctional edges still carry a row, and how their weight is scaled.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.PerEdgeRows.keep">keep</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>index, into the caller's own <code>trijunction_edges</code> list, of every edge that still
+carries a row, ascending.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.PerEdgeRows.weight_scale">weight_scale</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the multiplier on each kept row's weight, aligned with <code>keep</code>. All ones for
+every policy but <code>DownweightLine</code>, where it is the edge's line's unrefused arclength
+fraction.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.PerEdgeRows.surviving_lines">surviving_lines</span></code></td>
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.Triple">Triple</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the region triples still carrying at least one row.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.wedge_refusal.PerEdgeRows.n_refused">n_refused</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how many edges lost their row, for either reason (the policy or the crop).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.triple_of_edge" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">triple_of_edge</span>
+
+
+<a href="#foambryo.wedge_refusal.triple_of_edge" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">triple_of_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">:</span> <span class="n">TrijunctionEdge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Triple</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The sorted region triple of one trijunctional edge, i.e. which junction line it lies on.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>edge</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TrijunctionEdge
+
+
+  
+      dataclass
+   (foambryo.geometry.TrijunctionEdge)" href="../geometry/#foambryo.geometry.TrijunctionEdge">TrijunctionEdge</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one geometric trijunctional edge.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>Triple</code></td>            <td>
+                  <code><span title="foambryo.wedge_refusal.Triple">Triple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(a, b, c)</code> with <code>a &lt; b &lt; c</code>, the three regions meeting on it.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.reflex_trijunction_edges" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">reflex_trijunction_edges</span>
+
+
+<a href="#foambryo.wedge_refusal.reflex_trijunction_edges" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">reflex_trijunction_edges</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">tolerance_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">REFLEX_TOLERANCE_DEG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">GeometricEdge</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Every geometric trijunctional edge of <code>mesh</code> whose mesh is locally folded.</p>
+<p>An edge is reflex when its widest <strong>oriented</strong> wedge exceeds a straight angle by more than
+<code>tolerance_deg</code>. The oriented chord reading is used whatever reading the estimator itself
+consumes, so that "reflex" has exactly one definition here and the chord reading — still the
+shipped default — has a well-defined refused set too.</p>
+<p>Reads the mesh and nothing else.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tolerance_deg</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>excess past a straight angle, in degrees, above which a
+wedge counts as reflex. Defaults to :data:<code>REFLEX_TOLERANCE_DEG</code>; see that constant
+for why it is not a free parameter.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.REFLEX_TOLERANCE_DEG">REFLEX_TOLERANCE_DEG</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.GeometricEdge">GeometricEdge</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>frozenset[GeometricEdge]: <code>(min, max)</code> vertex-key pairs, one per folded edge.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.resolve_refused_edges" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">resolve_refused_edges</span>
+
+
+<a href="#foambryo.wedge_refusal.resolve_refused_edges" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">resolve_refused_edges</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">GeometricEdge</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The edges <code>refusal</code> declines on this mesh: its explicit set, or the folded ones.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the policy and, optionally, an explicit edge set.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.GeometricEdge">GeometricEdge</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>frozenset[GeometricEdge]: empty under <code>NoRefusal</code>. The crop edges are not part of it:</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="frozenset">frozenset</span>[<span title="foambryo.wedge_refusal.GeometricEdge">GeometricEdge</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>they are <code>refusal.crop_edges</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.refusal_with_crop" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">refusal_with_crop</span>
+
+
+<a href="#foambryo.wedge_refusal.refusal_with_crop" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">refusal_with_crop</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WedgeRefusal</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><code>refusal</code>, with the mesh's crop edges added as the second reason to decline an edge.</p>
+<p>Every estimator calls this on its own refusal before reading any angle, so the crop is
+honoured whatever the caller passed. Idempotent; on a mesh without crop faces it returns
+<code>refusal</code> itself, unchanged, and the untouched code path stays untouched.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh, whose <code>crop_faces</code> decide.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the caller's refusal.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>WedgeRefusal</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the same policy, explicit set and tolerance, with <code>crop_edges</code> set to every</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>edge that has a vertex on a crop face (<code>foambryo.crop_faces.crop_edges</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.refusal_report" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">refusal_report</span>
+
+
+<a href="#foambryo.wedge_refusal.refusal_report" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">refusal_report</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">per_edge_rows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RefusalReport</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Count what <code>refusal</code> declines on <code>mesh</code>, in the unit the estimator's rows use.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the policy to account for.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>per_edge_rows</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> when the estimator's observation unit is a single
+trijunctional edge (the per-edge method), <code>False</code> (the default) when it is a whole
+junction line. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>RefusalReport</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="RefusalReport
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.RefusalReport)" href="#foambryo.wedge_refusal.RefusalReport">RefusalReport</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the counts, including which lines still carry a row.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.line_averaged_angles" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">line_averaged_angles</span>
+
+
+<a href="#foambryo.wedge_refusal.line_averaged_angles" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">line_averaged_angles</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineAveragedAngles</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Angles, lengths and gauge partition for a line-averaged builder, under a refusal policy.</p>
+<p>With :data:<code>NO_REFUSAL</code> this calls <code>geometry.compute_angles_tri_with_report(unique=False)</code>
+and <code>junction_graph.partition_from_mesh</code> and nothing else, in that order — so the untouched
+path really is untouched and every existing number is bitwise unchanged.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which observations to decline. Keyword-only, defaults
+to refusing nothing.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>LineAveragedAngles</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="LineAveragedAngles
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.LineAveragedAngles)" href="#foambryo.wedge_refusal.LineAveragedAngles">LineAveragedAngles</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the maps, the partition and the coverage report. <code>dict_rad</code> is empty
+when the policy leaves no line reporting, which the builder turns into an
+all-undetermined answer rather than an exception.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.per_edge_rows" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">per_edge_rows</span>
+
+
+<a href="#foambryo.wedge_refusal.per_edge_rows" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">per_edge_rows</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">trijunction_edges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TrijunctionEdge</span><span class="p">],</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PerEdgeRows</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply a refusal policy to a per-edge estimator, whose observation unit is one edge.</p>
+<p><code>ExcludeEdgeFromLineMean</code> and <code>DropLine</code> coincide here and the coincidence is exact, not
+approximate: the unit is a single edge, so excluding a folded edge from its own unit's mean
+empties that unit, and an empty unit has no row — which is what dropping it means. They are
+the same intervention. <code>DownweightLine</code> is genuinely different: it keeps every row, including
+the folded ones, and scales the whole line's rows by its unrefused arclength fraction.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyze — read only to decide which edges are folded.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>trijunction_edges</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="TrijunctionEdge
+
+
+  
+      dataclass
+   (foambryo.geometry.TrijunctionEdge)" href="../geometry/#foambryo.geometry.TrijunctionEdge">TrijunctionEdge</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the estimator's own edge list, under
+whichever reading it uses. The edge set and lengths do not depend on the reading.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>which observations to decline. Defaults to refusing
+nothing, in which case every edge is kept with scale <code>1.0</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.wedge_refusal.NO_REFUSAL">NO_REFUSAL</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>PerEdgeRows</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="PerEdgeRows
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.PerEdgeRows)" href="#foambryo.wedge_refusal.PerEdgeRows">PerEdgeRows</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the surviving rows and their weight scales.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.all_interfaces_undetermined" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">all_interfaces_undetermined</span>
+
+
+<a href="#foambryo.wedge_refusal.all_interfaces_undetermined" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">all_interfaces_undetermined</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Interface</span><span class="p">],</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">partition</span><span class="p">:</span> <span class="n">JunctionGraphPartition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentTensionSolution</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The answer when a policy leaves no observation at all: every interface <code>nan</code>.</p>
+<p>Assembles the normalisation's row alone and hands it to
+<code>junction_graph.solve_gauged_least_squares</code>, so the undetermined interfaces are produced by
+the same machinery that already produces them for a closed surface, and the result carries
+the same <code>undetermined</code> / <code>component_of</code> / <code>gauge_notes</code> structure every caller reads.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>keys</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="foambryo.junction_graph.Interface">Interface</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interface key per column, in order.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the gauge value the caller requested.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>partition</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="../junction-graph/#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the partition over the surviving lines — with no
+surviving line every interface is isolated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>ComponentTensionSolution</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>float("nan")</code> at every interface.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.wedge_refusal.require_refusal_is_honoured" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">require_refusal_is_honoured</span>
+
+
+<a href="#foambryo.wedge_refusal.require_refusal_is_honoured" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_refusal_is_honoured</span><span class="p">(</span><span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Refuse a non-default policy on an estimator that reads no wedge angle.</p>
+<p>The counterpart of <code>tension_inference._require_reading_is_honoured</code>, and for the same reason:
+an estimator that assembles an area/volume or force-balance operator has no trijunction row
+to decline, so silently accepting a policy would hand the caller a result they believe
+refused its folded observations and which never had any.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>method_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the estimator's name, for the message.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>refusal</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="WedgeRefusal
+
+
+  
+      dataclass
+   (foambryo.wedge_refusal.WedgeRefusal)" href="#foambryo.wedge_refusal.WedgeRefusal">WedgeRefusal</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the requested refusal.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>refusal</code> is not <code>NO_REFUSAL</code>'s policy.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3837 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../linear-solves/">
+      
+      
+        <link rel="next" href="../uncertainty/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>The junction graph and the normalisation - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-junction-graph-and-the-normalisation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              The junction graph and the normalisation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.SparseSolveFallbackWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SparseSolveFallbackWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.MalformedTripleLineError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MalformedTripleLineError
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JunctionGraphPartition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JunctionGraphPartition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition.n_components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        n_components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition.fragmented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fragmented
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphGaugeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JunctionGraphGaugeWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.ComponentTensionSolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ComponentTensionSolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.GaugeNotExactWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GaugeNotExactWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.warn_on_junction_graph_fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_on_junction_graph_fragmentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_by_junction_graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_by_junction_graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_over_surviving_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_over_surviving_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_from_mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_from_mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.gauge_row_weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gauge_row_weight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.solve_with_exact_gauge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        solve_with_exact_gauge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.solve_gauged_least_squares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        solve_gauged_least_squares
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.require_single_component_solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_single_component_solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.SparseSolveFallbackWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SparseSolveFallbackWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.MalformedTripleLineError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MalformedTripleLineError
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JunctionGraphPartition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JunctionGraphPartition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition.n_components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        n_components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphPartition.fragmented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fragmented
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.JunctionGraphGaugeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JunctionGraphGaugeWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.ComponentTensionSolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ComponentTensionSolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.GaugeNotExactWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GaugeNotExactWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.warn_on_junction_graph_fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_on_junction_graph_fragmentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_by_junction_graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_by_junction_graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_over_surviving_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_over_surviving_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.partition_from_mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        partition_from_mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.gauge_row_weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gauge_row_weight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.solve_with_exact_gauge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        solve_with_exact_gauge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.solve_gauged_least_squares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        solve_gauged_least_squares
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.junction_graph.require_single_component_solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_single_component_solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="the-junction-graph-and-the-normalisation">The junction graph and the normalisation<a class="headerlink" href="#the-junction-graph-and-the-normalisation" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>The junction graph of a mesh, and the tension solves normalised in each of its connected pieces.</p>
+<p><strong>The normalisation (the "gauge").</strong> A mesh determines tension <em>ratios</em> only, so every tension
+solve adds one condition that fixes the overall scale: the tensions are normalised so that their
+mean is <code>mean_tension</code>, exactly, in each connected piece of the junction graph. This module calls
+that condition the gauge, and a connected piece of the graph a component.</p>
+<p><strong>Why per piece.</strong> A Young-Dupre-family solver couples two interfaces only when they share a
+triple line. Build the graph with interfaces as nodes and an edge wherever two interfaces meet at
+a triple line (<code>foambryo.validation.mesh_io.list_junctions</code>). If that graph has <code>k</code> connected
+components, the tension system decomposes into <code>k</code> blocks each determined only up to <strong>its own
+scale</strong>, while <code>mean(gamma) = mean_tension</code> supplies a single global constraint. Ordinary least
+squares then returns the minimum-norm solution, which drives the <code>k - 1</code> unpinned blocks towards
+zero -- giving a gauge-matched relative error of exactly 1.0, silently. This was found on 12 of the
+72 ground-truth simulator meshes of 91-166 cells described in <code>BENCHMARKS.md</code>.</p>
+<p><strong>A degenerate sub-case.</strong> An interface that is a fully closed surface (an engulfed cell, a
+sealed lumen) has no triple line at all, so it is an isolated node in <em>no</em> junction-graph
+edge and <em>no</em> equation in any builder's physics rows. Its tension is not merely unpinned in
+scale -- it is wholly undetermined, and this module reports it as such (<code>float("nan")</code>),
+never as a number, never silently folded into a component.</p>
+<p><strong>The design.</strong> Infer per component, normalised per component: each block's tensions are
+internally consistent and comparable only <em>within</em> the block. That is surfaced in the output, not
+buried in a docstring -- <code>ComponentTensionSolution</code> carries, for every interface, which component
+it belongs to and which normalisation was applied to that component; isolated/closed interfaces
+are reported as undetermined, never as a component with a normalisation and never as a number;
+and any code that would aggregate tensions <em>across</em> components must refuse rather than silently
+blend two incompatible scales (<code>require_single_component_solution</code> below).</p>
+<p><strong>The normalisation is exact</strong> (since 0.7.0). The builders still append a row of ones, <code>sum(gamma) =
+n * f(mean_tension)</code>; <code>solve_gauged_least_squares</code> reads its value and replaces the row by
+<code>solve_with_exact_gauge</code>: a gauge row weighted to the physics rows' median norm (the
+best-conditioned weight), then an exact rescale (homogeneous rows) or shift (difference rows), so
+that each component's tensions meet their gauge exactly. Until 0.6.0 the row of ones was a soft
+least-squares row of weight 1. Because the physics rows are homogeneous, its weight changed only the
+overall scale of the solution, never a tension ratio, but it missed the requested mean (by ~1e-6 for
+<code>YoungDupre</code>, up to 80 % for <code>Equilibrium</code>) and raised the condition number by up to three orders of
+magnitude (2.8e7 against 311 on a 1 866-cell tissue's <code>YoungDupre</code> system), which is what limited
+the iterative solve's accuracy to ~1e-6 of the tension scale.</p>
+<p><strong>Scope: which methods.</strong> This module decomposes any solver whose assembled system is
+<code>[physics rows; one trailing global gauge row</code>sum(gamma) = n * f(mean_tension)<code>]</code>, which is
+every method in <code>foambryo.tension_inference</code> and <code>foambryo.per_edge_tension_inference</code>
+<strong>except</strong>:</p>
+<ul>
+<li><code>TensionComputationMethod.Equilibrium</code>, whose physics rows are keyed by <em>geometric mesh
+  edges</em> (<code>len(edge.twin) != 1</code>), which include quadrijunction edges that
+  <code>mesh_io.list_junctions</code> does not enumerate (it only finds edges bordering exactly three
+  regions) -- so this module's triple-line-only graph would not necessarily match
+  <code>Equilibrium</code>'s actual row coupling. A known limitation: <code>Equilibrium</code> is normalised over the
+  whole mesh at once, never decomposed;</li>
+<li>the <code>ForceBalance*</code> and <code>Variational</code> family, whose operator additionally carries area
+  <em>and</em> volume gradients tied to shared cells and is column-coupled through the pressure
+  block rather than through the triple-junction graph alone -- measured not to fragment the
+  same way, so these are normalised over the whole mesh at once and never decomposed here.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.SparseSolveFallbackWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SparseSolveFallbackWarning</span>
+
+
+<a href="#foambryo.junction_graph.SparseSolveFallbackWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p><code>lsqr</code> did not converge on a large linear system.</p>
+<p>The dense least-squares solve was run instead; or, when the dense solve would not fit in the
+memory available, <code>lsqr</code>'s last iterate is returned and the message says it is not converged.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.MalformedTripleLineError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">MalformedTripleLineError</span>
+
+
+<a href="#foambryo.junction_graph.MalformedTripleLineError" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MalformedTripleLineError</span><span class="p">(</span><span class="n">edge</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">missing_interface</span><span class="p">:</span> <span class="n">Interface</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+        <p>A triple-line edge names an interface pair absent from the mesh's own interface list.</p>
+<p>Structurally, this should not be reachable after <code>mesh_io.list_junctions</code>'s stricter
+admission rule: a genuine triple line's three sub-interfaces are, by construction, its
+three incident triangles' own region pairs (see that function's docstring). This is a
+named, catchable safety net standing in for what used to be a bare <code>KeyError</code> naming an
+internal union-find dict key -- for any future change to <code>list_junctions</code>'s guarantee, or
+any caller that builds <code>junctions</code>/<code>edge_to_triple</code> some other way.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.MalformedTripleLineError.edge">edge</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The mesh edge <code>(u, v)</code>, <code>u &lt; v</code>, that synthesized <code>triple</code> -- <code>None</code> if no
+edge in <code>edge_to_triple</code> could be matched to it.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.MalformedTripleLineError.triple">triple</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The region-triple <code>(a, b, c)</code> the edge synthesized.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.MalformedTripleLineError.missing_interface">missing_interface</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The interface pair from <code>triple</code> that has no key in the
+union-find parent map, i.e. does not occur as any triangle's actual region pair.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+        <p>Build the error from the offending edge, its synthesized triple, and the missing interface.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.JunctionGraphPartition" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">JunctionGraphPartition</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.junction_graph.JunctionGraphPartition" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">JunctionGraphPartition</span><span class="p">(</span><span class="n">interfaces</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">components</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span> <span class="n">component_of</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">isolated</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Connected-component partition of a mesh's interfaces by its triple-junction graph.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.JunctionGraphPartition.interfaces">interfaces</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Every interface present on the mesh (<code>mesh_io.list_interfaces</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.JunctionGraphPartition.components">components</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="tuple">tuple</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, ...], ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>One tuple of interface keys per connected component, ordered largest
+first (ties broken by the component's smallest key); a mesh with a fully
+connected junction graph has exactly one component containing every touched
+interface.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.JunctionGraphPartition.component_of">component_of</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, <span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Map interface -&gt; component index, for every interface <strong>except</strong> the
+isolated ones (which are never assigned a component -- see <code>isolated</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.JunctionGraphPartition.isolated">isolated</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interfaces touching no triple line at all (closed surfaces). Disjoint from
+every entry of <code>components</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.junction_graph.JunctionGraphPartition.n_components" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">n_components</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.junction_graph.JunctionGraphPartition.n_components" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Number of proper (gaugeable) components -- excludes isolated interfaces.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.junction_graph.JunctionGraphPartition.fragmented" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">fragmented</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.junction_graph.JunctionGraphPartition.fragmented" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">fragmented</span><span class="p">:</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>True iff a single global <code>mean(gamma) = mean_tension</code> normalisation no longer pins one scale.</p>
+<p>This is the case whenever there is more than one component, <strong>or</strong> at least one
+isolated interface -- an isolated interface is already a failure of the single-gauge
+assumption even if the rest of the mesh's junction graph is fully connected.</p>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.JunctionGraphGaugeWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">JunctionGraphGaugeWarning</span>
+
+
+<a href="#foambryo.junction_graph.JunctionGraphGaugeWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p>Emitted when a mesh's triple-junction graph is in several pieces or has an undetermined interface.</p>
+<p>Fires whenever <code>JunctionGraphPartition.fragmented</code> is true: more than one component (a
+connected piece of the junction graph, normalised on its own), at least one undetermined
+interface (no surviving triple line, e.g. a fully closed surface), or both. Tensions in
+different components sit on different, arbitrary relative scales -- comparing or averaging
+them directly is meaningless -- and an undetermined interface is reported as <code>nan</code>, never a
+number. Emitted by <code>infer_tensions</code>, <code>infer_tensions_and_residuals</code>, <code>infer_forces</code> and
+<code>infer_tensions_over_seeds</code>, whose flat maps hold the tensions of every component side by
+side; use <code>foambryo.tension_inference.infer_tensions_by_junction_component</code> to get each
+interface's component explicitly instead of blending them.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.ComponentTensionSolution" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ComponentTensionSolution</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.junction_graph.ComponentTensionSolution" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ComponentTensionSolution</span><span class="p">(</span><span class="n">tensions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">component_of</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">gauge_notes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">undetermined</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">lstsq_residuals</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">fragmented</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">solver_notes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">())</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>One inference's tensions, decomposed by the junction graph.</p>
+<p>When <code>fragmented</code> is <code>False</code> this is the solve of the whole mesh with one normalisation,
+<code>mean(gamma) = mean_tension</code> met exactly. When <code>fragmented</code> is <code>True</code>, each connected
+component of the interfaces' triple-junction graph was solved with its <strong>own</strong>
+<code>mean(gamma) = mean_tension</code> normalisation, met exactly; a component's
+tensions are therefore comparable only to each other, never across components, and
+<code>gauge_notes</code> says so per component. Isolated interfaces (no triple line at all) are
+undetermined: <code>dict_tensions</code> maps them to <code>float("nan")</code>, and <code>component_of</code> maps them
+to <code>None</code>.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.tensions">tensions</span></code></td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(n_interfaces,)</code>, aligned with the <code>keys</code> the caller passed in;
+<code>float("nan")</code> at every undetermined interface.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.dict_tensions">dict_tensions</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The same, keyed by interface. <code>float("nan")</code> for undetermined
+interfaces -- never a number.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.component_of">component_of</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, <span title="int">int</span> | None]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interface -&gt; component index, or <code>None</code> for an undetermined interface.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.gauge_notes">gauge_notes</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Component index -&gt; a one-line description of the gauge applied to it.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.undetermined">undetermined</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interfaces with no triple line at all (closed surfaces).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.lstsq_residuals">lstsq_residuals</span></code></td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Concatenation of each component's squared physics residual (a
+length-1 array per component; the normalisation, met exactly, adds none). When
+<code>fragmented</code> is <code>False</code>, the single whole-mesh solve's.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.fragmented">fragmented</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the junction graph required per-component gauging.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.n_components">n_components</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of gauged components (1 when not fragmented).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.junction_graph.ComponentTensionSolution.solver_notes">solver_notes</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Component index -&gt; which least-squares solver ran on it and, for the sparse
+solver, its stop code, iteration count, residual norm and condition estimate
+(<code>_solve_least_squares</code>). Component 0 is the whole mesh when not fragmented. Empty for
+solutions not built by <code>solve_gauged_least_squares</code>, and for <code>LogLami</code>, which rebuilds
+its solution from the one this function returned.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.junction_graph.GaugeNotExactWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GaugeNotExactWarning</span>
+
+
+<a href="#foambryo.junction_graph.GaugeNotExactWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p>A gauge could not be made exact: the solution is the well-scaled soft row's.</p>
+<p>Raised only for a system whose physics rows are neither homogeneous (zero right-hand side) nor
+differences (each row sums to zero): no method of this package builds one.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.warn_on_junction_graph_fragmentation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">warn_on_junction_graph_fragmentation</span>
+
+
+<a href="#foambryo.junction_graph.warn_on_junction_graph_fragmentation" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">warn_on_junction_graph_fragmentation</span><span class="p">(</span><span class="n">fragmented</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">isolated</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">stacklevel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Emit <code>JunctionGraphGaugeWarning</code> when a mesh's junction-graph gauging was fragmented.</p>
+<p>Called only from the entry points that drop the underlying gauge structure on the floor --
+mirrors <code>second_order_angle_reading.warn_on_partial_coverage</code>'s precedent: the
+report/solution-returning entry point (<code>infer_tensions_by_junction_component</code>) hands the
+caller the <code>ComponentTensionSolution</code> this warning would have described, and stays
+silent; <code>infer_tensions_and_residuals</code> (and, through it, <code>infer_tensions</code>) does not, so
+it calls this instead.</p>
+<p>Takes the three scalars directly, rather than a <code>JunctionGraphPartition</code>, so a caller that
+already solved the system (and therefore already has a <code>ComponentTensionSolution</code> or
+<code>YoungDupreLocalResult</code> carrying these same three fields) does not need to recompute
+<code>partition_from_mesh</code> a second time just to decide whether to warn.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>fragmented</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the junction graph required per-component gauging.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_components</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of gauged components (1 when not fragmented).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>isolated</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="foambryo.junction_graph.Interface">Interface</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interfaces with no triple line at all.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stacklevel</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>passed through to <code>warnings.warn</code>, so the warning points
+at the caller's own line rather than at this module. Defaults to 3.</p>
+              </div>
+            </td>
+            <td>
+                  <code>3</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.partition_by_junction_graph" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">partition_by_junction_graph</span>
+
+
+<a href="#foambryo.junction_graph.partition_by_junction_graph" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">partition_by_junction_graph</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">JunctionGraphPartition</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Connected components of the triple-junction graph, from raw mesh arrays.</p>
+<p>One node per interface (<code>mesh_io.list_interfaces</code>); an edge between two interfaces
+whenever they co-occur in a triple line (<code>mesh_io.list_junctions</code> gives each triple
+line's three constituent interfaces, all <code>C(3,2) = 3</code> pairs among them become edges).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh triangles (vertex indices), shape <code>(nf, 3)</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>regions</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Per-triangle region pair, shape <code>(nf, 2)</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>JunctionGraphPartition</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The partition. A "healthy" mesh (every interface reachable
+from every other through some chain of shared triple lines, no closed interface)
+returns exactly one component holding every interface and an empty <code>isolated</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="MalformedTripleLineError (foambryo.junction_graph.MalformedTripleLineError)" href="#foambryo.junction_graph.MalformedTripleLineError">MalformedTripleLineError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a triple line names an interface pair that is not
+present in <code>mesh_io.list_interfaces(regions)</code>. <code>mesh_io.list_junctions</code>'s
+admission rule (three interfaces on exactly three incident triangles) should
+make this unreachable in practice; this is the defensive, named replacement for
+what used to be a bare <code>KeyError</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.partition_over_surviving_junctions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">partition_over_surviving_junctions</span>
+
+
+<a href="#foambryo.junction_graph.partition_over_surviving_junctions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">partition_over_surviving_junctions</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">surviving</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">JunctionGraphPartition</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>:func:<code>partition_by_junction_graph</code>, restricted to the triple lines still carrying a row.</p>
+<p>An estimator that declines some of its observations no longer couples the interfaces those
+observations coupled, so the gauge structure has to be read off the <em>surviving</em> junction
+lines rather than off the mesh. An interface left touching no surviving line is then
+<code>isolated</code> — exactly what this module already reports as <code>float("nan")</code> for a
+fully closed surface — and a survivor graph that falls into several pieces is gauged per
+component by :func:<code>solve_gauged_least_squares</code>, as a fragmented mesh already is.</p>
+<p><code>surviving</code> only ever <strong>removes</strong> lines: a triple that this mesh's own
+<code>mesh_io.list_junctions</code> does not admit as a genuine triple line is absent from the graph
+here exactly as it is absent from :func:<code>partition_by_junction_graph</code>'s, so an estimator
+whose rows outrun that admission rule is treated identically with and without refusal.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh triangles (vertex indices), shape <code>(nf, 3)</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>regions</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Per-triangle region pair, shape <code>(nf, 2)</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>surviving</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Collection">Collection</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>sorted region-triples whose row survived.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>JunctionGraphPartition</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the partition of the same interfaces by the surviving lines
+alone. Passing every triple the mesh has reproduces
+:func:<code>partition_by_junction_graph</code> exactly.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.partition_from_mesh" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">partition_from_mesh</span>
+
+
+<a href="#foambryo.junction_graph.partition_from_mesh" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">partition_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JunctionGraphPartition</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convenience: partition a <code>DcelData</code> mesh directly (<code>mesh.f</code>'s vertex/label columns).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A <code>foambryo.dcel.DcelData</code> (typed as <code>object</code> to avoid a hard import cycle;
+only <code>mesh.f</code>, an <code>(nf, 5)</code> array of <code>[v0, v1, v2, label_a, label_b]</code>, is used).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>JunctionGraphPartition</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>See <code>partition_by_junction_graph</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.gauge_row_weight" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">gauge_row_weight</span>
+
+
+<a href="#foambryo.junction_graph.gauge_row_weight" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">gauge_row_weight</span><span class="p">(</span><span class="n">physics</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="n">csr_matrix</span><span class="p">,</span> <span class="n">n_unknowns</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Weight of the gauge row: its norm is the median non-zero physics-row norm (to a power of two).</p>
+<p>The row is <code>weight * 1^T</code>, norm <code>weight * sqrt(n)</code>. Matching it to the physics rows' typical norm
+puts the system at the bottom of the condition number's V in the row weight (measured on a
+1 866-cell tissue's Young-Dupre system: 311 against 2.8e7 for the unit row). 1.0 when no physics
+row has an entry.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.solve_with_exact_gauge" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">solve_with_exact_gauge</span>
+
+
+<a href="#foambryo.junction_graph.solve_with_exact_gauge" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">solve_with_exact_gauge</span><span class="p">(</span><span class="n">physics</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="n">csr_matrix</span><span class="p">,</span> <span class="n">physics_b</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">gauge_total</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'tension system'</span><span class="p">,</span> <span class="n">use_sparse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_columns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Least squares on <code>physics @ x = physics_b</code> with the gauge <code>sum(x) = gauge_total</code> met exactly.</p>
+<p>The gauge row is appended with the weight <code>gauge_row_weight</code> (its norm equal to the median
+physics-row norm, where the system is best conditioned), the system is solved by
+<code>_solve_least_squares</code> (dense or sparse as the options say), and the gauge is then made exact
+without moving the solution off the physics rows' least-squares set:</p>
+<ul>
+<li><strong>homogeneous physics rows</strong> (<code>physics_b == 0</code>: every Young-Dupre-family, cotangent, Lami,
+  per-edge and <code>Equilibrium</code> system): the solution of a soft gauge row of any weight is the
+  exact-gauge solution times one factor (Sherman-Morrison; the two were measured to agree to
+  1e-13), so it is rescaled to <code>sum(x) = gauge_total</code>. Tension ratios are those of the exact
+  constrained least-squares solution;</li>
+<li><strong>difference rows</strong> (each physics row sums to zero, e.g. <code>LogLami</code> in log space): adding a
+  constant to every unknown leaves every physics residual unchanged, so the solution is shifted
+  to meet the gauge;</li>
+<li>otherwise (no builder of this package): the soft row's solution is returned with a
+  <code>GaugeNotExactWarning</code>.</li>
+</ul>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>physics</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>] | <span title="scipy.sparse.csr_matrix">csr_matrix</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(n_rows, n)</code> physics rows, dense or CSR, without any gauge row.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>physics_b</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(n_rows,)</code> their right-hand side.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>gauge_total</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the value <code>sum(x)</code> must take (<code>n * mean_tension</code> for the tension methods).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>system</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>label, for messages and diagnostics. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;tension system&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>use_sparse</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>force a path, see <code>_solve_least_squares</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale_columns</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>see <code>_solve_least_squares</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>tuple</code></td>            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(x, residuals, record)</code>. <code>residuals</code> is the squared 2-norm of the physics rows'</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>residual, <code>physics @ x - physics_b</code>, as a length-1 array: the gauge row is met exactly and</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>contributes nothing. <code>record</code> is <code>_solve_least_squares</code>'s, plus <code>gauge</code> (how the gauge was</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="tuple">tuple</span>[<span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>], <span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>], <span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>made exact) and <code>gauge_row_weight</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Nothing is raised beyond <code>_solve_least_squares</code>'s exceptions; a zero-sum solution of homogeneous
+rows (no scale to rescale) is returned as solved, with a <code>GaugeNotExactWarning</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.solve_gauged_least_squares" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">solve_gauged_least_squares</span>
+
+
+<a href="#foambryo.junction_graph.solve_gauged_least_squares" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">solve_gauged_least_squares</span><span class="p">(</span><span class="n">matrix_m</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="n">csr_matrix</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Interface</span><span class="p">],</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">partition</span><span class="p">:</span> <span class="n">JunctionGraphPartition</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'tension system'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentTensionSolution</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Solve <code>matrix_m @ x = vector_b</code>, gauging per junction-graph component if fragmented.</p>
+<p><code>matrix_m</code> must be exactly the shape every builder in <code>foambryo.tension_inference</code>
+produces: <code>(n_rows, len(keys))</code>, whose <strong>last row</strong> is the single global gauge
+<code>sum(gamma) = vector_b[-1]</code> (<code>vector_b[-1]</code> is <code>len(keys) * mean_tension</code> for every
+method except <code>LogLami</code>, which works in <code>log</code>-space -- this function reads
+<code>vector_b[-1]</code> directly rather than recomputing it, so it is agnostic to which
+convention the caller used). The row itself is not used: each component is solved by
+<code>solve_with_exact_gauge</code>, which meets its share of the gauge exactly (<code>sum(gamma)</code> over the
+component <code>= vector_b[-1] * n_component / n</code>, i.e. <code>mean(gamma) = mean_tension</code>). The residuals
+returned are the physics rows' (the gauge contributes none).</p>
+<p>Each component's solve is dense or sparse as <code>foambryo.linear_solves</code>'s options in force say
+(by default: dense below <code>SPARSE_SOLVE_MIN_UNKNOWNS</code> interfaces, <code>lsqr</code> at or above), see
+<code>_solve_least_squares</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>matrix_m</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>] | <span title="scipy.sparse.csr_matrix">csr_matrix</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Assembled system, gauge row
+last. A sparse system is never densified as a whole: only the components that take the
+dense path are.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>vector_b</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Right-hand side, gauge value last.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>keys</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="foambryo.junction_graph.Interface">Interface</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interface key per column of <code>matrix_m</code>, in order.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The gauge value the caller requested (only used for the
+human-readable <code>gauge_notes</code>; the actual constraint value is read from
+<code>vector_b[-1]</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>partition</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="JunctionGraphPartition
+
+
+  
+      dataclass
+   (foambryo.junction_graph.JunctionGraphPartition)" href="#foambryo.junction_graph.JunctionGraphPartition">JunctionGraphPartition</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>This mesh's junction-graph partition. Must cover
+exactly <code>keys</code> (checked).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>system</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>what the system is, for messages and diagnostics. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;tension system&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>ComponentTensionSolution</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>See its docstring.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>partition</code>'s interfaces do not exactly match <code>keys</code>, or (defensive,
+fragmented case only) if a physics row's nonzero columns span more than one
+component -- meaning the caller's row coupling does not match the triple-junction
+graph, and this decomposition must not be trusted for that builder.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.junction_graph.require_single_component_solution" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">require_single_component_solution</span>
+
+
+<a href="#foambryo.junction_graph.require_single_component_solution" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_single_component_solution</span><span class="p">(</span><span class="n">solution</span><span class="p">:</span> <span class="n">ComponentTensionSolution</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Refuse to let a caller silently aggregate a fragmented solution across components.</p>
+<p>Call this at the top of any function that reduces one mesh's tensions to a single number (a mean,
+a single gauge-matching scale, a pooled error). It raises rather than returning a number
+computed by blending two components that are not on the same scale.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>solution</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A solve from <code>solve_gauged_least_squares</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>int</code></td>            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>0</code>, the sole component index, when <code>solution</code> is not fragmented.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>solution.fragmented</code> is <code>True</code> -- i.e. more than one gauge component,
+or at least one undetermined interface, is present.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

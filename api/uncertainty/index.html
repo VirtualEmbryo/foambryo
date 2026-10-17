@@ -1,0 +1,3364 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../junction-graph/">
+      
+      
+        <link rel="next" href="../second-order-angle-reading/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Error bars and diagnostics - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#error-bars-and-diagnostics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Error bars and diagnostics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.UncertaintyModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UncertaintyModel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.InferenceDiagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InferenceDiagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InferenceDiagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.InferenceDiagnostics.identifiability_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        identifiability_report
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TensionUncertaintyResult
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TensionUncertaintyResult">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict_tensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tension_std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict_tension_std
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.compute_inference_diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_inference_diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.infer_tensions_with_uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_with_uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.error_over_std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        error_over_std
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.UncertaintyModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UncertaintyModel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.InferenceDiagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InferenceDiagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InferenceDiagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.InferenceDiagnostics.identifiability_report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        identifiability_report
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TensionUncertaintyResult
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TensionUncertaintyResult">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict_tensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tension_std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict_tension_std
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.compute_inference_diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_inference_diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.infer_tensions_with_uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_tensions_with_uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.uncertainty.error_over_std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        error_over_std
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="error-bars-and-diagnostics">Error bars and diagnostics<a class="headerlink" href="#error-bars-and-diagnostics" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Error bars on inferred tensions, with their measured calibration, and identifiability diagnostics.</p>
+<p><code>infer_tensions_with_uncertainty</code> returns the tensions of <code>infer_tensions</code> (it never changes a
+point estimate) together with an interval and the diagnostics needed to decide whether to trust it;
+<code>compute_inference_diagnostics</code> returns the diagnostics alone. Neither has a formulation for crop
+faces yet: both raise <code>ValueError</code> on a cropped mesh.</p>
+<p><strong>Large tissues.</strong> Both compute the diagnostics from the dense force-balance operator, three rows per mesh
+vertex and one column per interface and per cell, and its singular value decomposition. Past
+<code>DENSE_OPERATOR_ENTRY_LIMIT</code> entries (<code>2**31 - 1</code>, the most scipy's LAPACK can index) that decomposition cannot
+run, so both raise <code>ValueError</code> at once, before building anything; a mesh of the default reconstruction reaches it at
+about 1 300 cells of real size. Below the limit the cost grows with the operator: on a generated 1 200-cell foam (0.8
+of the limit) <code>infer_tensions_with_uncertainty(mesh, 1, YoungDupre)</code> took about 30 minutes and 46 GiB.</p>
+<p><strong>Read this before using an error bar from here.</strong> No interval of this module is a calibrated
+error bar on a reconstructed mesh. The first-order interval of the <code>YoungDupre</code> tensions
+(<code>AnglePropagation</code>) is a <strong>lower bound</strong> on the error: measured on 2 400 reconstructions with
+ground truth, one reconstruction's <code>+- std</code> contained the true tension for 26-54 % of interfaces
+(nominal 68 %), because the error is mostly the reconstruction's bias, which no propagated scatter
+measures. The calibration figures below are for the simulator's reference meshes.</p>
+<p>The goal here is not "add error bars" — it is <em>produce an interval whose <code>error/std</code> is
+O(1), or state plainly that we cannot</em>. <code>error/std</code> (the ratio of the actual error against
+ground truth to the reported standard deviation, gauge-matched) is <strong>the</strong> calibration
+metric: 1 is calibrated, &gt;&gt;1 is optimistic (dangerous), &lt;&lt;1 is conservative (safe but
+uninformative). Measured over the 42 equilibrium cases of <code>benchmarking-dataset</code>
+(<code>foambryo_benchmarks/run_uncertainty_calibration.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>model</th>
+<th>estimator</th>
+<th>median <code>error/std</code></th>
+<th>worst case</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ProbeResidual</code></strong></td>
+<td>force balance</td>
+<td><strong>0.233</strong></td>
+<td><strong>0.93</strong></td>
+<td><strong>O(1), and conservative on 42/42</strong></td>
+</tr>
+<tr>
+<td><code>CoherentResidual</code></td>
+<td>force balance</td>
+<td>1.33</td>
+<td>29.9</td>
+<td>O(1) at the median, <strong>not uniformly</strong></td>
+</tr>
+<tr>
+<td><code>EdgeBootstrap</code></td>
+<td><code>YoungDupreLocal</code></td>
+<td>0.27</td>
+<td>1.57</td>
+<td>~4x conservative (measured on all 47</td>
+</tr>
+<tr>
+<td>cases)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BayesianMap</code></td>
+<td>force balance</td>
+<td>0.21</td>
+<td>0.61</td>
+<td>O(1) <strong>by choice of prior</strong>, not by measurement</td>
+</tr>
+<tr>
+<td><code>AnglePropagation</code></td>
+<td><code>YoungDupre</code></td>
+<td>0.015</td>
+<td>0.078</td>
+<td>~65x conservative here; <strong>too narrow on reconstructions</strong></td>
+</tr>
+<tr>
+<td><code>ClusterRobust</code></td>
+<td>force balance</td>
+<td>204</td>
+<td>1.5e4</td>
+<td>optimistic; <strong>not recommended</strong></td>
+</tr>
+<tr>
+<td><code>ClusterBootstrap</code></td>
+<td>force balance</td>
+<td>216</td>
+<td>3e4</td>
+<td>optimistic; <strong>not recommended</strong></td>
+</tr>
+<tr>
+<td><code>IidGls</code></td>
+<td>force balance</td>
+<td>246</td>
+<td>5.4e3</td>
+<td>optimistic; <strong>not recommended</strong> (the naive posterior)</td>
+</tr>
+<tr>
+<td><code>LineBootstrap</code></td>
+<td><code>YoungDupre</code></td>
+<td>1.3e-05</td>
+<td>—</td>
+<td>~1e5 conservative, weight-confounded; diagnostic only</td>
+</tr>
+</tbody>
+</table>
+<p><code>AnglePropagation</code>'s row is on the reference meshes, whose angles are nearly exact. On 2 400
+reconstructions of five tissue populations with ground truth, one reconstruction's <code>+- std</code>
+contains the true tension for only 26-54 % of interfaces (nominal 68 %), <code>+- 2 std</code> for 48-79 %
+(nominal 95 %): it is not a calibrated interval there, and no single factor makes it one.</p>
+<p><strong>So that goal is met: <code>ProbeResidual</code> is an interval with <code>error/std</code> = O(1), and it
+errs on the safe side on every one of the 42 cases.</strong></p>
+<p><strong>Why the naive posterior fails by 250x, and why the fix is one factor.</strong> The i.i.d. model
+says the per-component vertex force residual is <code>N(0, sigma_f^2)</code> with <code>sigma_f</code> estimated
+as <code>||M beta|| / sqrt(dof)</code>. On a 11 000-vertex mesh that is ~34 000 rows, so the estimator
+averages the noise down by <code>sqrt(34 000) ~ 185</code> and claims to know each tension to ~1e-4.
+It does not: the residual was measured to be <strong>systematic</strong> — the meshes are the
+equilibrium of the generator's volume-<em>constraint</em> projection, not of <code>M beta = 0</code> — so it
+does not average down at all. Measured, the implied <code>n_eff</code> (the number of independent
+observations the rows are actually worth, <code>dof / (error/std)^2</code>) has median <strong>0.57</strong> on the
+42 and is <strong>below 1 on 29 of them</strong>: the ~33 000 rows are worth <em>less than one</em> independent
+observation.</p>
+<p><code>CoherentResidual</code> replaces the probabilistic assumption with a deterministic one, and it
+is the same linear algebra with <code>sigma_f -&gt; ||M beta||</code>: treat the residual as <strong>one
+coherent perturbation of measured norm and unknown direction</strong>. The worst-case-direction
+first-order bound on the estimator is then</p>
+<div class="highlight"><pre><span></span><code>|d gamma_i| &lt;= sigma * sqrt(Sigma_unit_ii),
+</code></pre></div>
+<p>with <code>Sigma_unit</code> the constrained-GLS shape matrix of
+<code>foambryo.validation.force_balance.constrained_covariance</code> at <code>sigma_f = 1</code>. That is the
+<code>n_eff = 1</code> extreme, and it moves the median calibration from 246 to <strong>1.33</strong> — the whole
+250x gap is that one <code>sqrt(dof)</code> factor, nothing else. But it is <strong>not uniform</strong>: 10 of the
+42 cases still come out above 10, worst 29.9.</p>
+<p><strong><code>ProbeResidual</code> closes that, and the mechanism is measured rather than guessed.</strong> The
+remaining failure is <em>self-fitting</em>: <code>||M beta_hat||</code> is the residual at the estimate, and
+<code>beta_hat</code> was chosen to minimise it. The residual at the truth is a median <strong>5.4x</strong> and up
+to <strong>87x</strong> larger, and that ratio is what predicts the failures (Spearman 0.80). Worse, the
+bound fails <strong>worst on the best meshes</strong> — a mesh close to <code>M</code>'s equilibrium lets the fit
+drive <code>||M beta_hat||</code> to almost nothing while the true error stays put (Spearman against
+<code>rho_free</code>: <strong>-0.81</strong>). <code>ProbeResidual</code> therefore takes <code>sigma</code> from the residual at an
+<strong>independent</strong> tension estimate (<code>PROBE_METHOD</code>, <code>YoungDupre</code>, which never touches <code>M</code>).
+Measured: the probe residual reproduces the residual at the ground truth to <strong>0.1 % on every
+case</strong>, so this is the oracle bound without an oracle — and probe error can only <em>inflate</em>
+<code>sigma</code>, so it fails safe. See <code>_probe_residual_norm</code>.</p>
+<p><strong>Why resampling does not rescue the i.i.d. model.</strong> <code>ClusterRobust</code> (a cluster-robust
+sandwich) and <code>ClusterBootstrap</code> (resampling whole cells) both model <em>correlation</em>; neither
+can model a <em>bias</em>. Measured, they move 246 to 204 and 216 — a factor 1.2, not 250. That is
+the honest reason to prefer the deterministic bound: the dominant term is not variance, so
+there is nothing for a resampling scheme to find.</p>
+<p><strong>Why <code>ForceBalanceMAP</code>'s apparently-good 0.21 is not an answer.</strong> Its interval's width is
+set by <code>MAP_PRIOR_TENSION_STD</code>, a hyperparameter documented as "deliberately broad" and
+never derived. Sweeping it over 0.03-1.0 moves <code>error/std</code> over 2.93-0.061, a log-log slope
+of <strong>-1.03</strong>: the interval <em>is</em> the prior. Any calibration it shows was chosen. Both
+<code>CoherentResidual</code> and <code>ProbeResidual</code> have no such knob — their scale is a measured residual
+norm.</p>
+<p><strong>The negative control behaves differently, and that is a check on the mechanism.</strong> On the
+five non-equilibrium cases excluded from every accuracy claim, the residual is genuinely large and spread over
+interface interiors, so the implied <code>n_eff</code> is <strong>370</strong> rather than 0.57, <code>IidGls</code> improves to
+9.0, and <code>ProbeResidual</code>/<code>CoherentResidual</code> become ~20x conservative. The models fail in the
+<em>safe</em> direction exactly where the mesh is bad — which is the behaviour one wants and not
+something that was fitted.</p>
+<p><strong>Why the angle family is conservative rather than optimistic.</strong> <code>YoungDupre</code> reads
+triple-line angles and never touches <code>M</code>. Propagating the <em>measured</em> along-line angle
+spread through the operator over-predicts its error by ~2 orders, because (as measured) the
+dataset's angle deviations from Neumann lie nearly orthogonal to the Young-Dupre operator's column
+space. So its interval is safe and nearly useless, and its point estimate (2.3e-05) is far
+better than any interval we can defend around it.</p>
+<p><strong>One caveat, and it is load-bearing.</strong> <code>YoungDupre</code>'s accuracy is
+<strong>weighting-critical</strong>: a factor-~4 change in relative inter-line weights costs two orders
+of magnitude. <code>LineBootstrap</code> resamples whole triple lines, which <em>is</em> such a reweighting
+(<code>n</code> copies of a line of weight <code>w</code> act as one row of weight <code>w sqrt(n)</code>), so its width is
+dominated by weight perturbation rather than by angle noise. It is reported for that reason,
+not despite it. <strong>Nothing here changes the junction-length weighting of any shipped
+method</strong> — every point estimate returned by this module is bit-identical to the
+corresponding <code>infer_tensions</code> call.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.uncertainty.UncertaintyModel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">UncertaintyModel</span>
+
+
+<a href="#foambryo.uncertainty.UncertaintyModel" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>How the interval around an inferred tension is produced.</p>
+<p>See the module docstring for the measured <code>error/std</code> of each. <code>ProbeResidual</code> is the one
+recommended for reporting — O(1) <em>and</em> conservative on every one of the 42 equilibrium
+cases. The others are kept because a calibration claim that cannot be reproduced against
+its alternatives is not a calibration claim, and because two of them (<code>IidGls</code>,
+<code>ClusterRobust</code>) are the models a reader would otherwise reach for.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.ProbeResidual">ProbeResidual</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>CoherentResidual</code>, but scaled by the residual at an <strong>independent</strong>
+tension estimate instead of at the fitted one, which removes the self-fitting.
+Force-balance / <code>Variational</code> family. <strong>Default, and the only model measured to
+be conservative on every one of the 42 cases.</strong></p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.CoherentResidual">CoherentResidual</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Deterministic worst-case-direction bound, <code>sigma_f = ||M beta||</code>
+(<code>n_eff = 1</code>). Force-balance / <code>Variational</code> family. O(1) at the median but
+<strong>not uniformly</strong> — see the module docstring.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.IidGls">IidGls</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the naive constrained-GLS posterior, <code>sigma_f = ||M beta|| / sqrt(dof)</code>.
+Retained for comparison and <strong>not for reporting</strong> — ~250x optimistic.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.ClusterRobust">ClusterRobust</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cluster-robust (sandwich) covariance, clusters = cells.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.ClusterBootstrap">ClusterBootstrap</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Nonparametric bootstrap resampling whole cells.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.AnglePropagation">AnglePropagation</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>First-order propagation of the <em>measured</em> along-line angle spread
+through the Young-Dupre solve. Angle family (<code>YoungDupre</code>), and its default. <strong>Not a
+calibrated interval on reconstructions: a lower bound on the error</strong> (one
+reconstruction's <code>+- std</code> held the true tension for 26-54 % of interfaces, nominal
+68 %).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.UncertaintyModel.LineBootstrap">LineBootstrap</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Nonparametric bootstrap resampling whole triple lines. Angle family;
+weight-confounded, see the module docstring.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.uncertainty.InferenceDiagnostics" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">InferenceDiagnostics</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.uncertainty.InferenceDiagnostics" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">InferenceDiagnostics</span><span class="p">(</span><span class="n">n_interfaces</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rho_free</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma_gauge</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma_soft</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">soft_mode_fractions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">condition_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Per-mesh diagnostics saying whether <em>any</em> tension inference on it can be trusted.</p>
+<p>These are properties of the mesh and the operator, not of a method, which is what makes
+them usable on <code>dw3d</code> output where no ground truth exists. <code>rho_free</code> is the one to read
+first: it was measured that the force-balance / <code>Variational</code> family's error is
+limited by it (median <code>rho_free</code> 0.012 against a median error 0.021 on the 42), while
+<code>YoungDupre</code>'s is not.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.n_interfaces">n_interfaces</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of interfaces (tension unknowns).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.n_cells">n_cells</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of cells (pressure unknowns; the exterior is the gauge).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.n_rows">n_rows</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rows of <code>M</code> = <code>3 * n_vertices</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.rho">rho</span></code></td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>||P_perp M_gamma gamma|| / ||M_gamma gamma||</code> at the tensions
+passed in, pressures marginalised — the fraction of the surface-tension force
+this mesh leaves unbalanced <em>at those tensions</em>. <code>None</code> if no tensions were
+given. Gauge-invariant.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.rho_free">rho_free</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The same quantity with the tensions themselves free — the
+<strong>distance of this mesh from any equilibrium of <code>M</code></strong>. It is the ratio at the
+minimiser of <code>||M beta||</code> under the mean-tension gauge, so <code>rho</code> at given tensions
+can fall slightly below it, but not by more than the gap between that minimiser
+and the minimum of the ratio.
+Gauge-invariant. ~1e-10 for a mesh that minimises <code>M</code>;
+0.0007-0.036 on the 42 simulation meshes; 0.26-0.28 on the five non-equilibrium
+cases excluded from every accuracy claim. <strong>On <code>dw3d</code>-reconstructed meshes of the
+same cases it is about 50x the reference value: median 0.578 (range 0.48-0.72) on the 40-case equilibrium
+cohort, every case above the 0.2 alarm below</strong>, so the force-balance family's
+numbers on reconstructions stand on a floor no gauge choice can lower.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.sigma_gauge">sigma_gauge</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Smallest singular value of the column-normalised <code>M</code> — the
+overall-scale gauge direction. Should be near zero; if it is not, the operator
+has no scale gauge and something is wrong.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.sigma_soft">sigma_soft</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second-smallest singular value: the worst-determined <em>physical</em>
+direction. <code>1 / sigma_soft</code> is the noise amplification (1.2-5.5 on the 42).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.soft_mode_fractions">soft_mode_fractions</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>How much of that soft direction
+sits in the (surface tension, line tension, pressure) blocks. The line entry is
+always 0 here — the harness operator carries no line-tension block, by the package
+author's design choice.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.InferenceDiagnostics.condition_number">condition_number</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>cond(M)</code>, the operator actually inverted.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.uncertainty.InferenceDiagnostics.identifiability_report" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">identifiability_report</span>
+
+
+<a href="#foambryo.uncertainty.InferenceDiagnostics.identifiability_report" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">identifiability_report</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable identifiability and equilibrium summary.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A short multi-line report, safe to print next to an inferred tension table.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.uncertainty.TensionUncertaintyResult" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TensionUncertaintyResult</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.uncertainty.TensionUncertaintyResult" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TensionUncertaintyResult</span><span class="p">(</span><span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">tensions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">tension_std</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">method</span><span class="p">:</span> <span class="n">TensionComputationMethod</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">UncertaintyModel</span><span class="p">,</span> <span class="n">sigma_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">residual_norm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="n">InferenceDiagnostics</span><span class="p">,</span> <span class="n">calibration_note</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>An inferred tension field with an interval whose calibration is stated, not assumed.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.interfaces">interfaces</span></code></td>
+            <td>
+                  <code><span title="list">list</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interface keys, in the order of <code>tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.tensions">tensions</span></code></td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Inferred tensions — <strong>bit-identical</strong> to the
+corresponding <code>infer_tensions</code> call. This module never changes a point estimate.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.tension_std">tension_std</span></code></td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Per-interface interval half-width, in the unit of
+<code>tensions</code>. For <code>ProbeResidual</code> and <code>CoherentResidual</code> this is a worst-case-direction
+<em>bound</em>, not a standard deviation; for <code>AnglePropagation</code> a first-order standard
+error that is a lower bound on the error of a reconstruction, not a calibrated
+interval; read <code>calibration_note</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.method">method</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Which estimator produced <code>tensions</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.model">model</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="UncertaintyModel (foambryo.uncertainty.UncertaintyModel)" href="#foambryo.uncertainty.UncertaintyModel">UncertaintyModel</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Which model produced <code>tension_std</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.sigma_scale">sigma_scale</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The residual scale the interval was built on.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.residual_norm">residual_norm</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>||M beta||</code> (force-balance family) or <code>||M gamma - b||</code>
+(angle family) at the returned estimate.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.n_rows">n_rows</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rows of the operator inverted.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.diagnostics">diagnostics</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="InferenceDiagnostics
+
+
+  
+      dataclass
+   (foambryo.uncertainty.InferenceDiagnostics)" href="#foambryo.uncertainty.InferenceDiagnostics">InferenceDiagnostics</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh-level identifiability and equilibrium.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.uncertainty.TensionUncertaintyResult.calibration_note">calibration_note</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The measured <code>error/std</code> of this model on the 42 equilibrium
+cases, and what it means. Always non-empty: an uncalibrated interval must not
+leave this module without saying so.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.uncertainty.TensionUncertaintyResult.dict_tensions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">dict_tensions</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tensions" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Map interface key -&gt; inferred tension.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.uncertainty.TensionUncertaintyResult.dict_tension_std" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">dict_tension_std</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.uncertainty.TensionUncertaintyResult.dict_tension_std" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">dict_tension_std</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Map interface key -&gt; interval half-width on that tension.</p>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.uncertainty.compute_inference_diagnostics" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">compute_inference_diagnostics</span>
+
+
+<a href="#foambryo.uncertainty.compute_inference_diagnostics" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_inference_diagnostics</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InferenceDiagnostics</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Equilibrium and identifiability diagnostics for a mesh, readable without ground truth.</p>
+<p>The <code>rho</code> / <code>sigma_soft</code> diagnostics of the benchmark harness, as a public function, so they
+can be computed on a mesh with no ground truth (i.e. on <code>dw3d</code> output). Everything here is a
+property of the mesh and of the force-balance operator; nothing is fitted to a ground-truth
+tension.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyse, in any length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tensions at which to
+evaluate <code>rho</code>, one per interface <code>(label_1, label_2)</code>, <code>label_1 &lt; label_2</code>, on any
+scale (<code>rho</code> is scale-invariant). Defaults to <code>None</code>, in which case <code>rho</code> is <code>None</code>
+and only <code>rho_free</code> (which needs no tensions) is reported.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>InferenceDiagnostics</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="InferenceDiagnostics
+
+
+  
+      dataclass
+   (foambryo.uncertainty.InferenceDiagnostics)" href="#foambryo.uncertainty.InferenceDiagnostics">InferenceDiagnostics</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>See that class; call <code>identifiability_report()</code> for text.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>on a mesh with crop faces, for which these diagnostics have no formulation
+yet (<code>foambryo.crop_faces</code>), or on a mesh whose dense force-balance operator has more than
+<code>DENSE_OPERATOR_ENTRY_LIMIT</code> entries (about 1 300 cells of real size; see the
+module docstring), raised before the operator is built.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="KeyError">KeyError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>dict_tensions</code> misses an interface of the mesh.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.uncertainty.infer_tensions_with_uncertainty" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">infer_tensions_with_uncertainty</span>
+
+
+<a href="#foambryo.uncertainty.infer_tensions_with_uncertainty" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_with_uncertainty</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">ForceBalance</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">UncertaintyModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_resamples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_N_RESAMPLES</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TensionUncertaintyResult</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Infer tensions <strong>and</strong> an interval whose calibration has been measured and is reported.</p>
+<p>A companion to <code>foambryo.infer_tensions</code>: the point estimate is that of the corresponding
+<code>infer_tensions</code> call -- bit-identical for <code>ForceBalance</code> and <code>YoungDupre</code> (pinned by
+<code>tests/test_uncertainty.py</code>), to rounding (within 1e-12 on benchmark case 000) for <code>Variational</code>,
+whose interval is built on the <code>ForceBalance</code> operator. The <code>YoungDupre</code> tensions are
+normalised over the whole mesh at once, so they match <code>infer_tensions</code> on a mesh whose
+junction graph is in one piece. The returned <code>calibration_note</code> states the measured
+<code>error/std</code> of the interval rather than leaving the reader to assume it is 1.</p>
+<p><strong>The interval is not a calibrated error bar on a reconstructed mesh.</strong> The first-order
+<code>AnglePropagation</code> interval of <code>YoungDupre</code> is a lower bound on the error: one
+reconstruction's <code>+- std</code> held the true tension for 26-54 % of interfaces (nominal 68 %) and
+<code>+- 2 std</code> for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth.
+The force-balance family's error is floored by <code>rho_free</code> on reconstructed meshes (see the
+module docstring and <code>InferenceDiagnostics</code>).</p>
+<p>Only the estimators whose intervals have been calibrated are accepted. That is deliberate:
+an interval for a method nobody measured would be exactly the failure mode this module
+exists to close.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh to analyse, in any length unit; not cropped.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The normalisation: the mean of the returned tensions,
+met exactly. Defaults to 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The estimator. One of <code>ForceBalance</code>,
+<code>Variational</code> (both the force-balance family, same estimator up to the solve
+route) or <code>YoungDupre</code> (the angle family). Defaults to <code>ForceBalance</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.tension_inference.TensionComputationMethod.ForceBalance">ForceBalance</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>model</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="UncertaintyModel (foambryo.uncertainty.UncertaintyModel)" href="#foambryo.uncertainty.UncertaintyModel">UncertaintyModel</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>How to build the interval. Defaults to
+<code>None</code>, which selects <code>ProbeResidual</code> for the force-balance family and
+<code>AnglePropagation</code> for the angle family — in both cases the best-calibrated
+model measured for that estimator.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_resamples</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bootstrap draws, for the bootstrap models
+(<code>ClusterBootstrap</code>, <code>LineBootstrap</code>). Defaults to <code>DEFAULT_N_RESAMPLES</code> (200).</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.uncertainty.DEFAULT_N_RESAMPLES">DEFAULT_N_RESAMPLES</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seed</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bootstrap RNG seed, recorded so any number is reproducible.
+Defaults to 0.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>TensionUncertaintyResult</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionUncertaintyResult
+
+
+  
+      dataclass
+   (foambryo.uncertainty.TensionUncertaintyResult)" href="#foambryo.uncertainty.TensionUncertaintyResult">TensionUncertaintyResult</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tensions (keyed by interface <code>(label_1, label_2)</code>,
+<code>label_1 &lt; label_2</code>), the per-interface interval half-width <code>tension_std</code> in the
+same unit, the mesh's diagnostics and the calibration note.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="NotImplementedError">NotImplementedError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>method</code> has no calibrated interval (any method but
+<code>ForceBalance</code>, <code>Variational</code> and <code>YoungDupre</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>model</code> does not apply to <code>method</code>'s estimator family, if the mesh has
+crop faces, for which no interval is calibrated yet (<code>foambryo.crop_faces</code>), or if its
+dense force-balance operator has more than <code>DENSE_OPERATOR_ENTRY_LIMIT</code> entries (about
+1 300 cells of real size, for every method and model, because the diagnostics are
+always computed; see the module docstring), raised before anything is built.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.uncertainty.error_over_std" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">error_over_std</span>
+
+
+<a href="#foambryo.uncertainty.error_over_std" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">error_over_std</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">TensionUncertaintyResult</span><span class="p">,</span> <span class="n">dict_truth_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><strong>The</strong> calibration metric used throughout this module: <code>|error| / std</code>, gauge-matched, per interface.</p>
+<p>Gauge matching is mandatory (the rule every accuracy comparison in this package follows): only
+tension <em>ratios</em> are physical,
+so the inferred tensions are rescaled by the single factor making their mean match the
+truth's, and <strong>the same factor is applied to the interval</strong> — an interval is in the same
+units as the quantity it bounds, so rescaling one without the other would be a units
+error dressed up as a calibration result.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>result</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionUncertaintyResult
+
+
+  
+      dataclass
+   (foambryo.uncertainty.TensionUncertaintyResult)" href="#foambryo.uncertainty.TensionUncertaintyResult">TensionUncertaintyResult</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The result to score.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_truth_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Ground-truth tension per interface.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict[str, float]: <code>{"median", "p95", "max", "n", "gauge_matching_scale",
+"median_std", "median_abs_error"}</code>. Values are <code>nan</code> where the interval is zero.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

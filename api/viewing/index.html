@@ -1,0 +1,3596 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../colour-scales/">
+      
+      
+        <link rel="next" href="../geometry/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>The Polyscope viewer - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-polyscope-viewer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              The Polyscope viewer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_force_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_force_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_pressure_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_pressure_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_tension_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_tension_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.view_mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        view_mask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_valid_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_valid_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_residual_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_residual_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_force_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_force_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_pressure_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_pressure_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_tension_inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_tension_inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.view_mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        view_mask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_valid_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_valid_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.viewing.plot_residual_junctions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_residual_junctions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="the-polyscope-viewer">The Polyscope viewer<a class="headerlink" href="#the-polyscope-viewer" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>The Polyscope viewer: a mesh coloured by its tensions and pressures, in a window with their colour bars.</p>
+<p>Sacha Ichbiah 2021
+Matthieu Perez 2024</p>
+<p>This module needs Polyscope (<code>pip install "foambryo[viewing]"</code>), and its viewers need a display. The colour bars
+alone are written without either by <code>save_colour_bars</code> (also in <code>foambryo.colour_scales</code>).</p>
+<p>The three force viewers (<code>plot_force_inference</code>, <code>plot_tension_inference</code>, <code>plot_pressure_inference</code>) draw the
+mesh coloured with the library's colour functions (<code>foambryo.colour_scales</code>):</p>
+<ul>
+<li><strong>tensions</strong>: <code>coolwarm</code> (blue for low, light grey for the mean tension, red for high), over a range centred on
+  the mean of the finite tensions and symmetric around it, its half-width the farther of the <code>alpha</code> and
+  <code>1 - alpha</code> quantiles from the mean;</li>
+<li><strong>pressures</strong>: <code>magma</code>, reversed (light for low) and trimmed to its 10-90 % range, from 0 to the <code>1 - alpha</code>
+  quantile of the pressures over the surface's triangles;</li>
+<li><strong>undetermined values</strong> (<code>nan</code>): green, <code>#1b9e77</code> (<code>UNDETERMINED_COLOR</code>). In the tension view an interface whose
+  tension is undetermined is drawn as its outline in this green, without fill; a cell whose pressure is
+  undetermined is filled green;</li>
+<li><strong>crop faces</strong> (where the image box cut the tissue): see-through glass with its edges drawn; they carry no value;</li>
+<li>other quantities drawn on the surface (a seed spread, the sphere-fit residual, the curvatures) keep <code>jet</code>.</li>
+</ul>
+<p>With tensions and pressures, the surface shows the tensions first. The viewers with tensions also draw a graph
+of the tissue (a node at each cell's centroid, an edge per interface coloured by its tension; with pressures, the
+nodes coloured by pressure) and, with pressures, each cell's principal stresses. Polyscope's window gets a panel,
+"foambryo", that shows:</p>
+<ul>
+<li><strong>the colour bars</strong> of what is drawn: the library's colours over the library's ranges (the ones
+  <code>save_colour_bars</code> writes), with a green swatch when a value is undetermined and a glass one for crop
+  faces. Polyscope is handed the colours, not the values: its own scalar colour maps would draw <code>nan</code> in their
+  top colour;</li>
+<li><strong>which values</strong> the colours show: the inference call that produced them (the library's options are the
+  viewers' own, <code>mode_tension</code>, <code>mode_pressure</code>, <code>mean_tension</code>, <code>base_pressure</code>, <code>solver</code>, with the library's
+  defaults), or where they were read from;</li>
+<li>with tensions and pressures, <strong>which one colours the surface</strong> (the tensions by default);</li>
+<li><strong>a length scale bar</strong> when the mesh's unit is known (<code>length_unit</code>): a segment of round length in the scene,
+  its length written beside it; and an optional <strong>x, y, z frame</strong>, three labelled segments along the mesh's
+  columns (z, y, x);</li>
+<li><strong>the background</strong>: white (Polyscope's), light grey, dark grey or black (<code>BACKGROUND_COLOURS</code>, the napari plugin's
+  choices too), or a custom colour; on a dark one, the scale bar, the frame, their labels and the graph's black
+  nodes are drawn light;</li>
+<li><strong>Explode</strong> (the scattered view: each cell moved away from the tissue's centre by a coefficient; the graph's
+  nodes stay on their exploded cells) and <strong>Cut</strong> (a scene slice plane normal to z, y or x, at a chosen position,
+  keeping either side);</li>
+<li><strong>Save figure</strong> (the view with its colour bars and scale bar, PNG / PDF / SVG), <strong>Save colour bars</strong>, and
+  <strong>Export</strong>: <code>foambryo infer</code>'s files for the values shown (<code>tensions.csv</code>, <code>pressures.csv</code>, <code>solves.csv</code>,
+  <code>run.json</code>, <code>colour_bars.png</code>), in a folder; a file is never overwritten without asking;</li>
+<li>a choice of tension method, pressure method or no pressures, solver and diagnostics, <strong>Recompute</strong>, and the
+  <code>foambryo infer</code> command line that gives the same numbers.</li>
+</ul>
+<p><code>view_mask</code> opens the window on a segmentation mask instead (<code>foambryo view MASK --spacing DZ DY DX</code>): the mask
+first, then its reconstruction and the inference, run in child processes that the panel follows and can cancel.</p>
+<p><code>save_figure=PATH</code> writes the same figure from Python, without keeping the window open when <code>show=False</code>
+(Polyscope still needs a display to render the view).</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.plot_force_inference" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">plot_force_inference</span>
+
+
+<a href="#foambryo.viewing.plot_force_inference" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_force_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Show a mesh's tensions and pressures in Polyscope's window, with their colour bars; what <code>foambryo view</code> opens.</p>
+<p>The surface is coloured by the tensions first (<code>coolwarm</code>, centred on the mean tension); the panel switches it
+to the pressures (reversed <code>magma</code>, trimmed to its 10-90 % range). An undetermined tension (<code>nan</code>) is drawn as
+its interface's green outline, without fill, and an undetermined pressure fills its cell green; crop faces
+are see-through glass. The graph of the tissue and each cell's principal stresses are drawn too. The module
+docstring lists what the panel offers.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display, also with <code>show=False</code> (Polyscope renders
+the figure). Returns when the window is closed.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh, in its own length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tension per interface, keyed
+<code>(label_1, label_2)</code> with <code>label_1 &lt; label_2</code> (0 is the medium). Defaults to None: the tensions and
+the pressures are inferred with <code>infer_forces</code> and the options below.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_pressure</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pressure per label, the medium (0) included. Defaults
+to None: inferred with <code>infer_forces</code>, or, when <code>dict_tensions</code> is given, with <code>infer_pressures</code> from
+those tensions and the options below.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the quantile clipped at each end of the colour scales, in [0, 0.5): the tension
+range reaches the farther of the <code>alpha</code> and <code>1 - alpha</code> quantiles from the mean, the pressure range
+runs from 0 to the <code>1 - alpha</code> quantile. Defaults to 0.05.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scalar_quantities</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>also add the sphere-fit residual, the area and volume derivatives
+and the curvatures as surface quantities (<code>jet</code>). Defaults to False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattered</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window exploded: each cell moved away from the tissue's centre by
+<code>scatter_coeff</code> times (its centroid - the tissue's centroid). The panel changes it. Defaults to False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scatter_coeff</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the explode coefficient. Defaults to 0.2 (<code>DEFAULT_SCATTER_COEFF</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo._viewer_defaults.DEFAULT_SCATTER_COEFF">DEFAULT_SCATTER_COEFF</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mean the tensions are gauged to. Defaults to 1. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mean_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>base_pressure</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the pressure of the medium, label 0. Defaults to 0. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;base_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_tension</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the tension method. Defaults to <code>YoungDupre</code>.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_pressure</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the pressure method. Defaults to <code>Variational</code>.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code>, <code>"dense"</code> or <code>"sparse"</code>. Defaults to <code>"auto"</code>. Keyword-only.
+These five are <code>infer_forces</code>' options, with its defaults, passed to it unchanged when the viewer
+infers (bitwise <code>foambryo infer</code>'s numbers); the panel names the call that produced the colours.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;solver&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>length_unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the unit of the mesh's coordinates (<code>"um"</code>, ...); with a unit, a
+length scale bar is drawn. Defaults to None: no scale bar. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale_bar</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>draw the scale bar (<code>True</code>, its length 1, 2 or 5 times a power of
+ten, at most a quarter of the tissue's largest side), not (<code>False</code>), or with this length, in
+<code>length_unit</code>. Defaults to True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_figure</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="os.PathLike">PathLike</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>write the first view, with its colour bars and scale
+bar, to this file (<code>.png</code>, <code>.pdf</code>, <code>.svg</code>; matplotlib chooses the format from the suffix), before the
+window is shown. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>show</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window; <code>False</code> with <code>save_figure</code> only writes the figure. Defaults to
+True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>values_from</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>where given values come from, shown in the panel and under a saved
+figure. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh's file name, for the <code>foambryo infer</code> command line the panel
+shows for values inferred in the window. Defaults to None (no command line). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when the viewer infers and the library refuses the tensions or the pressures (the library's
+message; <code>UndeterminedTensionError</code>, a <code>ValueError</code>, when the given tensions are not all finite on a
+mesh without crop faces).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.plot_pressure_inference" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">plot_pressure_inference</span>
+
+
+<a href="#foambryo.viewing.plot_pressure_inference" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_pressure_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Show a mesh's cell pressures in Polyscope's window, with their colour bar.</p>
+<p>Each triangle carries the pressure of the higher-labelled of its two materials, coloured with reversed
+<code>magma</code> trimmed to its 10-90 % range, from 0 to the <code>1 - alpha</code> quantile over the triangles (negative
+pressures drawn as 0). An undetermined pressure (<code>nan</code>) fills its cell green; crop faces are see-through glass.
+Polyscope's structures are removed first.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display, also with <code>show=False</code> (Polyscope renders
+the figure). Returns when the window is closed.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh, in its own length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_pressure</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pressure per label, the medium (0) included. Defaults
+to None: the tensions and pressures are inferred with <code>infer_forces</code> and the options below, and the
+pressures are shown.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the quantile clipped at the top of the pressure scale. Defaults to 0.05.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattered</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window exploded: each cell moved away from the tissue's centre by
+<code>scatter_coeff</code> times (its centroid - the tissue's centroid). Defaults to False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scatter_coeff</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the explode coefficient. Defaults to 0.2 (<code>DEFAULT_SCATTER_COEFF</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo._viewer_defaults.DEFAULT_SCATTER_COEFF">DEFAULT_SCATTER_COEFF</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mean the tensions are gauged to. Defaults to 1. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mean_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>base_pressure</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the pressure of the medium, label 0. Defaults to 0. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;base_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_tension</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the tension method. Defaults to <code>YoungDupre</code>.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_pressure</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the pressure method. Defaults to <code>Variational</code>.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code>, <code>"dense"</code> or <code>"sparse"</code>. Defaults to <code>"auto"</code>. Keyword-only.
+These five are <code>infer_forces</code>' options, with its defaults, passed to it unchanged when the viewer
+infers; the panel names the call that produced the colours. Unused when <code>dict_pressure</code> is given.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;solver&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>length_unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the unit of the mesh's coordinates (<code>"um"</code>, ...); with a unit, a
+length scale bar is drawn. Defaults to None: no scale bar. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale_bar</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>draw the scale bar (<code>True</code>, its length chosen round), not
+(<code>False</code>), or with this length, in <code>length_unit</code>. Defaults to True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_figure</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="os.PathLike">PathLike</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>write the first view, with its colour bar and scale
+bar, to this file (<code>.png</code>, <code>.pdf</code>, <code>.svg</code>), before the window is shown. Defaults to None.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>show</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window; <code>False</code> with <code>save_figure</code> only writes the figure. Defaults to
+True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>values_from</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>where given values come from, shown in the panel and under a saved
+figure. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when the viewer infers and the library refuses the tensions or the pressures (the library's
+message).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.plot_tension_inference" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">plot_tension_inference</span>
+
+
+<a href="#foambryo.viewing.plot_tension_inference" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_tension_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">seed_ensemble</span><span class="p">:</span> <span class="n">SeedEnsembleMaps</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Show a mesh's surface tensions in Polyscope's window, with their colour bar.</p>
+<p>The surface is coloured with <code>coolwarm</code> over a range centred on the mean tension and symmetric around it; an
+undetermined tension (<code>nan</code>), or an interface absent from the map, is drawn as its interface's green outline,
+without fill; crop faces are see-through glass. The graph of the tissue is drawn too, its edges coloured by
+tension. Polyscope's structures are removed first.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display, also with <code>show=False</code> (Polyscope renders
+the figure). Returns when the window is closed.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh, in its own length unit.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tension per interface, keyed
+<code>(label_1, label_2)</code> with <code>label_1 &lt; label_2</code> (0 is the medium). Defaults to None: inferred with
+<code>infer_tensions</code> and the options below.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the quantile at each end of the colour scale, in [0, 0.5): the range reaches the
+farther of the <code>alpha</code> and <code>1 - alpha</code> quantiles from the mean. Defaults to 0.05.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scalar_quantities</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>also add the sphere-fit residual, the area and volume derivatives
+and the curvatures as surface quantities (<code>jet</code>). Defaults to False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattered</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window exploded: each cell moved away from the tissue's centre by
+<code>scatter_coeff</code> times (its centroid - the tissue's centroid). Defaults to False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scatter_coeff</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the explode coefficient. Defaults to 0.2 (<code>DEFAULT_SCATTER_COEFF</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo._viewer_defaults.DEFAULT_SCATTER_COEFF">DEFAULT_SCATTER_COEFF</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mean the tensions are gauged to. Defaults to 1. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mean_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_tension</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the tension method. Defaults to <code>YoungDupre</code>.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"auto"</code>, <code>"dense"</code> or <code>"sparse"</code>. Defaults to <code>"auto"</code>. Keyword-only.
+These three are <code>infer_forces</code>' tension options, with its defaults, passed to <code>infer_tensions</code>
+unchanged when the viewer infers.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;solver&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seed_ensemble</code>
+            </td>
+            <td>
+                  <code><span title="foambryo._viewer_figures.SeedEnsembleMaps">SeedEnsembleMaps</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tensions combined over several reconstructions of
+the mesh's mask (<code>foambryo.infer_tensions_over_seeds</code>' result, or any object with its <code>tensions</code>,
+<code>tension_seed_sd</code> and <code>found_by_fewer_than_half_the_seeds</code> maps). They are drawn on this mesh's
+interfaces, matched by label pair (the mesh's other interfaces drawn as undetermined); the seeds'
+spread is a second quantity with its own colour bar (<code>jet</code>, between the <code>alpha</code> and <code>1 - alpha</code>
+quantiles); the interfaces found by fewer than half of the seeds are drawn over the surface in
+magenta (their triangles' edges). Not with <code>dict_tensions</code>. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>length_unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the unit of the mesh's coordinates (<code>"um"</code>, ...); with a unit, a
+length scale bar is drawn. Defaults to None: no scale bar. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale_bar</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>draw the scale bar (<code>True</code>, its length chosen round), not
+(<code>False</code>), or with this length, in <code>length_unit</code>. Defaults to True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_figure</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | <span title="os.PathLike">PathLike</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>write the first view, with its colour bars and scale
+bar, to this file (<code>.png</code>, <code>.pdf</code>, <code>.svg</code>), before the window is shown. Defaults to None.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>show</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>open the window; <code>False</code> with <code>save_figure</code> only writes the figure. Defaults to
+True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>values_from</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>where given values come from, shown in the panel and under a saved
+figure. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh's file name, for the <code>foambryo infer</code> command line the panel
+shows for values inferred in the window. Defaults to None (no command line). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if both <code>dict_tensions</code> and <code>seed_ensemble</code> are given, or when the viewer infers and the
+library refuses the tensions (the library's message).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.view_mask" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">view_mask</span>
+
+
+<a href="#foambryo.viewing.view_mask" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">view_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'um'</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">pressures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mask_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'mask.npz'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Open the viewer on a segmentation mask: the window <code>foambryo view MASK --spacing DZ DY DX</code> opens.</p>
+<p>The mask is shown first (each cell's voxels as points in its own colour); the panel reconstructs it as
+<code>foambryo mesh</code> does (<code>foambryo.io.reconstruct_mask</code>) and infers as <code>foambryo infer</code> does
+(<code>infer_tensions_then_pressures</code>) or <code>foambryo infer-over-seeds</code> (<code>infer_tensions_over_seeds</code>), each in a child
+process with its elapsed time, the estimate (<code>foambryo.reconstruction_cost</code>) and Cancel; the values are then
+drawn with their colour bars, explode, cut and export, as by <code>plot_force_inference</code>. Returns when the window is
+closed (a job still running is cancelled then).</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>), delaunay-watershed-3d and a display.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mask</code>
+            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the segmentation, a 3-D array of non-negative integer labels, axis 0 = z, axis 1 = y, axis 2 = x,
+0 the medium (<code>check_segmentation_mask</code>'s checks).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>spacing</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the voxel size <code>(dz, dy, dx)</code>, three finite numbers &gt; 0, in <code>spacing_unit</code>; an anisotropic mask
+is resampled to cubic voxels of the shortest spacing before meshing, as by <code>foambryo mesh</code> (only one
+axis may be longer than the other two). There is no default: a wrong spacing changes every angle.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>spacing_unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the spacing's unit, the mesh's length unit, written on the scale bar (<code>--spacing-unit</code>).
+Defaults to <code>"um"</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;um&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>min_distance</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the reconstruction's <code>--min-distance</code>, in cubic voxels of the shortest spacing; <code>None</code> (the
+default) is delaunay-watershed-3d's default (3). The panel changes it. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>infer_forces</code>' option, with its default (1); the panel starts with it. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mean_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>base_pressure</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>likewise (default 0). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;base_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_tension</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="TensionComputationMethod (foambryo.tension_inference.TensionComputationMethod)" href="../tension-inference/#foambryo.tension_inference.TensionComputationMethod">TensionComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>likewise (default <code>TensionComputationMethod.YoungDupre</code>). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_tension&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode_pressure</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>likewise (default <code>PressureComputationMethod.Variational</code>). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;mode_pressure&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>solver</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>likewise (default <code>"auto"</code>). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.viewing._INFER_FORCES_DEFAULTS">_INFER_FORCES_DEFAULTS</span>[&#39;solver&#39;]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pressures</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>False</code> infers the tensions only (<code>--no-pressures</code>). Defaults to True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattered</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>draw the values exploded (<code>--scattered</code>). Defaults to False. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scatter_coeff</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>by this coefficient (<code>--scattered COEFF</code>). Defaults to 0.2. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo._viewer_defaults.DEFAULT_SCATTER_COEFF">DEFAULT_SCATTER_COEFF</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale_bar</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as for <code>plot_force_inference</code>, in <code>spacing_unit</code>. Defaults to True. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mask_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mask's file name in the equivalent command lines the panel shows and in the messages of a
+refused mask. Defaults to <code>"mask.npz"</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;mask.npz&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the mask or the spacing is refused (the messages of <code>foambryo mesh</code>'s checks; a refused
+mask raises <code>foambryo.segmentation_masks.SegmentationMaskError</code>, a <code>ValueError</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.plot_valid_junctions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">plot_valid_junctions</span>
+
+
+<a href="#foambryo.viewing.plot_valid_junctions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_valid_junctions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Show in Polyscope's window which triple lines the tensions can balance: green if they can, red if not.</p>
+<p>At a triple line between cells <code>a</code>, <code>b</code> and <code>c</code>, three tensions can balance only if each is at most the sum of
+the other two (they form a triangle). A line where one tension exceeds the sum of the other two is drawn red
+("bad trijunctions"), every other line green ("valid trijunctions"), over the mesh drawn white and mostly
+see-through (opacity 0.1). A line with a crop interface (absent from the tension map) is not judged and is
+drawn green. When every line is judged and bad, only the red lines are drawn. Used to check an inference. When
+no line is judged (the mesh has no triple line, or every line has a
+crop interface), no line is drawn: the window shows the mesh alone, with a <code>UserWarning</code> that says so.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display. Polyscope's structures are removed first;
+returns when the window is closed, and removes them then.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tension per interface, keyed
+<code>(label_1, label_2)</code> with <code>label_1 &lt; label_2</code>. Defaults to None: <code>infer_tensions(mesh, mean_tension=1)</code>,
+with that function's default method.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Warns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>UserWarning</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when no triple line can be judged, and none is drawn.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.viewing.plot_residual_junctions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">plot_residual_junctions</span>
+
+
+<a href="#foambryo.viewing.plot_residual_junctions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_residual_junctions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Show in Polyscope's window how far each triple line is from force balance under the tensions.</p>
+<p>The residuals are <code>foambryo.tension_inference.compute_residual_junctions_dict(mesh, dict_tensions, alpha)</code>
+(read with the chord angle reading): per triple line, the sum of the squared residuals of its three balance
+equations, each clipped between the <code>alpha</code> and <code>1 - alpha</code> quantiles over all lines. The lines are coloured
+with <code>jet</code> from 0 to the largest residual, over the mesh drawn white and mostly see-through (opacity 0.1); the
+range is printed.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display. Polyscope's structures are removed first;
+returns when the window is closed, and removes them then.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dict_tensions</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tension per interface, keyed
+<code>(label_1, label_2)</code> with <code>label_1 &lt; label_2</code>. Defaults to None: <code>infer_tensions(mesh, mean_tension=1)</code>,
+with that function's default method.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the quantile at which the residuals are clipped at each end. Defaults to 0.05.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

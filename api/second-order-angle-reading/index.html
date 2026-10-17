@@ -1,0 +1,4004 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../uncertainty/">
+      
+      
+        <link rel="next" href="../wedge-refusal/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Angle readings - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#angle-readings" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Angle readings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--why-this-module-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this module exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-oriented-wedge-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The oriented wedge reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--which-inference-methods-this-changes-and-one-that-it-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which inference methods this changes, and one that it breaks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-two-junction-edge-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two junction-edge endpoints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The constant term, and the false reason it used to be omitted
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--units-and-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Units and conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--which-correction-form-is-applied-and-which-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which correction form is applied, and which is not
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--what-enters-the-fit-exhaustively" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What enters the fit, exhaustively
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--identity-at-zero-curvature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity at zero curvature
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--hyperparameters-are-fixed-in-production-and-measurable-outside-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hyperparameters are fixed in production, and measurable outside it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage, and why the fallback is reported rather than hidden
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--measured-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingCoverageWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingCoverageWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingReport
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AngleReadingReport">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.is_complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.line_coverage_fraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        line_coverage_fraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.describe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        describe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.fits_quadric_tangents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fits_quadric_tangents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.reads_oriented_wedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reads_oriented_wedges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.warn_on_partial_coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_on_partial_coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.validate_reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        validate_reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.orthonormal_basis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        orthonormal_basis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.rodrigues_about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rodrigues_about
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.junction_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        junction_frames
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.quadric_angle_rotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quadric_angle_rotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.rotations_for_reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rotations_for_reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--why-this-module-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this module exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-oriented-wedge-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The oriented wedge reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--which-inference-methods-this-changes-and-one-that-it-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which inference methods this changes, and one that it breaks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-two-junction-edge-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two junction-edge endpoints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The constant term, and the false reason it used to be omitted
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--units-and-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Units and conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--which-correction-form-is-applied-and-which-is-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which correction form is applied, and which is not
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--what-enters-the-fit-exhaustively" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What enters the fit, exhaustively
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--identity-at-zero-curvature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity at zero curvature
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--hyperparameters-are-fixed-in-production-and-measurable-outside-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hyperparameters are fixed in production, and measurable outside it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage, and why the fallback is reported rather than hidden
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading--measured-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingCoverageWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingCoverageWarning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AngleReadingReport
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AngleReadingReport">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.is_complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.line_coverage_fraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        line_coverage_fraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.AngleReadingReport.describe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        describe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.fits_quadric_tangents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fits_quadric_tangents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.reads_oriented_wedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reads_oriented_wedges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.warn_on_partial_coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_on_partial_coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.validate_reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        validate_reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.orthonormal_basis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        orthonormal_basis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.rodrigues_about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rodrigues_about
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.junction_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        junction_frames
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.quadric_angle_rotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        quadric_angle_rotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.second_order_angle_reading.rotations_for_reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rotations_for_reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="angle-readings">Angle readings<a class="headerlink" href="#angle-readings" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>The trijunction angle readings: the chord, the second-order (quadric) reading, and their oriented forms.</p>
+<p>The <code>angle_reading</code> (or <code>reading</code>) selector of every angle-reading function takes one of
+<code>ANGLE_READINGS</code>: <code>"chord"</code> (the default), <code>"quadric"</code>, <code>"oriented_chord"</code> and <code>"oriented_quadric"</code>.
+Angles are in radians in every returned map.</p>
+<h3 id="foambryo.second_order_angle_reading--why-this-module-exists">Why this module exists<a class="headerlink" href="#foambryo.second_order_angle_reading--why-this-module-exists" title="Permanent link">&para;</a></h3>
+<p><code>foambryo.geometry._wedges_at_half_edge</code> reads a trijunction wedge angle as
+<code>arccos(n_i . n_j)</code> between two incident triangles' <strong>face normals</strong>. Both normals are
+perpendicular to the shared junction edge, so both lie in the plane normal to it, and the
+angle between them equals the angle between the two triangles' in-plane <strong>traces</strong> — the
+straight lines from the junction out towards each incident triangle's apex. Production
+therefore reads a <strong>chord</strong> of each interface where the geometry has a <strong>tangent</strong>.</p>
+<p>A flat P1 facet has no curvature to offer, so it cannot report a tangent; a circular arc's
+chord is rotated from its tangent by exactly <code>kappa * L / 2</code>, with <code>L</code> the in-plane distance
+from the junction-edge midpoint to the incident apex. This chord-for-tangent substitution was
+measured to account for <strong>68.4 %</strong> of the length-weighted flattening slope of the reconstructed
+meshes.</p>
+<p>This module supplies the second reading: fit a <strong>generic quadric height field</strong> to the
+interface's own mesh vertices in a 3-D window around each junction-edge midpoint, read that
+surface's normal-plane section curvature <code>kappa</code> analytically, and rotate the face normal about
+the junction edge by <code>-kappa * L / 2</code>. It is a local patch fit, keyed to <code>foambryo</code>'s own trijunction
+identification.</p>
+<h3 id="foambryo.second_order_angle_reading--the-oriented-wedge-reading">The oriented wedge reading<a class="headerlink" href="#foambryo.second_order_angle_reading--the-oriented-wedge-reading" title="Permanent link">&para;</a></h3>
+<p><code>arccos</code> returns <code>[0, pi]</code>, so a wedge whose interior angle exceeds 180 degrees — a <strong>reflex</strong>
+wedge — is reported as <code>360 - theta</code>. The three wedges of one junction edge then sum to
+<code>360 - 2 (theta - 180)</code> instead of 360, and every average along the line inherits the deficit.
+This is not rare on a coarse reconstruction: measured on the benchmark meshes, 2 % to 25 % of
+trijunctional edges carry one, at a rate that differs by a factor of six between reconstruction
+strategies, so a comparison of two meshes through the unoriented reading compares two different
+amounts of clipping as if they were geometry.</p>
+<p><code>ORIENTED_CHORD_READING</code> and <code>ORIENTED_QUADRIC_READING</code> return the <strong>oriented</strong> wedge angle in
+<code>[0, 360)</code>: the arc from film <code>e|f</code> to film <code>f|g</code> measured <em>through</em> region <code>f</code>. The magnitude
+is still <code>arccos</code> of the same dot product, evaluated by the same expression; the oriented sine
+<code>dot(t, cross(n_first, n_second))</code> is used only to choose between <code>theta</code> and <code>360 - theta</code>. So
+the oriented readings are <strong>bitwise identical</strong> to their unoriented counterparts on every wedge
+that is not reflex, and the three wedges of an edge sum to 360 degrees.</p>
+<p>The axis <code>t</code> runs from the lower to the higher vertex key, as everywhere else in this module.
+Its sign is then resolved from the geometry, not asserted: three positive angles summing to 360
+contain at most one greater than 180, so under the reversed axis the three oriented wedges sum
+to 720 rather than 360, and the reader takes whichever assignment sums to 360. A wedge whose
+oriented sine is exactly zero — an interior angle of exactly 0 or exactly 180 degrees — reads as
+non-reflex under either axis, which reproduces the unoriented reader there.</p>
+<h3 id="foambryo.second_order_angle_reading--which-inference-methods-this-changes-and-one-that-it-breaks">Which inference methods this changes, and one that it breaks<a class="headerlink" href="#foambryo.second_order_angle_reading--which-inference-methods-this-changes-and-one-that-it-breaks" title="Permanent link">&para;</a></h3>
+<p><code>MEASURED</code> on the benchmark meshes. A method's exposure follows from the trigonometric function
+its rows use, because the reflection <code>theta -&gt; 360 - theta</code> leaves <code>cos</code> unchanged and flips the
+sign of <code>sin</code>:</p>
+<ul>
+<li><code>YoungDupreLocal</code> builds every row from <code>cos</code> of a <em>per-edge</em> wedge, so it is <strong>exactly</strong>
+  invariant -- its gauge-matched relative error moved by at most <code>1.6e-14</code> over 1035
+  reconstructed benchmark meshes. It could never see the defect and cannot benefit from it
+  either; a reflex wedge and its reflection are the same row to it.</li>
+<li><code>YoungDupre</code> averages the wedge <em>along the line</em> and then takes <code>cos</code> of the mean, so the
+  reflection does move it: up to <code>0.24</code> in absolute relative error, worse on 35 of the 46
+  reconstruction-variant cohorts measured and better on the rest.</li>
+<li><code>ProjectionYoungDupre</code>, <code>Lami</code> and <code>InvLami</code> use <code>sin</code>, which changes sign. Their error rises
+  by 5-42 %. That is not a defect of the reading: three tensions whose wedge is reflex admit no
+  planar equilibrium at all, and the negative sine is that fact surfacing where the unoriented
+  reading manufactured a plausible positive number instead.</li>
+<li><strong><code>LogLami</code> fails outright</strong> on a mesh with a reflex wedge: its rows take <code>log(sin(theta))</code>,
+  which is <code>nan</code> for a negative sine, and the solve then raises. Measured on 115 of 360
+  benchmark meshes. Pair <code>LogLami</code> with an unoriented reading, or repair the reflex edges
+  upstream.</li>
+</ul>
+<p>The quadric window needs no reflex guard. It is defined per incident <em>face</em>, transverse to the
+junction along that face's own chord, and never refers to a wedge angle at all; a reflex wedge
+is a relation between two faces, so it cannot enter one face's window. What the quadric reading
+does do is rotate normals about the junction edge, which moves some wedges <em>across</em> 180 degrees
+in either direction, so its reflex count differs from the chord reading's on the same mesh. That
+is a property of the corrected geometry, not a defect of the window.</p>
+<h3 id="foambryo.second_order_angle_reading--the-two-junction-edge-endpoints">The two junction-edge endpoints<a class="headerlink" href="#foambryo.second_order_angle_reading--the-two-junction-edge-endpoints" title="Permanent link">&para;</a></h3>
+<p>The fit keeps a sample when it is inside the window and on the interface's own side of the
+junction, <code>eta &gt; 0</code>. Two of the candidate samples are the junction edge's <strong>own two endpoints</strong>,
+and in exact arithmetic their <code>eta</code> is exactly zero — they sit on the <code>eta = 0</code> axis of the frame
+by construction, being the two vertices whose midpoint is the frame's origin. A strict <code>eta &gt; 0.0</code>
+therefore resolves them on the sign of a rounding error, and <strong>the sign of a rounding error depends
+on the units the mesh is expressed in</strong>.</p>
+<p><code>MEASURED</code>, on the benchmark's reference meshes: rescaling one mesh by <code>117x</code> — the ratio between
+the normalised frame those meshes are stored in and the voxel frame their reconstructions live in —
+changed the kept-sample count on <code>652</code> of <code>1 065</code> incident faces, changed the admission outcome on
+<code>19</code>, and moved line-mean wedge angles by up to <code>0.14</code> degrees. The chord reading moves by
+<code>2.5e-13</code> degrees under the same rescaling. That is about eleven orders of magnitude of difference
+between two readings of one mesh, and it is why the same reference meshes have been published at
+<code>2.032</code> and at <code>2.046</code> degrees of contact-angle error under one name: the frame a mesh is in was
+part of that reading's construction and was never stated with it.</p>
+<p>An angle between two surfaces cannot depend on the units the surfaces are measured in, so this is a
+correctness defect independently of any angle metric. <code>JUNCTION_ENDPOINTS</code> decides those two
+samples <strong>by vertex identity</strong> instead. They are <strong>included</strong>: they are exact, noise-free samples of
+the interface at the very point the frame is anchored, they constrain the along-edge coefficients
+that nothing else near <code>eta = 0</code> constrains, and including them is a statement rather than an
+accident. <code>"exclude"</code> and the historical <code>"rounding"</code> remain reachable through
+<code>quadric_angle_rotations</code> so that the repair can be <em>measured</em>; neither is reachable through any
+<code>reading</code> selector or any inference entry point.</p>
+<p><code>MEASURED</code> after the repair, on the same reference mesh: rescaling by <code>10</code>, <code>117</code> and <code>1000</code> moves
+the line-mean wedge angles by at most <code>2.3e-13</code> degrees, against the chord reading's own <code>2.5e-13</code>.
+The two readings are now equally invariant, to rounding. On a smooth surface whose contact angles
+are a closed form the repair moves the reading itself by at most <code>0.016</code> degrees and by about
+<code>0.001</code> degrees at typical spacings — so it is a repair whose value is the invariance, not an
+accuracy gain, and saying so is part of the repair.</p>
+<h3 id="foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted">The constant term, and the false reason it used to be omitted<a class="headerlink" href="#foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted" title="Permanent link">&para;</a></h3>
+<p>The height field is fitted <strong>without</strong> a constant term. The reason recorded here used to be that
+"the junction-edge midpoint is the midpoint of two mesh vertices lying on this interface, so the
+interface passes through the origin by construction". <strong>That reason is false whenever the junction
+line is curved</strong>, which on any real mesh it is: the midpoint of two vertices lies on the junction
+edge's <em>chord</em>, and the line leaves that chord by about <code>kappa_line * L^2 / 8</code>, as does the
+interface bounded by it. The frame's origin is a point the surface does not contain.</p>
+<p>The real reason, <code>MEASURED</code> rather than argued, on a smooth surface whose contact angles are a
+closed form and whose triangulation was varied over fourteen edge lengths spanning a factor of
+seventeen:</p>
+<ul>
+<li>fitting the constant term makes the reading <strong>better at every fine triangulation</strong> — up to <code>43 %</code>
+  lower line-mean error at the finest, and better at ten of the fourteen edge lengths tried;</li>
+<li>and <strong>worse at the four coarsest</strong>, by up to <code>7.4</code> degrees, because at those spacings the extra
+  free parameter is estimated from a window holding barely twice as many samples as the fit has
+  parameters, and the variance it adds exceeds the bias it removes;</li>
+<li>the coarse spacings the software is actually run at may or may not be on the worsening side: that
+  depends on how curved real interfaces are relative to their triangulation, which is not a number
+  this project has measured.</li>
+</ul>
+<p>So the term stays off — not because the surface passes through the origin, which it does not, but
+because switching it on is an improvement at fine triangulations bought with a degradation at coarse
+ones, and the operating point is not known well enough to take that trade. <code>fit_constant_term=True</code>
+turns it on for measurement. Turning it on also raises the minimum admissible sample count from <code>10</code>
+to <code>12</code>, which lowers coverage on meshes whose windows are thinly populated. It does not change
+<code>_section_curvature</code>, because translating a plane curve does not change its curvature.</p>
+<p><strong>What would settle it</strong>: the same fourteen-rung measurement with the analytic films' curvature
+matched to real interfaces', or the equivalent measurement on reconstructions with a ground-truth
+angle. Either would say which side of the crossover the shipped spacings are on.</p>
+<h3 id="foambryo.second_order_angle_reading--units-and-conventions">Units and conventions<a class="headerlink" href="#foambryo.second_order_angle_reading--units-and-conventions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Coordinates are in the mesh's own units: <strong>voxel indices</strong> on <code>dw3d</code> output reconstructed without a
+  <code>spacing</code>, the spacing's unit with one. <code>kappa</code> is per mesh length unit and <code>kappa * L / 2</code> is
+  dimensionless (an angle in radians); the reading does not depend on the unit (see "The two
+  junction-edge endpoints").</li>
+<li><code>kappa</code> is the signed in-plane curvature of the interface's normal-plane section at the
+  junction, positive when the section turns <strong>counter-clockwise about the junction-edge
+  direction</strong> (lower vertex key -&gt; higher vertex key) as it leaves the junction.</li>
+<li>The junction-edge axis runs from the <strong>lower</strong> to the <strong>higher</strong> vertex key. Using a
+  half-edge's own direction instead would flip the sign of the correction on half the
+  half-edges.</li>
+</ul>
+<h3 id="foambryo.second_order_angle_reading--which-correction-form-is-applied-and-which-is-not">Which correction form is applied, and which is not<a class="headerlink" href="#foambryo.second_order_angle_reading--which-correction-form-is-applied-and-which-is-not" title="Permanent link">&para;</a></h3>
+<p>Only the closed form <code>-kappa * L / 2</code> is applied. It was measured that the alternative —
+rotating the mesh's chord onto the <em>fitted patch's own tangent</em> — injects a zero-mean scatter of
+about 3.3 degrees at the median and 14.4 degrees at p90 on this patch fit,
+because a patch fit's absolute orientation carries the discrepancy between the fitted surface
+and the mesh's local orientation, which is not a chord-versus-tangent error and must not be
+rotated away. That form is not implemented here. The cost of the form that <em>is</em> implemented is
+that the circular-arc model becomes load-bearing: <code>-kappa * L / 2</code> is exact for an arc and
+first-order in <code>kappa * L</code> otherwise.</p>
+<h3 id="foambryo.second_order_angle_reading--what-enters-the-fit-exhaustively">What enters the fit, exhaustively<a class="headerlink" href="#foambryo.second_order_angle_reading--what-enters-the-fit-exhaustively" title="Permanent link">&para;</a></h3>
+<p>The fit is <strong>generic</strong>: a quadric height field is the second-order Taylor statement about
+whatever surface is there, and injects only smoothness. <strong>No constant-mean-curvature
+constraint, no Laplace or Neumann relaxation, no tension, no pressure, no area, no volume, no
+ground-truth angle, no reference mesh, no <code>.rec</code> file, no segmentation mask.</strong> The complete
+list of inputs is:</p>
+<ol>
+<li><code>mesh.v</code>, the mesh's vertex coordinates;</li>
+<li><code>mesh.f</code>, its triangles and their two material labels;</li>
+</ol>
+<p>and nothing else. <code>quadric_angle_rotations</code> takes a <code>DcelData</code> and, besides the window's
+measurement parameters, no other argument, so "no ground truth in the estimator" is structural
+here: there is no parameter through which a reference mesh, a ground-truth angle, a tension or a
+pressure could reach it.</p>
+<h3 id="foambryo.second_order_angle_reading--identity-at-zero-curvature">Identity at zero curvature<a class="headerlink" href="#foambryo.second_order_angle_reading--identity-at-zero-curvature" title="Permanent link">&para;</a></h3>
+<p>A fitted <code>kappa</code> of exactly <code>0.0</code> produces a rotation of exactly <code>-0.0</code>, and
+<code>geometry._wedges_at_half_edge</code> skips the Rodrigues call on a falsy angle, so the chord angle is
+returned <strong>bitwise</strong>. Pinned by <code>tests/test_second_order_angle_reading.py</code>, which also checks the
+stronger statement that an explicitly all-zero rotation map, and an empty one, are the identity to
+the bit.</p>
+<p>The honest qualification, MEASURED rather than asserted: a <em>geometrically</em> flat interface does
+not fit to an exactly-zero <code>c_ee</code>, because the least-squares design matrix is not exactly
+rank-consistent in binary floating point. On a planar three-film phantom the residual rotation
+peaks at <code>4.1e-17</code> rad (<code>2.3e-15</code> degrees) and moves a reported wedge angle by at most <code>2.8e-14</code>
+degrees — sixteen orders of magnitude below the ~5 degree per-line errors this reading exists to
+reduce, and below <code>float64</code>'s own resolution at 120 degrees. So the bitwise statement is about
+<code>kappa == 0</code>, and the practical statement about a flat surface is "identity to <code>1e-14</code> degrees".</p>
+<h3 id="foambryo.second_order_angle_reading--hyperparameters-are-fixed-in-production-and-measurable-outside-it">Hyperparameters are fixed in production, and measurable outside it<a class="headerlink" href="#foambryo.second_order_angle_reading--hyperparameters-are-fixed-in-production-and-measurable-outside-it" title="Permanent link">&para;</a></h3>
+<p><code>QUADRIC_WINDOW_FACTOR = 4.0</code> and <code>QUADRIC_AXIAL_FACTOR = 1.0</code> are fixed a priori (the axial
+one is the isotropic choice, which assumes least). Re-selecting them by held-out fit residual,
+with at least 85 % of incident faces covered, returns exactly these values, so they carry no
+selection freedom with respect to the metrics they are judged on.</p>
+<p>They remain module constants, and <strong>no production path can change them</strong>: no <code>reading</code> selector,
+no inference entry point, no public convenience function and not <code>rotations_for_reading</code> takes a
+window. <code>quadric_angle_rotations</code> alone accepts them, keyword-only, defaulting to these
+constants, so that the cost of the window can be <em>measured</em> without a second implementation of
+the fit living outside this module — two implementations of one fit diverge, and this project has
+been bitten by that. Called at the defaults it is bitwise what it was before the parameters
+existed, which <code>tests/test_second_order_angle_reading.py</code> executes rather than asserts.</p>
+<p>The prohibition that motivated keeping them constants is unchanged and is about <em>selection</em>, not
+about reachability: a window must never be chosen on the contact-angle flattening slope, the tension contrast or the
+per-line angle error of a mesh whose accuracy is being judged. A window may be chosen only on
+meshes that are not on trial — which is what makes measuring it admissible at all.</p>
+<h3 id="foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden">Coverage, and why the fallback is reported rather than hidden<a class="headerlink" href="#foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden" title="Permanent link">&para;</a></h3>
+<p>The fit is not admissible everywhere: an incident face whose window holds fewer than two mesh
+vertices per fit parameter, or whose design matrix is rank-deficient, gets <strong>no</strong> rotation and
+falls back to the chord reading. Measured on dw3d's 47-case benchmark at <code>min_distance = 3</code>,
+coverage is <code>0.919</code> of incident faces; at <code>min_distance = 4</code> it is <code>0.890</code>. A result that mixes
+corrected and uncorrected angles without saying so would be unreadable as science, so
+<code>quadric_angle_rotations</code> returns an <code>AngleReadingReport</code> naming the coverage and every
+trijunction line that is not fully corrected, and the report-less convenience paths in
+<code>foambryo.geometry</code> and <code>foambryo.tension_inference</code> emit an <code>AngleReadingCoverageWarning</code>
+instead of staying silent.</p>
+<h3 id="foambryo.second_order_angle_reading--measured-behaviour">Measured behaviour<a class="headerlink" href="#foambryo.second_order_angle_reading--measured-behaviour" title="Permanent link">&para;</a></h3>
+<p>The measured behaviour of the reading is in <code>BENCHMARKS.md</code> (foambryo repository).</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.second_order_angle_reading.AngleReadingCoverageWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">AngleReadingCoverageWarning</span>
+
+
+<a href="#foambryo.second_order_angle_reading.AngleReadingCoverageWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p>Emitted when a quadric reading corrects only part of a mesh's trijunction faces.</p>
+<p>Applies to <code>"quadric"</code> and <code>"oriented_quadric"</code>; the chord readings always cover every face.</p>
+<p>The uncorrected faces silently fall back to the chord reading, which mixes two angle
+conventions in one result. That is admissible — it is strictly better than dropping the
+lines — but it must never be invisible. Use the <code>*_with_report</code> entry points in
+<code>foambryo.geometry</code> and <code>foambryo.tension_inference</code> to receive the numbers instead of
+the warning.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.second_order_angle_reading.AngleReadingReport" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">AngleReadingReport</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.second_order_angle_reading.AngleReadingReport" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AngleReadingReport</span><span class="p">(</span><span class="n">reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_incident_faces</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_corrected</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_no_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_no_fit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">coverage_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">uncorrected_lines</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span> <span class="n">line_coverage</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(),</span> <span class="n">window_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">QUADRIC_WINDOW_FACTOR</span><span class="p">,</span> <span class="n">axial_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">QUADRIC_AXIAL_FACTOR</span><span class="p">,</span> <span class="n">junction_endpoints</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JUNCTION_ENDPOINTS</span><span class="p">,</span> <span class="n">fit_constant_term</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">FIT_CONSTANT_TERM</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>What a trijunction angle reading covered, and what it fell back on.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.reading">reading</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of <code>ANGLE_READINGS</code>. Either chord reading always reports full coverage: it
+has no fit to fail, and it does not walk the junctions a second time, so its
+per-face counts are <code>0</code> and carry no information — only <code>coverage_fraction</code>,
+<code>uncorrected_lines</code> and <code>is_complete</code> are meaningful on a chord report.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.n_incident_faces">n_incident_faces</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(trijunctional geometric edge, incident face)</code> pairs visited. Three
+per trijunctional edge; quadrijunctional edges are skipped, exactly as
+<code>foambryo.geometry.compute_angles_tri</code> skips them.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.n_corrected">n_corrected</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pairs that received a second-order correction.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.n_no_samples">n_no_samples</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pairs whose window held too few interface vertices to fit.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.n_no_fit">n_no_fit</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pairs whose design matrix was rank-deficient or whose curvature was not
+finite.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.coverage_fraction">coverage_fraction</span></code></td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>n_corrected / n_incident_faces</code>, or <code>None</code> on a mesh with no
+trijunctional edge at all.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.uncorrected_lines">uncorrected_lines</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, ...], ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>every trijunction line — identified by its sorted material triple,
+the same three materials whose wedge keys <code>compute_angles_tri</code> returns — carrying
+at least one uncorrected face. Sorted.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.line_coverage">line_coverage</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, ...], <span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>material triple -&gt; (corrected faces, total faces)</code> for every
+trijunction line in the mesh.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.window_factor">window_factor</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the transverse window multiplier actually used.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.axial_factor">axial_factor</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the axial window multiplier actually used.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.junction_endpoints">junction_endpoints</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the policy actually used for the frame's own two junction-edge
+endpoints, one of <code>JUNCTION_ENDPOINT_POLICIES</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.second_order_angle_reading.AngleReadingReport.fit_constant_term">fit_constant_term</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether the quadric height field actually fitted a constant term.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>A trijunction line with partial coverage (some but not all of its faces corrected) is
+not, by itself, a known source of extra angle error: measured against the chord
+reading's own error on the same lines, the per-line displacement this correction makes
+does not trend with how much of the line was covered (a near-zero, statistically
+insignificant slope, most of what little apparent trend there is already present in the
+chord reading, which has no coverage concept at all). A low <code>line_coverage_fraction</code>
+is a coverage fact about the mesh, not a warning sign about the correction's accuracy.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.second_order_angle_reading.AngleReadingReport.is_complete" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">is_complete</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.second_order_angle_reading.AngleReadingReport.is_complete" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">is_complete</span><span class="p">:</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>True when every trijunctional incident face was read with the selected reading.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.second_order_angle_reading.AngleReadingReport.line_coverage_fraction" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">line_coverage_fraction</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.second_order_angle_reading.AngleReadingReport.line_coverage_fraction" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">line_coverage_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Fraction of trijunction <em>lines</em> every one of whose faces was corrected.</p>
+<p>The line analogue of <code>coverage_fraction</code>, which is per-<em>face</em>: a line with 2 of its
+3 faces corrected counts as 0 here (it is in <code>uncorrected_lines</code>) but contributes
+2/3 to <code>coverage_fraction</code>. <code>None</code> on a mesh with no trijunctional edge at all,
+mirroring <code>coverage_fraction</code>'s own convention.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.second_order_angle_reading.AngleReadingReport.describe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">describe</span>
+
+
+<a href="#foambryo.second_order_angle_reading.AngleReadingReport.describe" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">describe</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A one-line human-readable summary, used as the coverage warning's message.</p>
+<p>Leads with the two numbers a reader needs to judge the result: the measured face
+coverage fraction and how many trijunction lines were not fully corrected (out of how
+many), then lists those lines (at most <code>_MAX_LINES_IN_WARNING</code> of them).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.fits_quadric_tangents" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fits_quadric_tangents</span>
+
+
+<a href="#foambryo.second_order_angle_reading.fits_quadric_tangents" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fits_quadric_tangents</span><span class="p">(</span><span class="n">reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Whether <code>reading</code> replaces each triangle's chord by a fitted quadric tangent.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bool</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True for <code>"quadric"</code> and <code>"oriented_quadric"</code>, False for the two chord readings.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>reading</code> is not one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.reads_oriented_wedges" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">reads_oriented_wedges</span>
+
+
+<a href="#foambryo.second_order_angle_reading.reads_oriented_wedges" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">reads_oriented_wedges</span><span class="p">(</span><span class="n">reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Whether <code>reading</code> returns the oriented wedge angle in <code>[0, 360)</code> rather than <code>[0, 180]</code>.</p>
+<p>See "The oriented wedge reading" in this module's docstring for what the two ranges mean and
+why they differ only on reflex wedges.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bool</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True for <code>"oriented_chord"</code> and <code>"oriented_quadric"</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>reading</code> is not one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.warn_on_partial_coverage" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">warn_on_partial_coverage</span>
+
+
+<a href="#foambryo.second_order_angle_reading.warn_on_partial_coverage" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">warn_on_partial_coverage</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">AngleReadingReport</span><span class="p">,</span> <span class="n">stacklevel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Emit an <code>AngleReadingCoverageWarning</code> when a reading fell back on part of the mesh.</p>
+<p>Called only from the entry points that drop the report on the floor — the report-returning
+ones hand the caller the numbers the warning would have described, and stay silent.
+Complete coverage is silent either way.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>report</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="AngleReadingReport
+
+
+  
+      dataclass
+   (foambryo.second_order_angle_reading.AngleReadingReport)" href="#foambryo.second_order_angle_reading.AngleReadingReport">AngleReadingReport</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the reading's coverage report.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stacklevel</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>passed through to <code>warnings.warn</code>, so the warning points at
+the caller's own line rather than at this module. Defaults to 3.</p>
+              </div>
+            </td>
+            <td>
+                  <code>3</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.validate_reading" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">validate_reading</span>
+
+
+<a href="#foambryo.second_order_angle_reading.validate_reading" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">validate_reading</span><span class="p">(</span><span class="n">reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Check an angle-reading selector and return it.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the selector to check.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>reading</code>, unchanged.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>reading</code> is not one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.orthonormal_basis" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">orthonormal_basis</span>
+
+
+<a href="#foambryo.second_order_angle_reading.orthonormal_basis" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">orthonormal_basis</span><span class="p">(</span><span class="n">normal</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A right-handed in-plane basis <code>(e1, e2)</code> with <code>cross(e1, e2) = normal</code>.</p>
+<p><code>e1</code> is built from the world axis least aligned with <code>normal</code>, which is deterministic and
+never degenerate. Handedness matters: it fixes the sign of every curvature this module
+returns, and it is the reason <code>rodrigues_about</code> and the in-plane angles agree
+(<code>cross(axis, e1) = e2</code> for this basis).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>normal</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the plane's normal, any non-zero length.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>], <span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple[NDArray[np.float64], NDArray[np.float64]]: the unit vectors <code>(e1, e2)</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.rodrigues_about" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">rodrigues_about</span>
+
+
+<a href="#foambryo.second_order_angle_reading.rodrigues_about" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">rodrigues_about</span><span class="p">(</span><span class="n">axis</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">vector</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">angle</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Rotate <code>vector</code> about the unit <code>axis</code> by <code>angle</code>, counter-clockwise seen from <code>+axis</code>.</p>
+<p>For a vector already perpendicular to the axis — which every face normal at a junction edge
+is — this reduces to <code>v cos a + (axis x v) sin a</code>, and it agrees with a counter-clockwise
+rotation in the <code>(e1, e2)</code> basis <code>orthonormal_basis</code> returns, because <code>cross(axis, e1) = e2</code>
+for that right-handed basis.</p>
+<p>The rotation is linear, so it acts identically on <code>n</code> and on <code>-n</code>: applying it before
+<code>_wedges_at_half_edge</code>'s relabelling flip and applying it after are the same operation, and
+the sign the mesh happens to carry on a face normal does not enter.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>axis</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unit rotation axis.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>vector</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the vector to rotate.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>rotation angle in radians.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>NDArray[np.float64]: the rotated vector.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.junction_frames" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">junction_frames</span>
+
+
+<a href="#foambryo.second_order_angle_reading.junction_frames" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">junction_frames</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>One local frame per <code>(trijunctional geometric edge, incident face)</code>, from the DCEL.</p>
+<p><strong>This walk is production's own trijunction identification, not a second one.</strong> A geometric
+edge is visited when at least one of its half-edges has more than one twin (the test
+<code>compute_angles_tri</code> and <code>compute_trijunction_edges</code> use), it is de-duplicated by its
+<code>(min, max)</code> vertex-key pair keeping the lowest incident half-edge, and its three incident
+faces are collected in exactly the order <code>geometry._wedges_at_half_edge</code> collects them —
+the half-edge's own face first, then its twins'. An edge with any number of incident faces
+other than three is a quadrijunction (or higher) and is skipped, exactly as production skips
+it. Keying the frames this way is what makes every corrected angle attributable to the same
+<code>(trijunction, material)</code> key the chord reading produces.</p>
+<p>The frame at one edge:</p>
+<ul>
+<li><code>axis</code> runs from the <strong>lower</strong> to the <strong>higher</strong> vertex key, normalised;</li>
+<li><code>midpoint</code> is the edge midpoint, which is where production's chord is anchored;</li>
+<li><code>(e1, e2)</code> is <code>orthonormal_basis(axis)</code>, whose handedness fixes every curvature sign;</li>
+<li><code>chord</code> is the in-plane unit vector from <code>midpoint</code> towards the incident face's apex —
+  production's own reading direction — and <code>lever</code> is the in-plane distance to that apex.</li>
+</ul>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh to walk.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<span title="dict">dict</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list[dict]: one entry per <code>(edge, face)</code> with keys <code>edge</code>, <code>face</code>, <code>axis</code>, <code>midpoint</code>,
+<code>e1</code>, <code>e2</code>, <code>lever</code>, <code>chord</code>, <code>edge_length</code>, <code>pair</code> (the face's sorted material
+pair) and <code>materials</code> (the edge's sorted material triple). Faces whose apex lies on
+the junction axis (<code>lever == 0</code>) are dropped: they have no chord to correct.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.quadric_angle_rotations" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">quadric_angle_rotations</span>
+
+
+<a href="#foambryo.second_order_angle_reading.quadric_angle_rotations" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">quadric_angle_rotations</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">window_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">QUADRIC_WINDOW_FACTOR</span><span class="p">,</span> <span class="n">axial_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">QUADRIC_AXIAL_FACTOR</span><span class="p">,</span> <span class="n">junction_endpoints</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JUNCTION_ENDPOINTS</span><span class="p">,</span> <span class="n">fit_constant_term</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">FIT_CONSTANT_TERM</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">AngleReadingReport</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Per-<code>(edge, face)</code> normal rotations that turn the chord reading into the quadric one.</p>
+<p>For each <code>(trijunctional geometric edge, incident face)</code> this fits a generic quadric height
+field to the incident interface's own mesh vertices inside an anisotropic window around the
+junction-edge midpoint, reads the normal-plane section's signed curvature <code>kappa</code> off the
+fitted surface, and returns the rotation <code>-kappa * lever / 2</code> to apply to that face's normal
+about the junction-edge axis. That is the exact chord-to-tangent rotation for a circular arc
+of curvature <code>kappa</code> whose chord has in-plane length <code>lever</code>.</p>
+<p>The window is <code>window_factor * lever</code> transversely and <code>axial_factor</code> times that along the
+junction edge. A sample is kept when <code>|xi| &lt;= axial window</code> and <code>hypot(eta, zeta) &lt;= window</code>,
+and then when <code>eta &gt; 0</code> — which keeps the fit on the side of the junction where the interface
+actually lies, since an interface is bounded by its junction line — <strong>except</strong> for the frame's
+own two junction-edge endpoints, whose membership <code>junction_endpoints</code> decides explicitly. See
+"The two junction-edge endpoints" in this module's docstring for why that exception is a
+correctness fix and not a tuning knob.</p>
+<p>Failure modes, all of which fall back to the chord reading for that face and are counted in
+the returned report: fewer than <code>_SAMPLES_PER_PARAMETER * 5</code> interface vertices in the
+window, a rank-deficient design matrix, or a non-finite curvature.</p>
+<p>Determinism: the walk, the k-d trees and the least-squares solve are all deterministic
+functions of <code>mesh.v</code>, <code>mesh.f</code> and the four keyword arguments; there is no random seed
+anywhere in this module.</p>
+<p><strong>The two window factors are measurement affordances, not tuning knobs, and no production path
+can reach them.</strong> They default to the module constants, <code>rotations_for_reading</code> does not
+forward them, and no <code>reading</code> selector, inference entry point or public convenience function
+exposes them; a caller who wants a different window has to name this function and say so. They
+exist because measuring what the window costs otherwise requires re-implementing the fit
+outside this module, and two implementations of one fit diverge. Called at the defaults the
+function is <strong>bitwise</strong> what it was before the parameters existed — the same float in every
+entry of the same map — and <code>tests/test_second_order_angle_reading.py</code> executes that identity
+rather than asserting it. Choosing a window on any quantity an arm is judged by would be the
+tuning this module's own docstring prohibits; a window may be chosen only on meshes that are
+not being judged.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh to read, in any length unit. <strong>The only mesh-derived
+argument</strong>: see "What enters the fit" in the module docstring. No reference mesh,
+target angle, tension or pressure can reach this function.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>window_factor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>transverse window, as a multiple of the incident face's
+own in-plane lever. Keyword-only. Defaults to <code>QUADRIC_WINDOW_FACTOR</code>, and production
+never passes anything else.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.QUADRIC_WINDOW_FACTOR">QUADRIC_WINDOW_FACTOR</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>axial_factor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>extent along the junction edge, as a multiple of the
+transverse window. Keyword-only. Defaults to <code>QUADRIC_AXIAL_FACTOR</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.QUADRIC_AXIAL_FACTOR">QUADRIC_AXIAL_FACTOR</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>junction_endpoints</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of <code>JUNCTION_ENDPOINT_POLICIES</code>. Keyword-only.
+Defaults to <code>JUNCTION_ENDPOINTS</code>, which is <code>"include"</code>. <code>"rounding"</code> reproduces the
+historical behaviour, in which these two samples' membership was decided by the sign of
+a rounding error; it exists so that the repair can be measured, not so that it can be
+chosen.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.JUNCTION_ENDPOINTS">JUNCTION_ENDPOINTS</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fit_constant_term</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>fit the quadric's constant term. Keyword-only. Defaults
+to <code>FIT_CONSTANT_TERM</code>. <code>False</code> reproduces the historical five-parameter fit, including
+its lower minimum sample count, exactly.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="foambryo.second_order_angle_reading.FIT_CONSTANT_TERM">FIT_CONSTANT_TERM</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>junction_endpoints</code> is not one of <code>JUNCTION_ENDPOINT_POLICIES</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="int">int</span>], <span title="float">float</span>], <a class="autorefs autorefs-internal" title="AngleReadingReport
+
+
+  
+      dataclass
+   (foambryo.second_order_angle_reading.AngleReadingReport)" href="#foambryo.second_order_angle_reading.AngleReadingReport">AngleReadingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple[dict[tuple[tuple[int, int], int], float], AngleReadingReport]: the rotation angles
+in radians keyed by <code>((low vertex key, high vertex key), face key)</code>, and the
+coverage report. A key absent from the map means "no admissible fit here, read the
+chord".</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.second_order_angle_reading.rotations_for_reading" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">rotations_for_reading</span>
+
+
+<a href="#foambryo.second_order_angle_reading.rotations_for_reading" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">rotations_for_reading</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">AngleReadingReport</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Dispatch on the reading selector, with a per-mesh cache for the quadric fit.</p>
+<p>The quadric fit costs one k-d tree query and one 5-parameter least-squares solve per
+incident trijunction face — measured at roughly 0.5 s on a 47-case benchmark mesh, which is
+the same order as one inference. Every angle-reading tension method calls
+<code>compute_angles_tri</code> once, so a benchmark that runs eight methods over one mesh would pay
+for the fit eight times. The result is cached on the mesh instance under
+<code>_angle_reading_rotations</code>.</p>
+<p><strong>Cache validity.</strong> <code>DcelData</code> never mutates <code>v</code> or <code>f</code> after <code>__init__</code>, so the cache
+cannot go stale through any public method of this package. If you mutate those arrays
+yourself, <code>del mesh._angle_reading_rotations</code> first.</p>
+<p>The cache is shared by <code>"quadric"</code> and <code>"oriented_quadric"</code>: the rotations depend only on
+the mesh, and whether a wedge is then reported oriented is decided downstream, in
+<code>foambryo.geometry</code>. Only the returned report's <code>reading</code> label differs.</p>
+<p><strong>This function does not forward a window.</strong> It calls <code>quadric_angle_rotations</code> with no window
+arguments, so every reading reachable through a <code>reading</code> selector uses
+<code>QUADRIC_WINDOW_FACTOR</code> and <code>QUADRIC_AXIAL_FACTOR</code>. A measurement that wants another window
+calls <code>quadric_angle_rotations</code> itself; it may then seed this function's cache by assigning
+the pair to <code>mesh._angle_reading_rotations</code>, and the report it stores names the window it
+used, so a result read that way says so rather than looking like production's.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the mesh to read.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="dict">dict</span>[<span title="tuple">tuple</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>], <span title="int">int</span>], <span title="float">float</span>] | None, <a class="autorefs autorefs-internal" title="AngleReadingReport
+
+
+  
+      dataclass
+   (foambryo.second_order_angle_reading.AngleReadingReport)" href="#foambryo.second_order_angle_reading.AngleReadingReport">AngleReadingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple[dict | None, AngleReadingReport]: the rotation map (<code>None</code> for either chord
+reading, which applies no rotation at all) and the coverage report.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>reading</code> is not one of <code>ANGLE_READINGS</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
