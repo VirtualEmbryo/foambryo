@@ -25,8 +25,9 @@ WORKSPACE_ROOT = FOAMBRYO_REPO.parent
 DW3D_REPO = WORKSPACE_ROOT / "delaunay-watershed-3d"
 DW3D_VARIANT_COMPARISON_OUTPUTS = FOAMBRYO_REPO / "foambryo_benchmarks" / "outputs" / "dw3d_variant_comparison"
 CONVERGED_MESHES = WORKSPACE_ROOT / "converged-meshes"
-FIGURES_OUT = WORKSPACE_ROOT / "figures"
-FIGURES_OUT.mkdir(parents=True, exist_ok=True)
+# Git-ignored (`foambryo_benchmarks/outputs/` in .gitignore). Created by `save_fig`, never on
+# import: importing this module must not write anywhere, least of all into the workspace root.
+FIGURES_OUT = FOAMBRYO_REPO / "foambryo_benchmarks" / "outputs" / "figures"
 
 DW3D_BASELINE = DW3D_REPO / "dw3d_benchmarks" / "baseline"
 FOAMBRYO_BASELINE = FOAMBRYO_REPO / "foambryo_benchmarks" / "baseline"
@@ -108,6 +109,7 @@ def save_fig(fig, name: str) -> tuple[Path, Path]:
     by design, a script must not claim success for
     an output it never actually wrote.
     """
+    FIGURES_OUT.mkdir(parents=True, exist_ok=True)
     pdf_path = FIGURES_OUT / f"{name}.pdf"
     png_path = FIGURES_OUT / f"{name}.png"
     fig.savefig(pdf_path, format="pdf", bbox_inches="tight")

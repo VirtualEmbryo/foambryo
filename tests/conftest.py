@@ -38,7 +38,7 @@ SUBSTITUTE_MESH = WORKSPACE_ROOT / "benchmarking-dataset" / "000_mesh.rec"
 REFERENCE_TENSIONS = REPO_ROOT / "Examples" / "reference_tensions.txt"
 REFERENCE_PRESSURES = REPO_ROOT / "Examples" / "reference_pressures.txt"
 ORIGINAL_BENCHMARK_MESH = REPO_ROOT / "data" / "Meshes" / "Benchmark_original_mesh.rec"
-COMPANION_REFERENCE_IMPLEMENTATION = WORKSPACE_ROOT / "companion" / "line_surface_inference.py"
+FORCE_BALANCE_REFERENCE_IMPLEMENTATION = REPO_ROOT / "tests" / "reference" / "force_balance_reference_implementation.py"
 DATASET_DIR = WORKSPACE_ROOT / "benchmarking-dataset"
 
 
@@ -49,22 +49,21 @@ def require_substitute_mesh() -> Path:
 
 
 def load_reference_implementation() -> ModuleType:
-    """Load the reference implementation as a module, unmodified.
+    """Load the force-balance reference implementation as a module, unmodified.
 
-    This is the reference implementation that accompanies the technical note on tension
-    inference (H. Turlier, in preparation; not distributed). It was ported, unchanged, into
-    `foambryo.validation`; loading it directly (rather than re-typing its logic in the
-    test) is what makes the comparison in `test_validation_force_balance.py` a genuine
-    check against the reference's *own* outputs, not against a second hand-written copy.
+    `tests/reference/force_balance_reference_implementation.py` is a standalone numpy/scipy
+    implementation of the force-balance operator and its solvers; `foambryo.validation` implements
+    the same functions with the same algorithms. Loading it directly (rather than re-typing its
+    logic in the test) is what makes the comparison in `test_validation_force_balance.py` a
+    genuine check against the reference's *own* outputs, not against a second hand-written copy.
+    It is part of the test tree (and of the source distribution), so the comparison runs wherever
+    the tests do.
     """
-    if not COMPANION_REFERENCE_IMPLEMENTATION.exists():
-        pytest.skip(
-            f"{COMPANION_REFERENCE_IMPLEMENTATION} not found (the reference implementation that "
-            "accompanies the technical note (not distributed))",
-        )
+    if not FORCE_BALANCE_REFERENCE_IMPLEMENTATION.exists():
+        pytest.skip(f"{FORCE_BALANCE_REFERENCE_IMPLEMENTATION} not found (the test tree is incomplete)")
     spec = importlib.util.spec_from_file_location(
-        "line_surface_inference_reference",
-        COMPANION_REFERENCE_IMPLEMENTATION,
+        "force_balance_reference_implementation",
+        FORCE_BALANCE_REFERENCE_IMPLEMENTATION,
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

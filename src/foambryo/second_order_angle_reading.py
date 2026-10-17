@@ -1,4 +1,8 @@
-r"""The second-order (quadric) trijunction angle reading, and its fixed window.
+r"""The trijunction angle readings: the chord, the second-order (quadric) reading, and their oriented forms.
+
+The `angle_reading` (or `reading`) selector of every angle-reading function takes one of
+`ANGLE_READINGS`: `"chord"` (the default), `"quadric"`, `"oriented_chord"` and `"oriented_quadric"`.
+Angles are in radians in every returned map.
 
 Why this module exists
 ----------------------
@@ -11,15 +15,15 @@ therefore reads a **chord** of each interface where the geometry has a **tangent
 
 A flat P1 facet has no curvature to offer, so it cannot report a tangent; a circular arc's
 chord is rotated from its tangent by exactly `kappa * L / 2`, with `L` the in-plane distance
-from the junction-edge midpoint to the incident apex. The chord-versus-tangent work measured that this
-chord-for-tangent substitution accounts for **68.4 %** of the length-weighted flattening slope
-of the reconstructed meshes.
+from the junction-edge midpoint to the incident apex. This chord-for-tangent substitution was
+measured to account for **68.4 %** of the length-weighted flattening slope of the reconstructed
+meshes.
 
 This module supplies the second reading: fit a **generic quadric height field** to the
 interface's own mesh vertices in a 3-D window around each junction-edge midpoint, read that
 surface's normal-plane section curvature `kappa` analytically, and rotate the face normal about
-the junction edge by `-kappa * L / 2`. It is the curvature-from-data work's `b1_mesh_patch`
-rung, ported into production and re-keyed onto `foambryo`'s own trijunction identification.
+the junction edge by `-kappa * L / 2`. It is a local patch fit, keyed to `foambryo`'s own trijunction
+identification.
 
 The oriented wedge reading
 --------------------------
@@ -143,8 +147,10 @@ angle. Either would say which side of the crossover the shipped spacings are on.
 
 Units and conventions
 ---------------------
-* Coordinates are in the mesh's own units. On `dw3d` output that is **voxel indices**, so
-  `kappa` is per voxel and `kappa * L / 2` is dimensionless (an angle in radians).
+* Coordinates are in the mesh's own units: **voxel indices** on `dw3d` output reconstructed without a
+  `spacing`, the spacing's unit with one. `kappa` is per mesh length unit and `kappa * L / 2` is
+  dimensionless (an angle in radians); the reading does not depend on the unit (see "The two
+  junction-edge endpoints").
 * `kappa` is the signed in-plane curvature of the interface's normal-plane section at the
   junction, positive when the section turns **counter-clockwise about the junction-edge
   direction** (lower vertex key -> higher vertex key) as it leaves the junction.
@@ -154,18 +160,17 @@ Units and conventions
 
 Which correction form is applied, and which is not
 --------------------------------------------------
-Only the closed form `-kappa * L / 2` is applied. The curvature-from-data work's decision
-D006 measured that the
-alternative — rotating the mesh's chord onto the *fitted patch's own tangent* — injects a
-zero-mean scatter of about 3.3 degrees at the median and 14.4 degrees at p90 on this rung,
+Only the closed form `-kappa * L / 2` is applied. It was measured that the alternative —
+rotating the mesh's chord onto the *fitted patch's own tangent* — injects a zero-mean scatter of
+about 3.3 degrees at the median and 14.4 degrees at p90 on this patch fit,
 because a patch fit's absolute orientation carries the discrepancy between the fitted surface
 and the mesh's local orientation, which is not a chord-versus-tangent error and must not be
 rotated away. That form is not implemented here. The cost of the form that *is* implemented is
 that the circular-arc model becomes load-bearing: `-kappa * L / 2` is exact for an arc and
 first-order in `kappa * L` otherwise.
 
-Safeguard 2 — exhaustively, the quantities that enter the fit
--------------------------------------------------------------
+What enters the fit, exhaustively
+---------------------------------
 The fit is **generic**: a quadric height field is the second-order Taylor statement about
 whatever surface is there, and injects only smoothness. **No constant-mean-curvature
 constraint, no Laplace or Neumann relaxation, no tension, no pressure, no area, no volume, no
@@ -175,18 +180,18 @@ list of inputs is:
 1. `mesh.v`, the mesh's vertex coordinates;
 2. `mesh.f`, its triangles and their two material labels;
 
-and nothing else. `quadric_angle_rotations` takes a `DcelData` and no other argument, so
-safeguard 1 ("no ground truth in the estimator") is structural here: there is no parameter
-through which a reference mesh, a ground-truth angle, a tension or a pressure could reach it.
+and nothing else. `quadric_angle_rotations` takes a `DcelData` and, besides the window's
+measurement parameters, no other argument, so "no ground truth in the estimator" is structural
+here: there is no parameter through which a reference mesh, a ground-truth angle, a tension or a
+pressure could reach it.
 
-Safeguard 4 — identity at zero curvature
------------------------------------------
+Identity at zero curvature
+--------------------------
 A fitted `kappa` of exactly `0.0` produces a rotation of exactly `-0.0`, and
 `geometry._wedges_at_half_edge` skips the Rodrigues call on a falsy angle, so the chord angle is
 returned **bitwise**. Pinned by `tests/test_second_order_angle_reading.py`, which also checks the
-stronger statement the chord-versus-tangent work used: an explicitly all-zero rotation map,
-and an empty one, are the
-identity to the bit.
+stronger statement that an explicitly all-zero rotation map, and an empty one, are the identity to
+the bit.
 
 The honest qualification, MEASURED rather than asserted: a *geometrically* flat interface does
 not fit to an exactly-zero `c_ee`, because the least-squares design matrix is not exactly
@@ -198,12 +203,10 @@ reduce, and below `float64`'s own resolution at 120 degrees. So the bitwise stat
 
 Hyperparameters are fixed in production, and measurable outside it
 ------------------------------------------------------------------
-`QUADRIC_WINDOW_FACTOR = 4.0` and `QUADRIC_AXIAL_FACTOR = 1.0` are the curvature-from-data
-work's a-priori values (the transverse one inherited unchanged from the chord-versus-tangent
-work, the axial one being the isotropic choice that assumes least). A later stage of the
-identifiability-floor work re-selected them by held-out fit residual under a pre-registered
-coverage floor of 0.85 and landed back on exactly these, so they carry no selection freedom
-with respect to the metrics they are judged on.
+`QUADRIC_WINDOW_FACTOR = 4.0` and `QUADRIC_AXIAL_FACTOR = 1.0` are fixed a priori (the axial
+one is the isotropic choice, which assumes least). Re-selecting them by held-out fit residual,
+with at least 85 % of incident faces covered, returns exactly these values, so they carry no
+selection freedom with respect to the metrics they are judged on.
 
 They remain module constants, and **no production path can change them**: no `reading` selector,
 no inference entry point, no public convenience function and not `rotations_for_reading` takes a
@@ -230,12 +233,9 @@ trijunction line that is not fully corrected, and the report-less convenience pa
 `foambryo.geometry` and `foambryo.tension_inference` emit an `AngleReadingCoverageWarning`
 instead of staying silent.
 
-Provenance
-----------
-Ported from the project's research history (the curvature-from-data work's
-`b1_mesh_patch`, `fit_quadric_height_field`, `section_from_quadric`, `junction_frames`, and
-the chord-versus-tangent work's `orthonormal_basis`, `rodrigues_about`). The measured
-behaviour of the reading is recorded in this package's `BENCHMARKS.md`.
+Measured behaviour
+------------------
+The measured behaviour of the reading is in `BENCHMARKS.md` (foambryo repository).
 """
 
 from __future__ import annotations
@@ -278,9 +278,8 @@ _READING_TRAITS: dict[str, tuple[bool, bool]] = {
 #: the oriented reading used, so the counts are comparable with it.
 REFLEX_TOLERANCE_DEG = 1e-6
 
-#: Transverse window, as a multiple of the incident face's own in-plane lever. The
-#: chord-versus-tangent work's value, inherited unchanged; re-selected onto itself by a
-#: later held-out fit residual.
+#: Transverse window, as a multiple of the incident face's own in-plane lever. Fixed a priori;
+#: re-selecting it by held-out fit residual returns the same value.
 #: **Fixed, not a tuning knob** — see this module's docstring.
 QUADRIC_WINDOW_FACTOR = 4.0
 #: Extent along the junction edge, as a multiple of the transverse window. `1.0` makes the
@@ -321,12 +320,14 @@ _FACES_PER_TRIJUNCTION_EDGE = 3
 #: How many uncorrected trijunction lines the coverage warning names before it elides.
 _MAX_LINES_IN_WARNING = 8
 #: Slack added to the k-d tree query radius so the ball certainly contains the anisotropic
-#: keep-region below, in mesh units. Inherited from the curvature-from-data work unchanged.
+#: keep-region below, in mesh units.
 _QUERY_RADIUS_SLACK = 2.0
 
 
 class AngleReadingCoverageWarning(UserWarning):
-    """Raised when `reading="quadric"` corrects only part of a mesh's trijunction faces.
+    """Emitted when a quadric reading corrects only part of a mesh's trijunction faces.
+
+    Applies to `"quadric"` and `"oriented_quadric"`; the chord readings always cover every face.
 
     The uncorrected faces silently fall back to the chord reading, which mixes two angle
     conventions in one result. That is admissible — it is strictly better than dropping the
@@ -842,8 +843,8 @@ def quadric_angle_rotations(
     window, a rank-deficient design matrix, or a non-finite curvature.
 
     Determinism: the walk, the k-d trees and the least-squares solve are all deterministic
-    functions of `(mesh.v, mesh.f, window_factor, axial_factor)`; there is no random seed anywhere
-    in this module.
+    functions of `mesh.v`, `mesh.f` and the four keyword arguments; there is no random seed
+    anywhere in this module.
 
     **The two window factors are measurement affordances, not tuning knobs, and no production path
     can reach them.** They default to the module constants, `rotations_for_reading` does not
@@ -858,9 +859,9 @@ def quadric_angle_rotations(
     not being judged.
 
     Args:
-        mesh (DcelData): the mesh to read. **The only mesh-derived argument**: see safeguard 1 in
-            the module docstring. No reference mesh, target angle, tension or pressure can reach
-            this function.
+        mesh (DcelData): the mesh to read, in any length unit. **The only mesh-derived
+            argument**: see "What enters the fit" in the module docstring. No reference mesh,
+            target angle, tension or pressure can reach this function.
         window_factor (float, optional): transverse window, as a multiple of the incident face's
             own in-plane lever. Keyword-only. Defaults to `QUADRIC_WINDOW_FACTOR`, and production
             never passes anything else.

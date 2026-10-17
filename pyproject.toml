@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 # torch is dev-only: it backs the autodiff gradient-check test, not the runtime path.
-dev = ["pytest>=8", "ruff>=0.6", "torch>=2.2.0"]
+dev = ["pytest>=8", "ruff>=0.6", "torch>=2.3.0"]
 
 
 [tool.ruff]

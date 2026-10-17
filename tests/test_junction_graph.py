@@ -308,14 +308,31 @@ def _partition_two_pairs():
     )
 
 
-def test_solve_gauged_least_squares_not_fragmented_is_bit_identical_to_lstsq():
+def _constrained_least_squares(physics, physics_b, gauge_total):
+    """The exact-gauge solution, independently: the KKT system of min |P x - b| s.t. sum(x) = g."""
+    n = physics.shape[1]
+    kkt = np.zeros((n + 1, n + 1))
+    kkt[:n, :n] = physics.T @ physics
+    kkt[:n, n] = 1.0
+    kkt[n, :n] = 1.0
+    rhs = np.concatenate([physics.T @ physics_b, [gauge_total]])
+    return np.linalg.solve(kkt, rhs)[:n]
+
+
+def test_solve_gauged_least_squares_not_fragmented_meets_the_gauge_exactly():
+    """Since 0.7.0 the gauge is exact; the tensions are the constrained least-squares solution.
+
+    Until 0.6.0 this was `lstsq` on the soft row of ones, bit for bit. With homogeneous physics rows
+    (as every builder produces) that soft solution was the exact one times one factor: the ratios
+    are unchanged, only the scale now meets `mean_tension`.
+    """
     from foambryo.junction_graph import JunctionGraphPartition
 
     rng = np.random.default_rng(0)
     keys = [(0, 1), (0, 2), (1, 2)]
     matrix_m = rng.normal(size=(7, 3))
     matrix_m[-1] = 1.0
-    vector_b = rng.normal(size=7)
+    vector_b = np.zeros(7)
     vector_b[-1] = 3.0
 
     partition = JunctionGraphPartition(
@@ -325,10 +342,49 @@ def test_solve_gauged_least_squares_not_fragmented_is_bit_identical_to_lstsq():
         isolated=(),
     )
     solution = solve_gauged_least_squares(matrix_m, vector_b, keys, 1.0, partition)
-    expected, expected_resid, _rank, _sv = linalg.lstsq(matrix_m, vector_b)
-    assert np.array_equal(solution.tensions, expected)
-    assert np.array_equal(solution.lstsq_residuals, expected_resid)
+    assert solution.tensions.sum() == pytest.approx(3.0, abs=1e-12)
+    exact = _constrained_least_squares(matrix_m[:-1], vector_b[:-1], 3.0)
+    np.testing.assert_allclose(solution.tensions, exact, rtol=0, atol=1e-12)
+    soft, *_ = linalg.lstsq(matrix_m, vector_b)
+    np.testing.assert_allclose(solution.tensions, soft * (3.0 / soft.sum()), rtol=0, atol=1e-12)
+    residual = matrix_m[:-1] @ solution.tensions
+    assert solution.lstsq_residuals == pytest.approx([residual @ residual], rel=1e-12)
     assert not solution.fragmented
+
+
+def test_rows_that_are_neither_homogeneous_nor_differences_keep_a_soft_gauge_and_say_so():
+    from foambryo.junction_graph import GaugeNotExactWarning, JunctionGraphPartition
+
+    rng = np.random.default_rng(1)
+    keys = [(0, 1), (0, 2), (1, 2)]
+    matrix_m = rng.normal(size=(7, 3))
+    matrix_m[-1] = 1.0
+    vector_b = rng.normal(size=7)
+    vector_b[-1] = 3.0
+    partition = JunctionGraphPartition(interfaces=tuple(keys), components=(tuple(keys),),
+                                       component_of=dict.fromkeys(keys, 0), isolated=())
+    with pytest.warns(GaugeNotExactWarning, match="neither homogeneous nor differences"):
+        solve_gauged_least_squares(matrix_m, vector_b, keys, 1.0, partition)
+
+
+def test_difference_rows_are_shifted_onto_the_gauge_without_changing_their_residual():
+    """`LogLami`'s rows (in log space) sum to zero: the gauge is met by a shift, the fit is untouched."""
+    from foambryo.junction_graph import JunctionGraphPartition
+
+    rng = np.random.default_rng(2)
+    keys = [(0, 1), (0, 2), (1, 2), (1, 3)]
+    pairs = [(0, 1), (0, 2), (1, 2), (2, 3), (0, 3), (1, 3)]
+    physics = np.zeros((len(pairs), 4))
+    for row, (i, j) in enumerate(pairs):
+        physics[row, i], physics[row, j] = 1.0, -1.0
+    physics_b = rng.normal(size=len(pairs))
+    matrix_m = np.vstack([physics, np.ones(4)])
+    vector_b = np.concatenate([physics_b, [0.8]])
+    partition = JunctionGraphPartition(interfaces=tuple(keys), components=(tuple(keys),),
+                                       component_of=dict.fromkeys(keys, 0), isolated=())
+    solution = solve_gauged_least_squares(matrix_m, vector_b, keys, 0.2, partition)
+    assert solution.tensions.sum() == pytest.approx(0.8, abs=1e-12)
+    np.testing.assert_allclose(solution.tensions, _constrained_least_squares(physics, physics_b, 0.8), atol=1e-12)
 
 
 def test_solve_gauged_least_squares_fragmented_solves_each_block_with_its_own_gauge():

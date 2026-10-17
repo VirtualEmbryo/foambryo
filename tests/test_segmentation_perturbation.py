@@ -1,9 +1,8 @@
 """Positive-control tests for `foambryo_benchmarks.segmentation_perturbation` (the robustness work).
 
 Every test injects a perturbation of an independently-computable size and asserts the
-measured effect matches it - not merely that "something changed" (the project's
-non-negotiable testing discipline, restated for the segmentation-perturbation work after three
-prior sessions shipped a vacuous "0 differ" comparison).
+measured effect matches it - not merely that "something changed", which is how a
+comparison that compares nothing can report "0 differ".
 """
 
 import numpy as np

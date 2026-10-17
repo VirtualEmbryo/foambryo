@@ -47,7 +47,8 @@ def cell_mean_stress_tensors(
         dict_tensions (dict[tuple[int, int], float]): Tension of every interface of the mesh,
             keyed by its sorted material pair.
         dict_pressure (dict[int, float]): Pressure of each cell, in the units of the tensions
-            divided by a length.
+            divided by a length. A cell whose pressure is `nan` (undetermined by a Laplace
+            method) gets a `nan` tensor: leave it out of `cells`, as the stress viewer does.
         volumes (dict[int, float]): Volume of each cell (positive).
         cells (Iterable[int]): The cells to compute.
         lumen_materials (Iterable[int]): Materials treated as exterior: a membrane against one
@@ -69,7 +70,9 @@ def cell_mean_stress_tensors(
     faces_of_membrane: dict[tuple[int, int], list[int]] = {key: [] for key in dict_tensions}
     for i, face in enumerate(mesh.f):
         a, b = face[3:]
-        faces_of_membrane[(a, b)].append(i)
+        # A crop interface (only crop faces) is absent from the tension map: no membrane, no stress.
+        if (a, b) in faces_of_membrane:
+            faces_of_membrane[(a, b)].append(i)
 
     areas = compute_faces_areas(mesh.v, mesh.f)
     normals = compute_normal_faces(mesh.v, mesh.f)

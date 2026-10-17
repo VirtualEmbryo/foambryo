@@ -10,7 +10,10 @@ one function that defines
    `tests/data/angle_reading_bit_identity_baseline.json` is a SHA-256 digest of the raw IEEE-754
    bits of every angle, length and tension the source produced before this work, on all 47
    `benchmarking-dataset` reference meshes, generated from a `git archive` export of the branch
-   point. A one-ulp drift anywhere fails this test.
+   point. A one-ulp drift anywhere fails this test. Bit identity holds only on the numerical stack
+   it was verified on (numpy and scipy, `BITWISE_NUMPY`, `BITWISE_SCIPY`); elsewhere that test skips
+   with the reason, and a second gate compares the same quantities with the stored numbers of
+   `tests/data/angle_reading_reference_values.json` to a relative 1e-12, on every stack.
 
 2. **Safeguards 1, 2 and 4** of the inherited five (see
    `foambryo.second_order_angle_reading`'s module docstring, and dw3d's chord-versus-tangent
@@ -31,6 +34,7 @@ one function that defines
    bitwise the default one, executed here rather than asserted.
 """
 
+import functools
 import itertools
 import json
 import warnings
@@ -71,6 +75,18 @@ from foambryo.second_order_angle_reading import (
 from tests.conftest import DATASET_DIR, require_substitute_mesh
 
 BASELINE = Path(__file__).resolve().parent / "data" / "angle_reading_bit_identity_baseline.json"
+#: The same quantities as plain numbers (every method's tensions per interface; count, sum and sum
+#: of squares of the angles and lengths), written by `tests/data/make_angle_reading_reference_values.py`,
+#: which refuses to write unless every digest of its run equals `BASELINE`'s. The tolerance gate
+#: reads it.
+REFERENCE_VALUES = Path(__file__).resolve().parent / "data" / "angle_reading_reference_values.json"
+#: The numerical stack the bit-identity digests are verified on. Another numpy or scipy can change
+#: the last bits of a solve without any change in foambryo (numpy 2.4.6 / scipy 1.17.1, the newest
+#: that install on Python 3.11, move `Variational`'s tensions by up to 1.8e-14 relative), so the
+#: bitwise gate runs only on this stack; the tolerance gate runs on every stack.
+BITWISE_NUMPY, BITWISE_SCIPY = "2.5.1", "1.18.0"
+#: Relative tolerance of the gate that runs on every numerical stack.
+REFERENCE_RTOL = 1e-12
 #: The digest helper is duplicated from
 #: the project's research history rather than
 #: imported, deliberately: a permanent test must not depend on a research script that may be
@@ -87,6 +103,17 @@ ANGLE_METHOD_NAMES = (
     "InvCotan",
 )
 NON_ANGLE_METHOD_NAMES = ("Variational", "ForceBalance")
+#: The methods whose mean-tension gauge became exact in 0.7.0 (`foambryo.junction_graph.solve_with_exact_gauge`):
+#: their tensions are the baseline's times one factor per case, by design, so they are compared
+#: gauge-matched (the baseline rescaled to mean 1) and left out of the bitwise digests. Their angles
+#: are unchanged, and are what these gates are about.
+EXACT_GAUGE_SINCE_0_7 = (
+    "YoungDupre", "ProjectionYoungDupre", "Lami", "InvLami", "YoungDupreLocal", "Cotan", "InvCotan",
+)
+#: Methods whose tensions are solved through `solve_with_exact_gauge` since 0.7.0: their last bits
+#: moved (a differently weighted gauge row), so they leave the bitwise digests. `LogLami`'s gauge was
+#: already exact, so its values are compared to the baseline as they are, to 1e-12.
+SOLVED_THROUGH_THE_EXACT_GAUGE = (*EXACT_GAUGE_SINCE_0_7, "LogLami")
 
 
 def _digest(items):
@@ -100,9 +127,22 @@ def _digest(items):
     return hasher.hexdigest()
 
 
-def _digest_one_case(mesh_path):
+def _sums(values):
+    """Count, sum and sum of squares of a collection of floats: a small, tolerance-checkable record."""
+    array = np.asarray(list(values), dtype=np.float64)
+    return {"n": int(array.size), "sum": float(array.sum()), "sum_sq": float((array**2).sum())}
+
+
+@functools.cache
+def _measure_one_case(mesh_path):
+    """`(digests, values)` of everything the default reading produces on one mesh, computed once.
+
+    `digests` is the bit-identity record (`_digest` of each quantity); `values` holds the same
+    quantities as numbers: every method's tensions per interface, and the count, sum and sum of
+    squares of the angles, lengths and per-edge angles.
+    """
     mesh = dcel_mesh_from_file(str(mesh_path))
-    record = {}
+    record, values = {}, {}
     for unique in (True, False):
         radians, degrees, lengths = compute_angles_tri(mesh, unique=unique)
         suffix = "unique" if unique else "repeated"
@@ -110,15 +150,31 @@ def _digest_one_case(mesh_path):
         record[f"angles_deg_{suffix}"] = _digest(list(degrees.items()))
         record[f"lengths_{suffix}"] = _digest(list(lengths.items()))
         record[f"n_wedge_keys_{suffix}"] = len(radians)
+        values[f"angles_rad_{suffix}"] = _sums(radians.values())
+        values[f"lengths_{suffix}"] = _sums(lengths.values())
     edges = compute_trijunction_edges(mesh)
     record["trijunction_edge_angles"] = _digest(
         [((edge.vertices, key), angle) for edge in edges for key, angle in zip(edge.keys, edge.angles, strict=True)],
     )
     record["n_trijunction_edges"] = len(edges)
+    values["trijunction_edge_angles"] = _sums(angle for edge in edges for angle in edge.angles)
     for name in (*ANGLE_METHOD_NAMES, *NON_ANGLE_METHOD_NAMES):
         tensions = infer_tensions(mesh, 1, getattr(TensionComputationMethod, name))
         record[f"tensions_{name}"] = _digest(list(tensions.items()))
-    return record
+        values[f"tensions_{name}"] = [[[int(k) for k in key], float(value)] for key, value in sorted(tensions.items())]
+    return record, values
+
+
+def _digest_one_case(mesh_path):
+    return _measure_one_case(str(mesh_path))[0]
+
+
+def _benchmark_meshes():
+    if not DATASET_DIR.exists():
+        pytest.skip(f"{DATASET_DIR} not found (sibling benchmarking-dataset/ missing)")
+    meshes = sorted(DATASET_DIR.glob("*_mesh.rec"))
+    assert len(meshes) == 47, f"expected 47 reference meshes, found {len(meshes)}"
+    return meshes
 
 
 @pytest.fixture(scope="module")
@@ -143,11 +199,20 @@ def test_default_reading_is_bitwise_unchanged_on_every_benchmark_case(baseline):
     tensions from every one of the ten inference methods, digested over their raw IEEE-754
     bits. This is the gate the second-order-angle-reading work is accepted or rejected on; if it fails, the fix is
     in the source, never in `tests/data/angle_reading_bit_identity_baseline.json`.
+
+    Bit identity is a property of the whole numerical stack, so this runs only on the numpy and
+    scipy it is verified on (`BITWISE_NUMPY`, `BITWISE_SCIPY`) and skips elsewhere, saying why;
+    `test_default_reading_matches_the_reference_values_to_1e12` is the gate on every other stack.
     """
-    if not DATASET_DIR.exists():
-        pytest.skip(f"{DATASET_DIR} not found (sibling benchmarking-dataset/ missing)")
-    meshes = sorted(DATASET_DIR.glob("*_mesh.rec"))
-    assert len(meshes) == 47, f"expected 47 reference meshes, found {len(meshes)}"
+    import scipy
+
+    if (np.__version__, scipy.__version__) != (BITWISE_NUMPY, BITWISE_SCIPY):
+        pytest.skip(
+            f"bit identity is verified on numpy {BITWISE_NUMPY} / scipy {BITWISE_SCIPY}, and this is numpy "
+            f"{np.__version__} / scipy {scipy.__version__}: the last bits of a solve may differ; the 1e-12 "
+            "tolerance gate (test_default_reading_matches_the_reference_values_to_1e12) still runs",
+        )
+    meshes = _benchmark_meshes()
     assert set(baseline["cases"]) == {p.stem.removesuffix("_mesh") for p in meshes}
 
     differences = []
@@ -155,12 +220,51 @@ def test_default_reading_is_bitwise_unchanged_on_every_benchmark_case(baseline):
         case = path.stem.removesuffix("_mesh")
         recorded = baseline["cases"][case]
         for field, value in _digest_one_case(path).items():
+            if field.removeprefix("tensions_") in SOLVED_THROUGH_THE_EXACT_GAUGE:
+                continue
             if recorded[field] != value:
                 differences.append(f"{case}/{field}")
     assert not differences, (
         f"the default angle reading is no longer bit-identical to {baseline['source']} on "
         f"{len(differences)} digest(s): {differences[:12]}"
     )
+
+
+def test_default_reading_matches_the_reference_values_to_1e12():
+    """The default path reproduces commit `55bac17`'s numbers to 1e-12, on every numerical stack.
+
+    The companion of the bit-identity gate, for the stacks that gate skips: every method's tension on
+    every interface of the 47 cases (relative to the case's largest tension), and the count, sum and
+    sum of squares of the angles, lengths and per-edge angles, against
+    `tests/data/angle_reading_reference_values.json`. Those values were written in a run whose
+    digests all equal the bit-identity baseline, so they are the baseline's own numbers. 1e-12 is far
+    above the 1.8e-14 measured between numpy 2.5.1 and 2.4.6, and far below any change of method.
+    """
+    reference = json.loads(REFERENCE_VALUES.read_text())["cases"]
+    meshes = _benchmark_meshes()
+    assert set(reference) == {p.stem.removesuffix("_mesh") for p in meshes}
+    failures = []
+    for path in meshes:
+        case = path.stem.removesuffix("_mesh")
+        values = _measure_one_case(str(path))[1]
+        for field, expected in reference[case].items():
+            actual = values[field]
+            if field.startswith("tensions_"):
+                assert [k for k, _ in actual] == [k for k, _ in expected], f"{case}/{field}: interfaces differ"
+                a = np.array([v for _, v in actual], dtype=np.float64)
+                e = np.array([v for _, v in expected], dtype=np.float64)
+                if field.removeprefix("tensions_") in EXACT_GAUGE_SINCE_0_7:
+                    e = e / np.nanmean(e)  # the baseline's soft-row scale, gauge-matched to mean 1
+                scale = float(np.nanmax(np.abs(e))) if np.isfinite(e).any() else 1.0
+                same_nan = np.array_equal(np.isnan(a), np.isnan(e))
+                close = np.allclose(a, e, rtol=REFERENCE_RTOL, atol=REFERENCE_RTOL * scale, equal_nan=True)
+                if not (same_nan and close):
+                    failures.append(f"{case}/{field}")
+            elif actual["n"] != expected["n"] or not all(
+                np.isclose(actual[k], expected[k], rtol=REFERENCE_RTOL, atol=0.0) for k in ("sum", "sum_sq")
+            ):
+                failures.append(f"{case}/{field}")
+    assert not failures, f"{len(failures)} quantity(ies) moved by more than {REFERENCE_RTOL:g}: {failures[:12]}"
 
 
 def test_the_selector_defaults_to_the_chord_reading(reference_mesh):

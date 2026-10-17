@@ -1,22 +1,50 @@
-"""Module defining several plotting scenarii for a polyscope viewer.
+"""Drawing helpers for the Polyscope viewer: values on a mesh's surface, crop faces, and triple lines.
 
 Sacha Ichbiah 2021
 Matthieu Perez 2024
+
+`foambryo.viewing`'s viewers are built from these functions; they can also be called on their own. They need
+Polyscope (`pip install "foambryo[viewing]"`), and `show=True` needs a display. Tensions are coloured with the
+library's tension colours (`view_tensions_on_mesh`: `coolwarm`, centred on the mean tension); other per-interface
+or per-vertex quantities with `jet` unless another map is given. An undetermined value (`nan`) is drawn in
+`UNDETERMINED_COLOR` (green, #1b9e77); crop faces are drawn apart, as see-through glass (`view_crop_faces`).
 """
 
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-import polyscope as ps
 from matplotlib import cm
 from numpy.typing import NDArray
+
+# The colour of a face or a cell whose value is undetermined (`nan`): an interface no equation
+# fixes, or a cell whose pressure is not reported (an undetermined or a cut cell), and the crop faces' glass.
+# Defined with the colour scales, which the colour bars share without importing Polyscope.
+from foambryo._colour_scales import (
+    CROP_FACE_COLOR,
+    CROP_FACE_EDGE_COLOR,
+    CROP_FACE_OPACITY,
+    UNDETERMINED_COLOR,
+    clipped_colour_fractions,
+    quantile_colour_range,
+    tension_colour_fractions,
+    tension_colour_range,
+    tension_colours,
+)
+
+# `ps` is Polyscope, or, on a thread that prepares the viewer's scene, the recorder of its calls
+# (`foambryo._polyscope_recording`).
+from foambryo._polyscope_recording import polyscope_target as ps
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
 
 
 ##Support functions, simple mesh
+
+#: The name of the per-face transparency (1 drawn, 0 hidden) that hides the crop faces of the coloured surface: they
+#: are drawn as their own glass surface (`view_crop_faces`), never in a value's colour.
+CROP_FACES_HIDDEN = "crop faces hidden (drawn as glass)"
 
 
 def view_faces_values_on_embryo(
@@ -33,24 +61,32 @@ def view_faces_values_on_embryo(
     adapt_values: bool = True,
     scattered: bool = False,
 ) -> ps.SurfaceMesh:
-    """Visualize face_values data on a surface mesh.
+    """Colour a surface mesh's triangles by one value each, as a Polyscope colour quantity.
+
+    The values are mapped through `colormap` (expected in [0, 1]); a `nan` value is drawn `UNDETERMINED_COLOR`
+    (green). The surface is registered as "Embryo" unless `ps_mesh` is given.
 
     Args:
-        mesh (DcelData): Mesh data to visualize.
-        face_values (NDArray[np.float64]): Data array to visualize, per mesh triangle.
-        name_values (str, optional): Name of the data in viewer. Defaults to "Values".
-        ps_mesh (ps.SurfaceMesh|None, optional): If given, data is added to it and "mesh" is not used. Defaults to None.
-        colormap ("cm.colors.ColorMap", optional): Matplotlib colormap for the data. Defaults to cm.jet.
-        min_to_zero (bool, optional): Map the minimum value to 0, if adapt_values is True too. Defaults to True.
-        clean_before (bool, optional): Clean polyscope viewer before adding the mesh. Defaults to True.
-        clean_after (bool, optional): Clean polyscope viewer after adding the mesh. Defaults to True.
-        show (bool, optional): Show polyscope viewer directly. Defaults to True.
-        highlight_junctions (bool, optional): Show trijunctions on mesh. Defaults to False.
-        adapt_values (bool, optional): Values are stretched so that min & max have a difference of 1. Defaults to True.
-        scattered (bool, optional): Separate individual cells. Defaults to False.
+        mesh (DcelData): the mesh.
+        face_values (NDArray[np.float64]): one value per row of `mesh.f` (per triangle).
+        name_values (str, optional): the colour quantity's name in the viewer. Defaults to "Values".
+        ps_mesh (ps.SurfaceMesh | None, optional): a registered surface to add the quantity to; its triangles must
+            be those drawn (`mesh.f`, or `mesh.f_scattered` with `scattered`). Defaults to None.
+        colormap (matplotlib colormap, optional): the colour map. Defaults to `cm.jet`.
+        min_to_zero (bool, optional): with `adapt_values`, subtract the minimum first. Defaults to True.
+        clean_before (bool, optional): remove every Polyscope structure first. Defaults to True.
+        clean_after (bool, optional): remove every Polyscope structure before returning (after the window, with
+            `show`). Defaults to True.
+        show (bool, optional): open Polyscope's window (needs a display); returns when it is closed. Defaults to
+            True.
+        highlight_junctions (bool, optional): also draw the triple lines, in white. Defaults to False.
+        adapt_values (bool, optional): divide the values by their range (max - min), after subtracting the
+            minimum with `min_to_zero`, so that they span [0, 1]. Defaults to True.
+        scattered (bool, optional): draw the scattered (exploded) mesh; `mesh.compute_scattered_arrays` must have
+            been called. Defaults to False.
 
     Returns:
-        ps.SurfaceMesh: _description_
+        ps.SurfaceMesh: the surface the quantity was added to.
     """
     if scattered:
         v, f, idx = mesh.v_scattered, mesh.f_scattered, mesh.idx_scattered
@@ -66,6 +102,9 @@ def view_faces_values_on_embryo(
 
     values = values[idx]
     colors_face = colormap(values)[:, :3]
+    # A face whose value is undetermined (nan) is drawn `UNDETERMINED_COLOR` (green); with every value finite
+    # this changes nothing.
+    colors_face[np.isnan(values)] = UNDETERMINED_COLOR
 
     ps.init()
 
@@ -111,21 +150,29 @@ def view_vertex_values_on_embryo(  # noqa: C901
     highlight_junction: bool = False,
     scattered: bool = True,
 ) -> ps.SurfaceMesh:
-    """Plot a Surface Mesh with colors based on data on the mesh's vertices.
+    """Colour a surface mesh's triangles by values given on its vertices, with `jet`.
+
+    Each triangle takes the mean of its vertices' values (without the vertices on a triple line when
+    `remove_trijunctions`; a triangle with no vertex left takes the mean over the other triangles); the triangle
+    values are then stretched to [0, 1] between their minimum and maximum.
 
     Args:
-        mesh (DcelData): Mesh data to show.
-        value_on_vertices (NDArray[np.float64]): Data to show.
-        remove_trijunctions (bool, optional): Do not show data on trijunctions. Defaults to True.
-        ps_mesh (ps.SurfaceMesh | None, optional): Polyscope mesh pre-existing replacing the mesh. Defaults to None.
-        name_values (str, optional): Name of the data in the viewer. Defaults to "Values".
-        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
-        show (bool, optional): Show polyscope viewer directly. Defaults to True.
-        highlight_junction (bool, optional): Show junctions. Defaults to False.
-        scattered (bool, optional): Use scattered version of the mesh, with cells separated. Defaults to True.
+        mesh (DcelData): the mesh.
+        value_on_vertices (NDArray[np.float64]): one value per vertex (per row of `mesh.v`).
+        remove_trijunctions (bool, optional): leave out the vertices on a triple line, where these quantities are
+            not defined. Defaults to True.
+        ps_mesh (ps.SurfaceMesh | None, optional): a registered surface to add the quantity to; else "Embryo" is
+            registered. Defaults to None.
+        name_values (str, optional): the colour quantity's name in the viewer. Defaults to "Values".
+        clean_after (bool, optional): remove every Polyscope structure before returning. Defaults to True.
+        show (bool, optional): open Polyscope's window (needs a display); returns when it is closed. Defaults to
+            True.
+        highlight_junction (bool, optional): also draw the triple lines, in white. Defaults to False.
+        scattered (bool, optional): draw the scattered (exploded) mesh; `mesh.compute_scattered_arrays` must have
+            been called. Defaults to True.
 
     Returns:
-        ps.SurfaceMesh: Polyscope mesh with associated data visualized.
+        ps.SurfaceMesh: the surface the quantity was added to.
     """
     v, f = mesh.v, mesh.f
 
@@ -203,43 +250,62 @@ def view_dict_values_on_mesh(
     max_value: float | None = None,
     cmap: "cm.colors.ColorMap" = cm.jet,
 ) -> ps.SurfaceMesh:
-    """View the mesh with data defined per interface.
+    """Colour a surface mesh's triangles by a value per interface (a seed spread, a residual), with `jet`.
+
+    Not for tensions: they have their own colours, `view_tensions_on_mesh`. The values are clipped to a range and
+    stretched to [0, 1] (`clipped_colour_fractions`): by default between the `alpha` and `1 - alpha` quantiles of
+    the finite values (`quantile_colour_range`, the range the viewer's colour bars draw). An interface whose value
+    is `nan`, or that is absent from the map (a crop interface), is drawn `UNDETERMINED_COLOR` (green). The range
+    is printed.
 
     Args:
-        mesh (DcelData): Mesh to view.
-        dict_values (dict[tuple[int, int], float]): Data on interfaces
-        alpha (float, optional): Percentage to clip min & max value. Defaults to 0.05.
-        ps_mesh (ps.SurfaceMesh | None, optional): Polyscope mesh already instead of the mesh. Defaults to None.
-        clean_before (bool, optional): Clear polyscope viewer before this function. Defaults to True.
-        clean_after (bool, optional): Clear polyscope viewer after this function. Defaults to True.
-        show (bool, optional): Show polyscope viewer directly. Defaults to True.
-        scattered (bool, optional): Show scattered mesh. Defaults to False.
-        name_values (str, optional): Name of the data in the viewer. Defaults to "Values".
-        alpha_values (bool, optional): Use alpha parameter. Defaults to True.
-        min_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
-        max_value (float | None, optional): If not alpha_values, then clip data with this value. Defaults to None.
-        cmap ("cm.colors.ColorMap", optional): Colormap to color the data. Defaults to cm.jet.
+        mesh (DcelData): the mesh.
+        dict_values (dict[tuple[int, int], float]): one value per interface, keyed `(label_1, label_2)` with
+            `label_1 < label_2`.
+        alpha (float, optional): the quantile clipped at each end, in [0, 0.5). Defaults to 0.05.
+        ps_mesh (ps.SurfaceMesh | None, optional): a registered surface to add the quantity to; else "Embryo" is
+            registered. Defaults to None.
+        clean_before (bool, optional): remove every Polyscope structure first. Defaults to True.
+        clean_after (bool, optional): remove every Polyscope structure before returning. Defaults to True.
+        show (bool, optional): open Polyscope's window (needs a display); returns when it is closed. Defaults to
+            True.
+        scattered (bool, optional): draw the scattered (exploded) mesh; `mesh.compute_scattered_arrays` must have
+            been called. Defaults to False.
+        name_values (str, optional): the colour quantity's name in the viewer. Defaults to "Values".
+        alpha_values (bool, optional): clip at the quantiles; `False` clips to `[min_value, max_value]` instead.
+            Defaults to True.
+        min_value (float | None, optional): the low end of the range when `alpha_values` is False. Defaults to
+            None.
+        max_value (float | None, optional): the high end of the range when `alpha_values` is False. Defaults to
+            None.
+        cmap (matplotlib colormap, optional): the colour map. Defaults to `cm.jet`.
 
     Returns:
-        ps.SurfaceMesh: _description_
+        ps.SurfaceMesh: the surface the quantity was added to.
+
+    Raises:
+        IndexError: with `alpha_values` and no finite value (numpy's error on an empty quantile).
     """
     _, f = mesh.v, mesh.f
 
     def _find_values(triangles_and_labels: NDArray[np.int64]) -> float:
-        return dict_values[tuple(triangles_and_labels[[3, 4]])]
+        # An interface absent from the map (a crop interface, which carries no tension) is drawn
+        # like an undetermined one.
+        return dict_values.get(tuple(triangles_and_labels[[3, 4]]), np.nan)
 
-    values = np.array(list(map(_find_values, f)))
-    values_values = np.array(list(dict_values.values()))
+    values = np.array(list(map(_find_values, f)), dtype=np.float64)
+    values_values = np.array(list(dict_values.values()), dtype=np.float64)
+    # Undetermined values (nan) take no part in the scale; with every value finite this is the
+    # same array.
+    values_values = values_values[np.isfinite(values_values)]
     if alpha_values:
-        mint = np.quantile(values_values, alpha)
-        maxt = np.quantile(values_values, 1 - alpha)
+        # The same range `foambryo.viewing.save_colour_bars` draws.
+        mint, maxt = quantile_colour_range(values_values, alpha)
     else:
         mint = min_value
         maxt = max_value
-    values = values.clip(mint, maxt)
     print("Extremas of the " + name_values + " plotted : ", mint, maxt)
-    values -= np.amin(mint)
-    values /= np.amax(maxt - mint)
+    values = clipped_colour_fractions(values, (mint, maxt))
 
     ps_mesh = view_faces_values_on_embryo(
         mesh,
@@ -257,6 +323,111 @@ def view_dict_values_on_mesh(
     return ps_mesh
 
 
+def view_tensions_on_mesh(
+    mesh: "DcelData",
+    dict_tensions: dict[tuple[int, int], float],
+    alpha: float = 0.05,
+    ps_mesh: ps.SurfaceMesh | None = None,
+    scattered: bool = False,
+    name_values: str = "Surface Tensions",
+) -> ps.SurfaceMesh:
+    """Colour the surface's triangles by their interface's tension, with the library's tension colours.
+
+    `coolwarm` over `tension_colour_range` (centred on the mean of the finite tensions, symmetric around it, its
+    half-width the farther of the `alpha` and `1 - alpha` quantiles from the mean); an undetermined tension, or an
+    interface absent from the map (a crop interface), is filled `UNDETERMINED_COLOR` (green) here: the viewer's
+    window draws such an interface as its outline instead. With no finite tension, every triangle is green. The
+    range is printed, as `view_dict_values_on_mesh` prints its own. The crop faces are hidden on this surface
+    (`hide_crop_faces`). Does not open a window.
+
+    Args:
+        mesh (DcelData): the mesh.
+        dict_tensions (dict[tuple[int, int], float]): tension per interface, keyed `(label_1, label_2)` with
+            `label_1 < label_2`.
+        alpha (float, optional): the quantile at each end, in [0, 0.5). Defaults to 0.05.
+        ps_mesh (ps.SurfaceMesh | None, optional): the surface to add the colours to, else "Embryo" is registered.
+            Defaults to None.
+        scattered (bool, optional): the scattered view's triangles; `mesh.compute_scattered_arrays` must have
+            been called. Defaults to False.
+        name_values (str, optional): the colour quantity's name. Defaults to "Surface Tensions".
+
+    Returns:
+        ps.SurfaceMesh: the surface.
+    """
+    values = np.array([dict_tensions.get(tuple(row), np.nan) for row in mesh.f[:, 3:5]], dtype=np.float64)
+    tensions = np.array(list(dict_tensions.values()), dtype=np.float64)
+    if np.isfinite(tensions).any():
+        colour_range = tension_colour_range(tensions, alpha)
+        print("Extremas of the " + name_values + " plotted : ", *colour_range)
+        colours = tension_colours(tension_colour_fractions(values, colour_range))
+    else:
+        colours = np.tile(UNDETERMINED_COLOR, (len(values), 1))
+    if scattered:
+        v, f, idx = mesh.v_scattered, mesh.f_scattered, mesh.idx_scattered
+    else:
+        v, f, idx = mesh.v, mesh.f, np.arange(len(mesh.f))
+    ps.init()
+    if ps_mesh is None:
+        ps_mesh = ps.register_surface_mesh("Embryo", v, f[:, [0, 1, 2]])
+    ps_mesh.set_color((0.3, 0.6, 0.8))
+    ps_mesh.add_color_quantity(name_values, colours[idx], defined_on="faces", enabled=True)
+    hide_crop_faces(mesh, ps_mesh, scattered=scattered)
+    return ps_mesh
+
+
+def hide_crop_faces(mesh: "DcelData", ps_mesh: ps.SurfaceMesh, scattered: bool = False) -> None:
+    """Hide the crop faces of a coloured surface (a per-face transparency, `CROP_FACES_HIDDEN`): they carry no value.
+
+    They are drawn by `view_crop_faces` as glass instead. Does nothing on a mesh without crop faces.
+
+    Args:
+        mesh (DcelData): the mesh.
+        ps_mesh (ps.SurfaceMesh): the coloured surface, with the triangles of `mesh` (or of its scattered view).
+        scattered (bool, optional): `ps_mesh` has the scattered view's triangles. Defaults to False.
+    """
+    if not getattr(mesh, "has_crop_faces", False):
+        return
+    idx = mesh.idx_scattered if scattered else np.arange(len(mesh.f))
+    crop = np.asarray(mesh.crop_faces, dtype=bool)[idx]
+    ps_mesh.add_scalar_quantity(CROP_FACES_HIDDEN, np.where(crop, 0.0, 1.0), defined_on="faces")
+    ps_mesh.set_transparency_quantity(CROP_FACES_HIDDEN)
+
+
+def view_crop_faces(mesh: "DcelData", scattered: bool = False) -> ps.SurfaceMesh | None:
+    """Draw the mesh's crop faces as their own surface, "Crop faces": see-through glass with its edges drawn.
+
+    Crop faces lie on the boundary of the imaged volume, where the tissue was cut (see
+    `foambryo.crop_faces`); they carry no tension, and the cells they touch no reported pressure.
+    Drawing them apart, in `CROP_FACE_COLOR` at `CROP_FACE_OPACITY` with edges in `CROP_FACE_EDGE_COLOR`, keeps
+    them from reading as cell surfaces with a value; uncheck the structure to hide them. Polyscope's transparency
+    mode is set to "pretty" (depth peeling), the one that draws a see-through surface over others correctly. Does
+    nothing on a mesh without crop faces.
+
+    Args:
+        mesh (DcelData): the mesh.
+        scattered (bool, optional): draw the scattered mesh's crop faces. Defaults to False.
+
+    Returns:
+        ps.SurfaceMesh | None: the registered surface, or `None` without crop faces.
+    """
+    if not getattr(mesh, "has_crop_faces", False):
+        return None
+    if scattered:
+        v, f, idx = mesh.v_scattered, mesh.f_scattered, mesh.idx_scattered
+    else:
+        v, f, idx = mesh.v, mesh.f, np.arange(len(mesh.f))
+    crop = np.asarray(mesh.crop_faces)[idx]
+    ps.init()
+    ps_crop = ps.register_surface_mesh("Crop faces", v, f[crop][:, [0, 1, 2]])
+    ps_crop.set_color(tuple(float(c) for c in CROP_FACE_COLOR))
+    ps_crop.set_transparency(CROP_FACE_OPACITY)
+    ps_crop.set_edge_width(1.0)
+    ps_crop.set_edge_color(tuple(float(c) for c in CROP_FACE_EDGE_COLOR))
+    ps_crop.set_back_face_policy("identical")
+    ps.set_transparency_mode("pretty")
+    return ps_crop
+
+
 def plot_trijunctions(  # noqa: C901
     mesh: "DcelData",
     dict_trijunctional_values: dict[Iterable[int], float] | None = None,
@@ -267,20 +438,25 @@ def plot_trijunctions(  # noqa: C901
     value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
     cmap: "cm.colors.ColorMap" = cm.jet,
 ) -> None:
-    """Plot trijunctions curve network of a mesh with optional data.
+    """Draw a mesh's triple lines as a Polyscope curve network, "trijunctions", in one colour or by value.
+
+    A triple line is keyed by the sorted labels of the materials around it (three, or more at a quadruple edge).
+    With `color="values"`, each line takes its value in `dict_trijunctional_values` (0 when absent), divided by the
+    largest value and coloured with `cmap`.
 
     Args:
-        mesh (DcelData): Mesh to show.
-        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): Data to plot on junctions.
-            Defaults to None.
-        clean_before (bool, optional): Clean polyscope viewer before this function. Defaults to True.
-        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
-        show (bool, optional): Sho directly polyscope viewer. Defaults to True.
-        color (Literal["values"] | Literal["uniform"], optional): Show values from dict or one fixed color.
+        mesh (DcelData): the mesh.
+        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): a value per triple line, keyed by
+            its sorted labels `(a, b, c)`. Needed with `color="values"`. Defaults to None.
+        clean_before (bool, optional): remove every Polyscope structure first. Defaults to True.
+        clean_after (bool, optional): remove every Polyscope structure before returning. Defaults to True.
+        show (bool, optional): open Polyscope's window (needs a display); returns when it is closed. Defaults to
+            True.
+        color (Literal["values"] | Literal["uniform"], optional): colour by value, or every line in `value_color`.
             Defaults to "values".
-        value_color (tuple[float, float, float], optional): if color=="uniform", show junctions with this color.
+        value_color (tuple[float, float, float], optional): the RGB colour, in [0, 1], with `color="uniform"`.
             Defaults to (1.0, 1.0, 1.0).
-        cmap ("cm.colors.ColorMap", optional): if color=="values" show junctions with this colormap. Defaults to cm.jet.
+        cmap (matplotlib colormap, optional): the colour map with `color="values"`. Defaults to `cm.jet`.
     """
     dict_trijunctions = {}
 
@@ -365,20 +541,25 @@ def plot_trijunctions_topo_change_viewer(  # noqa: C901
     color: Literal["values"] | Literal["uniform"] = "values",
     value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
 ) -> None:
-    """Plot trijunctions curve network of a mesh with optional data. The color are not from a colormap.
+    """Draw a mesh's triple lines in two groups: red where a line's value is 1, green elsewhere.
 
-    TODO: find what this function does ;-) please document your own functions ;-)
+    The drawing behind `foambryo.viewing.plot_valid_junctions`: with `color="values"`, a line whose value in
+    `dict_trijunctional_values` is 1 is drawn red ("bad trijunctions", opaque), every other line, an absent one
+    included, green ("valid trijunctions", opacity 0.3). With `color="uniform"`, every line is drawn in
+    `value_color` ("trijunctions"). A group with no line is not drawn (every line of a mesh can be bad).
 
     Args:
-        mesh (DcelData): Mesh to show.
-        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): Data to plot on junctions.
-            Defaults to None.
-        clean_before (bool, optional): Clean polyscope viewer before this function. Defaults to True.
-        clean_after (bool, optional): Clean polyscope viewer after this function. Defaults to True.
-        show (bool, optional): Sho directly polyscope viewer. Defaults to True.
-        color (Literal["values"] | Literal["uniform"], optional): Show values from dict or one fixed color.
-            Defaults to "values".
-        value_color (tuple[float, float, float], optional): if color=="uniform", show junctions with this color.
+        mesh (DcelData): the mesh.
+        dict_trijunctional_values (dict[Iterable[int], float] | None, optional): a value per triple line, keyed by
+            its sorted labels `(a, b, c)`; 1 marks a line to draw red. Needed with `color="values"`. Defaults to
+            None.
+        clean_before (bool, optional): remove every Polyscope structure first. Defaults to True.
+        clean_after (bool, optional): remove every Polyscope structure before returning. Defaults to True.
+        show (bool, optional): open Polyscope's window (needs a display); returns when it is closed. Defaults to
+            True.
+        color (Literal["values"] | Literal["uniform"], optional): two groups by value, or every line in
+            `value_color`. Defaults to "values".
+        value_color (tuple[float, float, float], optional): the RGB colour, in [0, 1], with `color="uniform"`.
             Defaults to (1.0, 1.0, 1.0).
     """
     dict_trijunctions = {}
@@ -445,18 +626,23 @@ def plot_trijunctions_topo_change_viewer(  # noqa: C901
                     edges_g.append(np.array(dict_trijunctions[key]))
                     verts_g.append(mesh.v[edges_g[-1]].reshape(-1, 3))
 
-        verts_r = np.vstack(verts_r)
-        verts_g = np.vstack(verts_g)
-        red_edges = np.array(red_edges)
-        green_edges = np.array(green_edges)
-        ps.register_curve_network(
-            "valid trijunctions",
-            verts_g,
-            green_edges,
-            color=(0, 1, 0),
-            transparency=0.3,
-        )
-        ps.register_curve_network("bad trijunctions", verts_r, red_edges, color=(1, 0, 0), transparency=1.0)
+        # A group with no line is not drawn: numpy cannot stack no line, and every line of a mesh can be bad.
+        if verts_g:
+            ps.register_curve_network(
+                "valid trijunctions",
+                np.vstack(verts_g),
+                np.array(green_edges),
+                color=(0, 1, 0),
+                transparency=0.3,
+            )
+        if verts_r:
+            ps.register_curve_network(
+                "bad trijunctions",
+                np.vstack(verts_r),
+                np.array(red_edges),
+                color=(1, 0, 0),
+                transparency=1.0,
+            )
 
     if show:
         ps.show()

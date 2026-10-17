@@ -3,8 +3,7 @@
 Synthetic records only - the underlying metrics (`attribution_metrics`, `segmentation_
 perturbation`, `junction_instability`) already carry their own positive controls; this
 file's job is to catch a vacuous-aggregation bug in the *aggregation* itself (the class of
-defect three prior sessions shipped per the robustness work's brief: "0 differ" while
-comparing nothing).
+defect where an aggregation reports "0 differ" while comparing nothing).
 """
 
 import pytest

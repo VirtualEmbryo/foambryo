@@ -1,4 +1,4 @@
-r"""Per-edge Young-Dupre tension inference (the per-edge Young-Dupre work).
+r"""Per-edge Young-Dupre tension inference: `TensionComputationMethod.YoungDupreLocal`.
 
 `TensionComputationMethod.YoungDupre` imposes the Young-Dupre balance **once per triple line,
 on angles that have already been averaged along it** (`geometry.compute_angles_tri` returns
@@ -19,8 +19,8 @@ This module imposes the same balance **once per geometric trijunctional edge**:
     \begin{pmatrix} \gamma_{ab} \\ \gamma_{bc} \\ \gamma_{ac} \end{pmatrix} = 0
 
 with `a < b < c` the three regions meeting on edge `e`, :math:`\alpha^e_f` the **interior wedge
-angle** in region `f` measured on that edge (the angle-convention work settled this convention; see
-`geometry._wedges_at_half_edge`), and :math:`w_e = \ell_e / L` the edge's share of the mesh's
+angle** in region `f` measured on that edge (see `geometry._wedges_at_half_edge` for this
+convention), and :math:`w_e = \ell_e / L` the edge's share of the mesh's
 total junction length. Summing the rows of one triple line reproduces the averaged builder's
 weight for that line exactly, so the two methods differ only in *where* the averaging happens:
 `YoungDupre` averages the angles and then takes the cosine; `YoungDupreLocal` takes the cosine
@@ -29,14 +29,13 @@ along the line, which is second order in the angle spread — so on a line whose
 constant the two are identical, and they separate exactly where the angle varies along the
 line, i.e. where the mesh is noisy.
 
-**Row weighting is not a detail — it dominates the comparison, and the per-edge Young-Dupre
-work measured that.** The naive choice :math:`w_e = \ell_e / L` (the literal per-edge
-formulation) does
-*not* keep a triple line's total influence fixed when its single row block is split into
-:math:`n_e` blocks: :math:`n_e` identical rows of weight :math:`w` are equivalent to one row of
-weight :math:`w\sqrt{n_e}`, so the naive choice silently reweights line `k` by
-:math:`1/\sqrt{n_e}` — it *penalises well-resolved lines*. On the 42 equilibrium cases that
-reweighting alone costs two orders of magnitude, more than the per-edge idea itself is worth.
+**Row weighting is not a detail — it dominates the comparison, as measured.** The naive
+choice :math:`w_e = \ell_e / L` (the literal per-edge formulation) does *not* keep a triple
+line's total influence fixed when its single row block is split into :math:`n_e` blocks:
+:math:`n_e` identical rows of weight :math:`w` are equivalent to one row of weight
+:math:`w\sqrt{n_e}`, so the naive choice silently reweights line `k` by :math:`1/\sqrt{n_e}` —
+it *penalises well-resolved lines*. On the benchmark's 42 equilibrium cases that reweighting alone costs
+two orders of magnitude, more than the per-edge idea itself is worth.
 Hence :class:`PerEdgeWeighting`:
 
 - ``LinePreserving`` (the default) sets :math:`w_e = (\ell_k / L)\sqrt{\ell_e / \ell_k}`, so
@@ -49,9 +48,9 @@ Hence :class:`PerEdgeWeighting`:
 - ``Arclength`` sets :math:`w_e = \sqrt{\ell_e / L}`, which makes the objective a discretisation
   of :math:`\int |r|^2\,\mathrm{d}\ell`.
 
-**Read this outcome before using this.** The per-edge Young-Dupre work measured
-`YoungDupreLocal` to be **decisively worse** than `YoungDupre` on the 42 equilibrium cases and
-marked its own hypothesis **FALSIFIED**, for a reason that turns out to be structural: at a
+**Read this outcome before using this.** `YoungDupreLocal` was measured to be **decisively
+worse** than `YoungDupre` on the 42 equilibrium cases, for a reason that turns out to be
+structural: at a
 triple line in mechanical equilibrium the three wedge angles are fixed by the three (constant)
 tensions alone, so **the true angle is constant along each line** and every bit of measured
 along-line variation is error. Averaging the angles first is therefore a noise filter, while the
@@ -61,7 +60,9 @@ as an additional, non-default member — because its per-edge residual field is 
 genuinely more informative diagnostic than the per-junction one, and because a negative result
 that is reproducible is worth more than a deleted branch.
 
-The per-edge Young-Dupre work, 2026-07-31.
+The normalisation is that of every junction-line method: the tensions are normalised so that their
+mean is `mean_tension`, exactly, in each connected piece of the junction graph
+(`foambryo.junction_graph.solve_gauged_least_squares`).
 """
 
 from __future__ import annotations
@@ -73,6 +74,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from numpy.typing import NDArray
 
+from foambryo.crop_faces import remove_crop_interfaces
 from foambryo.geometry import TrijunctionEdge, compute_trijunction_edges_with_report
 from foambryo.junction_graph import (
     Interface,
@@ -88,7 +90,7 @@ from foambryo.second_order_angle_reading import (
     QUADRIC_READING,
     AngleReadingReport,
 )
-from foambryo.wedge_refusal import NO_REFUSAL, WedgeRefusal, per_edge_rows
+from foambryo.wedge_refusal import NO_REFUSAL, WedgeRefusal, per_edge_rows, refusal_with_crop
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
@@ -104,7 +106,7 @@ class PerEdgeWeighting(Enum):
 
     - `LinePreserving`: `w_e = (l_k / L) * sqrt(l_e / l_k)`, so each triple line `k` keeps the
       total least-squares weight `YoungDupre` gives it. **Default.**
-    - `Edge`: `w_e = l_e / L`, the phase specification's literal reading. Silently reweights
+    - `Edge`: `w_e = l_e / L`, the literal per-edge formulation. Silently reweights
       line `k` by `1 / sqrt(n_e)`, i.e. penalises well-resolved lines.
     - `Arclength`: `w_e = sqrt(l_e / L)`, making the objective a discretisation of the continuum
       `integral |r|^2 dl`.
@@ -154,24 +156,25 @@ class YoungDupreLocalResult:
     """Everything the per-edge solve produces, including the diagnostics `infer_tensions` drops.
 
     Attributes:
-        tensions: `(n_interfaces,)` inferred tensions, ordered by `sorted(dict_areas)`.
-            `float("nan")` at any interface undetermined by the junction-graph gauge split
-            (the junction-graph work, `foambryo.junction_graph`) -- an interface with no triple line at all.
-        dict_tensions: the same, keyed by interface `(label_1, label_2)`.
-        lstsq_residuals: `scipy.linalg.lstsq`'s residual output, for signature compatibility
-            with the other `_infer_tension_*` functions.
+        tensions: `(n_interfaces,)` inferred relative tensions, ordered by sorted interface
+            (crop interfaces absent). `float("nan")` at any undetermined interface
+            (`foambryo.junction_graph`) -- one with no surviving triple line.
+        dict_tensions: the same, keyed by interface `(label_1, label_2)`, `label_1 < label_2`.
+        lstsq_residuals: the squared residual of the solved equations, one entry per connected
+            piece of the junction graph, for signature compatibility with the other
+            `_infer_tension_*` functions.
         residual_field: the per-edge residual field.
         n_rows: number of rows in the assembled system, gauge row included.
         n_edges: number of geometric trijunctional edges that carried a row block.
         irls_iterations: number of IRLS passes actually run (0 without robust weighting).
-        component_of: interface -> junction-graph gauge component, `None` if undetermined
-            (the junction-graph work). `{key: 0 for every interface}` when the graph is not fragmented.
-        gauge_notes: gauge component -> one-line description of the gauge applied to it.
+        component_of: interface -> connected piece of the junction graph, `None` if
+            undetermined. `{key: 0 for every interface}` when the graph is in one piece.
+        gauge_notes: piece -> one-line description of the normalisation applied to it.
         undetermined: interfaces with no triple line at all (closed surfaces).
         fragmented: whether the mesh's triple-junction graph required per-component gauging.
         n_components: number of gauged components (1 when not fragmented).
         angle_reading_report: which trijunction faces the angle reading actually covered
-            (the second-order-angle-reading work). For the default `"chord"` reading this is the trivial
+            (`foambryo.second_order_angle_reading`). For the default `"chord"` reading this is the trivial
             complete-coverage report; for `"quadric"` it names every trijunction line whose
             angles are a mixture of the two conventions because the quadric fit was
             inadmissible on part of it. Carried on the result rather than warned about, so a
@@ -278,13 +281,13 @@ def build_matrix_tension_local_yd(
     n_interfaces: int,
     mean_tension: float = 1.0,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Scatter the weighted per-edge blocks into `M`, and append the soft gauge row.
+    """Scatter the weighted per-edge blocks into `M`, and append the row of the normalisation.
 
-    The gauge row is the same soft least-squares row every other builder in
-    `foambryo.tension_inference` uses (`matrix_m[-1, :] = 1`, `vector_b[-1] = nm * mean_tension`),
-    so `YoungDupreLocal` is comparable with `YoungDupre` row-normalisation for row-normalisation.
-    The force-balance work measured that the soft row, hard KKT and Bayesian MAP are indistinguishable in
-    accuracy once gauge-matched, so nothing here turns on that choice.
+    The last row is the one every other builder in `foambryo.tension_inference` appends
+    (`matrix_m[-1, :] = 1`, `vector_b[-1] = nm * mean_tension`), so `YoungDupreLocal` is
+    comparable with `YoungDupre` row for row. The solve reads it for its value only and meets the
+    normalisation exactly (`foambryo.junction_graph.solve_gauged_least_squares`); until 0.6.0 it
+    was solved as a least-squares row, which changed only the overall scale of the tensions.
 
     Args:
         blocks (NDArray): `(n_edges, 3, 3)` unweighted coefficient blocks.
@@ -433,22 +436,24 @@ def infer_tensions_young_dupre_local(
     """Infer tensions with one Young-Dupre block per trijunctional edge.
 
     Args:
-        mesh (DcelData): Mesh to analyze.
-        mean_tension (float, optional): Expected mean tension. Defaults to 1.
+        mesh (DcelData): Mesh to analyze, in any length unit.
+        mean_tension (float, optional): The normalisation: the tensions are normalised so that
+            their mean is `mean_tension`, exactly, in each connected piece of the junction graph.
+            Defaults to 1.
         huber_delta (float | None, optional): Huber threshold, in units of the robust scale, for
             IRLS down-weighting of outlying edges. `None` (the default) disables robust weighting
             entirely, which is what `TensionComputationMethod.YoungDupreLocal` uses — the robust
             variant is an option, not the shipped behaviour. Pass `DEFAULT_HUBER_DELTA` for the
             classical 1.345.
-        max_irls_iterations (int, optional): IRLS iteration cap. Defaults to 60 — the per-edge
-            Young-Dupre work measured convergence to `irls_tolerance` at 45-50 iterations on the
-            dataset meshes, and the answer at a 20-iteration cap already agrees with the converged
-            one to ~1e-6.
+        max_irls_iterations (int, optional): IRLS iteration cap. Defaults to 60 — convergence
+            to `irls_tolerance` was measured at 45-50 iterations on the benchmark's meshes, and the
+            answer at a 20-iteration cap already agrees with the converged one to ~1e-6.
         weighting (PerEdgeWeighting, optional): row-weighting scheme. Defaults to
             `LinePreserving`, the only one that keeps each triple line's total influence equal to
             `YoungDupre`'s — see the module docstring, this choice is worth two orders of
             magnitude.
         irls_tolerance (float, optional): Stop IRLS when the max tension change falls below this.
+            Defaults to 1e-10.
         angle_reading (str, optional): which trijunction angle convention to read, `"chord"`
             (the default, and bit-identical to the historical behaviour) or `"oriented_chord"`.
             Keyword-only. See `foambryo.second_order_angle_reading`.
@@ -460,20 +465,34 @@ def infer_tensions_young_dupre_local(
             Refusing rows can leave an interface with no surviving line: it is then reported
             `float("nan")`, never a number. See `foambryo.wedge_refusal`.
 
+    The solve runs under the solver options in force (`foambryo.linear_solves`): called
+    directly, dense below 2 000 interfaces per piece of the junction graph and `lsqr` at or above;
+    `foambryo.linear_solves.solve_options` sets others around the call. On a cropped mesh every
+    junction edge that touches a crop face is declined, whatever `refusal` is, and the crop
+    interfaces are absent from the result.
+
     Returns:
         YoungDupreLocalResult: tensions plus the per-edge residual field and solve diagnostics.
             Every interface is `float("nan")`, with an empty residual field, when the refusal
             leaves no row at all — an empty answer rather than an exception, so a caller can
-            count how often a policy costs a whole mesh.
+            count how often a policy costs a whole mesh. Emits no `JunctionGraphGaugeWarning`:
+            the result carries `fragmented`, `component_of` and `undetermined`.
 
     Raises:
-        ValueError: if `angle_reading` is `"quadric"` or `"oriented_quadric"` (the
-            quadric-safeguard work found that the per-edge balance never performs the
-            along-line average that cancels the quadric
-            correction's per-face scatter, so it eats the scatter directly — +0.0290 relative
-            RMS tension error at `md=3`, +0.97 at `md=4`).
+        ValueError: if `angle_reading` is `"quadric"` or `"oriented_quadric"`: the per-edge
+            balance never performs the along-line average that cancels the quadric
+            correction's per-face scatter, so it eats the scatter directly (measured on the
+            benchmark's 42 equilibrium cases, as the mean per-case change of the relative RMS
+            tension error: +0.0290 at `min_distance=3` and +0.97 at `min_distance=4`;
+            `BENCHMARKS.md`).
+        ValueError: if `angle_reading` is not one of
+            `foambryo.second_order_angle_reading.ANGLE_READINGS`.
         ValueError: if the mesh has no trijunctional edge at all, which would leave the system
-            with nothing but the gauge row.
+            with nothing but the normalisation.
+        MalformedTripleLineError: if a triple line names an interface the mesh does not have.
+
+    Warns:
+        SparseSolveFallbackWarning: when `lsqr` did not converge on a large system.
     """
     if angle_reading in (QUADRIC_READING, ORIENTED_QUADRIC_READING):
         message = (
@@ -488,6 +507,9 @@ def infer_tensions_young_dupre_local(
             "LogLami — or keep angle_reading='chord' or 'oriented_chord' with YoungDupreLocal."
         )
         raise ValueError(message)
+    # A cropped mesh declines every junction edge that touches a crop face (`foambryo.crop_faces`);
+    # without crop faces `refusal` is returned unchanged.
+    refusal = refusal_with_crop(mesh, refusal)
     dict_areas = mesh.compute_areas_interfaces()
     trijunction_edges, angle_reading_report = compute_trijunction_edges_with_report(mesh, reading=angle_reading)
     row_scale = None
@@ -507,7 +529,10 @@ def infer_tensions_young_dupre_local(
             msg = "No trijunctional edge found: the per-edge Young-Dupre system would be empty."
             raise ValueError(msg)
         empty_partition = partition_over_surviving_junctions(mesh.f[:, :3], mesh.f[:, 3:5], ())
-        return _undetermined_result(keys_interface, mean_tension, empty_partition, angle_reading_report)
+        return remove_crop_interfaces(
+            _undetermined_result(keys_interface, mean_tension, empty_partition, angle_reading_report),
+            mesh.crop_interfaces,
+        )
 
     if refusal.refuses_nothing:
         partition = partition_from_mesh(mesh)
@@ -533,10 +558,9 @@ def infer_tensions_young_dupre_local(
             n_interfaces,
             mean_tension,
         )
-        # The junction-graph work (`foambryo.junction_graph`): bit-identical to the pre-existing direct
-        # `linalg.lstsq(matrix_m, vector_b)` call whenever the mesh's triple-junction graph
-        # is not fragmented; the partition is fixed for the whole IRLS loop (it depends only
-        # on mesh topology, not on the current robust weights).
+        # Solved per piece of the junction graph (`foambryo.junction_graph`), the normalisation met
+        # exactly; the partition is fixed for the whole IRLS loop (it depends only on mesh
+        # topology, not on the current robust weights).
         solution = solve_gauged_least_squares(matrix_m, vector_b, keys_interface, mean_tension, partition)
         new_tensions, lstsq_residuals = solution.tensions, solution.lstsq_residuals
         converged = iterations > 0 and np.nanmax(np.abs(new_tensions - tensions)) < irls_tolerance
@@ -565,7 +589,7 @@ def infer_tensions_young_dupre_local(
         robust_weights=robust_weights,
     )
 
-    return YoungDupreLocalResult(
+    result = YoungDupreLocalResult(
         tensions=tensions,
         dict_tensions=solution.dict_tensions,
         lstsq_residuals=lstsq_residuals,
@@ -580,3 +604,4 @@ def infer_tensions_young_dupre_local(
         n_components=solution.n_components,
         angle_reading_report=angle_reading_report,
     )
+    return remove_crop_interfaces(result, mesh.crop_interfaces)

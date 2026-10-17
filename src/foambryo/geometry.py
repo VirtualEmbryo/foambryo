@@ -1,6 +1,10 @@
-"""Geometry on a DCEL Mesh.
+"""Geometry on a DCEL mesh: trijunction angles and lengths, areas, volumes, and their derivatives.
 
-computation of trijunction mean angles and lengths, interfaces/regions areas, regions volumes ; and their derivatives.
+Computation of trijunction mean angles (in radians, under any of the angle readings of
+`foambryo.second_order_angle_reading`) and lengths, interface and region areas, region volumes,
+and their derivatives with respect to the vertex positions. Every quantity is in the mesh's own
+length unit; interfaces are keyed `(label_1, label_2)`, `label_1 < label_2`, label 0 the exterior
+medium.
 
 Sacha Ichbiah, Sept 2021.
 Matthieu Perez, 2024.
@@ -400,8 +404,7 @@ def _wedges_at_half_edge(
     This is the single definition of `foambryo`'s trijunction angle convention. It is called
     once per *half*-edge by :func:`compute_angles_tri` and once per *geometric* edge by
     :func:`compute_trijunction_edges`, so the per-edge and the averaged views cannot drift
-    apart — the convention lives in one place. The angle-convention work settled what that
-    convention is: the returned angle is the **interior wedge angle** of
+    apart — the convention lives in one place. That convention is: the returned angle is the **interior wedge angle** of
     the shared region `f`, it is **relabel-invariant**, and it is what every Young-Dupre
     builder consumes as `cos(angle)`. Do not change the normal-flip heuristic below without
     re-running `tests/test_angle_convention.py`.
@@ -635,7 +638,7 @@ def compute_angles_tri(
 
     The keys are wedge keys: `(min(e, g), f, max(e, g))` is the angle of the wedge *inside*
     region `f` at the triple line where regions `e`, `f` and `g` meet, so one triple line
-    contributes three keys whose angles sum to 360 degrees (per the angle-convention work).
+    contributes three keys whose angles sum to 360 degrees.
 
     **That sum holds exactly only under an oriented reading.** Under `"chord"` and `"quadric"`
     the angle is `arccos` of a dot product, whose range is `[0, 180]` degrees, so a wedge wider
@@ -644,7 +647,7 @@ def compute_angles_tri(
     `[0, 360)` and restore the identity; they are bitwise identical to their unoriented
     counterparts on every wedge that is not reflex.
 
-    **`unique`, resolved by the per-edge Young-Dupre work.** The parameter used to be dead — it doubled every
+    **`unique`.** In earlier versions the parameter had no effect except to double every
     accumulator uniformly, which changes neither the mean angle nor the length *ratio* that
     every builder actually uses. It now means what its name says:
 
@@ -657,24 +660,23 @@ def compute_angles_tri(
       `dict_length[key] = 6 * length` and `sum(...) / 3 = 6 * L_total`. Every call site inside
       `foambryo.tension_inference` passes `unique=False`, so no inferred number moves.
 
-    The mean angles are identical either way — the over-count was, and remains, uniform on this
-    dataset. The per-edge Young-Dupre work verified that uniformity rather than assuming it: on all 47 dataset meshes
-    every trijunctional geometric edge has exactly 3 incident half-edges, and the three visits
+    The mean angles are identical either way — the over-count was, and remains, uniform on the
+    benchmarking dataset (`BENCHMARKS.md`). That uniformity was verified rather than assumed: on
+    all 47 of its meshes every trijunctional geometric edge has exactly 3 incident half-edges, and
+    the three visits
     return **bit-identical** angles. The one construction where that edge accounting is *not*
     uniform — a triple line running off an open mesh boundary, where an edge that has lost one of
     its three films is dropped and the line's length weight is under-stated in proportion — is
     pinned in `tests/test_per_edge_young_dupre.py`.
 
-    **`reading`, added by the second-order-angle-reading work.** `"chord"` (the default) is
-    the convention described above and every number it produces is bit-identical to this
-    function's behaviour before that work. `"oriented_chord"` is the same reading with the wedge
-    angle reported in `[0, 360)` degrees instead of `[0, 180]`, so a wedge wider than a straight
-    angle is no longer reported as its reflection and the three wedge keys of a line really do
-    sum to 360 degrees; it is bitwise identical to `"chord"` wherever no wedge is reflex.
-    `"quadric"`
-    replaces each triangle's chord by the tangent of a generic quadric fitted to that
-    interface's own mesh vertices around the junction — see
-    `foambryo.second_order_angle_reading`. It is **not** available on every face of every mesh:
+    **`reading`.** `"chord"` (the default) is the convention described above; adding the selector
+    changed none of its numbers.
+    `"oriented_chord"` is the same reading with the wedge angle reported in `[0, 360)` degrees
+    instead of `[0, 180]`, so a wedge wider than a straight angle is no longer reported as its
+    reflection and the three wedge keys of a line really do sum to 360 degrees; it is bitwise
+    identical to `"chord"` wherever no wedge is reflex. `"quadric"` replaces each triangle's
+    chord by the tangent of a generic quadric fitted to that interface's own mesh vertices around
+    the junction — see `foambryo.second_order_angle_reading`. It is **not** available on every face of every mesh:
     where the fit is inadmissible the chord is kept, so a `"quadric"` result can mix the two
     conventions. This function reports that mixing as an `AngleReadingCoverageWarning`; use
     :func:`compute_angles_tri_with_report` to receive the coverage numbers instead.
@@ -818,8 +820,7 @@ class TrijunctionEdge:
     """One **geometric** trijunctional edge, with the three wedge angles measured on it.
 
     The per-edge counterpart of :func:`compute_angles_tri`'s per-triple-line averages, and the
-    object the per-edge Young-Dupre work's `TensionComputationMethod.YoungDupreLocal`
-    assembles its rows from. One
+    object `TensionComputationMethod.YoungDupreLocal` assembles its rows from. One
     instance per geometric edge, not one per half-edge: `half_edge_keys` records the
     de-duplicated multiplicity so a caller can check it rather than assume it.
 
@@ -878,9 +879,9 @@ def compute_trijunction_edges_with_report(
     `tests/test_per_edge_young_dupre.py`.
 
     De-duplication is by the geometric edge's `(min, max)` vertex-key pair, keeping the
-    lowest-keyed incident half-edge; the choice does not matter numerically (the per-edge
-    Young-Dupre work measured
-    the three visits of every trijunctional edge in the 47-case dataset to be **bit-identical**)
+    lowest-keyed incident half-edge; the choice does not matter numerically (the three visits of
+    every trijunctional edge in the 47 meshes of the benchmarking dataset were measured to be
+    **bit-identical**)
     but it makes the output deterministic. Quadrijunctional edges are skipped, exactly as
     `compute_angles_tri` skips them.
 

@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from scipy import linalg
 
 from foambryo_benchmarks import metrics as m
 from foambryo_benchmarks import phantoms as ph
@@ -25,6 +24,7 @@ from foambryo_benchmarks.run_per_edge_young_dupre import constructed_open_bounda
 from foambryo import dcel_mesh_from_file, infer_tensions
 from foambryo.dcel import DcelData
 from foambryo.geometry import compute_angles_tri, compute_trijunction_edges
+from foambryo.junction_graph import solve_with_exact_gauge
 from foambryo.per_edge_tension_inference import (
     DEFAULT_HUBER_DELTA,
     PerEdgeWeighting,
@@ -128,7 +128,8 @@ def test_line_preserving_weights_reproduce_young_dupre_with_averaged_angles(mesh
     total_length = lengths.sum()
     weights = line_lengths[line_index] / total_length / np.sqrt(line_counts[line_index])
     matrix_m, vector_b = build_matrix_tension_local_yd(averaged_blocks, columns, weights, len(keys), 1.0)
-    tensions, *_ = linalg.lstsq(matrix_m, vector_b)
+    # The same exact-gauge solve both methods use (`foambryo.junction_graph.solve_with_exact_gauge`).
+    tensions, *_ = solve_with_exact_gauge(matrix_m[:-1], vector_b[:-1], float(vector_b[-1]))
 
     reference = infer_tensions(mesh, 1, TensionComputationMethod.YoungDupre)
     for key, value in zip(keys, tensions, strict=True):
@@ -276,7 +277,10 @@ def test_equilibrium_defaults_are_unchanged_and_the_alternatives_are_measurable(
 
     _, deduplicated, _ = _infer_tension_equilibrium(mesh, 1, deduplicate=True)
     _, weighted, _ = _infer_tension_equilibrium(mesh, 1, length_weighted=True)
-    # Both are real changes, not no-ops: the uniform triplication is *not* harmless once the
-    # un-triplicated soft gauge row is in the system.
-    assert max(abs(deduplicated[key] - shipped[key]) for key in shipped) > 1e-6
+    scale = max(abs(value) for value in shipped.values())
+    # Since 0.7.0 the gauge is exact, and the uniform triplication of homogeneous rows is a true
+    # no-op (to rounding). Until then it was a real change, only because the soft gauge row of ones
+    # was not triplicated with them.
+    assert max(abs(deduplicated[key] - shipped[key]) for key in shipped) <= 1e-12 * scale
+    # The length weighting reweights the blocks against each other: a real change.
     assert max(abs(weighted[key] - shipped[key]) for key in shipped) > 1e-6

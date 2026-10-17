@@ -62,7 +62,7 @@ def test_resolve_variant_refuses_the_default_getter_even_though_it_is_discoverab
 
 
 def test_resolve_variant_offset_included_resolves_through_the_junction_protected_getter():
-    """dw3d 0.5.0 deprecates `get_offset_included_...` as an exact synonym of this getter."""
+    """`get_offset_included_...`, an exact synonym of this getter, was removed from dw3d in 0.7.0."""
     fake_dw3d = _FakeDW3D()
     result = dv.resolve_variant(fake_dw3d, "offset_included", min_distance=3)
     assert result == ("junction_protected", 3, {"print_info": False})

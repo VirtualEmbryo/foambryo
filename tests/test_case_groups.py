@@ -31,7 +31,7 @@ def _load(directory: Path, pattern: str = "case_*.json") -> list[dict]:
         pytest.skip(f"committed baseline directory not found: {directory}")
     paths = sorted(directory.glob(pattern))
     if not paths:
-        message = f"{directory} exists but has no files matching {pattern!r} -- a real gap, not a missing worktree"
+        message = f"{directory} exists but has no files matching {pattern!r} -- a real gap, not a missing checkout"
         raise AssertionError(message)
     return [json.loads(path.read_text()) for path in paths]
 

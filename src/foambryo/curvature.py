@@ -1,6 +1,7 @@
-"""Curvature computation module.
+"""Mean curvature of a mesh's interfaces, from the cotangent Laplacian, as the Laplace pressure methods read it.
 
-This will be moved to foambryo in the future.
+Curvatures are in inverse mesh length units. An interface all of whose vertices lie on junction
+lines has no curvature (`nan`); see `foambryo.pressure_inference.UndeterminedPressureWarning`.
 
 Sacha Ichbiah, 2021.
 Matthieu Perez, 2024.
@@ -120,7 +121,20 @@ def compute_curvature_vertices_cotan(
 
 
 def compute_curvature_interfaces(mesh: "DcelData", weighted: bool = True) -> dict[tuple[int, int], float]:
-    """Compute the mean curvature on the interfaces of the mesh."""
+    """Compute the mean curvature on the interfaces of the mesh.
+
+    The vertex mean curvature of the cotangent Laplacian, signed by the vertex normal, averaged over
+    each interface's vertices that are not on a junction line.
+
+    Args:
+        mesh (DcelData): the mesh.
+        weighted (bool, optional): weight each vertex by its area (`PressureComputationMethod.
+            WeightedLaplace`) rather than equally (`Laplace`). Defaults to True.
+
+    Returns:
+        dict[tuple[int, int], float]: interface `(label_1, label_2)` -> mean curvature, in inverse
+            mesh length units; `nan` for an interface all of whose vertices lie on junction lines.
+    """
     lcot, inv_areas = compute_laplacian_cotan(points=mesh.v, triangles=mesh.f[:, :3])
 
     vertex_normals = mesh.compute_vertex_normals()
@@ -157,27 +171,11 @@ def compute_curvature_interfaces(mesh: "DcelData", weighted: bool = True) -> dic
                     curvature += mean_curvature[vert_idx]
                     weights += 1
 
-        """
-        TEMPORARY :
-        FOR THE MOMENT, WE CANNOT COMPUTE CURVATURE ON LITTLE INTERFACES
-        THERE ARE THREE POSSIBILITIES :
-        -WE REFINE THE SURFACES UNTIL THERE IS A VERTEX ON THE SURFACE AND THUS IT CAN BE COMPUTED>
-        -WE PUT THE CURVATURE TO ZERO
-        -WE REMOVE THE EQUATION FROM THE SET OF EQUATIONS
-
-        -Removing the equations could be dangerous as we do not know what we are going to get :
-        maybe the system will become underdetermined, and thus unstable ?
-            -> Unprobable as the systems are strongly overdetermined.
-            -> Bayesian ?
-        -Putting the curvature to zero should not have a strong influence on the inference as in any way during
-        the least-squares minimization each equation for the pressures are proportionnal to the area of the interfaces.
-        Thus we return to the case 1,
-        where in fact it does not matter so much if the equation is removed or kept for the little interfaces.
-
-        -It is thus useless to refine the surface until a curvature can be computed, for sure.
-
-
-        """
+        # An interface all of whose vertices lie on junction lines has no vertex to read a
+        # curvature from: it gets nan. The Laplace pressure leaves its equation out, and reports
+        # as nan the cells that the remaining equations do not connect to the exterior
+        # (`pressure_inference.UndeterminedPressureWarning`). On coarse meshes of small cells this
+        # is common: up to about a third of the interfaces.
         if weights == 0:
             interfaces_curvatures[key] = np.nan
         else:
@@ -197,12 +195,9 @@ def laplacian_cot(
         triangles: triangles of the mesh (topology).
 
     Returns:
-        2-element tuple containing
-        - **laplacian_matrix** L: FloatTensor of shape (V,V) for the Laplacian matrix (V = sum(V_n))
-           Here, L[i, j] = cot a_ij + cot b_ij iff (i, j) is an edge in meshes.
-           See the description above for more clarity.
-        - **inv_areas**: FloatTensor of shape (V,) containing the inverse of sum of
-           face areas containing each vertex
+        tuple[NDArray[np.float64], NDArray[np.float64]]: the Laplacian matrix `L`, of shape
+        `(V, V)`, with `L[i, j] = cot a_ij + cot b_ij` if `(i, j)` is an edge of the mesh; and the
+        inverse of the sum of the areas of the faces around each vertex, of shape `(V,)`.
     """
     nbpts, nbtri = len(points), len(triangles)
 

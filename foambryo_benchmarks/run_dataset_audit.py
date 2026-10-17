@@ -3,20 +3,21 @@ r"""Integrity and equilibrium audit of `benchmarking-dataset`'s 47 ground-truth 
 
 This audit is what the recorded decision to exclude the five non-equilibrium cases rests on
 (`foambryo_benchmarks.case_groups`). Runs, on every case, three checks in order — integrity,
-equilibrium, identifiability, the order the *technical note on tension inference (H. Turlier,
-in preparation)* recommends — plus the effective-tension comparison:
+equilibrium, identifiability; each needs the one before it to mean anything — plus the effective-tension
+comparison:
 
 1. **integrity** — dangling vertex references; every triple line shared by exactly 3
    interfaces (`foambryo.validation.mesh_io.mesh_integrity`);
 2. **equilibrium** — `rho = ||P_perp b|| / ||M_gamma gamma||` at the *nominal* tensions
    with pressures marginalised, and `rho_free`, the same residual once the tensions are
-   themselves free (the floor `rho` cannot go below);
+   themselves free (the ratio at the gauged minimiser, close to the lowest `rho` can reach);
 3. **identifiability** — the singular spectrum of the column-normalised operator,
    `sigma_soft`, and its block composition;
 4. **effective tensions** — which `gamma` balance each mesh, compared to nominal per
    interface, in three explicitly-stated gauges, looking for a factor on a subset of
    interfaces (for example, some line tensions encoded at half their value by the program
-   that generated the mesh): a subset at 0.5 or 2.0 against a bulk at 1.0.
+   that generated the mesh): a subset at 0.5 or 2.0 against a bulk at 1.0
+   (`foambryo.validation.effective_surface_tensions`).
 
 Also reported, because it is what turns a large `rho` into a diagnosis:
 **residual localisation** — whether the unbalanced force sits at the triple lines (expected;

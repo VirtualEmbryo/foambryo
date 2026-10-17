@@ -1,6 +1,9 @@
-"""Module dedicated to the computation of geometrical quantities on a 3D Mesh.
+"""The mesh every inference reads: `DcelData`, a multimaterial triangle mesh as a doubly connected edge list.
 
-Will probably be moved to foambryo in the future.
+A `DcelData` holds the vertices, the triangles with the two materials each separates, and the
+half-edge structure the geometry (`foambryo.geometry`, `foambryo.curvature`) walks. Build one with
+`foambryo.dcel_mesh_from_segmentation_mask`, `foambryo.dcel_mesh_from_file` or
+`foambryo.dcel_mesh_from_multimaterial_mesh`.
 
 Sacha Ichbiah, 2021.
 Matthieu Perez, 2024.
@@ -446,10 +449,94 @@ def _normalize_label_order(triangles_and_labels: NDArray[np.int64]) -> NDArray[n
     return triangles_and_labels
 
 
-class DcelData:
-    """DCEL Graph containing faces, half-edges and vertices."""
+def _crop_face_mask(
+    crop_faces: NDArray[np.bool_] | NDArray[np.integer] | None,
+    triangles_and_labels: NDArray[np.int64],
+) -> NDArray[np.bool_]:
+    """A crop-face argument as a boolean mask over the rows of `triangles_and_labels`.
 
-    def __init__(self, points: NDArray[np.float64], triangles: NDArray[np.int64], labels: NDArray[np.int64]) -> None:
+    Args:
+        crop_faces: `None`, a boolean mask of shape `(nf,)`, or integer row indices.
+        triangles_and_labels: the normalised `(nf, 5)` rows, `material_1 < material_2`.
+
+    Returns:
+        NDArray[np.bool_]: `(nf,)`, all `False` for `None`.
+
+    Raises:
+        ValueError: if the argument is neither a mask of the right length nor valid row indices,
+            or if a crop face does not have the medium (label 0) as its first material.
+    """
+    n_faces = len(triangles_and_labels)
+    mask = np.zeros(n_faces, dtype=bool)
+    if crop_faces is None:
+        return mask
+    crop_faces = np.asarray(crop_faces)
+    if crop_faces.dtype == bool:
+        if crop_faces.shape != (n_faces,):
+            message = f"crop_faces is a mask of shape {crop_faces.shape}, expected ({n_faces},)"
+            raise ValueError(message)
+        mask[:] = crop_faces
+    elif np.issubdtype(crop_faces.dtype, np.integer) and crop_faces.ndim == 1:
+        if len(crop_faces) and (crop_faces.min() < 0 or crop_faces.max() >= n_faces):
+            message = f"crop_faces names rows outside the mesh's {n_faces} triangles"
+            raise ValueError(message)
+        mask[crop_faces] = True
+    else:
+        message = f"crop_faces must be a boolean mask or integer row indices, got {crop_faces.dtype} {crop_faces.shape}"
+        raise ValueError(message)
+    if mask.any() and not np.all(triangles_and_labels[mask, 3] == 0):
+        first = int(np.flatnonzero(mask & (triangles_and_labels[:, 3] != 0))[0])
+        message = (
+            f"triangle {first} is marked as a crop face but separates materials "
+            f"{tuple(int(m) for m in triangles_and_labels[first, 3:5])}; a crop face lies between a cell "
+            "and the medium label 0"
+        )
+        raise ValueError(message)
+    return mask
+
+
+def _source_spacing(spacing: tuple[float, float, float] | None) -> tuple[float, float, float] | None:
+    """`DcelData`'s `source_spacing` as three floats, or `None`; a malformed one raises `ValueError`."""
+    if spacing is None:
+        return None
+    values = tuple(float(v) for v in spacing)
+    if len(values) != 3 or not all(np.isfinite(v) and v > 0 for v in values):
+        message = f"source_spacing must be three positive finite numbers, got {spacing!r}"
+        raise ValueError(message)
+    return values
+
+
+class DcelData:
+    """A multimaterial triangle mesh as a doubly connected edge list (DCEL): faces, half-edges and vertices.
+
+    Conventions: label 0 is the exterior medium; every triangle's labels are stored as
+    `material_1 < material_2`, its winding flipped to match (`_normalize_label_order`), so an
+    interface is keyed `(label_1, label_2)` with `label_1 < label_2`; coordinates are in the
+    mesh's own length unit (voxels, or the unit of the `spacing` the mesh was reconstructed with).
+
+    Attributes:
+        v (NDArray[np.float64]): vertex positions, `(nv, 3)`, unused vertices removed.
+        f (NDArray[np.int64]): triangles and labels, `(nf, 5)` rows `(v0, v1, v2, material_1,
+            material_2)`, in the input's row order.
+        materials (NDArray[np.int64]): the labels present, sorted (0 first when the medium is).
+        n_materials (int): their number.
+        crop_faces (NDArray[np.bool_]): `(nf,)`, `True` on the crop faces (all `False` without).
+        source_spacing (tuple[float, float, float] | None): the source mask's voxel size, if
+            recorded.
+        vertices (list[Vertex]): the DCEL's vertex records, aligned with `v`.
+        half_edges (list[HalfEdge]): the DCEL's half-edge records.
+        faces (list[Face]): the DCEL's face records, aligned with the rows of `f`.
+    """
+
+    def __init__(
+        self,
+        points: NDArray[np.float64],
+        triangles: NDArray[np.int64],
+        labels: NDArray[np.int64],
+        *,
+        crop_faces: NDArray[np.bool_] | NDArray[np.integer] | None = None,
+        source_spacing: tuple[float, float, float] | None = None,
+    ) -> None:
         """Take a multimaterial mesh as input.
 
         Args:
@@ -460,15 +547,38 @@ class DcelData:
                 normal on the *second* label's side, i.e. point outward from the first —
                 see `_normalize_label_order` for why, and for what goes wrong silently
                 when a mesh from an outside source violates it.
+            crop_faces (NDArray | None, optional): which triangles are **crop faces**: faces on
+                the boundary of the imaged volume, where the tissue was cut by the crop rather
+                than bounded by the medium. A boolean mask of shape `(nf,)` or the row indices
+                of the crop faces, aligned with `triangles`. Keyword-only. Defaults to `None`,
+                no crop face. A crop
+                face keeps its labels `(0, c)`; every inference method keeps it, and every
+                junction edge and vertex that touches it, out of its equations, leaves the
+                interfaces made only of crop faces out of its tension map, and reports the
+                pressure of a cut cell as `nan`. See `foambryo.crop_faces`.
+            source_spacing (tuple[float, float, float] | None, optional): the voxel size of the
+                mask the mesh was made from, along the mask's axes 0, 1, 2, when the mesh records
+                it: delaunay-watershed-3d's `construct_mesh_in_physical_units` writes it in the
+                `.rec` file, `dcel_mesh_from_file` reads it, and `dcel_mesh_from_segmentation_mask`
+                sets it when given a `spacing`. Keyword-only. Defaults to `None`, unknown. **It
+                changes nothing**: the mesh is already in physical units, and no inference reads
+                it. It is kept so that a mesh says which voxels it came from.
 
         Raises:
-            ValueError: If any triangle carries the same material on both sides.
+            ValueError: If any triangle carries the same material on both sides, or if
+                `crop_faces` is not a mask or a set of rows of `triangles`, or names a
+                triangle that does not carry the medium label 0, or if `source_spacing` is not
+                three positive finite numbers.
         """
+        self.source_spacing: tuple[float, float, float] | None = _source_spacing(source_spacing)
         triangles_and_labels = np.hstack((triangles, labels), dtype=np.int64)
         triangles_and_labels = _normalize_label_order(triangles_and_labels)
         points, triangles_and_labels = remove_unused_vertices(points, triangles_and_labels)
         self.v = points
         self.f = triangles_and_labels
+        # Rows of `self.f` are the input rows, in their order: the label normalisation and the
+        # vertex renumbering above never move a row, so the crop mask stays aligned.
+        self.crop_faces: NDArray[np.bool_] = _crop_face_mask(crop_faces, triangles_and_labels)
         # self.n_materials = np.amax(Faces[:,[3,4]])+1
         self.materials: NDArray[np.int64] = np.unique(triangles_and_labels[:, [3, 4]])
         self.n_materials = len(self.materials)
@@ -480,6 +590,50 @@ class DcelData:
         self.compute_centroids_cells()
         self.mark_trijunctional_vertices()
         self.compute_length_halfedges()
+
+    @property
+    def source_anisotropy(self) -> float | None:
+        """Longest over shortest source voxel size (`1.0` for cubic voxels); `None` when the spacing is unknown."""
+        if self.source_spacing is None:
+            return None
+        return max(self.source_spacing) / min(self.source_spacing)
+
+    @property
+    def has_crop_faces(self) -> bool:
+        """Whether any triangle is a crop face. When `False`, no inference method applies a crop-face rule."""
+        return bool(self.crop_faces.any())
+
+    @property
+    def crop_vertices(self) -> NDArray[np.int64]:
+        """Sorted keys of the vertices that lie on a crop face (empty without crop faces)."""
+        return np.unique(self.f[self.crop_faces, :3])
+
+    @property
+    def cut_cells(self) -> tuple[int, ...]:
+        """The cells the crop cuts: a cell with a crop face or with a vertex on one, sorted.
+
+        Their volume and part of their surface lie outside the imaged volume, so a pressure
+        inferred for them is not a measurement: the pressure methods report it as `nan`.
+        """
+        if not self.has_crop_faces:
+            return ()
+        touching = np.isin(self.f[:, :3], self.crop_vertices).any(axis=1)
+        return tuple(int(c) for c in np.unique(self.f[touching, 3:5]) if c != 0)
+
+    @property
+    def crop_interfaces(self) -> tuple[tuple[int, int], ...]:
+        """Interfaces `(0, c)` all of whose triangles are crop faces, sorted.
+
+        They are the crop itself, not a contact between a cell and the medium, so they carry no
+        tension: no inference method gives them an unknown's value, and the tension maps leave
+        them out. An interface `(0, c)` with crop faces *and* real contact with the medium keeps
+        its tension, which then describes the real contact only.
+        """
+        if not self.has_crop_faces:
+            return ()
+        every = {(int(a), int(b)) for a, b in self.f[:, 3:5]}
+        real = {(int(a), int(b)) for a, b in self.f[~self.crop_faces, 3:5]}
+        return tuple(sorted(every - real))
 
     def compute_scattered_arrays(self, coeff: float) -> None:
         """Modify the mesh to obtain the alternative "scattered" mesh, with each region separated from others.
@@ -497,11 +651,7 @@ class DcelData:
         compute_areas_faces(self)
 
     def compute_vertex_normals(self) -> NDArray[np.float64]:
-        """Compute normals at every vertex.
-
-        Args:
-            points (NDArray[np.float64]): points of the mesh
-            triangles (NDArray[np.int64]): triangles of the mesh
+        """Compute normals at every vertex, from the mesh's own points and triangles.
 
         Returns:
             NDArray[np.float64]: normal for every vertex
@@ -558,9 +708,8 @@ class DcelData:
     ) -> dict[tuple[int, int], NDArray[np.float64]]:
         """Compute dict that maps interface (label1, label2) to array of change of area per point.
 
-        Alias of :meth:`compute_area_derivatives`, kept for backward compatibility. Since the
-        sparse-assembly work both return the closed-form (float64) derivative — the ``_slow`` name predates that
-        being the default.
+        Alias of :meth:`compute_area_derivatives`, kept for backward compatibility. Both return the
+        closed-form (float64) derivative — the ``_slow`` name predates that being the default.
         """
         return compute_area_derivative_dict(self)
 
@@ -941,20 +1090,41 @@ def compute_networkx_graph(mesh: DcelData) -> networkx.Graph:
 
 
 def update_graph_with_scattered_values(graph: networkx.Graph, mesh: DcelData) -> networkx.Graph:
-    """Update graph after scattering regions (it moves vertices and centroids)."""
-    new_centroids = dict(graph.nodes.data("centroid"))
-    for key in new_centroids:
-        if key == 0:
-            continue
-        new_centroids[key] += mesh.clusters_displacements[key]
-        # print(new_centroids[key])
+    """Move the graph to the mesh's scattered ("exploded") view, from its unexploded positions.
+
+    Each cell node, and the vertices of each interface with the medium, move by the displacement of their cell
+    (`mesh.clusters_displacements`). Call it after `mesh.compute_scattered_arrays(coeff)`. Every node then sits at
+    its exploded cell's barycentre (up to rounding), and an interface with the medium moves with its cell; an
+    interface between two cells does not move (its edge in the graph view is drawn between the two nodes).
+
+    The positions are computed from the graph's unexploded ones each time, into new arrays: they are recorded in
+    `graph.graph["unexploded_centroid"]` and `graph.graph["unexploded_verts"]` at the first call, so that calling
+    it again on the same graph (a new coefficient) does not add a second displacement, and the arrays the graph was
+    built with (`mesh.centroids` itself for the nodes) are never modified.
+
+    Args:
+        graph: the mesh's graph (`compute_networkx_graph`), modified and returned.
+        mesh: the mesh, after `compute_scattered_arrays`.
+
+    Returns:
+        networkx.Graph: `graph`, its `"centroid"` node attributes and `"verts"` edge attributes moved.
+    """
+    unexploded_centroid = graph.graph.setdefault("unexploded_centroid", dict(graph.nodes.data("centroid")))
+    unexploded_verts = graph.graph.setdefault(
+        "unexploded_verts", {(a, b): v for a, b, v in graph.edges.data("verts")},
+    )
+    # A new array per node: `x + d`, never `x += d` (the node's array is `mesh.centroids[x]` itself, so an in-place
+    # sum moved the mesh's centroids too, and each explode added its displacement to the previous ones).
+    new_centroids = {
+        key: centroid if key == 0 else centroid + mesh.clusters_displacements[key]
+        for key, centroid in unexploded_centroid.items()
+    }
     networkx.set_node_attributes(graph, new_centroids, "centroid")
 
     verts_faces_dict = {}
-    for elmt in graph.edges.data("verts"):
-        a, b, v = elmt
+    for (a, b), v in unexploded_verts.items():
         if a == 0:
-            verts_faces_dict[(a, b)] = v.copy() + mesh.clusters_displacements[b]
+            verts_faces_dict[(a, b)] = v + mesh.clusters_displacements[b]
         else:
             verts_faces_dict[(a, b)] = v.copy()
 

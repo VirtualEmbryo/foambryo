@@ -1035,7 +1035,6 @@
    "trijunction_edge_angles": "2f88a795b74bd470963850f862882777ad336a2497d351260307332b6697c710"
   }
  },
- "dataset": "/Users/Turlier/TURLIERLAB Dropbox/Herve Turlier/Research/projects/foambryo/benchmarking-dataset",
  "how_to_regenerate": "scripts/make_bit_identity_baseline.py --source <export of commit 55bac17 src> --output <this file>. Do NOT regenerate it from the current tree to make a failing test pass: the file's whole purpose is to be a record of the behaviour before the second-order-angle-reading work.",
  "label": "commit 55bac17, exported by git archive",
  "n_cases": 47,

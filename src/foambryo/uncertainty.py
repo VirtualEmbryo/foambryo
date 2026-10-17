@@ -1,11 +1,23 @@
-"""Calibrated uncertainty and identifiability diagnostics for tension inference.
+"""Error bars on inferred tensions, with their measured calibration, and identifiability diagnostics.
 
-Part of the uncertainty work. This module is **additive**: no
-existing signature changes, no existing number moves. `infer_tensions` keeps returning a
-bare tension dict; this is the companion that also returns an interval and the diagnostics
-needed to decide whether to trust it.
+`infer_tensions_with_uncertainty` returns the tensions of `infer_tensions` (it never changes a
+point estimate) together with an interval and the diagnostics needed to decide whether to trust it;
+`compute_inference_diagnostics` returns the diagnostics alone. Neither has a formulation for crop
+faces yet: both raise `ValueError` on a cropped mesh.
 
-**Read this before using an error bar from here.**
+**Large tissues.** Both compute the diagnostics from the dense force-balance operator, three rows per mesh
+vertex and one column per interface and per cell, and its singular value decomposition. Past
+`DENSE_OPERATOR_ENTRY_LIMIT` entries (`2**31 - 1`, the most scipy's LAPACK can index) that decomposition cannot
+run, so both raise `ValueError` at once, before building anything; a mesh of the default reconstruction reaches it at
+about 1 300 cells of real size. Below the limit the cost grows with the operator: on a generated 1 200-cell foam (0.8
+of the limit) `infer_tensions_with_uncertainty(mesh, 1, YoungDupre)` took about 30 minutes and 46 GiB.
+
+**Read this before using an error bar from here.** No interval of this module is a calibrated
+error bar on a reconstructed mesh. The first-order interval of the `YoungDupre` tensions
+(`AnglePropagation`) is a **lower bound** on the error: measured on 2 400 reconstructions with
+ground truth, one reconstruction's `+- std` contained the true tension for 26-54 % of interfaces
+(nominal 68 %), because the error is mostly the reconstruction's bias, which no propagated scatter
+measures. The calibration figures below are for the simulator's reference meshes.
 
 The goal here is not "add error bars" — it is *produce an interval whose `error/std` is
 O(1), or state plainly that we cannot*. `error/std` (the ratio of the actual error against
@@ -18,14 +30,19 @@ uninformative). Measured over the 42 equilibrium cases of `benchmarking-dataset`
 |---|---|---|---|---|
 | **`ProbeResidual`** | force balance | **0.233** | **0.93** | **O(1), and conservative on 42/42** |
 | `CoherentResidual` | force balance | 1.33 | 29.9 | O(1) at the median, **not uniformly** |
-| `EdgeBootstrap` | `YoungDupreLocal` | 0.27 | 1.57 | ~4x conservative (the per-edge Young-Dupre
-work, extended to all 47) |
+| `EdgeBootstrap` | `YoungDupreLocal` | 0.27 | 1.57 | ~4x conservative (measured on all 47
+cases) |
 | `BayesianMap` | force balance | 0.21 | 0.61 | O(1) **by choice of prior**, not by measurement |
-| `AnglePropagation` | `YoungDupre` | 0.015 | 0.078 | ~65x conservative |
-| `ClusterRobust` | force balance | 204 | 1.5e4 | optimistic; **do not ship** |
-| `ClusterBootstrap` | force balance | 216 | 3e4 | optimistic; **do not ship** |
-| `IidGls` | force balance | 246 | 5.4e3 | **do not ship** (the force-balance work's naive posterior) |
+| `AnglePropagation` | `YoungDupre` | 0.015 | 0.078 | ~65x conservative here; **too narrow on reconstructions** |
+| `ClusterRobust` | force balance | 204 | 1.5e4 | optimistic; **not recommended** |
+| `ClusterBootstrap` | force balance | 216 | 3e4 | optimistic; **not recommended** |
+| `IidGls` | force balance | 246 | 5.4e3 | optimistic; **not recommended** (the naive posterior) |
 | `LineBootstrap` | `YoungDupre` | 1.3e-05 | — | ~1e5 conservative, weight-confounded; diagnostic only |
+
+`AnglePropagation`'s row is on the reference meshes, whose angles are nearly exact. On 2 400
+reconstructions of five tissue populations with ground truth, one reconstruction's `+- std`
+contains the true tension for only 26-54 % of interfaces (nominal 68 %), `+- 2 std` for 48-79 %
+(nominal 95 %): it is not a calibrated interval there, and no single factor makes it one.
 
 **So that goal is met: `ProbeResidual` is an interval with `error/std` = O(1), and it
 errs on the safe side on every one of the 42 cases.**
@@ -34,7 +51,7 @@ errs on the safe side on every one of the 42 cases.**
 says the per-component vertex force residual is `N(0, sigma_f^2)` with `sigma_f` estimated
 as `||M beta|| / sqrt(dof)`. On a 11 000-vertex mesh that is ~34 000 rows, so the estimator
 averages the noise down by `sqrt(34 000) ~ 185` and claims to know each tension to ~1e-4.
-It does not: the force-balance work established that the residual is **systematic** — the meshes are the
+It does not: the residual was measured to be **systematic** — the meshes are the
 equilibrium of the generator's volume-*constraint* projection, not of `M beta = 0` — so it
 does not average down at all. Measured, the implied `n_eff` (the number of independent
 observations the rows are actually worth, `dof / (error/std)^2`) has median **0.57** on the
@@ -88,13 +105,12 @@ something that was fitted.
 
 **Why the angle family is conservative rather than optimistic.** `YoungDupre` reads
 triple-line angles and never touches `M`. Propagating the *measured* along-line angle
-spread through the operator over-predicts its error by ~2 orders, because (as the force-balance
-work established) the dataset's
-angle deviations from Neumann lie nearly orthogonal to the Young-Dupre operator's column
+spread through the operator over-predicts its error by ~2 orders, because (as measured) the
+dataset's angle deviations from Neumann lie nearly orthogonal to the Young-Dupre operator's column
 space. So its interval is safe and nearly useless, and its point estimate (2.3e-05) is far
 better than any interval we can defend around it.
 
-**One caveat carried from the per-edge Young-Dupre work, and it is load-bearing.** `YoungDupre`'s accuracy is
+**One caveat, and it is load-bearing.** `YoungDupre`'s accuracy is
 **weighting-critical**: a factor-~4 change in relative inter-line weights costs two orders
 of magnitude. `LineBootstrap` resamples whole triple lines, which *is* such a reweighting
 (`n` copies of a line of weight `w` act as one row of weight `w sqrt(n)`), so its width is
@@ -112,14 +128,17 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy import linalg
+from scipy import linalg, sparse
 
+from foambryo.crop_faces import require_no_crop_faces
 from foambryo.force_balance_inference import build_force_balance_operator
+from foambryo.junction_graph import solve_with_exact_gauge
 from foambryo.tension_inference import (
     TensionComputationMethod,
     _build_matrix_tension_symmetrical_yd,
 )
 from foambryo.validation import force_balance as fb
+from foambryo.validation import mesh_io
 
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
@@ -142,12 +161,15 @@ class UncertaintyModel(Enum):
         CoherentResidual: Deterministic worst-case-direction bound, `sigma_f = ||M beta||`
             (`n_eff = 1`). Force-balance / `Variational` family. O(1) at the median but
             **not uniformly** — see the module docstring.
-        IidGls: the force-balance work's naive constrained-GLS posterior, `sigma_f = ||M beta|| / sqrt(dof)`.
+        IidGls: the naive constrained-GLS posterior, `sigma_f = ||M beta|| / sqrt(dof)`.
             Retained for comparison and **not for reporting** — ~250x optimistic.
         ClusterRobust: Cluster-robust (sandwich) covariance, clusters = cells.
         ClusterBootstrap: Nonparametric bootstrap resampling whole cells.
         AnglePropagation: First-order propagation of the *measured* along-line angle spread
-            through the Young-Dupre operator. Angle family (`YoungDupre`).
+            through the Young-Dupre solve. Angle family (`YoungDupre`), and its default. **Not a
+            calibrated interval on reconstructions: a lower bound on the error** (one
+            reconstruction's `+- std` held the true tension for 26-54 % of interfaces, nominal
+            68 %).
         LineBootstrap: Nonparametric bootstrap resampling whole triple lines. Angle family;
             weight-confounded, see the module docstring.
     """
@@ -174,15 +196,15 @@ FORCE_BALANCE_MODELS = frozenset(
 
 #: Estimator used as the independent probe by `UncertaintyModel.ProbeResidual`. `YoungDupre`
 #: is the right choice on the evidence: it reads triple-line angles and **never touches `M`**,
-#: so its error is not bounded by `rho_free` (per the force-balance work), and it is this dataset's most accurate
-#: method by three orders of magnitude (2.3e-05). Its accuracy is not *required* for the bound
-#: to be safe, only for it to be tight — see the module docstring.
+#: so its error is not bounded by `rho_free` (measured), and it is the most accurate method on the
+#: benchmarking dataset (`BENCHMARKS.md`) by three orders of magnitude (2.3e-05). Its accuracy is
+#: not *required* for the bound to be safe, only for it to be tight — see the module docstring.
 PROBE_METHOD = TensionComputationMethod.YoungDupre
 
 #: Models that apply to the angle-based `YoungDupre` estimator.
 ANGLE_MODELS = frozenset({UncertaintyModel.AnglePropagation, UncertaintyModel.LineBootstrap})
 
-#: Default number of bootstrap resamples. 200 is what the per-edge Young-Dupre work used; the reported spread is
+#: Default number of bootstrap resamples, as in the calibration measurement; the reported spread is
 #: stable to ~2 % against 400 (measured, `foambryo_benchmarks/run_uncertainty_calibration.py`).
 DEFAULT_N_RESAMPLES = 200
 
@@ -193,7 +215,7 @@ class InferenceDiagnostics:
 
     These are properties of the mesh and the operator, not of a method, which is what makes
     them usable on `dw3d` output where no ground truth exists. `rho_free` is the one to read
-    first: the force-balance work established that the force-balance / `Variational` family's error is
+    first: it was measured that the force-balance / `Variational` family's error is
     limited by it (median `rho_free` 0.012 against a median error 0.021 on the 42), while
     `YoungDupre`'s is not.
 
@@ -206,8 +228,11 @@ class InferenceDiagnostics:
             this mesh leaves unbalanced *at those tensions*. `None` if no tensions were
             given. Gauge-invariant.
         rho_free (float): The same quantity with the tensions themselves free — the
-            **distance of this mesh from any equilibrium of `M`**, and the floor `rho`
-            cannot go below. Gauge-invariant. ~1e-10 for a mesh that minimises `M`;
+            **distance of this mesh from any equilibrium of `M`**. It is the ratio at the
+            minimiser of `||M beta||` under the mean-tension gauge, so `rho` at given tensions
+            can fall slightly below it, but not by more than the gap between that minimiser
+            and the minimum of the ratio.
+            Gauge-invariant. ~1e-10 for a mesh that minimises `M`;
             0.0007-0.036 on the 42 simulation meshes; 0.26-0.28 on the five non-equilibrium
             cases excluded from every accuracy claim. **On `dw3d`-reconstructed meshes of the
             same cases it is about 50x the reference value: median 0.578 (range 0.48-0.72) on the 40-case equilibrium
@@ -271,9 +296,11 @@ class TensionUncertaintyResult:
         interfaces (list[tuple[int, int]]): Interface keys, in the order of `tensions`.
         tensions (NDArray[np.float64]): Inferred tensions — **bit-identical** to the
             corresponding `infer_tensions` call. This module never changes a point estimate.
-        tension_std (NDArray[np.float64]): Per-interface interval half-width. For
-            `CoherentResidual` this is a worst-case-direction *bound*, not a standard
-            deviation; read `calibration_note`.
+        tension_std (NDArray[np.float64]): Per-interface interval half-width, in the unit of
+            `tensions`. For `ProbeResidual` and `CoherentResidual` this is a worst-case-direction
+            *bound*, not a standard deviation; for `AnglePropagation` a first-order standard
+            error that is a lower bound on the error of a reconstruction, not a calibrated
+            interval; read `calibration_note`.
         method (TensionComputationMethod): Which estimator produced `tensions`.
         model (UncertaintyModel): Which model produced `tension_std`.
         sigma_scale (float): The residual scale the interval was built on.
@@ -372,40 +399,93 @@ def _calibration_note(model: UncertaintyModel) -> str:
         )
     if model is UncertaintyModel.AnglePropagation:
         return (
-            f"{measured} CONSERVATIVE by ~65x: the dataset's angle deviations from "
-            "Neumann lie nearly orthogonal to the Young-Dupre operator's column space "
-            "(as measured on the force-balance operator), so propagating their magnitude as i.i.d. noise vastly "
-            "over-predicts "
-            "the error. Safe, but nearly uninformative."
+            f"{measured} That figure is on the reference meshes, whose angles are nearly exact. ON "
+            "RECONSTRUCTIONS IT IS NOT CALIBRATED, AND TOO NARROW: one reconstruction's +-std contains the "
+            "true tension for 26-54 % of interfaces (nominal 68 %), +-2 std for 48-79 % (nominal 95 %), "
+            "measured on 2 400 reconstructions of five tissue populations with ground truth. It propagates "
+            "the scatter of the angles along each junction line, not the reconstruction's bias, which "
+            "dominates the error; no single factor calibrates it across tissue types. Read it as a lower "
+            "bound on the error."
         )
     return (
         f"{measured} CONSERVATIVE by ~2 orders, and WEIGHT-CONFOUNDED: resampling whole "
-        "triple lines is itself an inter-line reweighting, which the per-edge Young-Dupre work measured to be worth "
-        "two orders of magnitude on this operator. Its width therefore reflects "
-        "weight sensitivity more than angle noise. Diagnostic only."
+        "triple lines also changes how much each line weighs against the others, and changing those weights by a "
+        "factor of about 4 was measured to change the error of this method's tensions by two orders of magnitude. "
+        "Its width therefore reflects weight sensitivity more than angle noise. Diagnostic only."
     )
+
+
+#: The largest dense force-balance operator the diagnostics can decompose, in entries. scipy's standard builds
+#: (LAPACK with 32-bit integers) refuse a thin SVD of more than `2**31 - 1` entries; past it the diagnostics
+#: failed only after building the operator and a first SVD, minutes and tens of GiB later.
+DENSE_OPERATOR_ENTRY_LIMIT = int(np.iinfo(np.int32).max)
+
+
+def _dense_operator_shape(mesh: DcelData) -> tuple[int, int]:
+    """The shape `(3 n_vertices, n_interfaces + n_cells)` of `build_force_balance_operator(mesh)[0]`, not built."""
+    regions = mesh.f[:, 3:5]
+    return 3 * len(mesh.v), len(mesh_io.list_interfaces(regions)) + len(mesh_io.cell_labels(regions))
+
+
+def _require_dense_operator_within_the_limit(mesh: DcelData, function: str) -> None:
+    """Refuse, before anything is built, a mesh whose force-balance diagnostics cannot be computed.
+
+    Args:
+        mesh (DcelData): Mesh to analyse.
+        function (str): The public function's name, for the message.
+
+    Raises:
+        ValueError: if the dense operator has more than `DENSE_OPERATOR_ENTRY_LIMIT` entries.
+    """
+    rows, columns = _dense_operator_shape(mesh)
+    entries = rows * columns
+    if entries <= DENSE_OPERATOR_ENTRY_LIMIT:
+        return
+    message = (
+        f"{function} cannot run on this mesh: its diagnostics take the singular value decomposition of the "
+        f"dense force-balance operator, here {rows} x {columns} = {entries:.3g} entries "
+        f"({entries * 8 / 2**30:.0f} GiB), and scipy's LAPACK cannot index more than 2**31 - 1 = "
+        f"{DENSE_OPERATOR_ENTRY_LIMIT:.3g} entries. The operator has three rows per mesh vertex and one column "
+        "per interface and per cell, so a mesh of the default reconstruction reaches the limit at about 1 300 cells "
+        "of real size (about 55 000 voxels each), and a finer mesh sooner. "
+        "Instead: foambryo.infer_tensions gives the tensions without an interval; "
+        "foambryo.infer_tensions_over_seeds gives their spread over reconstruction seeds (a lower bound on the "
+        "error, like this function's YoungDupre interval); a mesh with fewer vertices (a larger min_distance) "
+        "has a smaller operator."
+    )
+    raise ValueError(message)
 
 
 def compute_inference_diagnostics(
     mesh: DcelData,
     dict_tensions: dict[tuple[int, int], float] | None = None,
 ) -> InferenceDiagnostics:
-    """Equilibrium and identifiability diagnostics for a mesh — the uncertainty work's user-facing report.
+    """Equilibrium and identifiability diagnostics for a mesh, readable without ground truth.
 
-    This is the `rho` / `sigma_soft` block that the dataset-audit work computed inside the benchmark
-    harness, promoted to a public function so it can be run on a mesh with no ground truth
-    (i.e. on `dw3d` output). Everything here is a property of the mesh; nothing is fitted to
-    a ground-truth tension.
+    The `rho` / `sigma_soft` diagnostics of the benchmark harness, as a public function, so they
+    can be computed on a mesh with no ground truth (i.e. on `dw3d` output). Everything here is a
+    property of the mesh and of the force-balance operator; nothing is fitted to a ground-truth
+    tension.
 
     Args:
-        mesh (DcelData): Mesh to analyse.
+        mesh (DcelData): Mesh to analyse, in any length unit.
         dict_tensions (dict[tuple[int, int], float] | None, optional): Tensions at which to
-            evaluate `rho`. Defaults to `None`, in which case `rho` is `None` and only
-            `rho_free` (which needs no tensions) is reported.
+            evaluate `rho`, one per interface `(label_1, label_2)`, `label_1 < label_2`, on any
+            scale (`rho` is scale-invariant). Defaults to `None`, in which case `rho` is `None`
+            and only `rho_free` (which needs no tensions) is reported.
 
     Returns:
         InferenceDiagnostics: See that class; call `identifiability_report()` for text.
+
+    Raises:
+        ValueError: on a mesh with crop faces, for which these diagnostics have no formulation
+            yet (`foambryo.crop_faces`), or on a mesh whose dense force-balance operator has more than
+            `DENSE_OPERATOR_ENTRY_LIMIT` entries (about 1 300 cells of real size; see the
+            module docstring), raised before the operator is built.
+        KeyError: if `dict_tensions` misses an interface of the mesh.
     """
+    require_no_crop_faces(mesh, "compute_inference_diagnostics")
+    _require_dense_operator_within_the_limit(mesh, "compute_inference_diagnostics")
     m, interfaces, cells = build_force_balance_operator(mesh)
     ni = len(interfaces)
 
@@ -673,8 +753,8 @@ def _young_dupre_operator(
     Calls `_build_matrix_tension_symmetrical_yd` with exactly the arguments
     `_infer_tension_symmetrical_yd` passes, including `unique=False` — so the returned
     operator, its junction-length weights and hence its solution are bit-identical to
-    `infer_tensions(mesh, mode=YoungDupre)`. **The weighting is load-bearing (the per-edge Young-Dupre work) and
-    is not touched here.**
+    `infer_tensions(mesh, mode=YoungDupre)`. **The weighting is load-bearing (measured) and is
+    not touched here.**
 
     Args:
         mesh (DcelData): Mesh to analyse.
@@ -695,34 +775,114 @@ def _young_dupre_operator(
     return matrix_m, vector_b, interfaces, dict_rad, dict_areas, dict_length
 
 
+#: Relative singular-value cutoff of the propagation's pseudo-inverse: `numpy.linalg.pinv`'s default,
+#: which the propagation through the former soft-row system (until 0.6.0) used.
+_PROPAGATION_RCOND = 1e-15
+
+#: Jacobian columns (wedges) computed at once by the propagation: bounds its memory to
+#: `n_interfaces x _PROPAGATION_BLOCK` floats beyond the SVD.
+_PROPAGATION_BLOCK = 4000
+
+
+def _exact_gauge_propagated_variance(
+    physics: NDArray[np.float64],
+    dp_gamma: sparse.csc_matrix,
+    dpt_residual: sparse.csc_matrix,
+    variances: NDArray[np.float64],
+    *,
+    return_jacobian: bool,
+) -> tuple[NDArray[np.float64], NDArray[np.float64] | None]:
+    """`diag(J diag(variances) J^T)`, `J = -Z (P Z)^+ dP gamma - Z ((P Z)^T P Z)^+ Z^T dP^T r`, in blocks.
+
+    `dp_gamma` holds `dP_k gamma` (physics rows x wedges), `dpt_residual` holds `dP_k^T r` (interfaces x
+    wedges), `r = P gamma` the physics residual.
+
+    `Z = H[:, 1:]`, `H = I - 2 w w^T` the Householder reflector taking `e_0` to `1 / sqrt(n)`; one SVD
+    of `P Z`, singular values below `_PROPAGATION_RCOND` of the largest treated as zero.
+
+    Returns:
+        tuple: the per-interface variance, and the dense `J` when `return_jacobian` (else `None`).
+    """
+    n_interfaces = physics.shape[1]
+    n_wedges = dp_gamma.shape[1]
+    variance = np.zeros(n_interfaces)
+    jacobian = np.zeros((n_interfaces, n_wedges)) if return_jacobian else None
+    if n_wedges == 0:
+        return variance, jacobian
+    reflector = np.full(n_interfaces, 1.0 / np.sqrt(n_interfaces))
+    reflector[0] -= 1.0
+    reflector /= np.linalg.norm(reflector)
+    reduced = (physics - 2.0 * np.outer(physics @ reflector, reflector))[:, 1:]
+    u, singular, vt = np.linalg.svd(reduced, full_matrices=False)
+    keep = singular > _PROPAGATION_RCOND * (singular[0] if len(singular) else 0.0)
+    u, singular, vt = u[:, keep], singular[keep], vt[keep]
+    for start in range(0, n_wedges, _PROPAGATION_BLOCK):
+        block = slice(start, min(start + _PROPAGATION_BLOCK, n_wedges))
+        y = vt.T @ ((dp_gamma[:, block].T @ u).T / singular[:, None])
+        projected = dpt_residual[:, block].toarray()
+        projected = (projected - 2.0 * np.outer(reflector, reflector @ projected))[1:]
+        y += vt.T @ ((vt @ projected) / (singular**2)[:, None])
+        full = np.vstack([np.zeros((1, y.shape[1])), y])
+        jacobian_block = -(full - 2.0 * np.outer(reflector, reflector @ full))
+        variance += (jacobian_block**2) @ variances[block]
+        if jacobian is not None:
+            jacobian[:, block] = jacobian_block
+    return variance, jacobian
+
+
 def _angle_propagation_std(
     mesh: DcelData,
     matrix_m: NDArray[np.float64],
     tensions: NDArray[np.float64],
-) -> tuple[NDArray[np.float64], float]:
+    *,
+    return_jacobian: bool = False,
+) -> tuple:
     """Propagate the *measured* along-line angle spread through the Young-Dupre operator.
 
-    The system is `min ||M(alpha) gamma - b||`, and only `M` depends on the angles, so to
-    first order `d gamma = -M^+ (dM) gamma`. Every angle enters exactly one place, as
-    `cos(alpha) * factor`, so `d(dM)/d alpha = -sin(alpha) * factor` at those entries and the
-    Jacobian columns can be assembled analytically. With the angle errors taken independent
-    across (line, wedge),
+    The tensions are `min ||P(alpha) gamma||` subject to the exact gauge `sum(gamma) = n *
+    mean_tension` (`foambryo.junction_graph.solve_with_exact_gauge`), and only the physics rows `P`
+    depend on the angles. With `Z` an orthonormal basis of the gauge's null space (`1⊥`, one
+    Householder reflector), the full first-order derivative of that constrained least-squares
+    solution is
 
-        Cov(gamma) = J diag(sigma_alpha^2) J^T,    J[:, k] = -M^+ (dM/d alpha_k) gamma.
+        d gamma = -Z (P Z)^+ (dP) gamma - Z ((P Z)^T P Z)^+ Z^T (dP)^T r,    r = P gamma,
+
+    which keeps `sum(gamma)` fixed: the mean tension carries no variance, as it carries no
+    freedom. The second term, the residual's, was dropped until 0.6.0; it changes the standard
+    errors by a median 3 % on reconstructions of the benchmark tissues and 21-23 % on
+    reconstructions of real-size 90- and 165-cell tissues, and is checked against finite
+    differences of the solve (to 2.4e-5 relative). (Until 0.6.0 the derivative was also that of
+    the soft-row system, `-M^+ [dP gamma; 0]` with `M = [P; 1^T]`.) Every angle enters exactly one
+    place, as `cos(alpha) * factor`, so `d(dP)/d alpha = -sin(alpha) * factor` at those entries and
+    the Jacobian columns are assembled analytically, in blocks, from one SVD of `P Z` (singular
+    values below `1e-15` of the largest are treated as zero, as `numpy.linalg.pinv` does). With the
+    angle errors taken independent across (line, wedge),
+
+        Cov(gamma) = J diag(sigma_alpha^2) J^T.
+
+    **Not a calibrated interval** (measured on 2 400 reconstructions with ground truth, five
+    populations): one reconstruction's `+- std` contains the true tension for 26-54 % of
+    interfaces (nominal 68 %), `+- 2 std` for 48-79 % (nominal 95 %). It measures the scatter of
+    the angles along each junction line, not the reconstruction's bias, which dominates the error.
+    No single factor calibrates it across tissue types.
 
     `sigma_alpha` for a line is the **standard error of that line's mean wedge angle**,
-    `s / sqrt(n_edges)`, measured from the per-edge angles of the per-edge Young-Dupre work's
-    `compute_trijunction_edges` — the same along-line variation that work proved is error rather
-    than signal. A line resolved by a single edge is given the mesh-wide median `s` instead
+    `s / sqrt(n_edges)`, measured from the per-edge angles of `geometry.compute_trijunction_edges`
+    — the same along-line variation that `foambryo.per_edge_tension_inference` showed is error
+    rather than signal. A line resolved by a single edge is given the mesh-wide median `s` instead
     of zero, so it is not silently treated as exact.
 
     Args:
         mesh (DcelData): Mesh to analyse.
         matrix_m (NDArray[np.float64]): The assembled Young-Dupre operator.
         tensions (NDArray[np.float64]): The solved tensions.
+        return_jacobian (bool, optional): also return the dense Jacobian `J` (interfaces x
+            wedges), the sparse `dP gamma` (physics rows x wedges) and the sparse `dP^T r`
+            (interfaces x wedges), for tests on small meshes. Keyword-only. Defaults to False.
 
     Returns:
-        tuple[NDArray[np.float64], float]: `(std, median_angle_standard_error_rad)`.
+        tuple: `(std, median_angle_standard_error_rad)`, plus `(jacobian, dp_gamma, dpt_residual)`
+        with `return_jacobian`.
     """
     from foambryo.geometry import compute_trijunction_edges  # local import: avoids an import cycle
 
@@ -741,7 +901,6 @@ def _angle_propagation_std(
 
     # Rebuild the operator's row layout, exactly as the builder does, so each angle can be
     # located. The builder's own key bookkeeping is reproduced rather than guessed.
-    n_interfaces = matrix_m.shape[1]
     n_junction_rows = matrix_m.shape[0] - 1
     n_junctions = n_junction_rows // 3
 
@@ -757,8 +916,12 @@ def _angle_propagation_std(
     }
     total_length = sum(dict_length.values()) / 3
 
-    pinv = np.linalg.pinv(matrix_m)
-    jacobian_columns = []
+    residual = matrix_m[:-1] @ tensions
+    rows: list[int] = []
+    columns: list[int] = []
+    values: list[float] = []
+    residual_rows: list[int] = []
+    residual_values: list[float] = []
     variances = []
     for i, key in enumerate(linear[:n_junctions]):
         c = key // ka**2
@@ -775,19 +938,25 @@ def _angle_propagation_std(
             ((a, c, b), ((3 * i + 1, idx_ac), (3 * i + 2, idx_bc))),
         )
         for wedge_key, cells in layout:
-            angle = dict_rad[wedge_key]
-            d_matrix = np.zeros_like(matrix_m)
-            for row, column in cells:
-                d_matrix[row, column] = -np.sin(angle) * factor
-            jacobian_columns.append(-pinv @ (d_matrix @ tensions))
+            derivative = -np.sin(dict_rad[wedge_key]) * factor
+            for row, column in cells:  # (dP_k gamma)[row] = dP_k[row, column] * gamma[column]
+                rows.append(row)
+                columns.append(len(variances))
+                values.append(derivative * tensions[column])
+                residual_rows.append(column)  # (dP_k^T r)[column] = dP_k[row, column] * r[row]
+                residual_values.append(derivative * residual[row])
             variances.append(sigma_of_key.get(wedge_key, fallback) ** 2)
 
-    jacobian = np.array(jacobian_columns).T if jacobian_columns else np.zeros((n_interfaces, 0))
-    cov = jacobian @ np.diag(np.array(variances)) @ jacobian.T if jacobian.size else np.zeros(
-        (n_interfaces, n_interfaces),
-    )
+    dp_gamma = sparse.csc_matrix((values, (rows, columns)), shape=(n_junction_rows, len(variances)))
+    dpt_residual = sparse.csc_matrix((residual_values, (residual_rows, columns)),
+                                     shape=(matrix_m.shape[1], len(variances)))
+    variance, jacobian = _exact_gauge_propagated_variance(matrix_m[:-1], dp_gamma, dpt_residual,
+                                                          np.asarray(variances), return_jacobian=return_jacobian)
+
     median_se = float(np.median(list(sigma_of_key.values()))) if sigma_of_key else 0.0
-    return np.sqrt(np.clip(np.diag(cov), 0.0, None)), median_se
+    if return_jacobian:
+        return np.sqrt(np.clip(variance, 0.0, None)), median_se, jacobian, dp_gamma, dpt_residual
+    return np.sqrt(np.clip(variance, 0.0, None)), median_se
 
 
 def _line_bootstrap_std(
@@ -802,7 +971,7 @@ def _line_bootstrap_std(
     physics blocks are drawn. Each block carries the junction-length weight the shipped
     builder gave it — **the weighting is not modified** — but drawing a line `n` times is
     equivalent to one row of weight `w sqrt(n)`, so this bootstrap perturbs the inter-line
-    weights as well as the angle sample. The per-edge Young-Dupre work measured that reweighting to be worth two
+    weights as well as the angle sample. That reweighting was measured to be worth two
     orders of magnitude here, so the resulting width is dominated by it. Reported for that
     reason; see `_calibration_note`.
 
@@ -840,38 +1009,56 @@ def infer_tensions_with_uncertainty(
 ) -> TensionUncertaintyResult:
     """Infer tensions **and** an interval whose calibration has been measured and is reported.
 
-    Additive companion to `foambryo.infer_tensions`: the point estimate is bit-identical to
-    the corresponding `infer_tensions` call (pinned by `tests/test_uncertainty.py`), and the
-    returned `calibration_note` states the measured `error/std` of the interval rather than
-    leaving the reader to assume it is 1.
+    A companion to `foambryo.infer_tensions`: the point estimate is that of the corresponding
+    `infer_tensions` call -- bit-identical for `ForceBalance` and `YoungDupre` (pinned by
+    `tests/test_uncertainty.py`), to rounding (within 1e-12 on benchmark case 000) for `Variational`,
+    whose interval is built on the `ForceBalance` operator. The `YoungDupre` tensions are
+    normalised over the whole mesh at once, so they match `infer_tensions` on a mesh whose
+    junction graph is in one piece. The returned `calibration_note` states the measured
+    `error/std` of the interval rather than leaving the reader to assume it is 1.
 
-    Only the estimators whose intervals the uncertainty work actually calibrated are accepted.
-    That is deliberate: an interval for a method nobody measured would be exactly the failure
-    mode this module exists to close.
+    **The interval is not a calibrated error bar on a reconstructed mesh.** The first-order
+    `AnglePropagation` interval of `YoungDupre` is a lower bound on the error: one
+    reconstruction's `+- std` held the true tension for 26-54 % of interfaces (nominal 68 %) and
+    `+- 2 std` for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth.
+    The force-balance family's error is floored by `rho_free` on reconstructed meshes (see the
+    module docstring and `InferenceDiagnostics`).
+
+    Only the estimators whose intervals have been calibrated are accepted. That is deliberate:
+    an interval for a method nobody measured would be exactly the failure mode this module
+    exists to close.
 
     Args:
-        mesh (DcelData): Mesh to analyse.
-        mean_tension (float, optional): The gauge — the mean of the returned tensions.
-            Defaults to 1.
+        mesh (DcelData): Mesh to analyse, in any length unit; not cropped.
+        mean_tension (float, optional): The normalisation: the mean of the returned tensions,
+            met exactly. Defaults to 1.
         method (TensionComputationMethod, optional): The estimator. One of `ForceBalance`,
             `Variational` (both the force-balance family, same estimator up to the solve
             route) or `YoungDupre` (the angle family). Defaults to `ForceBalance`.
         model (UncertaintyModel | None, optional): How to build the interval. Defaults to
-            `None`, which selects `CoherentResidual` for the force-balance family and
+            `None`, which selects `ProbeResidual` for the force-balance family and
             `AnglePropagation` for the angle family — in both cases the best-calibrated
             model measured for that estimator.
-        n_resamples (int, optional): Bootstrap draws, for the bootstrap models. Defaults to
-            `DEFAULT_N_RESAMPLES`.
+        n_resamples (int, optional): Bootstrap draws, for the bootstrap models
+            (`ClusterBootstrap`, `LineBootstrap`). Defaults to `DEFAULT_N_RESAMPLES` (200).
         seed (int, optional): Bootstrap RNG seed, recorded so any number is reproducible.
             Defaults to 0.
 
     Returns:
-        TensionUncertaintyResult: Tensions, interval, diagnostics and calibration note.
+        TensionUncertaintyResult: Tensions (keyed by interface `(label_1, label_2)`,
+            `label_1 < label_2`), the per-interface interval half-width `tension_std` in the
+            same unit, the mesh's diagnostics and the calibration note.
 
     Raises:
-        NotImplementedError: If `method` has no calibrated interval in the uncertainty work.
-        ValueError: If `model` does not apply to `method`'s estimator family.
+        NotImplementedError: If `method` has no calibrated interval (any method but
+            `ForceBalance`, `Variational` and `YoungDupre`).
+        ValueError: If `model` does not apply to `method`'s estimator family, if the mesh has
+            crop faces, for which no interval is calibrated yet (`foambryo.crop_faces`), or if its
+            dense force-balance operator has more than `DENSE_OPERATOR_ENTRY_LIMIT` entries (about
+            1 300 cells of real size, for every method and model, because the diagnostics are
+            always computed; see the module docstring), raised before anything is built.
     """
+    require_no_crop_faces(mesh, "infer_tensions_with_uncertainty")
     angle_family = {TensionComputationMethod.YoungDupre}
     balance_family = {
         TensionComputationMethod.ForceBalance,
@@ -899,6 +1086,7 @@ def infer_tensions_with_uncertainty(
             f"estimator family. Allowed here: {sorted(m.name for m in allowed)}."
         )
         raise ValueError(message)
+    _require_dense_operator_within_the_limit(mesh, "infer_tensions_with_uncertainty")
 
     if method in balance_family:
         interfaces, tensions, std, sigma, residual_norm, n_rows = _force_balance_uncertainty(
@@ -913,7 +1101,10 @@ def infer_tensions_with_uncertainty(
             mesh,
             mean_tension,
         )
-        tensions, _res, _rank, _sv = linalg.lstsq(matrix_m, vector_b)
+        # The same exact-gauge solve `infer_tensions` runs, so the point estimate is its tensions.
+        tensions, _res, _note = solve_with_exact_gauge(
+            matrix_m[:-1], vector_b[:-1], float(vector_b[-1]), system="YoungDupre tension system",
+        )
         residual_norm = float(np.linalg.norm(matrix_m @ tensions - vector_b))
         n_rows = matrix_m.shape[0]
         if chosen is UncertaintyModel.AnglePropagation:
@@ -940,7 +1131,7 @@ def error_over_std(
     result: TensionUncertaintyResult,
     dict_truth_tensions: dict[tuple[int, int], float],
 ) -> dict[str, float]:
-    """**The** calibration metric of the uncertainty work: `|error| / std`, gauge-matched, per interface.
+    """**The** calibration metric used throughout this module: `|error| / std`, gauge-matched, per interface.
 
     Gauge matching is mandatory (the rule every accuracy comparison in this package follows): only
     tension *ratios* are physical,

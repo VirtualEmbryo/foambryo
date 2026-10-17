@@ -1,10 +1,10 @@
 """Agreement tests: `foambryo.validation` vs. its reference implementation.
 
 Written at the package's initial validation stage: `foambryo.validation.mesh_io` and
-`foambryo.validation.force_balance` are a port of the reference implementation that
-accompanies the technical note on tension inference (H. Turlier, in preparation; not
-distributed), with no algorithmic change (docstrings/type hints/naming only). These tests load the
-reference implementation directly (`tests.conftest.load_reference_implementation`) and
+`foambryo.validation.force_balance` are a port of a standalone numpy/scipy reference
+implementation, kept in the test tree as `tests/reference/force_balance_reference_implementation.py`,
+with no algorithmic change (docstrings/type hints/naming only). These tests load the reference implementation
+directly (`tests.conftest.load_reference_implementation`) and
 assert the ported functions reproduce its outputs exactly (bit-identical, since both run
 the same numpy operations in the same order on the same inputs) or, where floating-point
 order of operations could plausibly differ, to a tight numerical tolerance.

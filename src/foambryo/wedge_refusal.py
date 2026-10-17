@@ -1,4 +1,9 @@
-r"""Declining a trijunction observation the mesh's own geometry makes infeasible.
+r"""Refusal policies: declining a trijunction observation the mesh's own geometry makes infeasible.
+
+A `WedgeRefusal` is passed as `refusal=` to `infer_tensions` and its relatives, and to
+`infer_tensions_young_dupre_local`. Only the methods of `foambryo.tension_inference.ANGLE_READING_METHODS`
+honour it; the others raise `ValueError` on any policy but `NO_REFUSAL`. `refusal_report` counts
+what a policy declines.
 
 The problem
 -----------
@@ -60,17 +65,29 @@ Underdetermination is an outcome, not an error
 ----------------------------------------------
 Refusing rows can leave an interface with no surviving junction line at all, or split the
 junction graph into pieces that no longer share a gauge. That is handled exactly as
-`foambryo.junction_graph` already handles a closed interface and a fragmented mesh (the
-2026-08-02 API decision): the partition is rebuilt over the surviving lines
+`foambryo.junction_graph` already handles a closed interface and a fragmented mesh: the
+partition is rebuilt over the surviving lines
 (`junction_graph.partition_over_surviving_junctions`), an interface touched by no surviving line
-is reported `float("nan")` and never a number, a fragmented survivor graph is gauged per
-component, and `JunctionGraphGaugeWarning` fires unchanged. A mesh all of whose lines are refused
+is reported `float("nan")` and never a number, a survivor graph in several pieces is
+normalised in each piece, and `JunctionGraphGaugeWarning` fires unchanged. A mesh all of whose lines are refused
 returns every interface undetermined rather than raising: an empty answer is a result, and it is
 one the caller can count.
 
 **Report the refused counts next to any accuracy number.** A policy that improves an error
 statistic by declining a large share of the data has not improved anything, and
 :func:`refusal_report` is what makes that visible.
+
+Two reasons to decline an edge: a fold, and the crop
+----------------------------------------------------
+A junction edge with a vertex on a crop face (`foambryo.crop_faces`) is not an observation of the
+tissue either: the tissue beyond the crop was cut away. It is declined for that reason on every
+cropped mesh, whatever the policy, and always edge by edge: it leaves its line's mean and length,
+and the rest of the line still reports. The policy then acts on what remains, as if the crop
+edges were not part of the line: under `DropLine` a line is dropped when one of its *other* edges
+is refused, and under `DownweightLine` its weight is the unrefused fraction of the arclength
+that is not on the crop. The two sets are held apart (`WedgeRefusal.crop_edges` beside the
+policy's own `edges`) and counted apart in `RefusalReport`. On a mesh without crop faces the crop
+set is empty and nothing here changes.
 
 Reading nothing but the mesh
 ----------------------------
@@ -157,25 +174,36 @@ class WedgeRefusal:
             is a set of edge keys, and nothing in this module consults anything else.
         tolerance_deg: excess past a straight angle above which a wedge is reflex, used only when
             `edges` is `None`.
+        crop_edges: the edges declined because they touch a crop face, excluded from their
+            line's mean whatever `policy` is (see "Two reasons to decline an edge" in the module
+            docstring). Filled from the mesh by every estimator (:func:`refusal_with_crop`); a
+            caller leaves it empty.
     """
 
     policy: WedgeRefusalPolicy = WedgeRefusalPolicy.NoRefusal
     edges: frozenset[GeometricEdge] | None = None
     tolerance_deg: float = REFLEX_TOLERANCE_DEG
+    crop_edges: frozenset[GeometricEdge] = frozenset()
 
     def __post_init__(self) -> None:
-        """Normalise an explicit edge collection to a `frozenset` of ordered pairs."""
+        """Normalise explicit edge collections to `frozenset`s of ordered pairs."""
         if self.edges is not None and not isinstance(self.edges, frozenset):
             object.__setattr__(
                 self,
                 "edges",
                 frozenset((min(u, v), max(u, v)) for u, v in self.edges),
             )
+        if not isinstance(self.crop_edges, frozenset):
+            object.__setattr__(
+                self,
+                "crop_edges",
+                frozenset((min(u, v), max(u, v)) for u, v in self.crop_edges),
+            )
 
     @property
     def refuses_nothing(self) -> bool:
         """True when this refusal cannot change any number, so the untouched path is taken."""
-        return self.policy is WedgeRefusalPolicy.NoRefusal
+        return self.policy is WedgeRefusalPolicy.NoRefusal and not self.crop_edges
 
 
 #: The shipped default: refuse nothing, and take the pre-existing code path unchanged.
@@ -204,6 +232,9 @@ class RefusalReport:
         n_units_refused: units the policy removed.
         n_units_used: units that still carry a row. `n_units_refused + n_units_used == n_units`.
         surviving_lines: the region triples that still carry a row, sorted.
+        n_edges_touching_crop: edges declined because they touch a crop face (0 without crop
+            faces). They are not counted in `n_edges_refused`, which counts the policy's own.
+        length_touching_crop: arclength carried by those edges.
     """
 
     policy: WedgeRefusalPolicy
@@ -218,6 +249,8 @@ class RefusalReport:
     n_units_refused: int
     n_units_used: int
     surviving_lines: tuple[Triple, ...] = field(default=())
+    n_edges_touching_crop: int = 0
+    length_touching_crop: float = 0.0
 
 
 def triple_of_edge(edge: TrijunctionEdge) -> Triple:
@@ -276,13 +309,36 @@ def resolve_refused_edges(mesh: DcelData, refusal: WedgeRefusal) -> frozenset[Ge
         refusal (WedgeRefusal): the policy and, optionally, an explicit edge set.
 
     Returns:
-        frozenset[GeometricEdge]: empty under `NoRefusal`.
+        frozenset[GeometricEdge]: empty under `NoRefusal`. The crop edges are not part of it:
+        they are `refusal.crop_edges`.
     """
-    if refusal.refuses_nothing:
+    if refusal.policy is WedgeRefusalPolicy.NoRefusal:
         return frozenset()
     if refusal.edges is not None:
         return refusal.edges
     return reflex_trijunction_edges(mesh, refusal.tolerance_deg)
+
+
+def refusal_with_crop(mesh: DcelData, refusal: WedgeRefusal) -> WedgeRefusal:
+    """`refusal`, with the mesh's crop edges added as the second reason to decline an edge.
+
+    Every estimator calls this on its own refusal before reading any angle, so the crop is
+    honoured whatever the caller passed. Idempotent; on a mesh without crop faces it returns
+    `refusal` itself, unchanged, and the untouched code path stays untouched.
+
+    Args:
+        mesh (DcelData): the mesh, whose `crop_faces` decide.
+        refusal (WedgeRefusal): the caller's refusal.
+
+    Returns:
+        WedgeRefusal: the same policy, explicit set and tolerance, with `crop_edges` set to every
+        edge that has a vertex on a crop face (`foambryo.crop_faces.crop_edges`).
+    """
+    from foambryo.crop_faces import crop_edges  # local import: crop_faces is a leaf module
+
+    if not getattr(mesh, "has_crop_faces", False) or refusal.crop_edges:
+        return refusal
+    return WedgeRefusal(refusal.policy, refusal.edges, refusal.tolerance_deg, crop_edges(mesh))
 
 
 def _edge_records_and_refused(
@@ -296,7 +352,12 @@ def _edge_records_and_refused(
     bookkeeping for any reading while carrying the oriented angles the refusal is defined on.
     """
     edges, _report = compute_trijunction_edges_with_report(mesh, reading=ORIENTED_CHORD_READING)
-    refused = refusal.edges if refusal.edges is not None else _reflex_among(edges, refusal.tolerance_deg)
+    if refusal.policy is WedgeRefusalPolicy.NoRefusal:
+        refused: frozenset[GeometricEdge] = frozenset()
+    elif refusal.edges is not None:
+        refused = refusal.edges
+    else:
+        refused = _reflex_among(edges, refusal.tolerance_deg)
     return edges, refused
 
 
@@ -313,6 +374,7 @@ class _LineStats:
 def _line_stats(
     edges: Sequence[TrijunctionEdge],
     refused: Collection[GeometricEdge],
+    crop: Collection[GeometricEdge] = frozenset(),
 ) -> dict[Triple, _LineStats]:
     """Edge counts and arclengths per junction line, split by what the refusal names.
 
@@ -322,13 +384,18 @@ def _line_stats(
 
     Args:
         edges (Sequence[TrijunctionEdge]): every trijunctional edge of the mesh.
-        refused (Collection[GeometricEdge]): the edges the refusal names.
+        refused (Collection[GeometricEdge]): the edges the refusal's policy names.
+        crop (Collection[GeometricEdge], optional): the edges that touch a crop face. They are
+            left out of every line, as if absent; a line with no other edge is absent from the
+            result. Defaults to none.
 
     Returns:
-        dict[Triple, _LineStats]: one entry per junction line present on the mesh.
+        dict[Triple, _LineStats]: one entry per junction line with an edge off the crop.
     """
     stats: dict[Triple, _LineStats] = {}
     for edge in edges:
+        if edge.vertices in crop:
+            continue
         entry = stats.setdefault(triple_of_edge(edge), _LineStats())
         entry.n_edges += 1
         entry.length += float(edge.length)
@@ -356,10 +423,11 @@ def refusal_report(
     Returns:
         RefusalReport: the counts, including which lines still carry a row.
     """
+    refusal = refusal_with_crop(mesh, refusal)
     edges, refused = _edge_records_and_refused(mesh, refusal)
-    if refusal.refuses_nothing:
-        refused = frozenset()
-    stats = _line_stats(edges, refused)
+    crop = refusal.crop_edges
+    stats = _line_stats(edges, refused, crop)
+    lines_on_mesh = {triple_of_edge(edge) for edge in edges}
     # For a per-edge estimator the unit is one edge, so `DropLine` drops the refused rows and
     # leaves a line reporting from whatever survives -- the same line rule `ExcludeEdgeFromLineMean`
     # follows. See :func:`per_edge_rows`.
@@ -368,28 +436,31 @@ def refusal_report(
         effective = WedgeRefusalPolicy.ExcludeEdgeFromLineMean
     keep_line = _surviving_line_scales(effective, stats)
 
+    on_crop = [edge for edge in edges if edge.vertices in crop]
     if per_edge_rows:
         n_units = len(edges)
         if refusal.policy is WedgeRefusalPolicy.DownweightLine:
-            n_units_used = sum(1 for edge in edges if triple_of_edge(edge) in keep_line)
+            n_units_used = sum(1 for edge in edges if edge.vertices not in crop and triple_of_edge(edge) in keep_line)
         else:
-            n_units_used = sum(1 for edge in edges if edge.vertices not in refused)
+            n_units_used = sum(1 for edge in edges if edge.vertices not in refused and edge.vertices not in crop)
     else:
-        n_units, n_units_used = len(stats), len(keep_line)
+        n_units, n_units_used = len(lines_on_mesh), len(keep_line)
 
     return RefusalReport(
         policy=refusal.policy,
         n_edges=len(edges),
         n_edges_refused=sum(entry.n_refused for entry in stats.values()),
-        n_lines=len(stats),
-        n_lines_without_row=len(stats) - len(keep_line),
+        n_lines=len(lines_on_mesh),
+        n_lines_without_row=len(lines_on_mesh) - len(keep_line),
         n_lines_downweighted=sum(1 for triple in keep_line if stats[triple].n_refused),
-        length_total=float(sum(entry.length for entry in stats.values())),
+        length_total=float(sum(entry.length for entry in stats.values()) + sum(float(e.length) for e in on_crop)),
         length_refused=float(sum(entry.length_refused for entry in stats.values())),
         n_units=n_units,
         n_units_refused=n_units - n_units_used,
         n_units_used=n_units_used,
         surviving_lines=tuple(sorted(keep_line)),
+        n_edges_touching_crop=len(on_crop),
+        length_touching_crop=float(sum(float(e.length) for e in on_crop)),
     )
 
 
@@ -468,16 +539,22 @@ def line_averaged_angles(
             when the policy leaves no line reporting, which the builder turns into an
             all-undetermined answer rather than an exception.
     """
+    refusal = refusal_with_crop(mesh, refusal)
     if refusal.refuses_nothing:
         dict_rad, _deg, dict_length, report = compute_angles_tri_with_report(mesh, unique=False, reading=reading)
         return LineAveragedAngles(dict_rad, dict_length, partition_from_mesh(mesh), report)
 
     edges, refused = _edge_records_and_refused(mesh, refusal)
-    scales = _surviving_line_scales(refusal.policy, _line_stats(edges, refused))
+    crop = refusal.crop_edges
+    scales = _surviving_line_scales(refusal.policy, _line_stats(edges, refused, crop))
 
     # `E` is the only policy that changes what is measured, so it is the only one that re-runs the
     # accumulation; `D` and `W` read the untouched accumulation and then drop or rescale lines.
+    # Crop edges change what is measured under every policy, so with any of them the accumulation
+    # is re-run without them.
     skip = refused if refusal.policy is WedgeRefusalPolicy.ExcludeEdgeFromLineMean else None
+    if crop:
+        skip = crop | (skip or frozenset())
     dict_rad, _deg, dict_length, report = compute_angles_tri_with_report(
         mesh,
         unique=False,
@@ -512,7 +589,7 @@ class PerEdgeRows:
             every policy but `DownweightLine`, where it is the edge's line's unrefused arclength
             fraction.
         surviving_lines: the region triples still carrying at least one row.
-        n_refused: how many edges lost their row.
+        n_refused: how many edges lost their row, for either reason (the policy or the crop).
     """
 
     keep: tuple[int, ...]
@@ -544,6 +621,7 @@ def per_edge_rows(
     Returns:
         PerEdgeRows: the surviving rows and their weight scales.
     """
+    refusal = refusal_with_crop(mesh, refusal)
     if refusal.refuses_nothing:
         return PerEdgeRows(
             keep=tuple(range(len(trijunction_edges))),
@@ -553,13 +631,17 @@ def per_edge_rows(
         )
 
     refused = resolve_refused_edges(mesh, refusal)
-    scales = _surviving_line_scales(refusal.policy, _line_stats(trijunction_edges, refused))
+    crop = refusal.crop_edges
+    scales = _surviving_line_scales(refusal.policy, _line_stats(trijunction_edges, refused, crop))
     downweighting = refusal.policy is WedgeRefusalPolicy.DownweightLine
 
     keep: list[int] = []
     weight_scale: list[float] = []
     surviving: set[Triple] = set()
     for index, edge in enumerate(trijunction_edges):
+        if edge.vertices in crop:
+            # Touches a crop face: never a row, whatever the policy.
+            continue
         if downweighting:
             # The line, not the edge, is the thing down-weighted: every row survives, including
             # the folded ones, scaled by its line's unrefused arclength fraction.
@@ -592,7 +674,7 @@ def all_interfaces_undetermined(
 ) -> ComponentTensionSolution:
     """The answer when a policy leaves no observation at all: every interface `nan`.
 
-    Assembles the gauge row alone and hands it to
+    Assembles the normalisation's row alone and hands it to
     `junction_graph.solve_gauged_least_squares`, so the undetermined interfaces are produced by
     the same machinery that already produces them for a closed surface, and the result carries
     the same `undetermined` / `component_of` / `gauge_notes` structure every caller reads.

@@ -1,11 +1,10 @@
-"""Raw multimaterial mesh I/O and combinatorics, ported from the reference implementation.
+"""Raw multimaterial mesh I/O and combinatorics, for the unified force-balance operator.
 
-Ported (algorithm unchanged) from the reference implementation that accompanies the
-technical note on tension inference (H. Turlier, in preparation; not distributed). It
-documents these conventions: regions are integers; one of them (0 by default) is the external
-medium and carries no pressure unknown. A mesh is `(V, F, regions)` with `V` of shape
-`(nv, 3)` float, `F` of shape `(nf, 3)` int vertex indices, `regions` of shape `(nf, 2)`
-int, the two regions each triangle separates.
+The test suite compares these functions with an independent reference implementation of the same algorithms
+(`tests/reference/force_balance_reference_implementation.py`). It documents these conventions: regions are
+integers; one of them (0 by default) is the external medium and carries no pressure unknown. A mesh is
+`(V, F, regions)` with `V` of shape `(nv, 3)` float, `F` of shape `(nf, 3)` int vertex indices, `regions` of shape
+`(nf, 2)` int, the two regions each triangle separates.
 
 This module operates on raw `(V, F, regions)` arrays rather than `DcelData`/half-edges,
 deliberately: it is the exact input format `force_balance.force_balance_operator`
@@ -13,9 +12,14 @@ expects, and keeping it independent of the half-edge structure is what makes the
 unit tests in `tests/test_validation_force_balance.py` a direct, literal comparison
 against the reference implementation's own outputs.
 
-Two mesh file formats are understood:
-    .arec : text   -> nv / nv lines "x y z" / nf / nf lines "v0 v1 v2 ra rb"
-    .rec  : binary -> int64 nv / nv*3 float64 / int64 nf / nf*(3 int64 verts + 2 int32 regions)
+Two mesh layouts are understood:
+    text   -> nv / nv lines "x y z" / nf / nf lines "v0 v1 v2 ra rb"
+    binary -> int64 nv / nv*3 float64 / int64 nf / nf*(3 int64 verts + 2 int32 regions), little-endian
+
+An `.arec` file is text. A `.rec` file may be either: the reference implementation wrote it binary, while
+delaunay-watershed-3d writes it as text by default (and so does `foambryo mesh`); `read_rec` tells them apart from
+the first bytes (see `_rec_is_text`). A metadata appendix after the geometry, as delaunay-watershed-3d writes it, is
+ignored by both readers.
 """
 
 from __future__ import annotations
@@ -48,10 +52,31 @@ def read_arec(
     return v, rows[:, :3].astype(int), rows[:, 3:5].astype(int)
 
 
+def _rec_is_text(head: bytes) -> bool:
+    """Tell a text `.rec` from a binary one by its first bytes.
+
+    A text file starts with its vertex count as ASCII digits on the first line. A binary file starts with the count
+    as a little-endian int64, whose last byte is 0 for any count below 2**56, and a NUL byte never occurs in a text
+    file; so a head with no NUL byte in its first 8 bytes and an integer as its first line is text.
+
+    Args:
+        head (bytes): the file's first bytes (at least the first line, or 8 bytes, whichever is longer, to decide).
+
+    Returns:
+        bool: `True` for a text `.rec`, `False` for a binary one.
+    """
+    if b"\x00" in head[:8]:
+        return False
+    return head.split(b"\n", 1)[0].strip().isdigit()
+
+
 def read_rec(
     path: str | Path,
 ) -> tuple[NDArray[np.float64], NDArray[np.int64], NDArray[np.int64]]:
-    """Read a binary multimaterial mesh (`.rec`).
+    """Read a multimaterial mesh (`.rec`), text or binary (told apart by `_rec_is_text`).
+
+    A text `.rec` (delaunay-watershed-3d's default, and what `foambryo mesh` writes) is read as `read_arec` reads an
+    `.arec`; a binary one in the layout of the module docstring. Before 0.7.0 only the binary layout was read.
 
     Args:
         path (str | Path): Path to the `.rec` file.
@@ -60,6 +85,8 @@ def read_rec(
         tuple[NDArray[np.float64], NDArray[np.int64], NDArray[np.int64]]: `(V, F, regions)`.
     """
     raw = Path(path).read_bytes()
+    if _rec_is_text(raw[:64]):
+        return read_arec(path)
     pos = 0
     nv = struct.unpack_from("<q", raw, pos)[0]
     pos += 8
@@ -77,7 +104,7 @@ def read_mesh(
     """Read a mesh, choosing the reader from the extension.
 
     Falls back to a binary/text sniff of the first bytes when the extension is
-    neither `.rec` nor `.arec`.
+    neither `.rec` nor `.arec`. A `.rec` is read by `read_rec`, text or binary.
 
     Args:
         path (str | Path): Path to the mesh file.
@@ -216,9 +243,9 @@ def mesh_integrity(
     triangles incident to an edge. This region-label count alone is only a classification,
     not a validity check: `list_junctions` uses it to name candidate triple-line edges but,
     like this function's own `n_bad_triple_lines` below, only *admits* one once it also
-    carries three interfaces on exactly three incident triangles (`triple_line_ok`) —
-    conflating the two was a bug (a non-manifold edge with three region labels but a fourth
-    incident triangle could reach `junction_graph.partition_by_junction_graph` and crash it).
+    carries three interfaces on exactly three incident triangles (`triple_line_ok`). A
+    non-manifold edge with three region labels but a fourth incident triangle is malformed,
+    and is left out of the tension system.
 
     - 1 region: an edge interior to a single interface's triangulation;
     - 2 regions: an interface edge;
@@ -336,16 +363,15 @@ def list_interfaces(regions: NDArray[np.int64]) -> list[tuple[int, int]]:
 
 
 class MalformedTripleLineWarning(UserWarning):
-    """Raised when `list_junctions` excludes a candidate triple-line edge because it is malformed.
+    """Emitted when `list_junctions` excludes a candidate triple-line edge because it is malformed.
 
     "Malformed" means: exactly three region labels touch the edge (the classification
     `mesh_integrity` also uses), but it does not also carry three interfaces on exactly
     three incident triangles (the validity rule, `mesh_integrity`'s `triple_line_ok`) -- a
-    non-manifold mesh defect, not a modelling choice. Conflating the two rules is what let
-    `list_junctions` synthesize a fictitious interface pair and crash
-    `junction_graph.partition_by_junction_graph`'s union-find with a bare `KeyError`; this
-    warning is what replaces that silence now that the excluded edge is instead dropped from
-    the tension system. Use `mesh_integrity` to get the count and locate the edges.
+    non-manifold mesh defect, not a modelling choice. Admitted, such an edge would give an
+    interface pair that no triangle carries, and `junction_graph.partition_by_junction_graph`
+    would fail on it with a `KeyError`; it is dropped from the tension system instead, and this
+    warning says so. Use `mesh_integrity` to get the count and locate the edges.
     """
 
 
@@ -388,7 +414,6 @@ def warn_on_malformed_triple_lines(
             caller, `junction_graph.partition_by_junction_graph`, is itself reached from
             several different `foambryo.tension_inference` entry points at varying call
             depth -- no fixed `stacklevel` here points at the user's own line in every case.
-            This is a known limitation, not a claim of parity with the angle-reading warning.
     """
     n_bad = _count_malformed_triple_line_edges(f, regions)
     if n_bad:
@@ -414,11 +439,10 @@ def list_junctions(
     (`interfaces_per_edge == 3`), on exactly three incident triangles
     (`triangles_per_edge == 3`) -- not merely three region labels. An edge with three
     region labels but a fourth (or more) incident triangle is a *malformed* triple line
-    (`mesh_integrity`'s `n_malformed_triple_line_edges`), not a genuine one: admitting it
-    here let it synthesize a region-triple whose derived interface pair can fail to occur
-    as any triangle's actual region pair in the mesh, which
-    `junction_graph.partition_by_junction_graph`'s union-find has no key for -- and raised
-    an unhandled `KeyError` there instead of being excluded here.
+    (`mesh_integrity`'s `n_malformed_triple_line_edges`), not a genuine one, and is excluded:
+    admitted, it would give a region-triple whose derived interface pair need not be any
+    triangle's actual region pair in the mesh, which
+    `junction_graph.partition_by_junction_graph`'s union-find has no key for (a `KeyError`).
 
     Args:
         f (NDArray[np.int64]): Mesh triangles (vertex indices), shape `(nf, 3)`.

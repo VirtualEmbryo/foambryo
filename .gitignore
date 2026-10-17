@@ -12,6 +12,17 @@ Examples/*.py
 !Examples/second_order_angle_reading.py
 !Examples/refusing_folded_trijunction_wedges.py
 !Examples/default_junction_relocation.py
+!Examples/anisotropic_voxels.py
+!Examples/cropped_tissue.py
+!Examples/seed_ensembles.py
+!Examples/large_tissue_solvers.py
+!Examples/polyscope_viewer.py
+# What the examples write when they are run from Examples/.
+Examples/*-output/
+# What Examples/command_line_example.sh writes when it is run from Examples/.
+Examples/foambryo-command-example/
+# The documentation website, when `mkdocs build` is run without -d.
+site/
 dist/
 build/
 .ipynb_checkpoints/

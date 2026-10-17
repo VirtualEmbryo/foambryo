@@ -1,10 +1,14 @@
-"""Validation and benchmarking infrastructure for foambryo.
+"""Validation and benchmarking tools: the unified force-balance operator and mesh checks, on raw mesh arrays.
 
-Ported (algorithm unchanged) from the reference implementation that accompanies the
-technical note on tension inference (H. Turlier, in preparation; not distributed), so the
-unified force-balance operator can be tested and benchmarked from within foambryo instead of
-as a standalone script.
-This subpackage introduces no new inference method and changes no existing public API.
+The unified force-balance operator (the gradient of the capillary energy with respect to the mesh vertices, one
+column per unknown), its solvers and diagnostics, so that it can be tested and benchmarked within foambryo; the
+`ForceBalance*` tension methods are built on it. The test suite compares these functions with an independent
+reference implementation of the same algorithms (`tests/reference/force_balance_reference_implementation.py`).
+These functions check and benchmark an inference; they are not an inference method of their own.
+
+A mesh here is three arrays, `(V, F, regions)`: vertices `(nv, 3)`, triangles `(nf, 3)` (vertex indices) and the
+two regions each triangle separates, `(nf, 2)`, the medium being region 0 by default
+(`foambryo.validation.mesh_io`); `foambryo.validation.force_balance` builds and solves the operator on them.
 """
 
 from foambryo.validation.force_balance import (

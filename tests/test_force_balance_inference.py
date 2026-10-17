@@ -9,8 +9,8 @@ What is pinned here, and why each test has teeth:
    subtly different one.
 2. **Closed-form pressure marginalisation reproduces the joint solve**
    (`test_marginalised_and_joint_solves_agree`). Eliminating the pressures in closed form is
-   exact block elimination of a quadratic form, so the tensions must equal those of the joint
-   solve; this test makes it a standing check.
+   exact block elimination of a quadratic form (a Schur complement on the pressure block), so
+   the tensions must equal those of the joint solve; this test makes it a standing check.
 3. **The KKT gauge is exact and the soft row's is not** (`test_kkt_mean_tension_is_exact`,
    `test_soft_row_gauge_is_only_approximate`). This is the force-balance work's acceptance criterion
    (`mean(gamma) = 1` to `1e-12`) and the honest measurement of how much the soft row
@@ -315,3 +315,58 @@ def test_force_balance_recovers_the_analytic_doublet():
         scale = float(np.mean(gamma_truth) / np.mean(result.tensions))
         error = np.abs(scale * result.tensions - gamma_truth) / np.abs(gamma_truth)
         assert error.max() < 1e-3, f"ratio={ratio}: {error}"
+
+
+def _rescaled(case_id: str, scale: float) -> DcelData:
+    path = DATASET_DIR / f"{case_id}_mesh.rec"
+    if not path.exists():
+        pytest.skip(f"{path} not found (sibling benchmarking-dataset/ missing)")
+    v, f, regions = mesh_io.read_rec(path)
+    return DcelData(np.asarray(v, dtype=np.float64) * scale, f, regions)
+
+
+@pytest.mark.parametrize("case_id", ["000", "001", "016", "046"])
+def test_map_does_not_depend_on_the_length_unit(case_id):
+    """`BayesianMap` gives the same relative tensions, and pressures times the scale, in any length unit.
+
+    Multiplying every vertex by `l` scales the surface-tension columns of the operator by `l` and
+    the pressure columns by `l**2`; `sigma_f` and the pressure prior follow (`_solve_bayesian_map`),
+    so the negative log-posterior is unchanged and so is the estimate, up to rounding. Before that,
+    the same rescaling moved the relative tensions by up to 1.6e-3 on these meshes and by up to
+    43 % on reconstructions in voxel units. Checked at `l = 10` and `l = 0.1` (not powers of two,
+    so the arithmetic is not exact) to 1e-12 of the largest value.
+    """
+    base = infer_force_balance(_rescaled(case_id, 1.0), 1.0, ForceBalanceNormalisation.BayesianMap)
+    t1 = base.tensions / base.tensions.mean()
+    p1 = base.pressures / base.tensions.mean()
+    for scale in (10.0, 0.1):
+        here = infer_force_balance(_rescaled(case_id, scale), 1.0, ForceBalanceNormalisation.BayesianMap)
+        assert here.interfaces == base.interfaces
+        assert here.cells == base.cells
+        ts = here.tensions / here.tensions.mean()
+        ps = scale * here.pressures / here.tensions.mean()
+        assert np.max(np.abs(ts - t1)) <= 1e-12 * np.max(np.abs(t1)), (case_id, scale)
+        assert np.max(np.abs(ps - p1)) <= 1e-12 * np.max(np.abs(p1)), (case_id, scale)
+        assert here.sigma_f == pytest.approx(scale * base.sigma_f, rel=1e-12)
+
+
+@pytest.mark.parametrize("case_id", ["000", "001", "016", "046"])
+def test_map_does_not_depend_on_the_gauge_value(case_id):
+    """`BayesianMap` gives the same relative tensions and pressures whatever `mean_tension` is.
+
+    The prior's mean and widths are proportional to `mean_tension`, and so is `sigma_f`
+    (`_solve_bayesian_map`), so with `beta = mean_tension * beta1` the negative log-posterior does
+    not change and neither do `gamma / mean(gamma)` and `p / mean(gamma)`. Before `sigma_f` followed
+    the gauge value, `mean_tension = 0.5` moved the relative tensions by up to 1.7e-2 on these
+    meshes. Checked at 0.5, 2 and 10 against 1, to 1e-12 of the largest value.
+    """
+    mesh = _rescaled(case_id, 1.0)
+    base = infer_force_balance(mesh, 1.0, ForceBalanceNormalisation.BayesianMap)
+    t1 = base.tensions / base.tensions.mean()
+    p1 = base.pressures / base.tensions.mean()
+    for mean_tension in (0.5, 2.0, 10.0):
+        here = infer_force_balance(mesh, mean_tension, ForceBalanceNormalisation.BayesianMap)
+        ts = here.tensions / here.tensions.mean()
+        ps = here.pressures / here.tensions.mean()
+        assert np.max(np.abs(ts - t1)) <= 1e-12 * np.max(np.abs(t1)), (case_id, mean_tension)
+        assert np.max(np.abs(ps - p1)) <= 1e-12 * np.max(np.abs(p1)), (case_id, mean_tension)

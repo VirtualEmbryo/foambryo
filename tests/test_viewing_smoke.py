@@ -58,7 +58,20 @@ def test_every_public_function_is_called():
         for name, value in vars(viewing).items()
         if callable(value) and not name.startswith("_") and getattr(value, "__module__", "") == viewing.__name__
     }
-    assert public == {call.split("(")[0] for call in CALLS}
+    assert public == {call.split("(")[0] for call in CALLS} | {"view_mask"}
+
+
+@pytest.mark.usefixtures("headless")
+def test_view_mask_runs_headless():
+    """`view_mask` (`foambryo view MASK`'s window from Python) opens on a mask and closes, with no Polyscope error."""
+    import foambryo.viewing as viewing
+
+    mask = np.zeros((12, 12, 12), dtype=np.uint8)
+    mask[3:9, 3:6, 3:9] = 1
+    mask[3:9, 6:9, 3:9] = 2
+    viewing.view_mask(mask, (1.0, 1.0, 1.0))
+    with pytest.raises(ValueError, match="spacing"):
+        viewing.view_mask(mask, (1.0, 0.0, 1.0))
 
 
 @pytest.mark.usefixtures("headless")
@@ -115,3 +128,112 @@ def test_stress_viewer_draws_each_sign_under_its_own_name_and_colour(monkeypatch
         else:
             assert name.startswith(empty)
             assert not np.any(vectors)
+
+
+# ---------------------------------------------------------------------------------------------
+# an undetermined pressure (nan, from a Laplace method): drawn in the undetermined colour, never breaks a viewer
+# ---------------------------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def forces(mesh):
+    from foambryo import infer_forces
+
+    return infer_forces(mesh)
+
+
+def _with_one_undetermined_cell(pressures: dict[int, float], cell: int = 1) -> dict[int, float]:
+    return {c: (float("nan") if c == cell else p) for c, p in pressures.items()}
+
+
+@pytest.mark.usefixtures("headless")
+@pytest.mark.parametrize("call", ["plot_force_inference", "plot_pressure_inference"])
+def test_pressure_viewers_run_with_an_undetermined_pressure(mesh, forces, call):
+    import foambryo.viewing as viewing
+
+    tensions, pressures = forces
+    kwargs = {"dict_pressure": _with_one_undetermined_cell(pressures)}
+    if call == "plot_force_inference":
+        kwargs["dict_tensions"] = tensions
+    getattr(viewing, call)(mesh, **kwargs)
+
+
+class _ColourRecorder:
+    def __init__(self, recorded: dict) -> None:
+        self.recorded = recorded
+
+    def add_color_quantity(self, name: str, colours: np.ndarray, **_kwargs: object) -> None:
+        self.recorded[name] = np.array(colours)
+
+    def __getattr__(self, _name: str) -> object:  # set_color, add_vector_quantity, ...: not under test
+        return lambda *_args, **_kwargs: None
+
+
+@pytest.mark.usefixtures("headless")
+def test_the_pressure_mesh_colours_an_undetermined_cell_and_is_unchanged_otherwise(monkeypatch, mesh, forces):
+    import matplotlib.cm as cm
+
+    import foambryo.viewing as viewing
+
+    recorded: dict[str, np.ndarray] = {}
+    monkeypatch.setattr(ps, "register_surface_mesh", lambda *_args, **_kwargs: _ColourRecorder(recorded))
+    _, pressures = forces
+    alpha = 0.05
+
+    viewing._view_pressures_on_mesh(mesh, pressures, alpha=alpha)
+    face_pressures = np.array([pressures[max(f[3], f[4])] for f in mesh.f])
+    clipped = face_pressures.clip(0, np.quantile(face_pressures, 1 - alpha))
+    expected = cm.magma(0.1 + 0.8 * (1 - clipped / np.amax(clipped)))[:, :3]  # magma reversed, trimmed to 10-90 %
+    assert recorded["Pressures Cells"].tobytes() == expected.tobytes()
+
+    viewing._view_pressures_on_mesh(mesh, _with_one_undetermined_cell(pressures), alpha=alpha)
+    undetermined = np.max(mesh.f[:, 3:], axis=1) == 1
+    assert undetermined.any()
+    assert (recorded["Pressures Cells"][undetermined] == viewing.UNDETERMINED_COLOR).all()
+    assert np.isfinite(recorded["Pressures Cells"]).all()
+
+
+@pytest.mark.usefixtures("headless")
+def test_the_force_graph_draws_an_undetermined_cell_in_its_colour(monkeypatch, mesh, forces):
+    import networkx as nx
+
+    import foambryo.viewing as viewing
+
+    recorded: dict[str, np.ndarray] = {}
+    monkeypatch.setattr(ps, "register_point_cloud", lambda *_args, **_kwargs: _ColourRecorder(recorded))
+    monkeypatch.setattr(ps, "register_curve_network", lambda *_args, **_kwargs: _ColourRecorder({}))
+    tensions, pressures = forces
+    graph = mesh.compute_networkx_graph()
+    nx.set_edge_attributes(graph, tensions, "tension")
+    nx.set_node_attributes(graph, _with_one_undetermined_cell(pressures), "pressure")
+
+    viewing._display_embryo_graph_forces(graph, show=False)
+    nodes = [n for n, v in graph.nodes.data("volume") if v > 0]
+    colours = recorded["Pressure"]
+    assert (colours[nodes.index(1)] == viewing.UNDETERMINED_COLOR).all()
+    assert np.isfinite(colours).all()
+    assert sum((c == viewing.UNDETERMINED_COLOR).all() for c in colours) == 1
+
+
+@pytest.mark.usefixtures("headless")
+def test_the_stress_viewer_draws_no_stress_for_an_undetermined_cell(monkeypatch, mesh, forces):
+    import foambryo.viewing as viewing
+
+    asked: list[list[int]] = []
+    real = viewing.cell_mean_stress_tensors
+
+    def recording(*args: object, **kwargs: object) -> dict:
+        asked.append([int(c) for c in args[4]])
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(viewing, "cell_mean_stress_tensors", recording)
+    tensions, pressures = forces
+    viewing._plot_stress_tensor(
+        mesh,
+        mesh.compute_networkx_graph(),
+        tensions,
+        _with_one_undetermined_cell(pressures),
+        show=False,
+    )
+    assert 1 not in asked[0]
+    assert len(asked[0]) > 0

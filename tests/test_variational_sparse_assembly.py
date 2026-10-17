@@ -104,7 +104,7 @@ def _dense_route_p_tensions(golden_mesh):
 
 
 def test_route_gram_tensions_match_dense_route(golden_mesh):
-    """Route `Gram` still equals the dense closed-form solve to rtol=1e-10.
+    """Route `Gram` still equals the dense closed-form solve to rtol=1e-10, once gauge-matched.
 
     **Updated by the uncertainty work, deliberately.** This test originally asserted that the
     *shipped* `Variational` reproduces the dense route-P solve. That work flipped the default
@@ -124,7 +124,11 @@ def test_route_gram_tensions_match_dense_route(golden_mesh):
     )
     keys = sorted(dict_tensions)
     x_got = np.array([dict_tensions[tuple(k)] for k in keys])
-    np.testing.assert_allclose(x_got, _dense_route_p_tensions(golden_mesh), rtol=1e-10, atol=1e-12)
+    # Since 0.7.0 the gauge is exact (`mean = 1`); the historical solve used a soft row of ones,
+    # which only rescales a homogeneous system's solution. The ratios are what is reproduced.
+    reference = _dense_route_p_tensions(golden_mesh)
+    assert x_got.mean() == pytest.approx(1.0, abs=1e-12)
+    np.testing.assert_allclose(x_got, reference * (len(reference) / reference.sum()), rtol=1e-10, atol=1e-12)
 
 
 def test_the_default_route_differs_from_route_p_by_the_measured_shift(golden_mesh):

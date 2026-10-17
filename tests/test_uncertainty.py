@@ -228,6 +228,84 @@ def test_gauge_direction_has_zero_variance(golden_mesh):
     assert abs(float(anchor @ cov @ anchor)) < 1e-12 * float(np.abs(np.diag(cov)).max())
 
 
+def _young_dupre_propagation(golden_mesh):
+    from foambryo.junction_graph import solve_with_exact_gauge
+    from foambryo.uncertainty import _angle_propagation_std, _young_dupre_operator
+
+    matrix_m, vector_b, *_ = _young_dupre_operator(golden_mesh, 1.0)
+    tensions, _res, _note = solve_with_exact_gauge(matrix_m[:-1], vector_b[:-1], float(vector_b[-1]))
+    std, _se, jacobian, dp_gamma, dpt_residual = _angle_propagation_std(
+        golden_mesh, matrix_m, tensions, return_jacobian=True,
+    )
+    return matrix_m, tensions, std, jacobian, dp_gamma.toarray(), dpt_residual.toarray()
+
+
+def _gauge_basis(n):
+    q, _r = np.linalg.qr(np.hstack([np.ones((n, 1)), np.eye(n)[:, : n - 1]]))
+    return q[:, 1:]
+
+
+def test_the_angle_propagation_is_the_full_derivative_of_the_exact_gauge_solve(golden_mesh):
+    """`J = -Z (P Z)^+ dP gamma - Z ((P Z)^T P Z)^+ Z^T dP^T r`, `Z` any orthonormal basis of `1⊥`.
+
+    Since 0.7.0 the propagation differentiates the exact-gauge solve (every Jacobian column sums to
+    zero: the mean tension has no variance), and includes the residual term, which was dropped
+    until 0.6.0. Checked here against an independent construction; on this mesh the term moves the
+    standard errors, but by less than 10 % at the median.
+    """
+    matrix_m, _tensions, std, jacobian, dp_gamma, dpt_residual = _young_dupre_propagation(golden_mesh)
+    physics = matrix_m[:-1]
+    z = _gauge_basis(physics.shape[1])
+    reduced = physics @ z
+    expected = -z @ np.linalg.pinv(reduced) @ dp_gamma - z @ np.linalg.pinv(reduced.T @ reduced) @ z.T @ dpt_residual
+    scale = np.abs(expected).max()
+    np.testing.assert_allclose(jacobian, expected, rtol=0, atol=1e-10 * scale)
+    assert np.abs(jacobian.sum(axis=0)).max() <= 1e-12 * scale
+    without_term = -z @ np.linalg.pinv(reduced) @ dp_gamma
+    relative = np.abs(np.linalg.norm(jacobian, axis=1) - np.linalg.norm(without_term, axis=1)) / np.linalg.norm(
+        without_term, axis=1)
+    assert 0 < np.median(relative) < 0.1
+    assert np.all(std > 0)
+
+
+def test_the_propagation_matches_finite_differences_of_the_constrained_solve():
+    """The Jacobian against central differences of `solve_with_exact_gauge`, on random systems.
+
+    Homogeneous physics rows `P`, perturbation directions `dP_k` with two entries each (as an angle
+    enters the Young-Dupre rows): the derivative of the exact-gauge solution along every `dP_k`.
+    """
+    from scipy import sparse
+
+    from foambryo.junction_graph import solve_with_exact_gauge
+    from foambryo.uncertainty import _exact_gauge_propagated_variance
+
+    rng = np.random.default_rng(7)
+    n_rows, n, n_wedges = 40, 9, 12
+    physics = rng.normal(size=(n_rows, n))
+    gauge = float(n)
+    gamma, *_ = solve_with_exact_gauge(physics, np.zeros(n_rows), gauge, use_sparse=False)
+    residual = physics @ gamma
+    directions = []
+    dp_gamma = np.zeros((n_rows, n_wedges))
+    dpt_residual = np.zeros((n, n_wedges))
+    for k in range(n_wedges):
+        d = np.zeros((n_rows, n))
+        for row, col in zip(rng.choice(n_rows, 2, replace=False), rng.choice(n, 2, replace=False), strict=True):
+            d[row, col] = rng.normal()
+        directions.append(d)
+        dp_gamma[:, k] = d @ gamma
+        dpt_residual[:, k] = d.T @ residual
+    _variance, jacobian = _exact_gauge_propagated_variance(
+        physics, sparse.csc_matrix(dp_gamma), sparse.csc_matrix(dpt_residual), np.ones(n_wedges), return_jacobian=True,
+    )
+    step = 1e-6
+    for k, d in enumerate(directions):
+        up, *_ = solve_with_exact_gauge(physics + step * d, np.zeros(n_rows), gauge, use_sparse=False)
+        down, *_ = solve_with_exact_gauge(physics - step * d, np.zeros(n_rows), gauge, use_sparse=False)
+        finite = (up - down) / (2 * step)
+        np.testing.assert_allclose(jacobian[:, k], finite, rtol=0, atol=1e-6 * np.abs(finite).max())
+
+
 # --------------------------------------------------------------------------------------
 # 3. Resampling cannot fix a bias — the reason the deterministic bound is preferred
 # --------------------------------------------------------------------------------------

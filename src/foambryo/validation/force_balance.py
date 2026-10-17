@@ -1,8 +1,9 @@
-"""The unified force-balance operator, ported from the reference implementation.
+"""The unified force-balance operator, and the solvers and diagnostics built on it.
 
-Ported (algorithm unchanged) from the reference implementation that accompanies the
-technical note on tension inference (H. Turlier, in preparation; not distributed). It assumes
-the mesh is a mechanical equilibrium of the capillary energy
+The test suite compares every function here with an independent reference implementation of the same algorithms
+(`tests/reference/force_balance_reference_implementation.py`); the documentation's methods note describes the
+operator. It assumes the mesh is a mechanical equilibrium of the
+capillary energy
 
     E(v) = sum_interfaces gamma * area + sum_junctions t * length - sum_cells p * volume.
 
@@ -14,8 +15,8 @@ this reads `M @ beta = 0`, with `beta = (gamma, t, p)` and `M` built from the di
 gradients of area, length and volume; every classical balance (Young-Dupre, its
 projection, Young-Laplace) is a row or combination of rows of `M`.
 
-The operator is kept general here (it can build the line-tension block `M_t`), but by the
-package author's design choice the foambryo benchmark harness (`foambryo_benchmarks/run_case.py`) calls it
+The operator is kept general here (it can build the line-tension block `M_t`), but by design
+the benchmark harness of the source repository (`foambryo_benchmarks/run_case.py`) calls it
 with no junctions (`beta = (gamma, p)`, `M = [M_gamma | M_p]`) — pass empty `junctions`
 and `edge_to_triple` to get that operator directly; the assembly loop below is a no-op
 for the line-tension block in that case, so no separate code path is needed.
@@ -46,16 +47,22 @@ def force_balance_operator(
     Args:
         v (NDArray[np.float64]): Mesh vertices, shape `(nv, 3)`.
         f (NDArray[np.int64]): Mesh triangles (vertex indices), shape `(nf, 3)`.
-        regions (NDArray[np.int64]): Per-triangle region pair, shape `(nf, 2)`.
-        interfaces (list[tuple[int, int]]): Sorted interface keys (see `list_interfaces`).
+        regions (NDArray[np.int64]): Per-triangle region pair `(first, second)`, shape `(nf, 2)`; the
+            triangle's right-hand-rule normal points out of the first region into the second
+            (`check_label_orientation_convention`).
+        interfaces (list[tuple[int, int]]): Sorted interface keys `(a, b)`, `a < b` (see `list_interfaces`).
         junctions (list[tuple[int, int, int]]): Sorted junction keys (see `list_junctions`).
             Pass `[]` for the no-line-tension operator `M = [M_gamma | M_p]`.
         edge_to_triple (dict[tuple[int, int], tuple[int, int, int]]): Map mesh edge -> its
             region-triple (see `list_junctions`). Pass `{}` together with `junctions=[]`.
-        cells (list[int]): Sorted cell labels (see `cell_labels`).
+        cells (list[int]): Sorted cell labels, the medium left out (see `cell_labels`).
 
     Returns:
-        NDArray[np.float64]: The operator `M`, shape `(3*nv, n_interfaces + n_junctions + n_cells)`.
+        NDArray[np.float64]: The operator `M`, shape `(3*nv, n_interfaces + n_junctions + n_cells)`, in the
+            mesh's own units.
+
+    Raises:
+        KeyError: if a triangle's region pair is not in `interfaces`, or an edge's triple not in `junctions`.
     """
     nv = len(v)
     ni, nj, nc = len(interfaces), len(junctions), len(cells)
@@ -201,8 +208,8 @@ def marginalise_pressures(
     an *exactly* equivalent problem in the tensions alone — this is block elimination of a
     quadratic form, not an approximation, so any constraint acting only on the tension
     columns (the mean-tension gauge) gives the same tensions from the reduced and the joint
-    problem. The test `test_marginalised_and_joint_solves_agree` in
-    `tests/test_force_balance_inference.py` checks this numerically.
+    problem. The test `test_marginalised_and_joint_solves_agree`
+    in `tests/test_force_balance_inference.py` checks this numerically.
 
     `P_perp` is applied through a thin QR factorisation of `M_p` rather than by forming the
     `3nv x 3nv` projector, which would be a ~9 GB dense array on a 20 000-vertex mesh.
@@ -263,7 +270,7 @@ def effective_surface_tensions(
     on a subset of interfaces (for example, some line tensions encoded at half their value
     by the program that generated the mesh) — a defect in the data, not in the inference.
     Here the harness operator carries no
-    line-tension block (`beta = (gamma, p)`, by the package author's design choice), so the same question
+    line-tension block (`beta = (gamma, p)`, by design), so the same question
     is asked of the surface tensions directly: solve
 
         min ||M beta||^2   subject to   mean(gamma) = mean_tension
@@ -271,13 +278,11 @@ def effective_surface_tensions(
     and compare `gamma` to nominal. Only *ratios* are physical, so the constraint is a
     gauge choice, not a physical input — without it `beta = 0` is the trivial minimiser.
     A comparison of the returned tensions against nominal ones is therefore only
-    meaningful after gauge matching (see `foambryo_benchmarks.metrics.effective_tension_ratios`).
+    meaningful after gauge matching (see `foambryo_benchmarks.metrics.effective_tension_ratios` in the source
+    repository).
 
-    A single anchor is correct here precisely because there is no line block. With two
-    tension blocks present, anchoring only one sends the other towards zero under noise:
-    to first order the error lies along the softest non-gauge singular direction, which
-    mixes the two blocks at a fixed ratio, and the anchor pushes all of it into the
-    un-anchored block. That is what `block_anchors` exists to avoid; `nj > 0` is accepted here only so the
+    The only constraint imposed is the mean surface tension, because the harness operator has no line block; with
+    a line block, `block_anchors` gives a constraint for each tension block. `nj > 0` is accepted here only so the
     residual is reported consistently, and the caller is expected to pass `nj = 0`.
 
     Args:
@@ -292,10 +297,12 @@ def effective_surface_tensions(
         tuple[NDArray[np.float64], NDArray[np.float64], float]: `(gamma_eff, p_eff,
             residual_fraction)`, where `residual_fraction` is
             `||M beta_eff|| / ||M_gamma gamma_eff||` — the force left unbalanced once the
-            tensions themselves are free, i.e. the floor that `residual_at`'s `rho` at any
-            *given* tensions cannot go below. `rho` far above this floor means the nominal
-            tensions are wrong; both being large means the mesh is not an equilibrium of
-            any tensions at all.
+            tensions themselves are free (`rho_free`). It is the ratio at the minimiser of
+            `||M beta||` under the gauge, not the minimum of the ratio itself, so it is close
+            to, but not strictly, the lowest value `residual_at`'s `rho` can take at any
+            *given* tensions. `rho` far above it means the nominal tensions are
+            wrong; both being large means the mesh is not an equilibrium of any tensions
+            at all.
     """
     anchor = np.zeros(m.shape[1])
     anchor[:ni] = 1.0 / ni
@@ -310,8 +317,8 @@ def effective_surface_tensions(
 def singular_values(m: NDArray[np.float64]) -> NDArray[np.float64]:
     """Sorted singular values of the column-normalised operator.
 
-    The smallest is the overall-scale gauge; the next controls the noise amplification
-    `1/sigma`.
+    Each column is scaled to unit norm first. The smallest value belongs to the overall-scale
+    (gauge) direction.
 
     Args:
         m (NDArray[np.float64]): The force-balance operator.
@@ -327,9 +334,9 @@ def singular_values(m: NDArray[np.float64]) -> NDArray[np.float64]:
 def soft_mode(m: NDArray[np.float64], ni: int, nj: int) -> tuple[float, NDArray[np.float64]]:
     """Return `(sigma_soft, block_fractions)` for the worst-determined non-gauge direction.
 
-    `sigma_soft` is its singular value; `block_fractions` is how much of it sits in the
-    (surface, line, pressure) blocks. A line-heavy soft mode means the line/surface scale
-    is the fragile quantity.
+    The direction is the right singular vector of the column-normalised operator with the second-smallest singular
+    value (the smallest being the gauge). `sigma_soft` is that singular value; `block_fractions` is how much of the
+    unit vector sits in the (surface, line, pressure) blocks, as the squared norms of its three parts.
 
     Args:
         m (NDArray[np.float64]): The force-balance operator.
@@ -363,9 +370,8 @@ def solve_constrained(
 
     `anchors` is a list of constraint vectors (e.g. the mean of a block, see
     `block_anchors`). The system solved is `[[2 M^T M, A^T], [A, 0]] @ (beta, lambda) =
-    (0, targets)`, with `A` the stacked anchors. Anchoring one block leaves the other free to
-    collapse under noise; anchoring both blocks (mean surface and mean line tension) pins
-    both the global scale and the soft line/surface direction.
+    (0, targets)`, with `A` the stacked anchors. With both anchors of `block_anchors` (mean
+    surface and mean line tension), the scale of each tension block is fixed.
 
     Args:
         m (NDArray[np.float64]): The force-balance operator.
@@ -374,6 +380,10 @@ def solve_constrained(
 
     Returns:
         NDArray[np.float64]: `beta`, the constrained least-squares solution.
+
+    Raises:
+        numpy.linalg.LinAlgError: if the KKT matrix is singular (for example an all-zero anchor, which
+            `block_anchors` returns as its line anchor when `nj == 0`).
     """
     a = np.atleast_2d(anchors)
     n, k = m.shape[1], len(a)
@@ -463,7 +473,8 @@ def block_anchors(ni: int, nj: int, ncols: int) -> list[NDArray[np.float64]]:
         ncols (int): Total number of columns of `M`.
 
     Returns:
-        list[NDArray[np.float64]]: `[a_surface, a_line]`.
+        list[NDArray[np.float64]]: `[a_surface, a_line]`, each the mean of its block's columns. With `nj == 0`,
+            `a_line` is all zeros: pass `a_surface` alone to `solve_constrained` then.
     """
     a_surface = np.zeros(ncols)
     a_surface[:ni] = 1.0 / ni
@@ -491,11 +502,12 @@ def map_estimate(
         prior_cov (NDArray[np.float64]): Prior covariance of `beta`.
         sigma_f (float, optional): Force-balance noise scale. Defaults to 1.0.
         nonneg_upto (int | None, optional): If given (e.g. `n_surface + n_line`), those
-            first entries are kept non-negative by a few projected-gradient steps
+            first entries are kept non-negative by 500 projected-gradient steps
             (pressures left free). Defaults to `None`.
 
     Returns:
-        tuple[NDArray[np.float64], NDArray[np.float64]]: `(beta, posterior_cov)`.
+        tuple[NDArray[np.float64], NDArray[np.float64]]: `(beta, posterior_cov)`; `posterior_cov` is the
+            Gaussian posterior's, without the non-negativity constraint.
     """
     p_inv = np.linalg.inv(prior_cov)
     a = m.T @ m / sigma_f**2 + p_inv

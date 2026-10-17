@@ -1,0 +1,101 @@
+# The documentation website. Build it with mkdocs-material and mkdocstrings[python] installed:
+#     mkdocs build -d <an output folder outside the repository>
+site_name: foambryo
+site_description: Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation
+repo_url: https://github.com/VirtualEmbryo/foambryo
+copyright: GPL-3.0-or-later, Turlier lab
+site_dir: site
+strict: false
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle: {icon: material/brightness-7, name: Dark mode}
+    - scheme: slate
+      toggle: {icon: material/brightness-4, name: Light mode}
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc: {permalink: true}
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.arithmatex: {generic: true}
+  - pymdownx.snippets: {base_path: ["."], check_paths: true}
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: false
+            show_root_toc_entry: false
+            members_order: source
+            filters: ["!^_"]
+            heading_level: 2
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Methods note: methods-note.md
+  - User guide:
+      - Methods: user-guide/methods.md
+      - Cropped tissues: user-guide/cropped-tissues.md
+      - Anisotropic voxels: user-guide/anisotropic-voxels.md
+      - Large tissues: user-guide/large-tissues.md
+      - Seed ensembles: user-guide/seed-ensembles.md
+      - Viewers: user-guide/viewers.md
+      - Command line: command_line_specification.md
+  - Examples:
+      - examples/index.md
+      - examples/anisotropic-voxels.md
+      - examples/cropped-tissue.md
+      - examples/seed-ensembles.md
+      - examples/large-tissue.md
+      - examples/command-line.md
+      - examples/polyscope-viewer.md
+      - examples/second-order-angle-reading.md
+      - examples/refusing-folded-trijunction-wedges.md
+      - examples/default-junction-relocation.md
+  - API reference:
+      - api/index.md
+      - api/io.md
+      - api/mesh.md
+      - api/tension-inference.md
+      - api/pressure-inference.md
+      - api/force-inference.md
+      - api/seed-ensembles.md
+      - api/crop-faces.md
+      - api/linear-solves.md
+      - api/junction-graph.md
+      - api/uncertainty.md
+      - api/second-order-angle-reading.md
+      - api/wedge-refusal.md
+      - api/per-edge-tension-inference.md
+      - api/force-balance-inference.md
+      - api/reconstruction-cost.md
+      - api/segmentation-masks.md
+      - api/results.md
+      - api/colour-scales.md
+      - api/viewing.md
+      - api/geometry.md
+      - api/curvature.md
+      - api/validation.md
+  - Changelog: changelog.md
+  - Release notes: release-notes.md

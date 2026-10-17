@@ -206,3 +206,24 @@ def test_mirror_doublet_gives_both_cells_the_mirrored_tensor(shared_tension):
     mirror = np.diag([-1.0, 1.0, 1.0])
     assert np.abs(stresses[1] - np.diag(np.diag(stresses[1]))).max() > 1e-3  # not trivially diagonal
     np.testing.assert_allclose(stresses[2], mirror @ stresses[1] @ mirror, atol=1e-13)
+
+
+def test_an_interface_absent_from_the_tension_map_contributes_no_stress():
+    """A crop interface (only crop faces) is absent from the tension map: it contributes no stress.
+
+    Its faces used to be looked up as a membrane and raised a `KeyError`, so the stress viewer could not draw such
+    a cropped mesh. Absent is exactly a tension of 0.
+    """
+    from foambryo import dcel_mesh_from_file, infer_forces
+
+    from .conftest import require_substitute_mesh
+
+    mesh = dcel_mesh_from_file(require_substitute_mesh())
+    tensions, pressures = infer_forces(mesh)
+    absent = next(key for key in tensions if key[0] == 0)
+    without = {key: value for key, value in tensions.items() if key != absent}
+    volumes = mesh.compute_volumes_cells()
+    cells = [int(c) for c in mesh.materials[1:]]
+    left_out = cell_mean_stress_tensors(mesh, without, pressures, volumes, cells)
+    zero = cell_mean_stress_tensors(mesh, {**without, absent: 0.0}, pressures, volumes, cells)
+    assert all(np.array_equal(left_out[c], zero[c]) for c in cells)

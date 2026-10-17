@@ -2,413 +2,245 @@
 
 User-facing changes only, organised by what a user experiences.
 
+## 0.7.0 — 2026-10-17
+
+0.6.0 was prepared (4 October 2026) but not published on PyPI: its changes are part of 0.7.0, listed at the end of this section under "Prepared for 0.6.0". 0.7.0 is the first release on PyPI since 0.5.1.
+
+Recent work on dw3d and foambryo is part of a collaboration with Alejandro Aguilera Castrejon (Janelia Research Campus, Howard Hughes Medical Institute). We thank him and his Janelia colleagues Adam L. Taylor, Wenhong Li and Francesco Roncato. Adam L. Taylor found the border-triangle winding defect fixed in 0.6.0 and pointed us to the seed-extraction and dense tension-solve bottlenecks on large tissues.
+
+- **Documentation.** The README is shorter and points to a user guide in `docs/` (methods, cropped tissues, anisotropic voxels, large tissues, seed ensembles, viewers), from which a documentation website is built with MkDocs (`mkdocs.yml`), with an API reference generated from the docstrings. New examples, each runnable on a tissue it generates: `anisotropic_voxels.py`, `cropped_tissue.py`, `seed_ensembles.py`, `large_tissue_solvers.py`, `polyscope_viewer.py`; `command_line_example.sh` now runs every sub-command, `--no-pressures`, `--diagnostics` and `foambryo view --figure`. The docstrings of the public functions were checked against the code: the mean-tension constraint is described as the exact normalisation it now is. No number changes.
+- **Dependencies: the minimum versions are the oldest with which the test suite passes**, on Python 3.11: `delaunay-watershed-3d>=0.7.0` (the command's `mesh` and `infer-over-seeds` need its physical-units reconstruction), `numpy>=2.0.0`, `scipy>=1.13.0`, `networkx>=3.2`, `trimesh>=4.0.0`; extras `polyscope>=2.6.1` (the first with every call the viewer makes), `matplotlib>=3.8.4`, `tifffile>=2023.1.23`, `torch>=2.3.0`. The package metadata now lists the source, documentation, changelog and issue-tracker URLs.
+- **Fixed: the Laplace pressure methods added `base_pressure` twice to every cell** (only with a non-zero `base_pressure`); present since the first version, 0.5.1 included. With `Laplace` or `WeightedLaplace`, every cell's pressure came out `base_pressure` too high, through `infer_pressures`, `infer_forces`, `foambryo infer --base-pressure` and the viewers: the solve pins the medium at `base_pressure`, so its pressures already include it, and it was added again. The medium's pressure, the differences between cells and the variational method (the default) were right. With the default `base_pressure=0` every number is unchanged, bitwise.
+- **`foambryo.validation.read_rec` and `read_mesh` read text `.rec` files.** They read only the binary layout, while delaunay-watershed-3d writes `.rec` files as text by default, and so does `foambryo mesh`: such a file raised an error. They now tell the two layouts apart from the first bytes and read both, as `dw3d.io.load_rec` does; a metadata appendix is ignored. Binary files read as before.
+- **`foambryo.viewing.plot_valid_junctions` no longer fails when no triple line can be judged** (a mesh without triple lines, or one whose every line has a crop interface): it raised numpy's "zero-size array" `ValueError`. It now shows the mesh alone and says so with a `UserWarning`. It also no longer fails when every judged line is bad and none is left unjudged (numpy's "need at least one array to concatenate"): it draws the red lines only.
+- **Error bars refuse a large tissue at once.** `infer_tensions_with_uncertainty` and `compute_inference_diagnostics` compute their diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy's LAPACK cannot take past `2**31 - 1` entries: on a 1 866-cell tissue they failed after about 20 minutes and 55 GiB, for `YoungDupre` too. They now raise `ValueError` before building anything, with the operator's size, the limit (`foambryo.uncertainty.DENSE_OPERATOR_ENTRY_LIMIT`) and what to use instead (`infer_tensions`; the seed spread of `infer_tensions_over_seeds`, a lower bound on the error). A mesh of the default reconstruction reaches the limit at about 1 300 cells of real size. A known limitation of 0.7.0; every smaller mesh is unchanged, bitwise.
+- **A saved figure no longer shows a local path.** `foambryo view --results OUTDIR --figure` wrote OUTDIR as typed in the caption (`Values: read from …`), so a figure made with an absolute path showed the folders above the results; the caption and the window's panel now name the results folder alone. No number changes.
+- **The `foambryo` command starts without matplotlib.** After `pip install foambryo` without the `viewing` extra, every sub-command, `--help` and `--version` failed with `ModuleNotFoundError: matplotlib`, because building the parser of `foambryo view` read one default value from the viewer's figure module. It no longer does.
+- **The `LineBootstrap` calibration note says what was measured, in plain words.** The note stored on every `infer_tensions_with_uncertainty` result referred to "the per-edge Young-Dupre work"; it now says that resampling whole triple lines changes how much each line weighs against the others, and that changing those weights by a factor of about 4 was measured to change the error of the tensions by two orders of magnitude. No number changes.
+- **The reconstruction estimate of a small tissue reads "under 1 s"**, not "about under 1 s (under 1 s-under 1 s)": `ReconstructionCostEstimate.text()`, and so the napari plugin and the viewer's window, say a quantity once when its band adds nothing ("under 1 s and under 1 MiB" for the smallest), and "up to 2 s" when the central value is under a second and the high end is not; the window's seed-ensemble status no longer reads "about under 1 s". Every other estimate reads as before; the estimate itself is unchanged.
+- **`foambryo view --results` names how an interface missing from an ensemble is drawn**: the warning said "drawn grey"; it now says "drawn undetermined", as they are drawn (a green outline, like any undetermined value).
+- **Tensions are coloured from blue to red through light grey, centred on the mean tension.** Every front end (the viewer's window, `foambryo view --colour-bars`, and the napari plugin through `foambryo.colour_scales`) now colours surface tensions with matplotlib's `coolwarm` instead of `jet`: a tension equal to the mean tension (`mean_tension`, 1 by default) is light grey, lower tensions are blue, higher ones red. The range is symmetric around the mean, its half-width the farther of the 5 % and 95 % quantiles from it (`tension_colour_range`), so both quantiles stay inside it; the bar's middle tick is the mean. Pressures keep their map. Other quantities the viewer can draw on interfaces (a seed spread, a residual) keep `jet`. No number changes.
+- **What has no value no longer looks like one.** An undetermined value (`nan`) is drawn green (#1b9e77), a colour far from every colour of the tension and pressure maps, on white and on black backgrounds; the former grey sat next to the new map's middle. Crop faces are drawn as see-through glass with their edges, and the coloured surface no longer draws them underneath; the colour bars add a "crop face" swatch when the mesh has crop faces. `foambryo.colour_scales` gains `tension_colour_range`, `tension_colour_fractions`, `quantity_colours`, `TENSION_COLOUR_MAP` and the crop-face constants.
+- **No pressure colour vanishes on a black or a white background.** Pressures keep `magma`, reversed, but trimmed to its 10–90 % range (a fraction `x` of the scale is drawn `magma(0.1 + 0.8 x)`): the whole map ran from black (the highest pressures) to near-white (the lowest), so on napari's black canvas the highest-pressure cells disappeared, and on a white background the lowest. Every front end and the saved colour bars change at once (`foambryo.colour_scales.pressure_colours`, with the new `PRESSURE_COLOUR_MAP` and `PRESSURE_COLOUR_MAP_RANGE`). The scale itself, its ends and every value are unchanged.
+- **The viewers' backgrounds, in one place: `foambryo.colour_scales.BACKGROUND_COLOURS`** (black, dark grey 0.20, light grey 0.70, white), the choices every front end offers, so that a colour hidden on one background can be seen on another. The light grey is not lighter because the tension map's middle (the mean tension) is light grey.
+- **A reconstruction's estimate, before it runs: `foambryo.reconstruction_cost`.** `estimate_reconstruction_cost( voxels)` gives the wall time and peak memory of `foambryo mesh`'s reconstruction, each with a band, from the voxels handed to delaunay-watershed-3d (`voxels_handed_to_dw3d(shape, spacing)`: an anisotropic mask counts its voxels after resampling to cubic voxels). Power laws fitted to seven sets of measured reconstructions, from aggregates of 2 to 10 cells to a 1 866-cell tissue, on one machine; the band is the largest in-sample ratio, not a validated interval. Front ends that reconstruct (the viewer started from a mask, the napari plugin) read it from here.
+- **The force viewer draws a mesh with an interface made only of crop faces.** Its stress tensors used to fail on such a mesh with a `KeyError`.
+- **Exploding the view keeps the graph on the cells.** Each explode used to add the cells' displacements to the mesh's own cell centroids (`mesh.centroids`), so a second explode, or a second plot of the same mesh, drew the graph's nodes, its edges and the stress tensors' crosses further and further from their cells (after 24 coefficients, the farthest node was 4.6 from its cell on a benchmark tissue 1.4 across, and 1 490 on a 90-cell tissue 340 across). Every node now sits at its exploded cell's barycentre, for every coefficient, and `mesh.centroids` is never changed. The sphere-fit residuals drawn on an exploded surface are those of the unexploded mesh, bitwise (they were fitted to translated vertices, a 1e-12 relative difference). No inferred number changes: tensions, pressures and stress tensors were and remain bitwise the same after an explode.
+- **The viewer's window: a choice of background.** The panel offers white (Polyscope's), light grey, dark grey and black (`foambryo.colour_scales.BACKGROUND_COLOURS`, the napari plugin's choices too), or a custom colour; on a dark background the scale bar, the frame, their labels and the graph view's black nodes are drawn light. A background set in Polyscope's own menu is followed too. Polyscope tone-maps its background (a grey of 0.2 was shown 0.5): the window hands it the value it shows as the colour chosen.
+- **The viewer's window: tensions first, live explode, a frame, Export, and `view_mask`.** When tensions and pressures are both inferred, the surface shows the tensions first (the panel switches to the pressures). An undetermined tension's interface is drawn as its green outline, without fill; crop faces as edged glass, which the panel can hide. Moving the explode coefficient redraws the exploded view at once: the window prepares each view on a background thread and keeps turning, also on large tissues. An optional x, y, z frame (three segments of a round length in the mesh's unit, labelled) can be shown and is written in saved figures. *Export* writes, in a folder, `foambryo infer`'s files for the values shown, with the command's writers: `tensions.csv`, `pressures.csv` (when inferred), `solves.csv` with diagnostics (a new *diagnostics* choice), `run.json`, and `colour_bars.png` as `foambryo view --colour-bars` writes it; it asks *Replace* or *Cancel* when the folder holds foambryo's files and never touches another file. `foambryo.viewing.view_mask(mask, spacing, ...)` opens from Python the window `foambryo view MASK` opens, with the same options and defaults.
+- **The viewer starts from a mask, and explodes and cuts the tissue.** `foambryo view MASK --spacing DZ DY DX` opens the segmentation in the Polyscope window (its cells in one colour each), reconstructs it there as `foambryo mesh` does and infers as `foambryo infer` or `foambryo infer-over-seeds` does: each step runs in a separate process, so the window stays responsive, shows the elapsed time and an estimate, and can cancel it. In every viewer window the panel now explodes the tissue (the scattered view, with its coefficient; `foambryo view --scattered [COEFF]`) and cuts it with a plane normal to z, y or x, and offers the tensions only (`foambryo view --no-pressures`) and the solver, with the `foambryo infer` command line that gives the numbers shown.
+
+- **The viewer's window shows its scales and the library's options.** `foambryo view` and the Polyscope viewer functions now draw, in a panel of the window, the colour bars of what is shown (the library's own colours over the library's ranges), which call produced the colours, and a length scale bar under the tissue when the mesh records its unit. *Save figure* writes the view with its bars and scale bar, *Save colour bars* the bars (PNG, PDF or SVG; a click never overwrites a file); from the command, `foambryo view MESH --figure FILE`, and from Python `plot_force_inference(..., save_figure=PATH)`. The viewer functions and `foambryo view` take `infer`'s options (`mode_tension`, `mode_pressure`, `mean_tension`, `base_pressure`, `solver`; the same defaults), with the same numbers bit for bit as `foambryo infer`, and the panel can switch the methods and recompute. `foambryo view --results` also reads what `foambryo infer-over-seeds` wrote: the ensemble tensions on the mesh, the seed spread, and the interfaces found by fewer than half of the seeds. **Colours are brighter**: Polyscope drew every coloured surface about 15 % darker than its colour bar (it shades the back of a triangle darker, and the outside of a tissue is the back of its triangles); the surface now draws both sides alike. A refused tension inference in `foambryo view` exits 4 with the library's message instead of a traceback.
+
+- **`foambryo infer --no-pressures`: the tensions only.** When the pressures are not needed, the command makes only the first of `infer_forces`' two calls, `infer_tensions` with the same options (bitwise the same tensions), writes no `pressures.csv`, and `run.json` says that the pressures were not computed. In Python, `infer_tensions_then_pressures(..., with_pressures=False)` does the same.
+- **The solve diagnostics as a table, `solves.csv`.** With `--diagnostics basic` or `spectrum`, `foambryo infer` also writes one row per linear solve (which system, the solver used, equations and unknowns, rank, residual, condition number, iterations), the values `run.json` records under `solves`, readable in a spreadsheet; `foambryo.results.write_solve_table` / `read_solve_table` write and read it. `--overwrite` deletes it with the other outputs.
+- **`foambryo mesh`'s mask report is information.** The line printed before the reconstruction now begins `mask, for information (nothing is changed):`; segmentations are reconstructed as they are.
+
+- **What the `foambryo` command does is public, for other front ends.** A front end such as a napari plugin can now give the command's numbers and write its files by calling the functions the command calls, rather than a copy of them:
+  - `foambryo.segmentation_masks`: `read_segmentation_mask` and `check_segmentation_mask` (the command's mask reading and checks, with its messages), and `segmentation_mask_report`, which counts what a reconstruction will meet without changing the mask: the cells, those touching the image box (they become cut cells), those in several pieces, the pieces of medium the tissue encloses, and the labels below 5 % of the median cell;
+  - `reconstruct_mask(mask, spacing)`: `foambryo mesh`'s reconstruction, returned as a `MaskReconstruction` that holds the mesh's arrays and the bytes of its `.rec` file, so it pickles to the size of the mesh and writes `foambryo mesh`'s file byte for byte; its `mesh()` gives bitwise the numbers of `dcel_mesh_from_segmentation_mask(mask, spacing=spacing)`;
+  - `infer_tensions_then_pressures`: `infer_forces`, bitwise, returning an `InferenceOutcome` that keeps the tensions when the pressure solve refuses them, as `foambryo infer` does;
+  - `foambryo.results` (the tables, the run record and its builders, the methods' command-line spellings, the warning counts) and `foambryo.colour_scales` (the viewer's colour scales and bars);
+  - `infer_tensions_over_seeds(progress=...)`, called once per seed, and `PressureComputationMethod.has_crop_face_formulation`, which says which pressure methods a cropped mesh accepts (only `Variational`).
+
+  The command now calls these functions; its tests pass unchanged, and every number and file is what it was.
+
+- **Tensions from several reconstructions: `infer_tensions_over_seeds`.** delaunay-watershed-3d dithers its tessellation points with a seed, and another seed gives slightly different tensions: about 5 % from seed to seed on the benchmarking dataset, 13–14 % on tissues with cells of real size, 21 % on a 110-cell and a 1 866-cell tissue. The new function reconstructs a mask at a fixed list of seeds (0 to 7 by default), infers each mesh's tensions and averages them per interface. It returns the ensemble tension, the standard deviation over the seeds (absolute, and relative to the tension), how many seeds found each interface, a flag for the interfaces found by fewer than half of them, and each seed's own tensions and reconstruction record. Against ground truth, 8 seeds lowered the median relative tension error from 0.152 to 0.123 on synthetic tissues with cells of real size (12 of 12 lower) and from 0.077 to 0.064 on the benchmarking dataset (35 of 42 lower), both against a single seed on average. Against one reconstruction at the default seed, which is what `infer_tensions` returns, the benchmark's median fell from 0.078 to 0.064, lower on 23 of the 42 cases.
+  - The seed spread is a lower bound on the error, not an error bar: a single seed's ±1 SD interval held the truth for about half of the interfaces.
+  - `seeds=[42]` reproduces `infer_tensions` on `dcel_mesh_from_segmentation_mask`'s mesh bit for bit.
+  - `max_workers` runs seeds in parallel processes, without changing the result.
+  - `combine="angles"` (averaging the contact angles, then one `YoungDupre` solve) is experimental and warns with `SeedEnsembleExperimentalWarning`.
+
+  Every existing function is unchanged.
+- **`Cotan`, `InvCotan`, `Lami` and `LogLami` no longer break on a degenerate junction.** A triple line whose wedge angle is exactly 0 or 180 degrees (two films lying in one plane, on short lines of meshes whose vertices sit on the voxel lattice) gives these four methods infinite coefficients: `1/sin`, `cot(phi/2)`, `log sin`. On a 1 866-cell tissue this made all four systems non-finite: `lsqr` ran to its iteration limit and the dense fallback ran on `nan`. On 5 of 484 embryo frames, `InvCotan` and `Lami` returned tensions the data did not determine (a row ~1e15 times the others). Such a line's equations are now left out, with a `DegenerateWedgeWarning` naming how many lines were left out and how many interfaces were left without any equation (reported as `nan`). These four methods also refuse to solve a system that still holds a non-finite coefficient. A wedge counts as degenerate within `DEGENERATE_WEDGE_TOLERANCE` = `sqrt(8 eps)` (4.2e-8 rad) of 0 or 180 degrees, the rounding of the angle reading itself. The other nine methods are unchanged. **On every mesh without such a line, every number is bitwise what it was.**
+- **Cropped tissues are supported.** A tissue imaged in part has cells the image boundary cuts, and the mesh closes them with **crop faces**: triangles on the boundary where the mask's cell reaches it, labelled like contact with the medium although nothing beyond them was observed. Read as medium contact they bias the tensions near the crop and the pressures of the cells they close. A mesh now carries them as a mask, `DcelData(..., crop_faces=...)`, filled by `dcel_mesh_from_segmentation_mask` from delaunay-watershed-3d's reconstruction and by `dcel_mesh_from_file` from `.rec` and `.vtk` files that record them. Then:
+  - **tensions**: a crop face, and every junction edge and vertex that touches it, enters no equation, in all 13 methods; the rest of a junction line that ends on the crop still counts. An interface made only of crop faces is absent from the tension map. An interface left with no equation is `nan`, as before;
+  - **pressures**: the cells the crop cuts (`DcelData.cut_cells`) are solved for and reported as `nan`, with a `CutCellPressureWarning` naming them; the other cells' pressures are reported as usual. Undetermined tensions are accepted there instead of raising `UndeterminedTensionError`. `infer_force_balance` follows the same rule;
+  - **viewers**: crop faces are drawn as their own surface, "Crop faces", and cut cells grey, like any cell whose pressure is not reported;
+  - the Laplace pressure methods, `compute_inference_diagnostics` and `infer_tensions_with_uncertainty` have no formulation for crop faces yet and raise `ValueError` on a cropped mesh, rather than read the crop as medium.
+
+  Measured on 433 plane crops of the 47 benchmark tissues (`YoungDupre`, gauge-matched relative error of the tensions of the interfaces that touch the crop, median over the 42 equilibrium cases): 13 %, 33 % and 40 % error with 10 %, 25 % and 40 % of the tissue cropped away when crop faces were read as medium contact, 10 %, 9 % and 12 % now; every one of the 13 methods improves at 25 % and 40 %, and `LogLami` no longer fails on 25 of the crops. The cut cells' pressures, reported until now, had 15 % to 46 % error. **On a mesh without crop faces every number is bitwise what it was.**
+- **A file that looks cropped but records no crop faces warns.** A `.rec` or `.vtk` file written before crop faces were recorded reads them as medium contact; when its mesh has large flat patches of medium-contact triangles on its own bounding box, `dcel_mesh_from_file` emits an `UnrecordedCropFacesWarning`. Re-export such meshes with a current delaunay-watershed-3d.
+- The wedge-refusal policies (`refusal=`) combine with the crop: a crop edge is always excluded from its line's mean, and the policy acts on the rest of the line. `RefusalReport` counts the crop edges apart (`n_edges_touching_crop`, `length_touching_crop`).
+- **Very large tissues: sparse pressure solves, a solver option, and solve diagnostics.**
+  - **Sparse solves at tissue scale.** Above 2 000 unknowns the Laplace and weighted-Laplace pressures are now assembled sparse and solved by `lsqr` (columns scaled to unit norm, on the cells connected to the exterior), the variational pressures by a sparse direct solve of a cells × cells system, and the Young-Dupré tension system is assembled sparse. Before, these allocated dense matrices whatever the size: some 120 GB for the Young-Dupré system and as much for the variational pressure at 10 000 cells. The undetermined cells (`nan`, `UndeterminedPressureWarning`) are the same on both paths.
+  - **`solver="auto" | "dense" | "sparse"` and `sparse_threshold`** on `infer_tensions*`, `infer_pressures*` and `infer_forces`. `"auto"` (the default) is dense below the threshold and sparse above; `"dense"` and `"sparse"` force a path. A forced dense solve too large for the memory available warns first (`DenseSolveMemoryWarning`). A sparse solve that does not converge falls back to the dense one, as before, unless the dense one cannot fit in memory: then it warns and returns `lsqr`'s last iterate instead of exhausting the machine.
+  - **`diagnostics=True | "spectrum"`** returns, last, a `SolveDiagnostics`: per solve, the solver, the shape, the rank, the residual norm, the condition number and the time; `"spectrum"` adds the extreme singular values of the sparse systems. `save_solve_diagnostics` writes them to JSON and NPZ.
+
+  Measured, forced sparse against forced dense, on 1 694 meshes (the 47 benchmark tissues and 94 rotated copies, 141 of the resolution sweep, 492 embryo timepoints, 4 converged foams, 915 cropped meshes and a 110-cell tissue): the same undetermined cells everywhere, and pressures within 1e-9 of their scale on every pair but three, all on converged foam meshes where the *dense* solve is the inaccurate one (a null direction kept by `lstsq`; the sparse result matches an independent SVD solution to 2e-11). On a 1 866-cell tissue: pressures within 6e-12 of their scale. **With the default arguments every output below the threshold is bitwise what it was** (checked on the same 1 694 meshes).
+- **The mean-tension constraint is exact.** For the angle-reading methods (`YoungDupre`, `YoungDupreLocal`, `ProjectionYoungDupre`, `Lami`, `InvLami`), the cotangent ones (`Cotan`, `InvCotan`), `Equilibrium` and the `Gram` route of `Variational`, it was a least-squares row of ones. Because their force-balance equations are homogeneous, that row's weight only changed the overall scale of the solution: **tension ratios are unchanged** (to 1e-12 of their scale on 15 891 of 16 025 method-mesh pairs of 1 694 test meshes; within 6e-9 on 102 badly conditioned ones, where the new values are the exact constrained solution and the old ones were off by the soft row's rounding; and changed only where the data do not determine them: `InvCotan` and `Lami` on 10 frames with a degenerate wedge, `Equilibrium` on 2 rank-deficient frames). The overall scale of the returned tensions changes by one factor per mesh: for `YoungDupre` by 3e-6 typically and up to 1.4 % (on small benchmark tissues and crops), for `YoungDupreLocal` up to 12 %, for `InvCotan` up to 8 %; for `Equilibrium` by 10 % typically, and on some small tissues its mean was as low as 0.1 of `mean_tension` (measured on 1 694 test meshes). Every component's mean is now exactly `mean_tension`. Pressures computed from those tensions scale by the same factor. The row of ones also made these systems badly conditioned (condition number 2.8e7 against 311 on a 1 866-cell tissue's Young-Dupré system), which limited the sparse solver's accuracy: sparse and dense tensions now agree to 1.5e-11 of their scale there, against 1e-6 before. `LogLami` (whose constraint, on the geometric mean, was already exact), `ForceBalance` (exact, by its KKT system), `ForceBalanceSoftRow` (a soft row by definition) and the default `Variational` route are unchanged.
+- **Laplace pressures: the exterior's pressure is pinned exactly, and cells left undetermined no longer disturb the others.** The pin is eliminated instead of solved as a row, and only the cells connected to the exterior are solved, on both the dense and the sparse path. On meshes where some cells are undetermined, the dense solve used to keep a null direction and move the other cells' pressures by up to 9e-5 of their scale (found on converged foams); the cropped variational pressure, up to 1.7e-4. Both now agree with an independent SVD solution to 3e-14. Elsewhere the pressures are unchanged to 1e-12.
+- **The angle-propagation uncertainty differentiates the exact-gauge solve.** The `YoungDupre` interval of `infer_tensions_with_uncertainty` (`UncertaintyModel.AnglePropagation`) propagated the angle errors through the old soft-row system. It now differentiates the solve that produces the tensions, so the propagated error of the mean tension is exactly zero, as the gauge allows no freedom there. The standard errors change by a median 7e-8 relative on the 42 equilibrium benchmark cases and 2e-6 on real embryo meshes (up to 4e-4 on one frame); the measured calibration (`error/std` 0.015) is unchanged to the digits reported. The propagation is also computed in blocks from one factorisation instead of one dense matrix per wedge, so it now runs on large tissues.
+- **A command line: `foambryo mesh`, `foambryo infer`, `foambryo infer-over-seeds`, `foambryo view`** (see "Command line" in the README). `foambryo mesh MASK --spacing DZ DY DX -o MESH.rec` reconstructs a mask's mesh with delaunay-watershed's default reconstruction and writes it in physical units, the spacing recorded in the file; the spacing has no default. A mask with anisotropic voxels takes the route below (resampled to cubic voxels first), and the command says so. `foambryo infer MESH -o OUTDIR` writes `tensions.csv`, `pressures.csv` and a run record, `run.json` (schema 1: versions, every option, the mesh file's SHA-256, the date, the warnings), and `spectra.npz` with `--diagnostics spectrum`. **Its defaults are the library's**, and its tables hold exactly `infer_forces`'s numbers for the same options (tested bitwise for every method). `foambryo view` opens the viewer and writes the colour bars, also without a display (`--no-show`). `foambryo infer-over-seeds MASK -o OUTDIR --seeds N` runs `infer_tensions_over_seeds` (seeds 0..N−1, `--combine tensions|angles`) and writes `tensions.csv` with three more columns, `tension_seed_sd`, `n_seeds_found` and `found_by_fewer_than_half_the_seeds`, `tensions_per_seed.csv` with every seed's own tensions, and `run.json` with the seed list. TIFF masks need the new `cli` extra, `pip install "foambryo[cli]"` (`tifffile`); `.npy` and `.npz` masks need nothing more.
+- **Masks with anisotropic voxels: `dcel_mesh_from_segmentation_mask(mask, spacing=(dz, dy, dx))`.** With a voxel size, the mask goes through delaunay-watershed-3d's `construct_mesh_in_physical_units` (0.7.0): resampled to cubic voxels of the shortest spacing by shape-based interpolation when one axis is longer, meshed, and returned in the spacing's unit. Measured on 12 simulated tissues of 90 and 165 cells voxelised at a real cell size and down-sampled along z by 5/3, 2 and 3 (one seed), as the median over tissues of each mesh's median line-mean contact-angle error minus that of the same tissue meshed at full resolution: resampling first costs +0.83, +0.71 and +1.17 degrees, against +1.38, +1.97 and +4.10 for meshing the native voxels and scaling the mesh (`BENCHMARKS.md`). The default angle reading stays the default: the quadric reading was worse at that cell size. Above 3 it was not measured, and delaunay-watershed-3d warns. The mesh records its source voxel size, `DcelData.source_spacing`, also read from a `.rec` file in physical units by `dcel_mesh_from_file`; it changes no number. **Without `spacing`, every mesh and every number is bitwise what it was.**
+- **The viewer's graph view colours pressures on the surface's scale.** Its cell nodes took the top of their pressure scale as a quantile over cells, the surface (and the colour bars) over triangles: one pressure got two slightly different colours (5.383 against 5.472 on benchmark case 000). All three now share one scale. Every other colour of the viewer is bitwise unchanged.
+- **Colour bars for the viewer: `foambryo.viewing.save_colour_bars`.** Writes the tension and pressure scales of the viewer's surface colours as an image, with their end values (the range the viewer prints), computed by the same functions as the viewer; matplotlib only, no display, no Polyscope. The viewer's colours are bitwise unchanged.
+- **The angle-propagation error bars include the residual's term, and say how often they hold.** The `YoungDupre` interval of `infer_tensions_with_uncertainty` (`UncertaintyModel.AnglePropagation`) is now the full first-order derivative of the solve (the term in the physics residual was dropped before), checked against finite differences. The standard errors grow by a median 3 % on reconstructions of the benchmark tissues and 21-23 % on reconstructions of real-size 90- and 165-cell tissues. **They are not a calibrated interval:** measured on 2 400 reconstructions with ground truth, one reconstruction's `+- std` contains the true tension for 26-54 % of interfaces (nominal 68 %) and `+- 2 std` for 48-79 % (nominal 95 %), because the error is mostly the reconstruction's bias, which no propagated scatter measures. No single scale factor, nor the spread over reconstruction seeds, nor their combination, calibrates it across tissue types. Its calibration note now says so; read it as a lower bound.
+
+### Prepared for 0.6.0 (4 October 2026, not published)
+
+- **`ForceBalanceMAP` no longer depends on the mesh's length unit, nor on the value of `mean_tension`.** Its noise scale is now the surface-tension block's row scale times `mean_tension`, and its pressure prior follows the inverse of the operator's own length scale, the scalings under which its objective does not depend on the length unit. Rescaling a mesh used to move the relative tensions by up to 43 % on reconstructed meshes in voxel units (cases 001, 016 and 046 at scales 0.25 to 4) and by up to 1.6e-3 on the benchmark's reference meshes, and changing `mean_tension` by up to 1.7e-2; both now change them by rounding only. At a mesh's own scale and `mean_tension = 1` the estimate changes: on the 45 shipped-default reconstructions that have a simulation truth, the median of the per-case median relative tension error falls from 0.177 to 0.120 (better on 35, worse on 10); on the 47 reference meshes the per-case median error changes by at most 8.1e-6 (larger on 40 of them).
+- **A methods note in the documentation** (`docs/methods-note.md`): what foambryo computes and how to read its results, in a few pages — the unknowns and their conventions, the angle-based and force-balance tension methods, the pressures, the diagnostics and error bars, and cropped tissues. The docstrings that cited an undistributed note now say what the code computes, or point to this note or to the 2023 method paper.
+- **`rho_free`'s docstrings say what it is** (in `effective_surface_tensions`, `ForceBalanceResult.rho` and `InferenceDiagnostics`): the residual ratio at the gauged minimiser of `||M beta||`, close to but not strictly the lowest ratio any tensions reach. No number the code computes changes.
+- **The agreement tests of `foambryo.validation` run wherever the tests do.** They compare the force-balance operator with an independent reference implementation of the same algorithms, now part of the test tree (`tests/reference/`, shipped in the source distribution); before, 15 of them skipped wherever a private copy was absent.
+- **Large tissues: tension systems of 2 000 unknowns or more are solved with sparse least squares** (`junction_graph.solve_gauged_least_squares`, `SPARSE_SOLVE_MIN_UNKNOWNS = 2000`). Below that size the dense solve is unchanged and results are bitwise identical (every benchmark, embryo and example system tried is below it). Above it, the sparse solve agrees with the dense one to 1.9e-6 of the tension scale on a 1 866-cell tissue, and takes 2.6 s instead of 218 s. `ComponentTensionSolution.solver_notes` (new, empty by default) records which solver ran on each component; if the sparse solve does not converge, the dense one runs and a `SparseSolveFallbackWarning` says so.
+- **Laplace pressures: a cell that no equation determines is now `nan`, with an `UndeterminedPressureWarning` naming it,** instead of silently getting the exterior's pressure. An interface all of whose vertices lie on junction lines has no curvature, so no Laplace equation; on coarse meshes of small cells (about a third of the interfaces of real embryo meshes) this can disconnect a cell from the exterior. Every other pressure is unchanged, bitwise, and an infinite curvature is now dropped like a `nan`. The viewers draw such a cell grey. The variational method (the default) is not affected.
+- The package metadata names the Turlier lab as author. Two Python 3.8 bytecode files that were tracked under `src/__pycache__/` (never part of the package) are removed.
+
 ## 0.5.1
 
-**0.5.1 republishes 0.5.0 as tagged on GitHub.** The 0.5.0 wheel and source archive on PyPI were built
-from an earlier snapshot of the release: their licence metadata says CC BY-NC-SA 4.0 instead of
-GPL-3.0-or-later (and the package page shows the old licence section), the force viewer is the version
-before the fixes listed below under "The force viewer works with numpy 2 and draws each cell's stress
-correctly" (it crashes with numpy 2), and two docstrings cite the preprints instead of the published
-articles. Install 0.5.1 instead; 0.5.0 is withdrawn from PyPI (yanked).
+**0.5.1 republishes the final 0.5.0 (as on GitHub's `main` since 27 September).** The 0.5.0 wheel and source archive on PyPI were built from an earlier snapshot of the release: their licence metadata says CC BY-NC-SA 4.0 instead of GPL-3.0-or-later (and the package page showed the old licence section), the force viewer is the version before the fixes listed below under "The force viewer works with numpy 2 and draws each cell's stress correctly" (it crashes with numpy 2), and two docstrings cite the preprints instead of the published articles. GitHub's `v0.5.0` tag points at that same earlier snapshot, and is left as it is. Install 0.5.1; 0.5.0 is withdrawn from PyPI (yanked).
 
-Nothing else changes: the code is 0.5.0's. The package metadata names the Turlier lab as author, the
-README's links point to the 0.5.1 tag, and two Python 3.8 bytecode files that the repository tracked
-under `src/__pycache__/` (never part of the package) are removed. foambryo 0.5.1 still requires `delaunay-watershed-3d>=0.5.0`; with
-0.5.0 withdrawn, pip installs delaunay-watershed-3d 0.5.1.
+Nothing else changes: the code is the final 0.5.0's. The package metadata names the Turlier lab as author, the README's links point to the 0.5.1 tag, and two Python 3.8 bytecode files the repository tracked under `src/__pycache__/` (never part of the package) are gone. foambryo 0.5.1 requires `delaunay-watershed-3d>=0.5.0`; with 0.5.0 withdrawn, pip installs delaunay-watershed-3d 0.5.1.
 
 ## 0.5.0
 
-**New licence: from 0.5.0, `foambryo` is licensed under the GNU General Public License, version 3
-or (at your option) any later version** (SPDX `GPL-3.0-or-later`; the text of version 3 is in
-`License`), replacing CC BY-NC-SA 4.0. Commercial use is
-allowed, under the GPL's conditions (a distributed derivative work must be released under the same
-licence, with its source). Earlier releases keep the licence they were published under.
+**New licence: from 0.5.0, `foambryo` is licensed under the GNU General Public License, version 3 or (at your option) any later version** (SPDX `GPL-3.0-or-later`; the text of version 3 is in `License`), replacing CC BY-NC-SA 4.0. Commercial use is allowed, under the GPL's conditions (a distributed derivative work must be released under the same licence, with its source). Earlier releases keep the licence they were published under.
 
-Released together with `delaunay-watershed-3d` 0.5.0, which foambryo now requires
-(`delaunay-watershed-3d>=0.5.0`). See `RELEASE_NOTES.md` for what to run and the limitations that
-matter on real data.
+Released together with `delaunay-watershed-3d` 0.5.0, which foambryo now requires (`delaunay-watershed-3d>=0.5.0`). See `RELEASE_NOTES.md` for what to run and the limitations that matter on real data.
 
-**Python 3.11 or later is required.** The package metadata said `>=3.6`, which was wrong: the source
-needs 3.10 and its dependency `delaunay-watershed-3d` 0.5.0 needs 3.11, so `pip` on an older Python
-now refuses to install instead of failing later.
+**Python 3.11 or later is required.** The package metadata said `>=3.6`, which was wrong: the source needs 3.10 and its dependency `delaunay-watershed-3d` 0.5.0 needs 3.11, so `pip` on an older Python now refuses to install instead of failing later.
 
 ### Meshes you reconstruct with dw3d 0.5.0 are different: junction relocation is on by default
 
-- **dw3d 0.5.0 moves every reconstructed mesh's trijunction vertices onto the trijunction curves the
-  segmentation mask itself gives**, in every reconstruction configuration. Triangles and material
-  labels are unchanged; vertex positions on the trijunction lines move, so every angle and tension
-  foambryo infers from a freshly reconstructed mesh moves too. To reproduce a 0.4 mesh exactly,
-  reconstruct with `relocate_junctions=False` (or `set_junction_relocation(False)` on dw3d's
-  factory). Meshes you already have on disk are not affected.
-- **`dcel_mesh_from_segmentation_mask` now reconstructs at `min_distance=3` by default, not 5** —
-  dw3d's own default. The mesh is denser and takes longer to build. Pass `min_distance=5` to get the
-  0.4 spacing back; at 5 or more dw3d emits `CoarseSpacingRelocationWarning` once per
-  reconstruction (the effect of relocation on surface-tangent contact angles there lies within the
-  check's own noise, while facet-based angles improve), so the default call no longer warns.
+- **dw3d 0.5.0 moves every reconstructed mesh's trijunction vertices onto the trijunction curves the segmentation mask itself gives**, in every reconstruction configuration. Triangles and material labels are unchanged; vertex positions on the trijunction lines move, so every angle and tension foambryo infers from a freshly reconstructed mesh moves too. To reproduce a 0.4 mesh exactly, reconstruct with `relocate_junctions=False` (or `set_junction_relocation(False)` on dw3d's factory). Meshes you already have on disk are not affected.
+- **`dcel_mesh_from_segmentation_mask` now reconstructs at `min_distance=3` by default, not 5** — dw3d's own default. The mesh is denser and takes longer to build. Pass `min_distance=5` to get the 0.4 spacing back; at 5 or more dw3d emits `CoarseSpacingRelocationWarning` once per reconstruction (the effect of relocation on surface-tangent contact angles there lies within the check's own noise, while facet-based angles improve), so the default call no longer warns.
 
 ### The second-order angle reading no longer depends on the units a mesh is expressed in
 
-- **`angle_reading="quadric"` (and `"oriented_quadric"`) now gives the same angles whatever the
-  mesh's units.** The fit used to decide whether the two endpoints of the junction edge entered it
-  by the sign of a rounding error, which changes with scale: rescaling one benchmark mesh by 117x
-  moved its line-mean wedge angles by up to 0.14 degrees. The endpoints are now always included,
-  decided by vertex identity. After the repair the same rescaling moves the reading by about
-  2e-13 degrees, the same rounding level as the chord reading.
-- **This moves previously published second-order numbers by up to 0.14 degrees.** On a smooth
-  analytic surface over fourteen triangulations the repair moves the reading itself by at most
-  0.016 degrees (about 0.001 at typical spacings): its value is the invariance, not an accuracy gain.
-- The historical behaviour stays reachable, for comparison only, through
-  `quadric_angle_rotations(..., junction_endpoints="rounding")`; with that and
-  `fit_constant_term=False` the reading is bit-identical to 0.4.2. The fit still omits a constant
-  term; the docstring now gives the correct reason and what would settle it.
+- **`angle_reading="quadric"` (and `"oriented_quadric"`) now gives the same angles whatever the mesh's units.** The fit used to decide whether the two endpoints of the junction edge entered it by the sign of a rounding error, which changes with scale: rescaling one benchmark mesh by 117x moved its line-mean wedge angles by up to 0.14 degrees. The endpoints are now always included, decided by vertex identity. After the repair the same rescaling moves the reading by about 2e-13 degrees, the same rounding level as the chord reading.
+- **This moves previously published second-order numbers by up to 0.14 degrees.** On a smooth analytic surface over fourteen triangulations the repair moves the reading itself by at most 0.016 degrees (about 0.001 at typical spacings): its value is the invariance, not an accuracy gain.
+- The historical behaviour stays reachable, for comparison only, through `quadric_angle_rotations(..., junction_endpoints="rounding")`; with that and `fit_constant_term=False` the reading is bit-identical to 0.4.2. The fit still omits a constant term; the docstring now gives the correct reason and what would settle it.
 
 ### Two reading selectors that report a folded wedge as folded
 
-- **`angle_reading="oriented_chord"` and `"oriented_quadric"`** report a folded (reflex) trijunction
-  wedge as its oriented angle in `[0, 360)` degrees instead of reading it as `360 - theta`. The
-  default reading is unchanged (`"chord"`).
+- **`angle_reading="oriented_chord"` and `"oriented_quadric"`** report a folded (reflex) trijunction wedge as its oriented angle in `[0, 360)` degrees instead of reading it as `360 - theta`. The default reading is unchanged (`"chord"`).
 
 ### `AngleReadingCoverageWarning` now says how much was covered
 
-- **The warning's message now leads with the measured coverage fraction and the number of
-  trijunction lines that were not fully corrected, out of how many**, then lists those lines. When
-  and how often it fires is unchanged: it fired on all 199 meshes it was measured on (154 real embryo
-  timepoints and 45 benchmark cases), so its firing alone tells you nothing -- the numbers in the
-  message are what to read.
+- **The warning's message now leads with the measured coverage fraction and the number of trijunction lines that were not fully corrected, out of how many**, then lists those lines. When and how often it fires is unchanged: it fired on all 199 meshes it was measured on (154 real embryo timepoints and 45 benchmark cases), so its firing alone tells you nothing -- the numbers in the message are what to read.
 
 ### The force viewer works with numpy 2 and draws each cell's stress correctly
 
 Only the display changes: no inferred tension or pressure moves.
 
-- **`plot_force_inference` crashed with numpy 2** (`UFuncOutputCastingError`, on every mesh tried),
-  which is what `pip install` gives you. The per-cell stress tensor is symmetric, and is now
-  diagonalised as such, so its principal values are real under every numpy version.
-- **One principal direction was drawn at the wrong length.** When the second principal value was
-  non-negative, its axis was drawn as a unit vector and the third axis was scaled twice. Fixed.
-- **A membrane shared by two cells counted with opposite signs in the two cells**, depending only on
-  which cell had the lower label: it pulled on one and pushed on the other. It now counts the same
-  way in both, as in Batchelor's formula for the mean stress. Checked on two cases with a known
-  answer: a single bubble at its Laplace pressure shows no stress, and two mirror-image cells show
-  mirror-image stresses. Cells touching only the exterior were already right.
-- **The force viewer drew tensile directions as compressive, and compressive ones as tensile.** The
-  stress is tension-positive, so a negative principal value is compression; the viewer drew the
-  negative ones as "principal axes" and the non-negative ones in red as "compressive". Each set is now
-  named and coloured for what it holds — compression in red, tension in teal. The Polyscope vector
-  quantities on the point cloud "Stress tensors principal directions" are renamed, for k = 0, 1, 2:
-  `principal_axes_k` → `compression_axes_k`, `principal_axes_k_down` → `compression_axes_k_down`,
-  `compressive_stress__axes_k` → `tension_axes_k`, `compressive_stress__axes_k_down` →
-  `tension_axes_k_down`. The arrows themselves are unchanged; only their names and colours are.
-- **`plot_tension_inference(scalar_quantities=True)` raised `TypeError`**: it passed an argument
-  (`clean_before`) that the curvature and derivative views do not take. Fixed; the option shows the
-  same scalar quantities as `plot_force_inference(scalar_quantities=True)`.
+- **`plot_force_inference` crashed with numpy 2** (`UFuncOutputCastingError`, on every mesh tried), which is what `pip install` gives you. The per-cell stress tensor is symmetric, and is now diagonalised as such, so its principal values are real under every numpy version.
+- **One principal direction was drawn at the wrong length.** When the second principal value was non-negative, its axis was drawn as a unit vector and the third axis was scaled twice. Fixed.
+- **A membrane shared by two cells counted with opposite signs in the two cells**, depending only on which cell had the lower label: it pulled on one and pushed on the other. It now counts the same way in both, as in Batchelor's formula for the mean stress. Checked on two cases with a known answer: a single bubble at its Laplace pressure shows no stress, and two mirror-image cells show mirror-image stresses. Cells touching only the exterior were already right.
+- **The force viewer drew tensile directions as compressive, and compressive ones as tensile.** The stress is tension-positive, so a negative principal value is compression; the viewer drew the negative ones as "principal axes" and the non-negative ones in red as "compressive". Each set is now named and coloured for what it holds — compression in red, tension in teal. The Polyscope vector quantities on the point cloud "Stress tensors principal directions" are renamed, for k = 0, 1, 2: `principal_axes_k` → `compression_axes_k`, `principal_axes_k_down` → `compression_axes_k_down`, `compressive_stress__axes_k` → `tension_axes_k`, `compressive_stress__axes_k_down` → `tension_axes_k_down`. The arrows themselves are unchanged; only their names and colours are.
+- **`plot_tension_inference(scalar_quantities=True)` raised `TypeError`**: it passed an argument (`clean_before`) that the curvature and derivative views do not take. Fixed; the option shows the same scalar quantities as `plot_force_inference(scalar_quantities=True)`.
 
 ### User-visible text
 
-- The uncertainty calibration notes no longer name internal development steps; each states its
-  measurement and points to `foambryo_benchmarks/run_uncertainty_calibration.py`.
-- `BENCHMARKS.md` is now self-contained: every number states its population and how it was
-  measured, without citing files that are not distributed. Those numbers were measured on meshes
-  reconstructed with dw3d **before** junction relocation became its default.
-- The README and the docstrings cite the published article (Ichbiah et al., *Nature Methods* 2023,
-  doi:10.1038/s41592-023-02084-7) instead of its preprint, and the `Cotan` method's published
-  source (Yamamoto et al., *Developmental Cell* 2026, doi:10.1016/j.devcel.2026.04.013). New
-  `CITATION.cff`.
-- The introductory notebook `Examples/Example.ipynb` says where to download its data (the link in
-  `data/alternative_link_to_data`, unzipped into `data/`) instead of asking for Git LFS, which no
-  file in the repository uses.
-- `Examples/actual.ipynb` is removed: a regression check with no explanatory text, which compared
-  floating-point tensions for exact equality. `tests/test_golden_master.py` makes the same check with
-  a stated tolerance. `Examples/reference.ipynb` and the two `reference_*.txt` files it wrote stay.
+- The uncertainty calibration notes no longer name internal development steps; each states its measurement and points to `foambryo_benchmarks/run_uncertainty_calibration.py`.
+- `BENCHMARKS.md` is now self-contained: every number states its population and how it was measured, without citing files that are not distributed. Those numbers were measured on meshes reconstructed with dw3d **before** junction relocation became its default.
+- The README and the docstrings cite the published article (Ichbiah et al., *Nature Methods* 2023, doi:10.1038/s41592-023-02084-7) instead of its preprint, and the `Cotan` method's published source (Yamamoto et al., *Developmental Cell* 2026, doi:10.1016/j.devcel.2026.04.013). New `CITATION.cff`.
+- The introductory notebook `Examples/Example.ipynb` says where to download its data (the link in `data/alternative_link_to_data`, unzipped into `data/`) instead of asking for Git LFS, which no file in the repository uses.
+- `Examples/actual.ipynb` is removed: a regression check with no explanatory text, which compared floating-point tensions for exact equality. `tests/test_golden_master.py` makes the same check with a stated tolerance. `Examples/reference.ipynb` and the two `reference_*.txt` files it wrote stay.
 
 ### Pressure inference refuses an undetermined tension instead of returning a non-finite field
 
-- **`infer_pressures`, `infer_pressures_and_residuals` and `infer_forces` now raise
-  `UndeterminedTensionError` when any tension they would use is not a finite number**, naming every
-  such interface. `UndeterminedTensionError` is new, exported from `foambryo`, and subclasses
-  `ValueError`.
+- **`infer_pressures`, `infer_pressures_and_residuals` and `infer_forces` now raise `UndeterminedTensionError` when any tension they would use is not a finite number**, naming every such interface. `UndeterminedTensionError` is new, exported from `foambryo`, and subclasses `ValueError`.
 
-  Why: an interface with no triple line at all — a closed surface such as an engulfed cell, a sealed
-  lumen, or a fragment a segmentation left inside another cell — has no angle from which its tension
-  can be measured, and `infer_tensions` reports it as `nan` (with a `JunctionGraphGaugeWarning`).
-  The pressure solve couples every cell to every tension, so that one `nan` used to come back as a
-  pressure field in which nearly every cell was non-finite, without any warning from the pressure
-  stage. Measured on five real embryo timepoints carrying one to four such interfaces, all but one
-  cell's pressure was non-finite each time (54 of 55 up to 71 of 72). That field carried no usable
-  value; the pressure inference now says why instead of returning it.
+  Why: an interface with no triple line at all — a closed surface such as an engulfed cell, a sealed lumen, or a fragment a segmentation left inside another cell — has no angle from which its tension can be measured, and `infer_tensions` reports it as `nan` (with a `JunctionGraphGaugeWarning`). The pressure solve couples every cell to every tension, so that one `nan` used to come back as a pressure field in which nearly every cell was non-finite, without any warning from the pressure stage. Measured on five real embryo timepoints carrying one to four such interfaces, all but one cell's pressure was non-finite each time (54 of 55 up to 71 of 72). That field carried no usable value; the pressure inference now says why instead of returning it.
 
-  What does not change: every tension, and every pressure inferred from finite tensions, is
-  **bitwise** what it was — verified on 45 benchmark reconstructions and 149 real embryo timepoints.
-  `infer_tensions` still returns `nan` for an undetermined interface and the other tensions of such
-  a mesh remain valid; use `infer_tensions_by_junction_component` to see which interfaces are
-  undetermined.
+  What does not change: every tension, and every pressure inferred from finite tensions, is **bitwise** what it was — verified on 45 benchmark reconstructions and 149 real embryo timepoints. `infer_tensions` still returns `nan` for an undetermined interface and the other tensions of such a mesh remain valid; use `infer_tensions_by_junction_component` to see which interfaces are undetermined.
 
 ### The force-balance family now warns that it is unreliable on reconstructed meshes
 
-No behaviour changes and no default moves. What changed is that the estimators say what was
-measured about them.
+No behaviour changes and no default moves. What changed is that the estimators say what was measured about them.
 
-- **`infer_force_balance`, the `ForceBalance*` members of `TensionComputationMethod`, and the
-  `rho_free` diagnostic now carry the measurement.** On reconstructed meshes `rho_free` — the
-  distance of a mesh from **any** equilibrium of the force-balance operator, the floor no tension
-  assignment can get below — has median `0.578` against the reference meshes' `0.0118`, a factor of
-  about 50, with per-case ratios from 17 to 850 and **every one** of the 40 equilibrium benchmark
-  cases above the `0.2` threshold at which the diagnostics already reported that no surface tensions
-  balance the mesh. `rho` at the `Kkt` solution equals `rho_free` by construction, so the solve
-  cannot lower it.
+- **`infer_force_balance`, the `ForceBalance*` members of `TensionComputationMethod`, and the `rho_free` diagnostic now carry the measurement.** On reconstructed meshes `rho_free` — the distance of a mesh from **any** equilibrium of the force-balance operator, the floor no tension assignment can get below — has median `0.578` against the reference meshes' `0.0118`, a factor of about 50, with per-case ratios from 17 to 850 and **every one** of the 40 equilibrium benchmark cases above the `0.2` threshold at which the diagnostics already reported that no surface tensions balance the mesh. `rho` at the `Kkt` solution equals `rho_free` by construction, so the solve cannot lower it.
 
-  What this means for a user: every `ForceBalance*` tension and pressure inferred on a reconstructed
-  mesh, and every comparison of one reconstruction against another through this family, stands on
-  that floor. **Read `rho` before reading the tensions.** The angle-reading family (`YoungDupre` and
-  relatives) never inverts the operator and is not bounded this way. Whether the family is repairable
-  on reconstructed meshes is an open scientific question and is not addressed here — the method is
-  published and stays, with the warning it needed.
+  What this means for a user: every `ForceBalance*` tension and pressure inferred on a reconstructed mesh, and every comparison of one reconstruction against another through this family, stands on that floor. **Read `rho` before reading the tensions.** The angle-reading family (`YoungDupre` and relatives) never inverts the operator and is not bounded this way. Whether the family is repairable on reconstructed meshes is an open scientific question and is not addressed here — the method is published and stays, with the warning it needed.
 
 
 ### The angle-reading methods can now decline a folded trijunction observation
 
-- **New `refusal` keyword on `infer_tensions`, `infer_tensions_and_residuals`,
-  `infer_tensions_and_residuals_with_report`, `infer_tensions_by_junction_component` and
-  `infer_tensions_young_dupre_local`, default off.** A folded (reflex) trijunctional edge is one
-  whose interior wedge angle in some region is past a straight angle; the Young-Dupré balance
-  presupposes the opposite, and no angle reading can repair such a row. `foambryo.wedge_refusal`
-  offers three ways to decline it — `ExcludeEdgeFromLineMean`, `DropLine`, `DownweightLine` —
-  together with `reflex_trijunction_edges`, which lists a mesh's folded edges from the mesh alone,
-  and `refusal_report`, which counts what a policy declines in rows and in arclength.
-  With the default `NO_REFUSAL` every result is **bitwise** what it was before.
-- **An interface left with no surviving junction line is reported `float("nan")`**, with the
-  existing `JunctionGraphGaugeWarning`, rather than given the number ordinary least squares would
-  have produced for a quantity nothing constrains. The gauge partition is rebuilt over the
-  surviving lines; a mesh left with no observation at all returns `nan` everywhere rather than
-  raising. New `foambryo.junction_graph.partition_over_surviving_junctions`.
-- A method that builds no row from a measured wedge angle — `Equilibrium`, `Variational`,
-  `ForceBalance`, `ForceBalanceSoftRow`, `ForceBalanceMAP` — **raises** on a non-default policy
-  instead of ignoring it.
-- `compute_angles_tri_with_report` gains a `skip_edges` keyword, which is how a policy declines an
-  edge's contribution; with `None` (the default) its result is bitwise unchanged.
-- **No policy is a default, and one of them is a trap.** `DropLine` removes a whole junction line
-  when any one of its edges is folded, which costs a median 16-76 % of the lines on reconstructed
-  meshes: harmless to `YoungDupreLocal`, whose row is a single edge, and ruinous to every
-  line-averaged method. See README, *Declining a folded trijunction observation*, and report the
-  refused share beside any accuracy number.
+- **New `refusal` keyword on `infer_tensions`, `infer_tensions_and_residuals`, `infer_tensions_and_residuals_with_report`, `infer_tensions_by_junction_component` and `infer_tensions_young_dupre_local`, default off.** A folded (reflex) trijunctional edge is one whose interior wedge angle in some region is past a straight angle; the Young-Dupré balance presupposes the opposite, and no angle reading can repair such a row. `foambryo.wedge_refusal` offers three ways to decline it — `ExcludeEdgeFromLineMean`, `DropLine`, `DownweightLine` — together with `reflex_trijunction_edges`, which lists a mesh's folded edges from the mesh alone, and `refusal_report`, which counts what a policy declines in rows and in arclength. With the default `NO_REFUSAL` every result is **bitwise** what it was before.
+- **An interface left with no surviving junction line is reported `float("nan")`**, with the existing `JunctionGraphGaugeWarning`, rather than given the number ordinary least squares would have produced for a quantity nothing constrains. The gauge partition is rebuilt over the surviving lines; a mesh left with no observation at all returns `nan` everywhere rather than raising. New `foambryo.junction_graph.partition_over_surviving_junctions`.
+- A method that builds no row from a measured wedge angle — `Equilibrium`, `Variational`, `ForceBalance`, `ForceBalanceSoftRow`, `ForceBalanceMAP` — **raises** on a non-default policy instead of ignoring it.
+- `compute_angles_tri_with_report` gains a `skip_edges` keyword, which is how a policy declines an edge's contribution; with `None` (the default) its result is bitwise unchanged.
+- **No policy is a default, and one of them is a trap.** `DropLine` removes a whole junction line when any one of its edges is folded, which costs a median 16-76 % of the lines on reconstructed meshes: harmless to `YoungDupreLocal`, whose row is a single edge, and ruinous to every line-averaged method. See README, *Declining a folded trijunction observation*, and report the refused share beside any accuracy number.
 
 ## 0.4.2
 
 ### Fixed a crash on some real meshes in the default tension-inference path
 
-- **`infer_tensions(mesh, mode=YoungDupre)` — the default call in the default mode — no
-  longer raises an unhandled `KeyError` on a mesh with a non-manifold triple-line edge.**
-  `dcel_mesh_from_multimaterial_mesh` and `dcel_mesh_from_file` reach the same fixed code
-  path. The edge that used to crash the solver is now excluded from the tension system
-  instead, with a new `foambryo.validation.mesh_io.MalformedTripleLineWarning` naming how
-  many edges were excluded and why, so this is never silent. On a mesh with no such edge,
-  every affected function is bitwise identical to before (checked on the 42-case equilibrium
-  benchmark cohort — one case, already flagged elsewhere in this project as carrying 2
-  malformed triple-line edges, is the one exception and now emits the new warning; on that
-  mesh only, the excluded edges' fictitious junction no longer contributes to the tension
-  system, which changes the returned numbers there, by construction).
-- A new `foambryo.junction_graph.MalformedTripleLineError`, carrying the offending edge and
-  region-triple, replaces what used to be a bare `KeyError` naming an internal dict key, for
-  the (now believed unreachable in practice) case where a genuine inconsistency remains after
-  the exclusion above.
-- A new `foambryo.junction_graph.JunctionGraphGaugeWarning` is emitted from
-  `infer_tensions_and_residuals` (and so from `infer_tensions`) whenever a mesh's
-  triple-junction graph is fragmented into more than one gauge component, or has an
-  undetermined (fully closed) interface. Use `infer_tensions_by_junction_component` to get
-  each interface's own component and gauge instead of the flat, potentially
-  scale-mismatched result these entry points return; that function itself does not emit the
-  warning, since it already hands the caller the information the warning would describe.
-  Does not fire on any of the 42-case equilibrium benchmark cohort (none of those meshes has
-  a fragmented junction graph).
-- Docstrings for `infer_tensions`, `infer_tensions_and_residuals` and `infer_forces` now
-  state plainly that an undetermined interface is reported as `nan`, and that a fragmented
-  junction graph's flat return value blends per-component gauges that are not on the same
-  scale.
+- **`infer_tensions(mesh, mode=YoungDupre)` — the default call in the default mode — no longer raises an unhandled `KeyError` on a mesh with a non-manifold triple-line edge.** `dcel_mesh_from_multimaterial_mesh` and `dcel_mesh_from_file` reach the same fixed code path. The edge that used to crash the solver is now excluded from the tension system instead, with a new `foambryo.validation.mesh_io.MalformedTripleLineWarning` naming how many edges were excluded and why, so this is never silent. On a mesh with no such edge, every affected function is bitwise identical to before (checked on the 42-case equilibrium benchmark cohort — one case, already flagged elsewhere in this project as carrying 2 malformed triple-line edges, is the one exception and now emits the new warning; on that mesh only, the excluded edges' fictitious junction no longer contributes to the tension system, which changes the returned numbers there, by construction).
+- A new `foambryo.junction_graph.MalformedTripleLineError`, carrying the offending edge and region-triple, replaces what used to be a bare `KeyError` naming an internal dict key, for the (now believed unreachable in practice) case where a genuine inconsistency remains after the exclusion above.
+- A new `foambryo.junction_graph.JunctionGraphGaugeWarning` is emitted from `infer_tensions_and_residuals` (and so from `infer_tensions`) whenever a mesh's triple-junction graph is fragmented into more than one gauge component, or has an undetermined (fully closed) interface. Use `infer_tensions_by_junction_component` to get each interface's own component and gauge instead of the flat, potentially scale-mismatched result these entry points return; that function itself does not emit the warning, since it already hands the caller the information the warning would describe. Does not fire on any of the 42-case equilibrium benchmark cohort (none of those meshes has a fragmented junction graph).
+- Docstrings for `infer_tensions`, `infer_tensions_and_residuals` and `infer_forces` now state plainly that an undetermined interface is reported as `nan`, and that a fragmented junction graph's flat return value blends per-component gauges that are not on the same scale.
 
 ### Fixed a performance regression the `JunctionGraphGaugeWarning` check above introduced
 
-- `infer_tensions_and_residuals` (and so `infer_tensions`) used to recompute the mesh's
-  triple-junction partition a second time, from scratch, purely to decide whether to emit
-  `JunctionGraphGaugeWarning` — even though the tension solve just above it had already
-  computed the same partition and discarded it. This added a measured **~2x per-call
-  overhead** (median 2.04x, range 1.82x–2.18x across the benchmark cohort) to `YoungDupre`,
-  `YoungDupreLocal`, `ProjectionYoungDupre`, `Cotan`, `InvCotan`, `Lami`, `InvLami` and
-  `LogLami` (the 8 methods `JunctionGraphGaugeWarning` applies to). Fixed by reusing the
-  already-computed partition instead of recomputing it. Every tension, residual and
-  warning-emission decision is bitwise identical to before (checked on all 42 equilibrium
-  cases and on the real-embryo frames used to verify the crash fix above); only the
-  wall-clock cost changed.
+- `infer_tensions_and_residuals` (and so `infer_tensions`) used to recompute the mesh's triple-junction partition a second time, from scratch, purely to decide whether to emit `JunctionGraphGaugeWarning` — even though the tension solve just above it had already computed the same partition and discarded it. This added a measured **~2x per-call overhead** (median 2.04x, range 1.82x–2.18x across the benchmark cohort) to `YoungDupre`, `YoungDupreLocal`, `ProjectionYoungDupre`, `Cotan`, `InvCotan`, `Lami`, `InvLami` and `LogLami` (the 8 methods `JunctionGraphGaugeWarning` applies to). Fixed by reusing the already-computed partition instead of recomputing it. Every tension, residual and warning-emission decision is bitwise identical to before (checked on all 42 equilibrium cases and on the real-embryo frames used to verify the crash fix above); only the wall-clock cost changed.
 
 ### Added `line_coverage_fraction` to the second-order angle reading's coverage report
 
-- `AngleReadingReport.line_coverage_fraction`: the fraction of trijunction *lines* every one
-  of whose faces was corrected by the `"quadric"` reading, as opposed to the existing
-  `coverage_fraction`, which is per-*face* (a line with 2 of 3 faces corrected counts as 2/3
-  there, but as not-fully-covered here). `None` on a mesh with no trijunctional edge,
-  mirroring `coverage_fraction`'s own convention. Included in the coverage warning's message
-  alongside the existing per-face number. A trijunction line with partial coverage is not,
-  by itself, a known source of extra angle error — see the field's own docstring for the
-  measurement this states. Purely additive: every existing field, warning trigger and
-  numeric value of `AngleReadingReport` is unchanged.
+- `AngleReadingReport.line_coverage_fraction`: the fraction of trijunction *lines* every one of whose faces was corrected by the `"quadric"` reading, as opposed to the existing `coverage_fraction`, which is per-*face* (a line with 2 of 3 faces corrected counts as 2/3 there, but as not-fully-covered here). `None` on a mesh with no trijunctional edge, mirroring `coverage_fraction`'s own convention. Included in the coverage warning's message alongside the existing per-face number. A trijunction line with partial coverage is not, by itself, a known source of extra angle error — see the field's own docstring for the measurement this states. Purely additive: every existing field, warning trigger and numeric value of `AngleReadingReport` is unchanged.
 
 ### Dropped internal report citations from user-visible error text
 
-- Two `ValueError`s (`junction_graph.require_single_component_solution`,
-  `tension_inference.infer_tensions_by_junction_component`) and one `NotImplementedError`
-  (`uncertainty.compute_inference_diagnostics`) no longer cite internal development reports,
-  which are not distributed with the package and so were a dead reference for anyone reading the
-  error outside this project. No change to when each is raised.
+- Two `ValueError`s (`junction_graph.require_single_component_solution`, `tension_inference.infer_tensions_by_junction_component`) and one `NotImplementedError` (`uncertainty.compute_inference_diagnostics`) no longer cite internal development reports, which are not distributed with the package and so were a dead reference for anyone reading the error outside this project. No change to when each is raised.
 
 ### Corrected one measurement affected by the crash fix
 
-- The dataset-audit measurement for one benchmark case (the one already known to carry two
-  non-manifold triple-line edges, see the crash fix above) recorded a triple line's length
-  as `0.14288904810756733`; with those two edges correctly excluded, it is
-  `0.08233713750534329` (about 42% shorter) — the two excluded edges were previously being
-  summed into that line's length. No other measurement for that case, or any other case,
-  changes.
+- The dataset-audit measurement for one benchmark case (the one already known to carry two non-manifold triple-line edges, see the crash fix above) recorded a triple line's length as `0.14288904810756733`; with those two edges correctly excluded, it is `0.08233713750534329` (about 42% shorter) — the two excluded edges were previously being summed into that line's length. No other measurement for that case, or any other case, changes.
 
 ### A note on this release's published accuracy numbers
 
-The `dw3d`-meshing accuracy table in `BENCHMARKS.md` is out of date for reasons unrelated to
-this release (an unrelated change to how `dw3d` reconstructs meshes since that table was
-last measured) and is being re-measured and republished in its own follow-up — this
-release's fixes do not move any number in that table. Do not read today's `BENCHMARKS.md`
-table as reflecting 0.4.2.
+The `dw3d`-meshing accuracy table in `BENCHMARKS.md` is out of date for reasons unrelated to this release (an unrelated change to how `dw3d` reconstructs meshes since that table was last measured) and is being re-measured and republished in its own follow-up — this release's fixes do not move any number in that table. Do not read today's `BENCHMARKS.md` table as reflecting 0.4.2.
 
 ## 0.4.1
 
-Release hygiene only. No change to inference behaviour: every default is bitwise identical to
-0.4.0 on all 47 benchmark meshes.
+Release hygiene only. No change to inference behaviour: every default is bitwise identical to 0.4.0 on all 47 benchmark meshes.
 
-- **Development artefacts no longer ship or return.** The project's development record is kept
-  in the development repository and has never been part of the packaged distribution;
-  confirmed by building the wheel and listing its contents. Development notes and scratch scripts
-  are now gitignored so they cannot be re-added by accident.
-- Internal benchmark filenames and test names that were named after a development phase (e.g.
-  `c1_attribution.json`, `run_c2_robustness.py`) are renamed to describe what they measure. This
-  does not change any benchmark's recorded numbers, and `foambryo_benchmarks` remains a
-  development tool, not part of the installed package.
-- `delaunay-watershed-3d`'s three phase-named factory methods
-  (`get_v0_3_algorithm`/`get_a1b_algorithm`/`get_a3_a5_algorithm`) are renamed on that side to
-  describe their mechanism; the old names still work as deprecated aliases until `dw3d` 0.5.0.
-  Nothing here depends on the old names, so no change is needed in this package.
+- **Development artefacts no longer ship or return.** The project's development record is kept in the development repository and has never been part of the packaged distribution; confirmed by building the wheel and listing its contents. Development notes and scratch scripts are now gitignored so they cannot be re-added by accident.
+- Internal benchmark filenames and test names that were named after a development phase (e.g. `c1_attribution.json`, `run_c2_robustness.py`) are renamed to describe what they measure. This does not change any benchmark's recorded numbers, and `foambryo_benchmarks` remains a development tool, not part of the installed package.
+- `delaunay-watershed-3d`'s three phase-named factory methods (`get_v0_3_algorithm`/`get_a1b_algorithm`/`get_a3_a5_algorithm`) are renamed on that side to describe their mechanism; the old names still work as deprecated aliases until `dw3d` 0.5.0. Nothing here depends on the old names, so no change is needed in this package.
 
 ## 0.4.0
 
 ### New capability — an opt-in second-order trijunction angle reading
 
-- **`angle_reading="quadric"`** on `infer_tensions`, `infer_tensions_and_residuals`,
-  `infer_tensions_young_dupre_local` and `compute_residual_junctions_dict`, and `reading=` on
-  `compute_angles_tri` / `compute_trijunction_edges` / `DcelData.compute_angles_tri`. It changes
-  **how a contact angle is measured**, not how tensions are solved for: instead of the angle
-  between two flat triangles — which is the *chord* to each triangle's far vertex — it fits a
-  generic quadric to the interface's own mesh vertices around the junction and reads that
-  surface's *tangent*. No vertex moves; no area, volume or interface identity changes.
+- **`angle_reading="quadric"`** on `infer_tensions`, `infer_tensions_and_residuals`, `infer_tensions_young_dupre_local` and `compute_residual_junctions_dict`, and `reading=` on `compute_angles_tri` / `compute_trijunction_edges` / `DcelData.compute_angles_tri`. It changes **how a contact angle is measured**, not how tensions are solved for: instead of the angle between two flat triangles — which is the *chord* to each triangle's far vertex — it fits a generic quadric to the interface's own mesh vertices around the junction and reads that surface's *tangent*. No vertex moves; no area, volume or interface identity changes.
 
-  On `dw3d`-reconstructed benchmark meshes this takes the gauge-matched tension contrast from
-  0.738 to 0.954 (`min_distance = 3`) and 0.722 to 1.056 (4), and the median per-line
-  junction-angle error from 7.35° to 4.83° and 8.22° to 5.43°, on all eight methods that read
-  angles. Full table, provenance and the residual: `BENCHMARKS.md`. Worked example:
-  `Examples/second_order_angle_reading.py`.
+  On `dw3d`-reconstructed benchmark meshes this takes the gauge-matched tension contrast from 0.738 to 0.954 (`min_distance = 3`) and 0.722 to 1.056 (4), and the median per-line junction-angle error from 7.35° to 4.83° and 8.22° to 5.43°, on all eight methods that read angles. Full table, provenance and the residual: `BENCHMARKS.md`. Worked example: `Examples/second_order_angle_reading.py`.
 
-- **Nothing changes unless you ask for it.** `"chord"` remains the default and is pinned
-  **bitwise** against the previous release's behaviour on all 47 benchmark meshes — every angle,
-  length and tension, digested over raw IEEE-754 bits, by
-  `tests/test_second_order_angle_reading.py`. If you do not pass `angle_reading`, no number you
-  have ever computed with this package moves.
+- **Nothing changes unless you ask for it.** `"chord"` remains the default and is pinned **bitwise** against the previous release's behaviour on all 47 benchmark meshes — every angle, length and tension, digested over raw IEEE-754 bits, by `tests/test_second_order_angle_reading.py`. If you do not pass `angle_reading`, no number you have ever computed with this package moves.
 
-- **The fallback is never silent.** The quadric fit is not admissible everywhere; where it is
-  not, that face keeps the chord reading. New `AngleReadingReport` (from
-  `infer_tensions_and_residuals_with_report`, `compute_angles_tri_with_report`, or
-  `YoungDupreLocalResult.angle_reading_report`) carries the coverage fraction and names every
-  trijunction line that is read with a mixture of the two conventions. The report-less entry
-  points emit an `AngleReadingCoverageWarning` carrying the same numbers instead.
+- **The fallback is never silent.** The quadric fit is not admissible everywhere; where it is not, that face keeps the chord reading. New `AngleReadingReport` (from `infer_tensions_and_residuals_with_report`, `compute_angles_tri_with_report`, or `YoungDupreLocalResult.angle_reading_report`) carries the coverage fraction and names every trijunction line that is read with a mixture of the two conventions. The report-less entry points emit an `AngleReadingCoverageWarning` carrying the same numbers instead.
 
-- **Where it does not help, stated plainly.** On a mesh whose elements are already much smaller
-  than the interface's radius of curvature, the chord deficit is small and this correction
-  over-applies. On the 47 ground-truth simulation meshes in the benchmark it makes the contrast
-  *worse* on 47 of 47 cases. Use it on reconstructions.
+- **Where it does not help, stated plainly.** On a mesh whose elements are already much smaller than the interface's radius of curvature, the chord deficit is small and this correction over-applies. On the 47 ground-truth simulation meshes in the benchmark it makes the contrast *worse* on 47 of 47 cases. Use it on reconstructions.
 
-- **`YoungDupreLocal` refuses `angle_reading="quadric"` outright**, raising `ValueError` rather
-  than returning a degraded result: its tension error gets *worse* under the quadric reading
-  even though its angles improve (+0.0290 relative RMS tension error at `min_distance=3`, +0.97
-  at 4), because a per-edge balance never performs the along-line average that cancels the
-  correction's per-edge scatter. Use `angle_reading="quadric"` with a line-averaged method
-  instead (`YoungDupre`, `ProjectionYoungDupre`, `Lami`, `InvLami`, `LogLami`), or keep
-  `YoungDupreLocal` on the default `"chord"` reading.
+- **`YoungDupreLocal` refuses `angle_reading="quadric"` outright**, raising `ValueError` rather than returning a degraded result: its tension error gets *worse* under the quadric reading even though its angles improve (+0.0290 relative RMS tension error at `min_distance=3`, +0.97 at 4), because a per-edge balance never performs the along-line average that cancels the correction's per-edge scatter. Use `angle_reading="quadric"` with a line-averaged method instead (`YoungDupre`, `ProjectionYoungDupre`, `Lami`, `InvLami`, `LogLami`), or keep `YoungDupreLocal` on the default `"chord"` reading.
 
-- **A method that cannot honour it now says so**: `Variational`, `Equilibrium` and the three
-  `ForceBalance*` members raise `ValueError` on a non-default `angle_reading` rather than
-  silently ignoring it.
+- **A method that cannot honour it now says so**: `Variational`, `Equilibrium` and the three `ForceBalance*` members raise `ValueError` on a non-default `angle_reading` rather than silently ignoring it.
 
 ### New in the benchmark harness
 
-- `foambryo_benchmarks.metrics.interface_area_fractions`, `interface_area_fraction_errors` and
-  `closer_interface_area_fractions`: interface area as a fraction of the mesh's own total, which
-  is scale-invariant and needs no registration between a candidate mesh and its reference.
+- `foambryo_benchmarks.metrics.interface_area_fractions`, `interface_area_fraction_errors` and `closer_interface_area_fractions`: interface area as a fraction of the mesh's own total, which is scale-invariant and needs no registration between a candidate mesh and its reference.
 
 ### Default behaviour changes — several methods now give correct numbers instead of wrong or missing ones
 
-- **`TensionComputationMethod.Equilibrium` used to crash on every input.** It now runs and
-  gives a scientifically sensible result. If you were catching the exception, you no longer
-  need to.
-- **`Cotan` and `InvCotan` had an operator-precedence bug** that over-weighted short
-  junctions on the diagonal of their linear system. Fixed; both methods' output has changed
-  (previously published results using them, if any, were unaffected — neither was the
-  default).
-- **`Variational` now solves through a different, better-justified linear-algebra route by
-  default** (routing through the operator directly, `VariationalRoute.Operator`, rather than
-  forming and row-normalising the Gram matrix). The previous route (`VariationalRoute.Gram`)
-  remains available for anyone who needs to reproduce a number computed under it.
-- **A silent aggregation defect is fixed for eight of the nine tension methods**
-  (`YoungDupre`, `ProjectionYoungDupre`, `Cotan`, `InvCotan`, `Lami`, `InvLami`, `LogLami`,
-  `YoungDupreLocal`): on a mesh whose triple-junction graph is disconnected — a mesh with a
-  fully engulfed cell or a sealed lumen, or one large enough to genuinely fragment — these
-  methods used to silently drive some interfaces' tensions toward zero while inflating
-  others, with no warning. They now solve per connected component with a per-component
-  gauge, and interfaces with no triple line at all are reported as undetermined (`nan`)
-  rather than guessed. New: `infer_tensions_by_junction_component`, for when you want that
-  structure exposed explicitly rather than collapsed into one flat result. This does not
-  affect meshes whose triple-junction graph is already fully connected, which is the common
-  case for the small-to-medium cell counts most users work with.
-- **`torch` is now an optional dependency.** The closed-form (non-autodiff) derivatives were
-  already the more numerically accurate path and are now the only one installed by default;
-  install `foambryo[autodiff]` if you specifically need the autodiff cross-check.
+- **`TensionComputationMethod.Equilibrium` used to crash on every input.** It now runs and gives a scientifically sensible result. If you were catching the exception, you no longer need to.
+- **`Cotan` and `InvCotan` had an operator-precedence bug** that over-weighted short junctions on the diagonal of their linear system. Fixed; both methods' output has changed (previously published results using them, if any, were unaffected — neither was the default).
+- **`Variational` now solves through a different, better-justified linear-algebra route by default** (routing through the operator directly, `VariationalRoute.Operator`, rather than forming and row-normalising the Gram matrix). The previous route (`VariationalRoute.Gram`) remains available for anyone who needs to reproduce a number computed under it.
+- **A silent aggregation defect is fixed for eight of the nine tension methods** (`YoungDupre`, `ProjectionYoungDupre`, `Cotan`, `InvCotan`, `Lami`, `InvLami`, `LogLami`, `YoungDupreLocal`): on a mesh whose triple-junction graph is disconnected — a mesh with a fully engulfed cell or a sealed lumen, or one large enough to genuinely fragment — these methods used to silently drive some interfaces' tensions toward zero while inflating others, with no warning. They now solve per connected component with a per-component gauge, and interfaces with no triple line at all are reported as undetermined (`nan`) rather than guessed. New: `infer_tensions_by_junction_component`, for when you want that structure exposed explicitly rather than collapsed into one flat result. This does not affect meshes whose triple-junction graph is already fully connected, which is the common case for the small-to-medium cell counts most users work with.
+- **`torch` is now an optional dependency.** The closed-form (non-autodiff) derivatives were already the more numerically accurate path and are now the only one installed by default; install `foambryo[autodiff]` if you specifically need the autodiff cross-check.
 
 ### New capability
 
-- **Uncertainty intervals on inferred tensions**: `infer_tensions_with_uncertainty`, with
-  several interval models (`UncertaintyModel`) and a calibration note on every result stating
-  how conservative or optimistic that model measured as on a 42-case benchmark. `ProbeResidual`
-  is the recommended default.
-- **Mesh-level identifiability diagnostics** (`compute_inference_diagnostics`,
-  `InferenceDiagnostics`): before trusting a tension inference on a mesh with no ground
-  truth, check `rho_free` (how far the mesh sits from any mechanical equilibrium) and the
-  operator's singular-value spectrum.
-- **Per-edge Young–Dupré** (`infer_tensions_young_dupre_local`,
-  `TensionComputationMethod.YoungDupreLocal`): imposes the balance once per trijunctional
-  edge instead of once per triple line on line-averaged angles, giving a per-edge residual
-  field usable for diagnostics and a calibrated bootstrap uncertainty. On its own it is
-  *less* accurate as a point estimate than the line-averaged `YoungDupre` (averaging first
-  is a noise filter, not a bias); it is kept for the diagnostic it enables, not as a
-  replacement.
+- **Uncertainty intervals on inferred tensions**: `infer_tensions_with_uncertainty`, with several interval models (`UncertaintyModel`) and a calibration note on every result stating how conservative or optimistic that model measured as on a 42-case benchmark. `ProbeResidual` is the recommended default.
+- **Mesh-level identifiability diagnostics** (`compute_inference_diagnostics`, `InferenceDiagnostics`): before trusting a tension inference on a mesh with no ground truth, check `rho_free` (how far the mesh sits from any mechanical equilibrium) and the operator's singular-value spectrum.
+- **Per-edge Young–Dupré** (`infer_tensions_young_dupre_local`, `TensionComputationMethod.YoungDupreLocal`): imposes the balance once per trijunctional edge instead of once per triple line on line-averaged angles, giving a per-edge residual field usable for diagnostics and a calibrated bootstrap uncertainty. On its own it is *less* accurate as a point estimate than the line-averaged `YoungDupre` (averaging first is a noise filter, not a bias); it is kept for the diagnostic it enables, not as a replacement.
 
 ### Documentation corrected
 
-- The capillary energy's pressure term has the sign `E = Σ γA + Σ tL − Σ pV`, not `+ΣpV`,
-  in `foambryo.validation.force_balance`'s module docstring — it previously contradicted
-  `foambryo.force_balance_inference`'s docstring, which had the correct sign. No numerical
-  result was affected: the code was already self-consistent, and this is purely a
-  documentation fix.
-- The tension method enum (`TensionComputationMethod`) now states which methods read
-  measured angles and which invert a global operator, since mesh-reconstruction quality
-  affects the two families very differently — see `dw3d`'s and this package's
-  `BENCHMARKS.md`.
+- The capillary energy's pressure term has the sign `E = Σ γA + Σ tL − Σ pV`, not `+ΣpV`, in `foambryo.validation.force_balance`'s module docstring — it previously contradicted `foambryo.force_balance_inference`'s docstring, which had the correct sign. No numerical result was affected: the code was already self-consistent, and this is purely a documentation fix.
+- The tension method enum (`TensionComputationMethod`) now states which methods read measured angles and which invert a global operator, since mesh-reconstruction quality affects the two families very differently — see `dw3d`'s and this package's `BENCHMARKS.md`.
 
 ### Compatibility
 
-`delaunay-watershed-3d`'s reconstruction default has reverted to its published (`dithered`)
-configuration in this release cycle (see `dw3d`'s `CHANGELOG.md`); no code change is
-required here, but tensions inferred from freshly-reconstructed meshes will differ slightly
-from ones inferred while `dw3d`'s revised meshing pipeline was the default, because the mesh
-itself is different. This is expected and is the change the accuracy finding above concerns.
+`delaunay-watershed-3d`'s reconstruction default has reverted to its published (`dithered`) configuration in this release cycle (see `dw3d`'s `CHANGELOG.md`); no code change is required here, but tensions inferred from freshly-reconstructed meshes will differ slightly from ones inferred while `dw3d`'s revised meshing pipeline was the default, because the mesh itself is different. This is expected and is the change the accuracy finding above concerns.
