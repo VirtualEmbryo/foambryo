@@ -53,11 +53,12 @@ operator is inverted on the mesh it is given, and a `dw3d`-reconstructed mesh is
 balance for *any* tension assignment: its `rho_free` (`foambryo.uncertainty`) is about fifty
 times the reference meshes' own value, on every case and independent of which sampler
 produced it. Measured on the 40 equilibrium cases of the benchmark cohort against their own
-reference meshes (shipped default reconstruction: dithered point placement, seed 42, `min_distance =
-3`): `rho_free` median 0.578, range 0.479-0.718, against the references' 0.0118, range 0.00066-0.036
--- a ratio of medians of 49, a median per-case ratio of 50, per-case ratios from 17 to 850 -- and
-every one of the 40 above the 0.2 alarm threshold; the deterministic variant reads 0.623. The five
-non-equilibrium cases' references already sit at 0.26 and their reconstructions at 0.59.
+reference meshes (dw3d 0.7.1's default reconstruction: dithered point placement, seed 42,
+`min_distance = 3`, junction relocation): `rho_free` median 0.546, range 0.457-0.672, against the
+references' 0.0118, range 0.00066-0.036 -- a ratio of medians of 46, a median per-case ratio of 46,
+per-case ratios from 15 to 819 -- and every one of the 40 above the 0.2 alarm threshold; the
+deterministic variant reads 0.516. The five non-equilibrium cases' references already sit at 0.26
+and their reconstructions at 0.53.
 `rho` at the `Kkt` solution equals `rho_free` by construction, so the solve cannot lower it.
 Every `ForceBalance*` tension and pressure inferred on a reconstruction, and every comparison
 of one reconstruction against another through this family, stands on that floor until the
@@ -320,7 +321,7 @@ def infer_force_balance(
     consistent by construction.
 
     **Warning -- reconstructed meshes.** On `dw3d` output the returned `rho` is about fifty
-    times what the same operator reads on the simulator's reference meshes (median 0.578
+    times what the same operator reads on the simulator's reference meshes (median 0.546
     against 0.0118 on the 40-case equilibrium cohort, all 40 above the 0.2 alarm threshold
     of `InferenceDiagnostics.identifiability_report`); no tension assignment balances such a
     mesh, so the tensions and pressures returned are the least-bad fit to a geometry that is

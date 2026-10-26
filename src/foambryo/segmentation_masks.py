@@ -17,6 +17,7 @@ Labels need not be consecutive: a label is a name, and the mesh keeps it.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -159,7 +160,7 @@ class SegmentationMaskReport:
 
     Attributes:
         shape: the mask's shape.
-        n_cells: the number of labels other than 0.
+        n_cells: the number of labels other than 0 (and other than the `media` given to the report).
         medium_voxels: the voxels of label 0.
         cells_touching_the_image_box: the labels with a voxel on a face of the array; the reconstruction makes
             them cut cells, whose pressures are not determined.
@@ -220,6 +221,7 @@ def segmentation_mask_report(
     mask: Any,  # noqa: ANN401 - any array-like
     *,
     small_label_fraction: float = DEFAULT_SMALL_LABEL_FRACTION,
+    media: Iterable[int] = (),
 ) -> SegmentationMaskReport:
     """Describe a mask before it is reconstructed: a report only, nothing is changed.
 
@@ -227,6 +229,10 @@ def segmentation_mask_report(
         mask: the mask; checked with `check_segmentation_mask` first.
         small_label_fraction: a label with fewer voxels than this fraction of the median cell is reported as very
             small. Defaults to 0.05 (`DEFAULT_SMALL_LABEL_FRACTION`). Keyword-only.
+        media: labels other than 0 that are media, not cells (a lumen the mask already labels): left out of the cell
+            count, the cells touching the image box, the cells in several pieces and the cell sizes. Keyword-only.
+            Defaults to none. (Pieces of label 0 that the tissue encloses are counted as `enclosed_medium_pieces`
+            either way; delaunay-watershed-3d 0.7.1 makes the deep ones their own regions.)
 
     Returns:
         SegmentationMaskReport: the counts.
@@ -239,11 +245,13 @@ def segmentation_mask_report(
     mask = check_segmentation_mask(mask)
     labels, voxels = _label_voxel_counts(mask)
     medium_voxels = int(voxels[labels == 0].sum())
-    cells, cell_voxels = labels[labels > 0], voxels[labels > 0]
+    is_cell = (labels > 0) & ~np.isin(labels, np.asarray(list(media), dtype=labels.dtype))
+    cells, cell_voxels = labels[is_cell], voxels[is_cell]
 
     faces = [mask[0], mask[-1], mask[:, 0], mask[:, -1], mask[:, :, 0], mask[:, :, -1]]
     on_box = np.unique(np.concatenate([np.unique(face) for face in faces]))
-    touching = tuple(int(label) for label in on_box if label > 0)
+    cell_set = set(cells.tolist())
+    touching = tuple(int(label) for label in on_box if label in cell_set)
 
     six = ndimage.generate_binary_structure(3, 1)
     several: dict[int, int] = {}

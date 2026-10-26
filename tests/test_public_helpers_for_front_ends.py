@@ -99,7 +99,16 @@ def test_reconstruct_mask_is_the_library_mesh_and_the_commands_file(
     assert (tmp_path / "written.rec").read_bytes() == reconstruction.rec_bytes
     assert out == (f"{segmentation_mask_report(MASKS[mask_name]()).summary()}\n"
                    f"wrote {tmp_path / 'command.rec'}: {reconstruction.summary()}\n")
-    assert reconstruction.n_cut_cells == (3 if mask_name == "four cells cut by the image box" else 0)
+    # The cut cells are the cells with a triangle that has a vertex on a crop face (delaunay-watershed-3d's
+    # rule), counted here on the reconstruction's own arrays, not pinned as a number: on the cut mask, which
+    # cells carry such a vertex depends on how Qhull splits sets of cospherical lattice points, which differs
+    # between machines (3 cut cells on macOS, 4 on Linux, with the same delaunay-watershed-3d 0.7.0).
+    if mask_name == "four cells cut by the image box":
+        on_crop = np.isin(reconstruction.triangles, np.unique(reconstruction.triangles[reconstruction.crop_faces]))
+        cut = np.setdiff1d(reconstruction.labels[on_crop.any(axis=1)], [0])
+        assert reconstruction.n_cut_cells == len(cut) > 0
+    else:
+        assert reconstruction.n_cut_cells == 0
     assert reconstruction.n_cells == int(np.count_nonzero(np.unique(library.f[:, 3:5])))
 
 

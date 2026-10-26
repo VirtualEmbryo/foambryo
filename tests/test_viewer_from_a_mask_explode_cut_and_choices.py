@@ -315,6 +315,8 @@ def test_explode_is_the_librarys_scattered_view():
 @pytest.mark.parametrize(("axis", "keep_higher"), [(0, False), (2, True)])
 @pytest.mark.usefixtures("mock_polyscope")
 def test_the_cut_is_a_slice_plane_pointing_to_the_side_kept(axis, keep_higher):
+    from foambryo._display_frame import drawn_points
+
     window = _force_window()
     window.draw()
     window.cut = (axis, 0.25, keep_higher)
@@ -326,7 +328,7 @@ def test_the_cut_is_a_slice_plane_pointing_to_the_side_kept(axis, keep_higher):
     assert np.count_nonzero(normal) == 1
     assert window.slice_plane is not None
     assert window.slice_plane.get_active()
-    assert np.allclose(window.slice_plane.get_normal(), normal)
+    assert np.allclose(window.slice_plane.get_normal(), drawn_points(normal))  # Polyscope's, in its x, y, z
     window.cut = None
     window.apply_cut()
     assert not window.slice_plane.get_active()

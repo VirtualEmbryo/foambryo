@@ -1,3 +1,41 @@
+# Release notes — 0.7.1, 26 October 2026
+
+`foambryo` and `delaunay-watershed-3d` ship together as 0.7.1. This is what changes for you and what can mislead you; `CHANGELOG.md` has the full list, and dw3d's `RELEASE_NOTES.md` covers reconstruction. Install both with `pip install --upgrade foambryo delaunay-watershed-3d`.
+
+## What changes for you
+
+1. **Tensions and pressures change slightly because delaunay-watershed-3d 0.7.1's meshes do**; foambryo's inference is unchanged. dw3d now orders the tetrahedra canonically, fixes its mesh surgery, and meshes enclosed media and unresolved regions correctly (its release notes). On the benchmark, `YoungDupre`'s median relative tension error goes from 0.0777 to 0.0763 on the default meshes; `ForceBalanceKKT`'s from 0.1150 to 0.1138 and `BayesianMAP`'s from 0.1211 to 0.1186, mostly through cases 031 and 038, whose spurious cells are gone.
+2. **On a mesh with a medium besides 0 (a lumen), the medium is no longer a cell.** Its interfaces keep their own tensions and its pressure is inferred like a cell's, but it is not counted as a cell, not listed as a cut cell, and a triangle between a cell and the medium is coloured by the cell's pressure. dw3d 0.7.1 records the media in the `.rec` file; for a mesh made elsewhere, name them with `DcelData(..., media=[L])` or `foambryo infer --media L`. Every mesh without such a medium gives the same numbers and pictures as before.
+3. **`foambryo view` drew the mirror image of the tissue**, its left and right exchanged, in every view and every figure saved from the window. It now draws the tissue the right way round; the mesh, its files and every number are unchanged. Figures saved with 0.7.0 show the mirror image.
+
+## New
+
+* `pressures.csv` has a `region_kind` column (`exterior`, `medium`, `cell`) when the mesh has a medium besides 0; `read_pressure_table` reads both forms and `read_pressure_region_kinds` the column. `run.json` records `mesh.media`, `mesh.cells`, `mesh.unresolved` and `options.media` (schema 1: keys added, none changed).
+* `foambryo mesh` names the enclosed media it made and the labels of the mask the mesh could not hold, and relays dw3d's warnings about them; `DcelData.unresolved` holds those labels, and no count or table includes them.
+* `segmentation_mask_report(mask, media=[...])` leaves the media out of the cell statistics.
+
+## Corrected in the documentation
+
+1. **The user guide's second-order angle-reading numbers were measured on meshes without junction relocation**, which is dw3d's default since 0.5.0. On relocated meshes the reading's excess over its own floor is +0.0112 [−0.0093, +0.0315] at `min_distance` 3 and −0.0221 [−0.0295, +0.0053] at 4: both intervals include zero, so the guide no longer says that a residual slope survives at 3. An interval that includes zero bounds the excess; it does not show that there is none.
+2. **What the 0.5.0 repair of the second-order reading changed**: the 0.5.0 entry quoted a unit dependence measured on one rescaled mesh (0.14 degrees); on 40 benchmark reconstructions the repair moved the median line-mean angle error from 5.27 to 5.40 degrees.
+
+## What can mislead you
+
+1. **Numbers not measured again on dw3d 0.7.1's meshes say so where printed**: the timings, the 1 866-cell tissue, the anisotropy costs and the error-bar calibration on simulated tissues at a real cell size. They were measured on 0.6.0's or 0.7.0's meshes.
+2. **Between machines, meshes may still differ at exactly cospherical points**, and so may the tensions read from them; on one machine a reconstruction is reproducible.
+3. The points of 0.7.0's list still hold.
+
+## Known issues
+
+1. **foambryo 0.7.0 cannot read a `pressures.csv` written for a mesh with a lumen**: the file's third column, `region_kind`, is refused by 0.7.0's reader. Files of meshes without such a medium are unchanged.
+2. **napari's default 3-D orientation shows the mirror image of a tissue**, mask and mesh alike: napari draws the array's axes in the order (z, y, x) and calls that orientation right-handed. `viewer.camera.orientation = ('away', 'down', 'right')` shows the tissue the right way round, with the plugin's surfaces shaded darker. A switch in napari-foambryo is planned; this is documented in the user guide (*Viewers*, "Which way round").
+3. **delaunay-watershed-3d's crop report can miss a cut cell**, and foambryo reads the same crop faces: on a small test mask of four cells in a ball cut by the image box, the cells with voxels on the box are 1, 3 and 4, and `DcelData.cut_cells` gives 2, 3 and 4, so cell 1 gets a pressure and cell 2 a `nan`. Not yet measured on realistic cut masks: check `cut_cells` against the mask's own border labels.
+4. **Figures saved from the window on a high-density (Retina) display have small text**: the colour bars and captions are drawn at 150 dots per inch of the window's pixels, which such a display doubles, so their text comes out about half as large relative to the picture (measured on one Mac: a 2 560-pixel-wide figure). The values are unaffected.
+
+## Credits
+
+Recent work on dw3d and foambryo is part of a collaboration with Alejandro Aguilera Castrejon (Janelia Research Campus, Howard Hughes Medical Institute). We thank him and his Janelia colleagues Adam L. Taylor, Wenhong Li and Francesco Roncato. Adam L. Taylor found the border-triangle winding defect fixed in 0.6.0 and pointed us to the seed-extraction and dense tension-solve bottlenecks on large tissues.
+
 # Release notes — 0.7.0, 17 October 2026
 
 `foambryo` and `delaunay-watershed-3d` ship together as 0.7.0, the first release on PyPI since 0.5.1. 0.6.0 was prepared but not published; its changes are part of 0.7.0 and are included below. This is what changes for you and what can mislead you; `CHANGELOG.md` has the full list, and dw3d's `RELEASE_NOTES.md` covers reconstruction. Install both with `pip install --upgrade foambryo delaunay-watershed-3d`.
@@ -59,7 +97,7 @@ From 0.5.0 `foambryo` is licensed under the **GNU General Public License, versio
 - **Meshes reconstructed with dw3d 0.5.0 differ from 0.4 meshes**: junction relocation is on by default there, so angles and tensions inferred from a freshly reconstructed mesh move. Reconstruct with `relocate_junctions=False` to reproduce a 0.4 mesh.
 - **`dcel_mesh_from_segmentation_mask` now defaults to `min_distance=3`** (was 5), dw3d's own default: a denser mesh, slower to build. Pass `min_distance=5` for the 0.4 spacing.
 - **The pressure and force functions now raise instead of returning a non-finite field.** `infer_pressures`, `infer_pressures_and_residuals` and `infer_forces` raise `UndeterminedTensionError` (a `ValueError`) naming every interface whose tension is not finite; on the real embryo series this happens on 5 of 154 timepoints, all outside the segmentation-quality window, where 0.4 returned 54–71 non-finite pressures out of 55–72 without a warning. Tensions are unchanged, and pressures from finite tensions are bitwise unchanged.
-- **The second-order reading (`angle_reading="quadric"`) is now independent of the mesh's units**, which moves previously published second-order numbers by up to **0.14°**.
+- **The second-order reading (`angle_reading="quadric"`) is now independent of the mesh's units.** This changes second-order readings on reconstructed meshes: on 40 benchmark reconstructions (delaunay-watershed-3d 0.4.2, without junction relocation), the median line-mean angle error under the oriented second-order reading moved from 5.27° to 5.40°, single cases by up to 0.92°. (This note first said "by up to 0.14°", which is the unit dependence removed, measured on one rescaled mesh.)
 - **`AngleReadingCoverageWarning` now carries its numbers**: the measured coverage fraction and how many trijunction lines were not fully corrected.
 
 ## Limitations

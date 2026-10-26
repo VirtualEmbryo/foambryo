@@ -8,7 +8,9 @@ Inputs can be:
 Output is always a DcelData mesh. Conventions: label 0 is the exterior medium; a mask's axes are
 (z, y, x) and the mesh's coordinates follow them, column 0 along axis 0; the mesh is in voxel units
 unless a `spacing` gives a physical one, and the inferred pressures are in the tension unit divided
-by that length unit.
+by that length unit. Mesh files keep that column order, (z, y, x): a program that reads the columns as
+(x, y, z), as ParaView and MeshLab do, shows the mirror image of the tissue. foambryo's Polyscope viewer
+draws (x, y, z) = the columns (2, 1, 0), the tissue as it is (`foambryo.viewing`).
 
 Matthieu Perez 2024.
 """
@@ -86,8 +88,12 @@ class MaskReconstruction:
         spacing_unit: its unit.
         min_distance: the reconstruction's `min_distance`, in cubic voxels of the shortest spacing.
         rec_bytes: the `.rec` file (crop faces as its last triangle rows, metadata appendix included).
-        n_cells: the labels other than the medium that the mesh holds.
+        n_cells: the labels that are cells (neither the exterior 0 nor an enclosed medium) that the mesh holds.
         n_cut_cells: the cells the image boundary cuts.
+        media: the labels that are media: 0, then the enclosed media (lumens) the reconstruction made its own
+            regions (delaunay-watershed-3d 0.7.1 and later; `(0,)` with an earlier one).
+        unresolved: labels of the mask absent from the mesh, because no tetrahedron of the reconstruction lay in
+            their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts.
     """
 
     points: NDArray[np.float64]
@@ -100,6 +106,8 @@ class MaskReconstruction:
     rec_bytes: bytes = field(repr=False)
     n_cells: int
     n_cut_cells: int
+    media: tuple[int, ...] = (0,)
+    unresolved: dict[int, int] = field(default_factory=dict)
 
     def mesh(self) -> DcelData:
         """The mesh for inference, as `dcel_mesh_from_segmentation_mask(mask, spacing=...)` builds it.
@@ -108,16 +116,30 @@ class MaskReconstruction:
         """
         crop_faces = None if self.crop_faces is None else self.crop_faces.copy()
         return DcelData(self.points.copy(), self.triangles.copy(), self.labels.copy(), crop_faces=crop_faces,
-                        source_spacing=self.spacing)
+                        source_spacing=self.spacing, media=self.media, unresolved=tuple(self.unresolved))
 
     def write_rec(self, filename: str | Path) -> None:
         """Write the `.rec` file, byte for byte what `foambryo mesh` writes for the same mask and options."""
         Path(filename).write_bytes(self.rec_bytes)
 
     def summary(self) -> str:
-        """The counts `foambryo mesh` prints: points, triangles, cells, and those cut by the image boundary."""
+        """The counts `foambryo mesh` prints: points, triangles, cells, those cut by the image boundary, and media.
+
+        The enclosed media (lumens) are named only when there is one, so a summary without is as before 0.7.1.
+        """
+        enclosed = [label for label in self.media if label != 0]
+        lumens = ""
+        if enclosed:
+            plural = len(enclosed) != 1
+            names = ", ".join(str(label) for label in enclosed)
+            lumens = f"; {len(enclosed)} enclosed medi{'a' if plural else 'um'} (label{'s' if plural else ''} {names})"
+        if self.unresolved:
+            plural = len(self.unresolved) != 1
+            names = ", ".join(f"{label}: {voxels} voxels" for label, voxels in sorted(self.unresolved.items()))
+            lumens += (f"; {len(self.unresolved)} label{'s' if plural else ''} of the mask unresolved, absent from "
+                       f"the mesh ({names})")
         return (f"{len(self.points)} points, {len(self.triangles)} triangles, {self.n_cells} cells "
-                f"({self.n_cut_cells} cut by the image boundary)")
+                f"({self.n_cut_cells} cut by the image boundary){lumens}")
 
 
 def reconstruct_mask(
@@ -167,6 +189,10 @@ def reconstruct_mask(
         rec_bytes = rec_path.read_bytes()
     report = algorithm.crop_face_report
     crop_faces = getattr(algorithm, "crop_faces", None)
+    media = tuple(int(label) for label in getattr(algorithm, "medium_labels", (0,)))
+    report_of_media = getattr(algorithm, "enclosed_medium_report", None)
+    unresolved = {int(u.label): int(u.voxels) for u in getattr(report_of_media, "unresolved", ())}
+    present = np.unique(np.asarray(labels))
     return MaskReconstruction(
         points=points,
         triangles=cast("NDArray[np.int64]", triangles),  # dw3d's own arrays, passed on as the library passes them
@@ -176,8 +202,10 @@ def reconstruct_mask(
         spacing_unit=spacing_unit,
         min_distance=int(min_distance),
         rec_bytes=rec_bytes,
-        n_cells=int(np.count_nonzero(np.unique(np.asarray(labels)))),
+        n_cells=int(np.count_nonzero(~np.isin(present, media))),
         n_cut_cells=len(report.cut_cells) if report is not None and report.meets_the_image_box else 0,
+        media=tuple(label for label in media if label in present),
+        unresolved=unresolved,
     )
 
 
@@ -223,7 +251,8 @@ def dcel_mesh_from_segmentation_mask(
             on 12 simulated tissues of 90 and 165 cells at a real cell size, down-sampled along z,
             against the same tissues meshed at full resolution: resampling first costs +0.83, +0.71
             and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against
-            +1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh. Above 3
+            +1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh (dw3d 0.7.0's
+            meshes, not measured again for 0.7.1). Above 3
             nothing was measured at that cell size, and delaunay-watershed-3d warns
             (`UnmeasuredAnisotropyWarning`); the mesh is built anyway. The cost is that of a mask
             acquired at the short spacing: the anisotropy times the voxels.
@@ -298,7 +327,12 @@ def _dcel_mesh_from_mask_with(
             spacing,
         )
     crop_faces = getattr(mesh_reconstruction_algorithm, "crop_faces", None)
-    return DcelData(points, triangles, labels, crop_faces=crop_faces, source_spacing=spacing)
+    media = [label for label in getattr(mesh_reconstruction_algorithm, "medium_labels", ()) if label != 0]
+    present = set(np.unique(np.asarray(labels)).tolist())
+    report_of_media = getattr(mesh_reconstruction_algorithm, "enclosed_medium_report", None)
+    unresolved = [int(u.label) for u in getattr(report_of_media, "unresolved", ())]
+    return DcelData(points, triangles, labels, crop_faces=crop_faces, source_spacing=spacing,
+                    media=[label for label in media if label in present], unresolved=unresolved)
 
 
 def _source_spacing_from_rec_appendix(filename: Path) -> tuple[float, float, float] | None:
@@ -373,6 +407,10 @@ def dcel_mesh_from_file(filename: str | Path) -> DcelData:
     units (`coordinate_frame = physical`, `spacing = ...`), as `DcelData.source_spacing`; it changes
     no number. Any other file gives `None`.
 
+    The **media** are read from a `.rec` file whose appendix records them (`media = 0 L ...`: the enclosed media,
+    lumens, that delaunay-watershed-3d 0.7.1 made their own regions), as `DcelData.media`. Any other file has the
+    exterior 0 alone; name further media with `DcelData(..., media=...)` or `foambryo infer --media`.
+
     Args:
         filename (str | Path): Path to the file on disk.
 
@@ -389,10 +427,13 @@ def dcel_mesh_from_file(filename: str | Path) -> DcelData:
     """
     filename = Path(filename)
     source_spacing = None
+    media = unresolved = None
     if filename.suffix in (".rec", ".arec"):
         points, triangles, labels = load_rec(filename)
         crop_faces = _crop_faces_from_rec_appendix(filename, labels)
         source_spacing = _source_spacing_from_rec_appendix(filename)
+        media = _media_from_rec_appendix(filename)
+        unresolved = _labels_from_rec_appendix(filename, "unresolved_regions")
     else:
         points, triangles, labels = load_meshio_mesh(filename)
 
@@ -403,7 +444,33 @@ def dcel_mesh_from_file(filename: str | Path) -> DcelData:
         crop_faces = _crop_faces_from_meshio_file(filename)
     if crop_faces is None:
         warn_if_crop_faces_unrecorded(points, triangles, labels, f"{filename.name}", stacklevel=3)
-    return DcelData(points, triangles, labels, crop_faces=crop_faces, source_spacing=source_spacing)
+    return DcelData(points, triangles, labels, crop_faces=crop_faces, source_spacing=source_spacing, media=media,
+                    unresolved=unresolved)
+
+
+def _media_from_rec_appendix(filename: Path) -> tuple[int, ...] | None:
+    """The medium labels a `.rec` file's appendix records (`media = 0 L ...`), or `None` when it records none.
+
+    delaunay-watershed-3d 0.7.1 writes the key only when the mesh has an enclosed medium (a lumen made its own
+    region). Its own reader parses it to integers; an older one keeps it as a string, read here as well.
+    """
+    return _labels_from_rec_appendix(filename, "media")
+
+
+def _labels_from_rec_appendix(filename: Path, key: str) -> tuple[int, ...] | None:
+    """The integer labels a `.rec` file's appendix records under `key`, or `None` when it records none.
+
+    Read from the typed tuple of delaunay-watershed-3d 0.7.1's reader, or from the string an older reader keeps.
+    """
+    try:
+        appendix = load_rec_appendix(filename)
+    except ImportError:
+        return None
+    if appendix is None or key not in appendix:
+        return None
+    value = appendix[key]
+    labels = value.split() if isinstance(value, str) else value
+    return tuple(int(label) for label in labels)
 
 
 def _crop_faces_from_rec_appendix(filename: Path, labels: NDArray[np.int64]) -> NDArray[np.bool_] | None:

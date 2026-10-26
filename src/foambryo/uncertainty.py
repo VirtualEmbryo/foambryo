@@ -17,7 +17,8 @@ error bar on a reconstructed mesh. The first-order interval of the `YoungDupre` 
 (`AnglePropagation`) is a **lower bound** on the error: measured on 2 400 reconstructions with
 ground truth, one reconstruction's `+- std` contained the true tension for 26-54 % of interfaces
 (nominal 68 %), because the error is mostly the reconstruction's bias, which no propagated scatter
-measures. The calibration figures below are for the simulator's reference meshes.
+measures (on meshes from dw3d's 0.6.0 code, part of 0.7.0; not measured again on 0.7.1's). The
+calibration figures below are for the simulator's reference meshes.
 
 The goal here is not "add error bars" — it is *produce an interval whose `error/std` is
 O(1), or state plainly that we cannot*. `error/std` (the ratio of the actual error against
@@ -42,7 +43,8 @@ cases) |
 `AnglePropagation`'s row is on the reference meshes, whose angles are nearly exact. On 2 400
 reconstructions of five tissue populations with ground truth, one reconstruction's `+- std`
 contains the true tension for only 26-54 % of interfaces (nominal 68 %), `+- 2 std` for 48-79 %
-(nominal 95 %): it is not a calibrated interval there, and no single factor makes it one.
+(nominal 95 %), on meshes from dw3d's 0.6.0 code (part of 0.7.0; not measured again on 0.7.1's): it is not a
+calibrated interval there, and no single factor makes it one.
 
 **So that goal is met: `ProbeResidual` is an interval with `error/std` = O(1), and it
 errs on the safe side on every one of the 42 cases.**
@@ -235,7 +237,7 @@ class InferenceDiagnostics:
             Gauge-invariant. ~1e-10 for a mesh that minimises `M`;
             0.0007-0.036 on the 42 simulation meshes; 0.26-0.28 on the five non-equilibrium
             cases excluded from every accuracy claim. **On `dw3d`-reconstructed meshes of the
-            same cases it is about 50x the reference value: median 0.578 (range 0.48-0.72) on the 40-case equilibrium
+            same cases it is about 50x the reference value: median 0.546 (range 0.46-0.67) on the 40-case equilibrium
             cohort, every case above the 0.2 alarm below**, so the force-balance family's
             numbers on reconstructions stand on a floor no gauge choice can lower.
         sigma_gauge (float): Smallest singular value of the column-normalised `M` — the
@@ -850,7 +852,7 @@ def _angle_propagation_std(
     which keeps `sum(gamma)` fixed: the mean tension carries no variance, as it carries no
     freedom. The second term, the residual's, was dropped until 0.6.0; it changes the standard
     errors by a median 3 % on reconstructions of the benchmark tissues and 21-23 % on
-    reconstructions of real-size 90- and 165-cell tissues, and is checked against finite
+    reconstructions of real-size 90- and 165-cell tissues (meshes from dw3d's 0.6.0 code), and is checked against finite
     differences of the solve (to 2.4e-5 relative). (Until 0.6.0 the derivative was also that of
     the soft-row system, `-M^+ [dP gamma; 0]` with `M = [P; 1^T]`.) Every angle enters exactly one
     place, as `cos(alpha) * factor`, so `d(dP)/d alpha = -sin(alpha) * factor` at those entries and
@@ -861,7 +863,7 @@ def _angle_propagation_std(
         Cov(gamma) = J diag(sigma_alpha^2) J^T.
 
     **Not a calibrated interval** (measured on 2 400 reconstructions with ground truth, five
-    populations): one reconstruction's `+- std` contains the true tension for 26-54 % of
+    populations, meshes from dw3d's 0.6.0 code): one reconstruction's `+- std` contains the true tension for 26-54 % of
     interfaces (nominal 68 %), `+- 2 std` for 48-79 % (nominal 95 %). It measures the scatter of
     the angles along each junction line, not the reconstruction's bias, which dominates the error.
     No single factor calibrates it across tissue types.
@@ -1020,8 +1022,9 @@ def infer_tensions_with_uncertainty(
     **The interval is not a calibrated error bar on a reconstructed mesh.** The first-order
     `AnglePropagation` interval of `YoungDupre` is a lower bound on the error: one
     reconstruction's `+- std` held the true tension for 26-54 % of interfaces (nominal 68 %) and
-    `+- 2 std` for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth.
-    The force-balance family's error is floored by `rho_free` on reconstructed meshes (see the
+    `+- 2 std` for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth
+    (meshes from dw3d's 0.6.0 code, part of 0.7.0; not measured again on 0.7.1's). The force-balance
+    family's error is floored by `rho_free` on reconstructed meshes (see the
     module docstring and `InferenceDiagnostics`).
 
     Only the estimators whose intervals have been calibrated are accepted. That is deliberate:

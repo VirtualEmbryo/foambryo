@@ -4,13 +4,22 @@
 
 **foambryo** infers the relative surface tensions and cell pressures of foam-like cell aggregates (early embryos, tissues, organoids) from the 3-D geometry of their cells.
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/Images_github_repo/Window_76_cells.png" alt="A 76-cell embryo in the foambryo viewer" width="650"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/Images_github_repo/Window_76_cells.png" alt="A 76-cell embryo in the foambryo viewer" width="650"/>
 
 It was developed by Sacha Ichbiah during his PhD in [Turlier Lab](https://www.turlierlab.com), and is maintained by Matthieu Perez and Hervé Turlier. For support, please open an issue. If you use it in your work, please cite the [article](https://doi.org/10.1038/s41592-023-02084-7): Ichbiah S., Delbary F., McDougall A., Dumollard R., Turlier H. *Embryo mechanics cartography: inference of 3D force atlases from fluorescence microscopy.* Nature Methods **20**(12), 1989–1999 (2023).
 
 To infer tensions in 2-D, see [foambryo2D](https://github.com/VirtualEmbryo/foambryo2D).
 
 The documentation (user guide, examples, API reference) is in [`docs/`][docs]; the full list of changes is in the [CHANGELOG][changelog], and what can mislead you in the [release notes][notes].
+
+## What's new in 0.7.1
+
+Install foambryo and delaunay-watershed-3d 0.7.1 together.
+
+- **Media besides the exterior.** A lumen that delaunay-watershed-3d 0.7.1 meshes as its own region is solved like a cell (its own interface tensions and pressure) but reported and drawn as a medium; `--media` names one in a mesh made elsewhere. `pressures.csv` then gets a `region_kind` column.
+- **`foambryo view` draws the tissue, not its mirror image.** Every view and saved figure of 0.7.0 was mirrored; no number was affected.
+- **The benchmark numbers are measured on delaunay-watershed-3d 0.7.1's meshes**, which differ slightly from 0.7.0's; this package's inference is unchanged. Two user-guide statements were corrected: the second-order angle reading's numbers were those of meshes without junction relocation, and what its 0.5.0 repair changed.
+- **The test suites run on Linux x86-64 CI** as well as on macOS.
 
 ## What's new in 0.7.0
 
@@ -37,7 +46,7 @@ pip install "foambryo[cli]"          # and TIFF masks for the foambryo command (
 pip install "foambryo[viewing,cli]"  # both
 ```
 
-Every dependency, delaunay-watershed-3d included, is installed by pip. The napari plugin is installed with `pip install "napari[all]" napari-foambryo`. For development, clone the repository and `pip install -e "./foambryo[viewing,cli]"`. Tested for 0.7.0 on macOS 14 on Apple silicon (arm64), with Python 3.12; other systems are expected to work but were not tested for this release.
+Every dependency, delaunay-watershed-3d included, is installed by pip. The napari plugin is installed with `pip install "napari[all]" napari-foambryo`. For development, clone the repository and `pip install -e "./foambryo[viewing,cli]"`. Tested for 0.7.1 on macOS 14 on Apple silicon (arm64) and on Linux x86-64 (Ubuntu 24.04), with Python 3.12 and 3.13, with the newest and the lowest supported versions of the dependencies; other systems are expected to work but were not tested for this release.
 
 foambryo starts from a **segmentation mask**: a 3-D array of integer labels, one per cell, 0 for the medium, axis 0 being z. Make it with any segmentation tool (a watershed, [Cellpose](https://www.cellpose.org), …); its quality and resolution set the precision of the result.
 
@@ -66,13 +75,13 @@ foambryo view tissue.rec --results results
 
 **In napari**, with the napari-foambryo plugin: *File › Open Sample › foambryo › Benchmark case 000*, then *Plugins › foambryo › Reconstruct*, *Infer* and *Results* (see the plugin's README).
 
-More: the [examples][examples] (anisotropic voxels, cropped tissues, seed ensembles, large tissues, the command line, the viewer) and the [introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/Example.ipynb).
+More: the [examples][examples] (anisotropic voxels, cropped tissues, seed ensembles, large tissues, the command line, the viewer) and the [introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/Examples/Example.ipynb).
 
 ## Viewers
 
 | Polyscope (`foambryo[viewing]`) | napari (`napari-foambryo`) |
 |---|---|
-| <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/docs/images/viewer_polyscope_case_000_tensions.jpg" alt="Benchmark case 000 in the Polyscope window" width="420"/> | <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/docs/images/viewer_napari_case_000_tensions.jpg" alt="Benchmark case 000 in napari" width="420"/> |
+| <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/docs/images/viewer_polyscope_case_000_tensions.jpg" alt="Benchmark case 000 in the Polyscope window" width="420"/> | <img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/docs/images/viewer_napari_case_000_tensions.jpg" alt="Benchmark case 000 in napari" width="420"/> |
 
 *Benchmark case 000 (a simulated 6-cell aggregate), reconstructed from its mask and inferred with the defaults; the tensions on the surface, with the same colour bar in both viewers.*
 
@@ -86,7 +95,7 @@ Both viewers draw what the library returns, with the library's colours, so a val
 
 We consider a tissue made of cells *i*, which minimise, under conservation of their volumes, an energy $\mathcal{E}=\sum_{i<j}\gamma_{ij}A_{ij}$, where $A_{ij}$ is the area of the interface between cells *i* and *j*.
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/Images_github_repo/Equilibrium.png" alt="Force balance at a junction" width="175"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/Images_github_repo/Equilibrium.png" alt="Force balance at a junction" width="175"/>
 
 Two laws follow:
 
@@ -100,9 +109,9 @@ foambryo offers thirteen tension methods (`YoungDupre`, the default, reads the c
 ## In practice
 
 - **Cropped tissues.** Where a cell reaches the image box, the mesh closes it with *crop faces*, which are not contact with the medium. Every tension method keeps them out of its equations; the pressures of the cells they cut are `nan`, with a `CutCellPressureWarning`; the Laplace pressure methods refuse a cropped mesh. A tissue that really ends on an image face (a coverslip): `physical_image_faces=("axis0_low",)`. See [cropped tissues][cropped].
-- **Anisotropic voxels.** Give the voxel size. Measured on simulated tissues whose cells are as small as real ones, down-sampled along z, against the same tissues meshed at full resolution: resampling to cubic voxels first costs +0.83, +0.71 and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against +1.38, +1.97 and +4.10 for meshing the native grid ([BENCHMARKS.md](BENCHMARKS.md)). Above 3 nothing was measured, and a warning says so. The cost is that of a mask acquired at the short spacing. See [anisotropic voxels][aniso].
-- **Large tissues.** `foambryo.reconstruction_cost` estimates the reconstruction's time and memory before it runs (a 1 866-cell tissue resampled to cubic voxels: 13.5 minutes and 38 GiB on the machine measured). The tension and pressure systems are solved sparsely from 2 000 unknowns (`solver="auto"`); `diagnostics=True` returns a record of every solve. On a 1 866-cell tissue the sparse solve took 9 s and 1 GiB where the dense one took 6 to 9 minutes and 14–18 GiB, and they agree to 1.5e-11. See [large tissues][large].
-- **Seed ensembles.** delaunay-watershed-3d dithers its points with a seed; another seed gives slightly different tensions. `infer_tensions_over_seeds(mask)` averages eight reconstructions: it lowered the median tension error from 0.152 (a single seed, on average) to 0.123 on synthetic tissues with cells of real size. **The seed spread is a lower bound on the error, not an error bar**: a single seed's ±1 SD interval held the true tension for about half of the interfaces. Interfaces found by fewer than half of the seeds are flagged. `combine="angles"` is experimental: on synthetic masks degraded by a smooth random warp of about one voxel, it lost its advantage over the default on tissues of 90 and 165 cells while keeping it on small aggregates. See [seed ensembles][seeds].
+- **Anisotropic voxels.** Give the voxel size. Measured on simulated tissues whose cells are as small as real ones, down-sampled along z, against the same tissues meshed at full resolution: resampling to cubic voxels first costs +0.83, +0.71 and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against +1.38, +1.97 and +4.10 for meshing the native grid (measured on dw3d 0.7.0's meshes; not measured again for 0.7.1, whose meshes differ slightly, because some of these runs need 8 to 40 GiB of memory; [BENCHMARKS.md](BENCHMARKS.md)). Above 3 nothing was measured, and a warning says so. The cost is that of a mask acquired at the short spacing. See [anisotropic voxels][aniso].
+- **Large tissues.** `foambryo.reconstruction_cost` estimates the reconstruction's time and memory before it runs (a 1 866-cell tissue resampled to cubic voxels: 13.5 minutes and 38 GiB on the machine measured). The tension and pressure systems are solved sparsely from 2 000 unknowns (`solver="auto"`); `diagnostics=True` returns a record of every solve. On a 1 866-cell tissue the sparse solve took 9 s and 1 GiB where the dense one took 6 to 9 minutes and 14–18 GiB, and they agree to 1.5e-11 (measured on a mesh from dw3d's 0.6.0 code, not on 0.7.1's, which has 93 099 points where 0.7.0's has 93 097; not measured again: one run needs about 31 GiB). See [large tissues][large].
+- **Seed ensembles.** delaunay-watershed-3d dithers its points with a seed; another seed gives slightly different tensions. `infer_tensions_over_seeds(mask)` averages eight reconstructions: it lowered the median tension error from 0.152 (a single seed, on average) to 0.123 on synthetic tissues with cells of real size (meshes from dw3d's 0.6.0 code, never published and part of 0.7.0; not measured again on 0.7.1's meshes). **The seed spread is a lower bound on the error, not an error bar**: a single seed's ±1 SD interval held the true tension for about half of the interfaces. Interfaces found by fewer than half of the seeds are flagged. `combine="angles"` is experimental: on synthetic masks degraded by a smooth random warp of about one voxel, it lost its advantage over the default on tissues of 90 and 165 cells while keeping it on small aggregates. See [seed ensembles][seeds].
 - **Error bars.** `infer_tensions_with_uncertainty` gives intervals with their measured calibration; none is a calibrated error bar on a reconstructed mesh, and the first-order one of `YoungDupre` is a lower bound. It stops at about 1 300 cells of real size, where its dense diagnostics outgrow scipy, and says so at once.
 
 ## Command line
@@ -124,19 +133,19 @@ Every default is the library's: `foambryo infer` gives the numbers of `infer_for
 
 *Phallusia mammillata* is a solitary marine tunicate of the ascidian class, known for its stereotypical development. Its embryo develops freely, so its tensions, pressures and stresses can all be inferred. Segmentation data from [Guignard, L., Fiúza, U. et al.](https://www.science.org/doi/10.1126/science.aar5663)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/Images_github_repo/Ascidians.png" alt="Tensions and pressures of an ascidian embryo" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/Images_github_repo/Ascidians.png" alt="Tensions and pressures of an ascidian embryo" width="900"/>
 
 ### *C. elegans* early embryo
 
 The *Caenorhabditis elegans* embryo develops within a shell of unknown shape and mechanics, so its pressures are not accessible, but the Young-Dupré law still gives the surface tensions. Segmentation data from [Cao, J., Guan, G., Ho, V.W.S. et al.](https://doi.org/10.1038/s41467-020-19863-x)
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/Images_github_repo/CElegans.png" alt="Tensions of a C. elegans embryo" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/Images_github_repo/CElegans.png" alt="Tensions of a C. elegans embryo" width="900"/>
 
 ### Scalar quantities on the surfaces
 
 With `scalar_quantities=True`, the viewer also draws the Gaussian curvature (angle defect), the mean curvature (cotangent formula), the vertex area and volume derivatives, the difference between the principal curvatures and the residual of the best sphere fit.
 
-<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.0/Images_github_repo/scalar_quantities.png" alt="Curvatures on the surfaces" width="900"/>
+<img src="https://raw.githubusercontent.com/VirtualEmbryo/foambryo/v0.7.1/Images_github_repo/scalar_quantities.png" alt="Curvatures on the surfaces" width="900"/>
 
 ## Repository layout
 
@@ -174,15 +183,15 @@ foambryo is free software: you can redistribute it and modify it under the terms
 [gpl]: https://www.gnu.org/licenses/gpl-3.0.html
 [gpl-image]: https://www.gnu.org/graphics/gplv3-127x51.png
 [gpl-shield]: https://img.shields.io/badge/License-GPLv3-blue.svg
-[docs]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/index.md
-[changelog]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/CHANGELOG.md
-[notes]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/RELEASE_NOTES.md
-[examples]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/examples/index.md
-[methods]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/methods.md
-[methods-note]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/methods-note.md
-[viewers]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/viewers.md
-[cropped]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/cropped-tissues.md
-[aniso]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/anisotropic-voxels.md
-[large]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/large-tissues.md
-[seeds]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/user-guide/seed-ensembles.md
-[cli]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/docs/command_line_specification.md
+[docs]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/index.md
+[changelog]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/CHANGELOG.md
+[notes]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/RELEASE_NOTES.md
+[examples]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/examples/index.md
+[methods]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/methods.md
+[methods-note]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/methods-note.md
+[viewers]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/viewers.md
+[cropped]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/cropped-tissues.md
+[aniso]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/anisotropic-voxels.md
+[large]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/large-tissues.md
+[seeds]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/user-guide/seed-ensembles.md
+[cli]: https://github.com/VirtualEmbryo/foambryo/blob/v0.7.1/docs/command_line_specification.md

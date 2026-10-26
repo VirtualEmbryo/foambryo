@@ -265,7 +265,7 @@ def _markdown_normalisation_table(group_summary: dict) -> str:
         "calibrated, and far above 1 means the residual is systematic and the error bars are "
         "optimistic.\n\n"
         "**Warning.** On `dw3d`-reconstructed meshes the operator this family inverts has "
-        "`rho_free` about 50x the reference meshes' own (median 0.578 against 0.0118 on the "
+        "`rho_free` about 50x the reference meshes' own (median 0.546 against 0.0118 on the "
         "40-case equilibrium cohort, all 40 above the 0.2 alarm threshold), so every "
         "`ForceBalance*` row computed on a reconstruction, here or in any variant comparison, "
         "stands on a floor no gauge treatment can lower; the angle-reading rows do not.\n\n"

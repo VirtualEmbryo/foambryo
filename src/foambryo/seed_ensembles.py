@@ -9,13 +9,16 @@ relocation on) and `YoungDupre` with the chord reading, a tension varies from se
   cells are about ten times larger in volume than real ones;
 * about 13-14 % on synthetic tissues voxelised at a real cell size (median cell 69 370 voxels, radius ~25)
   and on embryo frames;
-* about 21 % on a 110-cell and on a 1 866-cell tissue meshed on their native anisotropic grid.
+* about 21 % on a 110-cell and on a 1 866-cell tissue meshed on their native anisotropic grid (on meshes from
+  dw3d's 0.6.0 code, not on 0.7.1's, which differ slightly; not measured again: one reconstruction of the larger
+  tissue needs about 31 GiB).
 
 Averaging the tensions of several seeds removes part of that variation. Against ground truth, an
 ensemble of 8 seeds lowers the median relative tension error (gauge-matched, median over interfaces, then
 over tissues) from 0.152 to 0.123 on 12 synthetic tissues at real cell size (-23 % per tissue, lower on
 all 12), and from 0.077 to 0.064 on the benchmark (-9 %, lower on 35 of 42 cases), where most of the error
-is bias rather than seed noise. The contact-angle error falls by about 2 degrees at real cell size.
+is bias rather than seed noise (both measured on meshes from dw3d's 0.6.0 code, never published, part of 0.7.0;
+not measured again on 0.7.1's). The contact-angle error falls by about 2 degrees at real cell size.
 
 **What this module offers.** :func:`infer_tensions_over_seeds` reconstructs a mask at a fixed list of seeds
 (0 to 7 by default), infers the tensions of each mesh, and combines them:

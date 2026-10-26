@@ -290,8 +290,8 @@ def test_the_scale_bar_lies_under_the_tissue_with_its_length_in_its_unit():
     bar = scale_bar_for_points(points, "um")
     assert bar.length == 20.0
     assert bar.label == "20 µm" == format_length(20.0, "um")
-    assert np.allclose(bar.end - bar.start, [20.0, 0.0, 0.0])
-    assert bar.start[1] < 0.0
+    assert np.allclose(bar.end - bar.start, [0.0, 0.0, 20.0])  # along x, the mesh's column 2: horizontal when drawn
+    assert bar.start[1] < 0.0  # below the tissue along y, drawn up
     assert scale_bar_for_points(points, "voxel", length=7.5).label == "7.5 voxel"
     with pytest.raises(ValueError, match="finite and positive"):
         scale_bar_for_points(points, "um", length=0.0)

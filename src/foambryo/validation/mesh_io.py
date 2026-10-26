@@ -27,6 +27,7 @@ from __future__ import annotations
 import struct
 import warnings
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 
 import numpy as np
@@ -518,7 +519,7 @@ def check_label_orientation_convention(
     v: NDArray[np.float64],
     f: NDArray[np.int64],
     regions: NDArray[np.int64],
-    exterior: int = 0,
+    exterior: int | Iterable[int] = 0,
 ) -> dict:
     """Check that a mesh's triangle winding agrees with its label column order.
 
@@ -542,9 +543,10 @@ def check_label_orientation_convention(
         v (NDArray[np.float64]): Mesh vertices, shape `(nv, 3)`.
         f (NDArray[np.int64]): Mesh triangles (vertex indices), shape `(nf, 3)`.
         regions (NDArray[np.int64]): Per-triangle region pair, shape `(nf, 2)`.
-        exterior (int, optional): Label of the external medium, excluded from the
-            positivity requirement since its volume is legitimately negative.
-            Defaults to 0.
+        exterior (int | Iterable[int], optional): Label of the external medium, excluded from the
+            positivity requirement since its volume is legitimately negative; or the labels of
+            every medium (`DcelData.media`: 0 and the enclosed media), which are then not
+            counted as cells either. Defaults to 0.
 
     Returns:
         dict: `{"ok", "volumes", "nonpositive_cells", "n_nonpositive_cells",
@@ -552,8 +554,9 @@ def check_label_orientation_convention(
             when every bounded cell has a strictly positive volume.
     """
     volumes = signed_cell_volumes(v, f, regions)
+    media = {int(exterior)} if isinstance(exterior, (int, np.integer)) else {int(label) for label in exterior}
     nonpositive = sorted(
-        label for label, volume in volumes.items() if label != exterior and volume <= 0
+        label for label, volume in volumes.items() if label not in media and volume <= 0
     )
     return {
         "ok": not nonpositive,
@@ -571,7 +574,7 @@ def require_label_orientation_convention(
     v: NDArray[np.float64],
     f: NDArray[np.int64],
     regions: NDArray[np.int64],
-    exterior: int = 0,
+    exterior: int | Iterable[int] = 0,
 ) -> None:
     """Raise if a mesh's winding does not agree with its label column order.
 
@@ -582,7 +585,8 @@ def require_label_orientation_convention(
         v (NDArray[np.float64]): Mesh vertices, shape `(nv, 3)`.
         f (NDArray[np.int64]): Mesh triangles (vertex indices), shape `(nf, 3)`.
         regions (NDArray[np.int64]): Per-triangle region pair, shape `(nf, 2)`.
-        exterior (int, optional): Label of the external medium. Defaults to 0.
+        exterior (int | Iterable[int], optional): Label of the external medium, or the labels of
+            every medium (see `check_label_orientation_convention`). Defaults to 0.
 
     Raises:
         ValueError: If any bounded cell encloses a non-positive volume.

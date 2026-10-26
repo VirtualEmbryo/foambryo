@@ -97,7 +97,7 @@ TRUTH_INFERRED = "truth_inferred"
 #: single-method figure would misrepresent the comparison whichever family it picked.
 #:
 #: Read every `ForceBalanceKKT` panel and difference map with the measured floor: on `dw3d`
-#: reconstructions `rho_free` is about 50x the reference meshes' own (median 0.578 against
+#: reconstructions `rho_free` is about 50x the reference meshes' own (median 0.546 against
 #: 0.0118 on the 40-case equilibrium cohort, all above the 0.2 alarm threshold), so the
 #: force-balance panels compare two fits to geometries that no tension assignment balances,
 #: and a difference between variants through this family is a difference between two such

@@ -10,7 +10,8 @@ module computes, with no Polyscope and no display:
   library's functions clip that quantity to, and each sampled with the library's own bar colours (the samples
   `save_colour_bars` draws); the viewer draws them in its panel, and `compose_figure` under a saved view;
 * **a length scale bar** (`scale_bar_for_points`): a segment of round length in the mesh's unit, placed under the
-  tissue, and where it falls on a rendered image (`project_to_pixels`);
+  tissue as the viewer draws it (`foambryo._display_frame`), and where it falls on a rendered image
+  (`project_to_pixels`, which takes points of the drawn scene);
 * **a saved figure** (`compose_figure`): a rendered view of the window (an RGB array) with its colour bars and
   the scale bar's length written beside the segment, through matplotlib's non-interactive canvas;
 * **seed-ensemble tensions on one mesh** (`ensemble_on_mesh`): the tensions combined over seeds, matched to
@@ -41,6 +42,7 @@ from foambryo._colour_scales import (
     quantile_colour_range,
     surface_pressure_colour_upper,
 )
+from foambryo._display_frame import drawn_points
 
 if TYPE_CHECKING:
     import os
@@ -228,8 +230,8 @@ class ScaleBar:
     Attributes:
         length: the segment's length, in `unit`.
         unit: the mesh's length unit, as recorded (`um`, ...).
-        start: the segment's first end, in mesh coordinates.
-        end: the segment's other end: `start + (length, 0, 0)`.
+        start: the segment's first end, in mesh coordinates (columns z, y, x).
+        end: the segment's other end, `length` further along x (the mesh's column 2): `start + (0, 0, length)`.
     """
 
     length: float
@@ -244,25 +246,26 @@ class ScaleBar:
 
 
 def scale_bar_for_points(points: NDArray[np.float64], unit: str, length: float | None = None) -> ScaleBar:
-    """A scale bar under a tissue: along the first coordinate axis, below the points along the second.
+    """A scale bar under a tissue: along x, below the points along y, as the viewer draws them.
 
-    Polyscope's home view looks along its third axis with its second axis up, so the segment is horizontal and
-    under the tissue in that view; its length is exact in 3-D, and foreshortened on screen like any length in a
+    x, y and z are the viewer's drawn frame (`foambryo._display_frame`): the mask's column, row and slice, the
+    mesh's columns 2, 1 and 0. Polyscope's home view looks along its z with its y up, so the segment is horizontal
+    and under the tissue in that view; its length is exact in 3-D, and foreshortened on screen like any length in a
     perspective view of the scene.
 
     Args:
-        points: the mesh's points, `(n, 3)`, in the mesh's unit.
+        points: the mesh's points, `(n, 3)`, in the mesh's unit and column order (z, y, x).
         unit: that unit.
         length: the segment's length; `None` (the default) chooses `round_scale_bar_length` of the largest side.
 
     Returns:
-        ScaleBar: the segment, starting at the tissue's lowest first coordinate, 8 % of the largest side below
-        its lowest second coordinate, half-way along the third.
+        ScaleBar: the segment, in the mesh's coordinates, starting at the tissue's lowest x, 8 % of the largest
+        side below its lowest y, half-way along z.
 
     Raises:
         ValueError: if `length` is given and is not finite and positive, or the points have no extent.
     """
-    points = np.asarray(points, dtype=np.float64)
+    points = drawn_points(np.asarray(points, dtype=np.float64))
     low, high = points.min(axis=0), points.max(axis=0)
     extent = float(np.max(high - low))
     if length is None:
@@ -272,7 +275,8 @@ def scale_bar_for_points(points: NDArray[np.float64], unit: str, length: float |
         raise ValueError(message)
     start = np.array([low[0], low[1] - 0.08 * extent, 0.5 * (low[2] + high[2])])
     end = start + np.array([float(length), 0.0, 0.0])
-    return ScaleBar(length=float(length), unit=unit, start=start, end=end)
+    # The drawn frame's map exchanges columns 0 and 2: it is its own inverse, and takes the ends back to the mesh's.
+    return ScaleBar(length=float(length), unit=unit, start=drawn_points(start), end=drawn_points(end))
 
 
 def project_to_pixels(
@@ -288,7 +292,8 @@ def project_to_pixels(
     along its -z axis with +y up, and the vertical field of view spans the image's height.
 
     Args:
-        points: `(n, 3)` scene coordinates.
+        points: `(n, 3)` scene coordinates, as drawn: Polyscope's x, y, z (`foambryo._display_frame.drawn_points` of
+            the mesh's points).
         view_matrix: the camera's 4 x 4 view matrix (`CameraParameters.get_view_mat()`).
         fov_vertical_deg: the vertical field of view, in degrees.
         width: the image's width, in pixels.

@@ -26,6 +26,7 @@ case the one worthwhile follow-up is to re-run `Examples/reference.ipynb` on it 
 confirm the agreement above.
 """
 
+import gzip
 import importlib.util
 from pathlib import Path
 from types import ModuleType
@@ -40,12 +41,28 @@ REFERENCE_PRESSURES = REPO_ROOT / "Examples" / "reference_pressures.txt"
 ORIGINAL_BENCHMARK_MESH = REPO_ROOT / "data" / "Meshes" / "Benchmark_original_mesh.rec"
 FORCE_BALANCE_REFERENCE_IMPLEMENTATION = REPO_ROOT / "tests" / "reference" / "force_balance_reference_implementation.py"
 DATASET_DIR = WORKSPACE_ROOT / "benchmarking-dataset"
+#: Three benchmark meshes committed with the tests (gzip, 1.2 MB in all), so that the golden master runs
+#: without the benchmarking dataset, in the CI included: 000 (the golden-master mesh above), 002 (two
+#: cells) and 011 (ten cells, the most of any equilibrium case). They are the dataset's files byte for byte
+#: (`tests/test_golden_master_meshes_are_the_benchmark_files.py` checks it where the dataset is present).
+GOLDEN_MASTER_MESHES = REPO_ROOT / "tests" / "data" / "golden_master_meshes"
+GOLDEN_MASTER_CASES = ("000", "002", "011")
+#: The default inference's tensions and pressures on 002 and 011 (`tests/data/make_golden_master_values.py`);
+#: 000's are the published reference files above.
+GOLDEN_MASTER_VALUES = REPO_ROOT / "tests" / "data" / "golden_master_values.json"
 
 
 def require_substitute_mesh() -> Path:
     if not SUBSTITUTE_MESH.exists():
         pytest.skip(f"{SUBSTITUTE_MESH} not found (sibling benchmarking-dataset/ missing)")
     return SUBSTITUTE_MESH
+
+
+def golden_master_mesh(case: str, directory: Path) -> Path:
+    """Decompress one committed golden-master mesh (`GOLDEN_MASTER_MESHES`) into `directory`; its path."""
+    target = directory / f"{case}_mesh.rec"
+    target.write_bytes(gzip.decompress((GOLDEN_MASTER_MESHES / f"{case}_mesh.rec.gz").read_bytes()))
+    return target
 
 
 def load_reference_implementation() -> ModuleType:

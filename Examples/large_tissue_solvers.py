@@ -20,7 +20,9 @@ This example generates a foam of several hundred Voronoi cells, and:
 
 The foam is not at mechanical equilibrium: its tensions show the workflow and the solvers, not the method's
 accuracy. On a 1 866-cell tissue the sparse and dense tensions agree to 1.5e-11 of their scale and the pressures to
-1e-11; the dense solve took 6 to 9 minutes and 14-18 GiB there, the sparse one 9 s and 1 GiB.
+1e-11; the dense solve took 6 to 9 minutes and 14-18 GiB there, the sparse one 9 s and 1 GiB (measured on a mesh
+from dw3d's 0.6.0 code, not on 0.7.1's, which has 93 099 points where 0.7.0's has 93 097; not measured again:
+one run needs about 31 GiB).
 
     python large_tissue_solvers.py                # about a minute and 5 GiB; writes ./large-tissue-output/
     python large_tissue_solvers.py --cells 300    # smaller and faster

@@ -5,8 +5,8 @@ What this pins, and why (each the answer to a request about the window):
 * with tensions and pressures, the surface shows the **tensions** first; the panel switches to the pressures;
 * an **undetermined** tension's interface is drawn as its outline in the undetermined green, without fill, and the
   crop faces are never filled with a value's colour (a per-face transparency); the pressure view fills every cell;
-* an optional **x, y, z frame**: three segments of one round length from the drawn box's lowest corner, along the
-  mesh's columns (z, y, x), labelled at their tips;
+* an optional **x, y, z frame**: three segments of one round length from the drawn box's lowest corner, along
+  Polyscope's x, y, z, the mask's column, row and slice (the mesh's columns 2, 1, 0), labelled at their tips;
 * **explode is live**: changing the coefficient draws the scattered view at the new coefficient, the library's
   `compute_scattered_arrays(coeff)` positions bitwise; and the graph view's nodes and the stress tensors' centres
   stay at their exploded cells' barycentres however often the coefficient changes (they used to run away: each
@@ -131,8 +131,9 @@ def test_the_pressure_view_hides_no_cell_and_no_outline(mock_polyscope):
 
 
 def test_the_frame_is_three_round_segments_from_the_lowest_corner(mock_polyscope):
+    from foambryo._display_frame import drawn_points
     from foambryo._viewer_figures import round_scale_bar_length
-    from foambryo.viewing import _FRAME
+    from foambryo.viewing import _FRAME, _FRAME_AXES
 
     window = _window()
     window.show_frame = True
@@ -144,7 +145,9 @@ def test_the_frame_is_three_round_segments_from_the_lowest_corner(mock_polyscope
     assert length == round_scale_bar_length(extent)
     assert mock_polyscope.get_curve_network(_FRAME).is_enabled()
     labels = [text for text, _, _ in window.frame_labels(800, 600)]
-    assert labels[1:] == ["z", "y", "x"]  # columns 0, 1, 2 of the mesh's points are z, y, x
+    assert labels[1:] == ["x", "y", "z"]
+    # The segments x, y, z run along the mesh's columns 2, 1, 0, which are drawn as Polyscope's x, y, z.
+    assert np.array_equal(drawn_points(_FRAME_AXES), np.eye(3))
 
 
 def test_explode_follows_the_coefficient_live_off_the_windows_thread(mock_polyscope, monkeypatch):
@@ -175,6 +178,7 @@ def test_explode_follows_the_coefficient_live_off_the_windows_thread(mock_polysc
 
 def test_live_explode_keeps_the_graph_and_the_stress_tensors_on_the_cells(mock_polyscope, monkeypatch):
     import foambryo.viewing as viewing
+    from foambryo._display_frame import drawn_points
     from foambryo.curvature import compute_sphere_fit_residues_dict
 
     points: dict[str, np.ndarray] = {}
@@ -209,8 +213,8 @@ def test_live_explode_keeps_the_graph_and_the_stress_tensors_on_the_cells(mock_p
         cell_of_vertex = np.zeros(len(mesh.v_scattered), dtype=np.int64)
         cell_of_vertex[mesh.f_scattered[:, :3].ravel()] = np.repeat(mesh.cluster_idx_scattered.astype(np.int64), 3)
         barycentres = np.array([mesh.v_scattered[cell_of_vertex == cell].mean(axis=0) for cell in drawn_cells])
-        for name in ("Graph Nodes", "Stress tensors principal directions"):
-            assert np.linalg.norm(points[name] - barycentres, axis=1).max() <= tolerance, (coeff, name)
+        for name in ("Graph Nodes", "Stress tensors principal directions"):  # as drawn: Polyscope's x, y, z
+            assert np.linalg.norm(points[name] - drawn_points(barycentres), axis=1).max() <= tolerance, (coeff, name)
         assert residuals[-1] == unexploded
         assert all(np.array_equal(mesh.centroids[cell], centroids[cell]) for cell in centroids)
     window.close()

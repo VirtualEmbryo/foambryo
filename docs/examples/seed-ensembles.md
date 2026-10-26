@@ -25,14 +25,14 @@ On macOS 14 (Apple M3 Max), Python 3.12; times vary with the machine.
 ```text
 doublet at equilibrium, 8 seeds (0..7); every true tension is 1
   interface   ensemble  |error|  seed SD  relative SD
-  (0, 1)        1.069    0.069    0.029        2.7%
-  (0, 2)        1.076    0.076    0.022        2.0%
+  (0, 1)        1.069    0.069    0.028        2.7%
+  (0, 2)        1.077    0.077    0.023        2.1%
   (1, 2)        0.855    0.145    0.044        5.2%
 foam of 12 cells, 8 seeds
-  49 interfaces; relative seed SD median 30.7%, 90th percentile 77.6%
-  found by fewer than half of the seeds (flagged, kept): [(3, 6), (7, 12), (9, 12)] (seeds that found each: [3, 2, 1])
+  49 interfaces; relative seed SD median 32.5%, 90th percentile 88.6%
+  found by fewer than half of the seeds (flagged, kept): [(3, 6), (7, 12), (9, 12)] (seeds that found each: [3, 2, 2])
   combine='angles' warned: SeedEnsembleExperimentalWarning
-  combine='angles' (quadric) against the default ensemble: median relative difference 14.1% over 49 interfaces (a comparison, not an accuracy)
+  combine='angles' (quadric) against the default ensemble: median relative difference 18.8% over 49 interfaces (a comparison, not an accuracy)
 figure: seed-ensembles-output/seed_ensembles.png
 ```
 

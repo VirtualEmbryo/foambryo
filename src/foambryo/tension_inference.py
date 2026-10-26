@@ -137,7 +137,7 @@ class TensionComputationMethod(Enum):
 
     **The operator-inverting family is unreliable on reconstructed meshes, measured.** On the
     benchmark cohort's shipped-default reconstructions `rho_free` -- the distance of the mesh
-    from any equilibrium of the force-balance operator -- has median 0.578 against the
+    from any equilibrium of the force-balance operator -- has median 0.546 against the
     reference meshes' 0.0118 (a factor of about 50), and all 40 equilibrium cases exceed the
     0.2 threshold at which `foambryo.uncertainty` reports that no surface tensions balance the
     mesh at all. Every `ForceBalance*` number obtained on a `dw3d` mesh, including every

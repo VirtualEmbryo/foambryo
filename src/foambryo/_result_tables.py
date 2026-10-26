@@ -16,6 +16,7 @@ import csv
 import hashlib
 import json
 import math
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -46,6 +47,11 @@ PER_SEED_TENSION_COLUMNS = ("seed", *TENSION_COLUMNS)
 #: The files `foambryo infer-over-seeds` writes in OUTDIR, and only these (no pressures: no single mesh).
 ENSEMBLE_OUTPUTS = (TENSION_TABLE, PER_SEED_TENSION_TABLE, RUN_RECORD)
 PRESSURE_COLUMNS = ("label", "pressure")
+#: `pressures.csv` of a mesh with an enclosed medium (a lumen): a third column says which rows are media. Written
+#: only then, because foambryo 0.7.0's reader refuses any other header than `PRESSURE_COLUMNS`.
+PRESSURE_COLUMNS_WITH_REGION_KIND = (*PRESSURE_COLUMNS, "region_kind")
+#: The values of `region_kind`: the exterior medium (label 0), another medium (an enclosed lumen), a cell.
+REGION_KINDS = ("exterior", "medium", "cell")
 #: `solves.csv`: `index` (the solve's position, as in `run.json`'s `solves` and `spectra.npz`'s
 #: `singular_values_<index>`), then the scalars of the library's `SolveRecord`, in its order.
 SOLVE_COLUMNS = (
@@ -159,19 +165,35 @@ def read_per_seed_tension_table(path: Path) -> dict[int, dict[tuple[int, int], f
     return out
 
 
-def write_pressure_table(path: Path, dict_pressures: dict[int, float]) -> None:
+def write_pressure_table(
+    path: Path,
+    dict_pressures: dict[int, float],
+    *,
+    media: Iterable[int] | None = None,
+) -> None:
     """Write `pressures.csv`: `label,pressure`, one row per material (the medium, 0, included), sorted by label.
+
+    With a medium other than 0 among `media` (an enclosed medium, a lumen, made its own region by
+    delaunay-watershed-3d 0.7.1 or named with `--media`), a third column, `region_kind`, says what each row is:
+    `exterior` (0), `medium` or `cell`. Without one the file is `label,pressure` exactly as before 0.7.1, which
+    foambryo 0.7.0's reader requires.
 
     Args:
         path: the file (a `pathlib.Path`), replaced if it exists.
         dict_pressures: pressure per label; a `nan` pressure is written `nan`. Floats are written exactly
             (`format_float`).
+        media: the labels that are media (`DcelData.media`). Keyword-only. Defaults to `None`: 0 alone.
     """
+    enclosed = {int(m) for m in (media or ()) if int(m) != 0}
     with path.open("w", newline="", encoding="ascii") as file:
         writer = csv.writer(file, lineterminator="\n")
-        writer.writerow(PRESSURE_COLUMNS)
+        writer.writerow(PRESSURE_COLUMNS_WITH_REGION_KIND if enclosed else PRESSURE_COLUMNS)
         for label, pressure in sorted(dict_pressures.items(), key=lambda item: int(item[0])):
-            writer.writerow((int(label), format_float(pressure)))
+            row = (int(label), format_float(pressure))
+            if enclosed:
+                kind = "exterior" if int(label) == 0 else "medium" if int(label) in enclosed else "cell"
+                row = (*row, kind)
+            writer.writerow(row)
 
 
 def read_tension_table(path: Path) -> dict[tuple[int, int], float]:
@@ -200,22 +222,43 @@ def read_pressure_table(path: Path) -> dict[int, float]:
         dict[int, float]: the pressures, bitwise the numbers written.
 
     Raises:
-        ValueError: if the header is not `label,pressure` or a row cannot be parsed.
+        ValueError: if the header is neither `label,pressure` nor `label,pressure,region_kind`, or a row cannot be
+            parsed.
     """
-    rows = _read_rows(path, PRESSURE_COLUMNS)
+    rows = _read_rows(path, PRESSURE_COLUMNS, PRESSURE_COLUMNS_WITH_REGION_KIND)
     return {int(row[0]): float(row[1]) for row in rows}
 
 
-def _read_rows(path: Path, columns: tuple[str, ...]) -> list[list[str]]:
+def read_pressure_region_kinds(path: Path) -> dict[int, str]:
+    """Read the `region_kind` column of a `pressures.csv`: label -> `exterior`, `medium` or `cell`.
+
+    A file without the column (a mesh without an enclosed medium) gives `exterior` for 0 and `cell` for the rest.
+
+    Raises:
+        ValueError: as `read_pressure_table`, or for a kind not in `REGION_KINDS`.
+    """
+    rows = _read_rows(path, PRESSURE_COLUMNS, PRESSURE_COLUMNS_WITH_REGION_KIND)
+    kinds = {int(row[0]): (row[2] if len(row) == 3 else "exterior" if int(row[0]) == 0 else "cell") for row in rows}
+    unknown = sorted(set(kinds.values()) - set(REGION_KINDS))
+    if unknown:
+        message = f"{path.name}: unknown region_kind {unknown}"
+        raise ValueError(message)
+    return kinds
+
+
+def _read_rows(path: Path, columns: tuple[str, ...], *alternatives: tuple[str, ...]) -> list[list[str]]:
     with path.open(newline="", encoding="ascii") as file:
         rows = list(csv.reader(file))
-    if not rows or tuple(rows[0]) != columns:
+    accepted = (columns, *alternatives)
+    if not rows or tuple(rows[0]) not in accepted:
         found = ",".join(rows[0]) if rows else "an empty file"
-        message = f"{path.name}: expected the header {','.join(columns)}, found {found}"
+        expected = " or ".join(",".join(c) for c in accepted)
+        message = f"{path.name}: expected the header {expected}, found {found}"
         raise ValueError(message)
+    width = len(rows[0])
     body = rows[1:]
-    if any(len(row) != len(columns) for row in body):
-        message = f"{path.name}: every row must have {len(columns)} values"
+    if any(len(row) != width for row in body):
+        message = f"{path.name}: every row must have {width} values"
         raise ValueError(message)
     return body
 

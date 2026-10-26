@@ -60,7 +60,7 @@ Only `Variational`, the default, has a formulation for cropped tissues (see [Cro
 
 ## Error bars and diagnostics
 
-`infer_tensions_with_uncertainty` returns the tensions of `infer_tensions` with an interval, and `compute_inference_diagnostics` says how well the mesh determines them. **No interval is a calibrated error bar on a reconstructed mesh.** The first-order interval of the `YoungDupre` tensions (`UncertaintyModel.AnglePropagation`) is a **lower bound** on the error: on 2 400 reconstructions with known tensions, one reconstruction's `± std` held the true tension for 26–54 % of the interfaces (68 % for a calibrated interval) and `± 2 std` for 48–79 % (95 %), because the error is mostly the reconstruction's bias, which no propagated scatter measures. Neither function has a formulation for crop faces yet: both raise `ValueError` on a cropped mesh. **Both stop at about 1 300 cells** of real size: they compute the diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy cannot take past `2**31 - 1` entries, so both raise `ValueError` at once on a larger mesh, whatever the method ([large tissues](large-tissues.md#error-bars)). See the `foambryo.uncertainty` module in the [API reference](../api/uncertainty.md) for every interval and its measured calibration.
+`infer_tensions_with_uncertainty` returns the tensions of `infer_tensions` with an interval, and `compute_inference_diagnostics` says how well the mesh determines them. **No interval is a calibrated error bar on a reconstructed mesh.** The first-order interval of the `YoungDupre` tensions (`UncertaintyModel.AnglePropagation`) is a **lower bound** on the error: on 2 400 reconstructions with known tensions, one reconstruction's `± std` held the true tension for 26–54 % of the interfaces (68 % for a calibrated interval) and `± 2 std` for 48–79 % (95 %) (measured on meshes from dw3d's 0.6.0 code, never published and part of 0.7.0; not measured again on 0.7.1's meshes), because the error is mostly the reconstruction's bias, which no propagated scatter measures. Neither function has a formulation for crop faces yet: both raise `ValueError` on a cropped mesh. **Both stop at about 1 300 cells** of real size: they compute the diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy cannot take past `2**31 - 1` entries, so both raise `ValueError` at once on a larger mesh, whatever the method ([large tissues](large-tissues.md#error-bars)). See the `foambryo.uncertainty` module in the [API reference](../api/uncertainty.md) for every interval and its measured calibration.
 
 ## How the contact angle is read: `angle_reading`
 
@@ -81,12 +81,12 @@ tensions = infer_tensions(mesh, 1, TensionComputationMethod.YoungDupre, angle_re
 
 | `dw3d` `min_distance` | 3 | 4 |
 |---|---:|---:|
-| length-weighted junction-angle flattening slope, `chord` | −0.2135 | −0.2176 |
-| the same, `quadric` | **−0.0496** | **−0.0072** |
-| tension contrast (1.000 is perfect), `chord` | 0.791 | 0.766 |
-| the same, `quadric` | **1.022** | **1.059** |
+| length-weighted junction-angle flattening slope, `chord` | −0.2118 | −0.2169 |
+| the same, `quadric` | **−0.0475** | **−0.0051** |
+| tension contrast (1.000 is perfect), `chord` | 0.787 | 0.770 |
+| the same, `quadric` | **1.024** | **1.066** |
 | median per-line angle error, `chord` | 6.00° | 7.03° |
-| the same, `quadric` | **4.73°** | **5.46°** |
+| the same, `quadric` | **4.76°** | **5.46°** |
 
 Contrast and per-line angle error improve *together*, which is what distinguishes a geometry fix from a bias-for-variance trade.
 
@@ -100,19 +100,19 @@ from foambryo import infer_tensions_and_residuals_with_report
 *_values, report = infer_tensions_and_residuals_with_report(
     mesh, 1, TensionComputationMethod.YoungDupre, angle_reading="quadric",
 )
-report.coverage_fraction    # e.g. 0.919 -- the fraction of trijunction faces corrected
+report.coverage_fraction    # e.g. 0.932 -- the fraction of trijunction faces corrected
 report.uncorrected_lines    # the trijunction lines that are only partly corrected
 report.is_complete          # False when any face fell back
 ```
 
-Calling `infer_tensions` or `compute_angles_tri` directly, which drop the report, emits an `AngleReadingCoverageWarning` carrying the same numbers instead. On the benchmark meshes coverage is 0.919 of faces at `min_distance = 3` and 0.890 at 4 — but only **0.220** and **0.178** of *lines* are corrected throughout, so most lines carry a mixture. Look at `uncorrected_lines`, not only at the fraction.
+Calling `infer_tensions` or `compute_angles_tri` directly, which drop the report, emits an `AngleReadingCoverageWarning` carrying the same numbers instead. On the benchmark meshes coverage is 0.932 of faces at `min_distance = 3` and 0.913 at 4 — but only **0.328** and **0.288** of *lines* are corrected throughout, so most lines carry a mixture. Look at `uncorrected_lines`, not only at the fraction.
 
-**When *not* to use it, and this is the most important caveat.** The correction removes a `κL/2` chord deficit, and on a **well-resolved** mesh that deficit is already small while the reader's known over-application is not. Measured on the 47 ground-truth simulation meshes that ship with the benchmark — far finer than any reconstruction — the chord reading's contrast is already 1.000 to within 2×10⁻⁵, and `angle_reading="quadric"` moves it to a median of 1.080, **worse on 47 of 47 cases**. Use it on `dw3d`-reconstructed meshes, not on simulator output or any mesh whose elements are already much smaller than the interface's radius of curvature.
+**When *not* to use it, and this is the most important caveat.** The correction removes a `κL/2` chord deficit, and on a **well-resolved** mesh that deficit is already small while the reader's known over-application is not. Measured on the 47 ground-truth simulation meshes that ship with the benchmark — far finer than any reconstruction — the chord reading's contrast is already 1.000 to within 2×10⁻⁵, and `angle_reading="quadric"` moves it to a median of 1.081, **worse on 47 of 47 cases**. Use it on `dw3d`-reconstructed meshes, not on simulator output or any mesh whose elements are already much smaller than the interface's radius of curvature.
 
 **The honest residual.** The correction is not exact, and four measured facts qualify it:
 
 1. It **over-applies at fine spacing.** On a coarsened reference mesh, where the true angles are known, the reader removes about 26 % more rotation than the chord deficit it exists to remove at `min_distance = 3`; by `min_distance = 7` it under-applies instead. The reference-mesh result above is the same effect at its most extreme.
-2. Consequently a residual slope survives: the corrected arm sits **+0.0487** above its own corrected floor at `min_distance = 3`, while at `min_distance = 4` the excess contains zero (−0.0102, CI [−0.0288, +0.0127]).
+2. On `dw3d`'s default meshes (junction relocation on) the corrected arm's excess over its own corrected floor is not resolved: +0.0112 [−0.0093, +0.0315] at `min_distance = 3` and −0.0221 [−0.0295, +0.0053] at 4, both intervals including zero (`BENCHMARKS.md`). This bounds the residual, it does not show that there is none. On meshes without junction relocation it was +0.0487 at `min_distance = 3`.
 3. `YoungDupreLocal` is the one method whose **tension** error gets worse under the quadric reading even though its angles improve — it imposes the balance per edge and so never performs the along-line average that cancels the correction's per-edge scatter. Use `YoungDupre` with `angle_reading="quadric"`, not `YoungDupreLocal`.
 4. It reads angles a second-order surface fit reports; it does **not** move any vertex, so it cannot repair a mesh whose junction line is in the wrong place.
 

@@ -25,10 +25,10 @@ The script: [`Examples/polyscope_viewer.py`](https://github.com/VirtualEmbryo/fo
 
 ## Output of one run
 
-On macOS 14 (Apple M3 Max), Python 3.12; times vary with the machine.
+On macOS 14 (Apple M3 Max), Python 3.12, delaunay-watershed-3d 0.7.1; times vary with the machine.
 
 ```text
-wrote polyscope-viewer-output/colour_bars.png: ColourBarRanges(tension=(-0.11816166743291356, 2.1181616674329136), pressure=(0.0, 0.2521449715287928), alpha=0.05)
+wrote polyscope-viewer-output/colour_bars.png: ColourBarRanges(tension=(-0.12555029199922796, 2.125550291999228), pressure=(0.0, 0.2526588795647705), alpha=0.05)
 wrote polyscope-viewer-output/tensions_and_pressures.png
 wrote polyscope-viewer-output/tensions_exploded.png
 wrote polyscope-viewer-output/tensions_over_four_seeds.png (interfaces found by fewer than half of the seeds: 5, drawn in magenta)

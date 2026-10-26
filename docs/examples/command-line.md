@@ -22,7 +22,7 @@ wrote results/solves.csv
 wrote results/run.json
 wrote results-tensions-only/tensions.csv
 wrote results-tensions-only/run.json
-wrote results/colour_bars.png: tension 0.918712 to 1.08129, pressure 0 to 0.135339
+wrote results/colour_bars.png: tension 0.918712 to 1.08129, pressure 0 to 0.135111
 wrote results/figure.png
 wrote results-over-seeds/tensions.csv
 wrote results-over-seeds/tensions_per_seed.csv
@@ -33,19 +33,19 @@ label_1,label_2,tension
 1,2,0.9056190114191799
 label,pressure
 0,0.0
-1,0.13027858293102407
-2,0.13533901454340083
+1,0.13050218054098955
+2,0.1351107246540892
 index,system,solver,n_rows,n_unknowns,rank,residual_norm,condition_number,condition_number_source,seconds,lsqr_istop,lsqr_iterations,spectrum_seconds,spectrum_note,n_singular_values
-0,YoungDupre tension system,dense lstsq,4,3,3,6.628683812140618e-16,1.2754666092060924,singular values of dense lstsq (2-norm),0.00010391700016043615,,,,,3
-1,Variational pressure system,dense inv,2,2,2,0.0,1.393096799960001,SVD of the cells x cells matrix (2-norm; computed for diagnostics only),0.002161542000976624,,,,,2
+0,YoungDupre tension system,dense lstsq,4,3,3,6.628683812140618e-16,1.2754666092060924,singular values of dense lstsq (2-norm),0.00011841603554785252,,,,,3
+1,Variational pressure system,dense inv,2,2,2,5.551115123125783e-17,1.3918577003201873,SVD of the cells x cells matrix (2-norm; computed for diagnostics only),0.0025840840535238385,,,,,2
 label_1,label_2,tension
 0,1,1.1035926439473065
 0,2,1.1080629833257924
 1,2,0.788344372726901
 label_1,label_2,tension,tension_seed_sd,n_seeds_found,found_by_fewer_than_half_the_seeds
-0,1,1.068962417273275,0.029247815548050605,8,false
-0,2,1.0764760355509257,0.021868788532474117,8,false
-1,2,0.854561547175799,0.04443751792585566,8,false
+0,1,1.0685387071082215,0.02847756591884869,8,false
+0,2,1.076903913189298,0.022540200763520455,8,false
+1,2,0.8545573797024806,0.044436647263104145,8,false
 ```
 
 ## The script

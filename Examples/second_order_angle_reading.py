@@ -25,8 +25,8 @@ moves it to a median of 1.080, worse on **47 of 47** cases. The correction over-
 spacing (about +26 % on a mesh where the truth is known, from dw3d's identifiability-floor work).
 
 The reading is for **coarse reconstructed meshes**, where the chord deficit is large: on
-`dw3d`-reconstructed meshes of these same 47 cases the contrast goes 0.738 -> 0.954 at
-`min_distance = 3` and 0.722 -> 1.056 at 4. See `BENCHMARKS.md`. This example prints the
+`dw3d`-reconstructed meshes of the 42 equilibrium cases the contrast goes 0.787 -> 1.024 at
+`min_distance = 3` and 0.770 -> 1.066 at 4 (dw3d 0.7.1's default meshes). See `BENCHMARKS.md`. This example prints the
 correction's own scale (the median rotation it applies) so the two regimes are distinguishable
 by eye rather than by assertion.
 
@@ -167,8 +167,8 @@ def main() -> None:
     print("  reconstruction. Its chord deficit is already small, so the correction's known")
     print("  over-application at fine spacing dominates and the contrast gets slightly WORSE.")
     print("  Measured over all 47 reference meshes: chord |contrast-1| 1.9e-05, quadric 0.080,")
-    print("  chord closer on 47 of 47. On dw3d-RECONSTRUCTED meshes of the same 47 cases the")
-    print("  contrast goes 0.738 -> 0.954 (min_distance 3) and 0.722 -> 1.056 (4). See")
+    print("  chord closer on 47 of 47. On dw3d-RECONSTRUCTED meshes of the 42 equilibrium cases")
+    print("  the contrast goes 0.787 -> 1.024 (min_distance 3) and 0.770 -> 1.066 (4). See")
     print("  BENCHMARKS.md. Use angle_reading='quadric' on reconstructions, not on simulator")
     print("  output.")
 

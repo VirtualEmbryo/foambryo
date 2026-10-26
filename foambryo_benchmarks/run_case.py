@@ -166,7 +166,7 @@ def force_balance_diagnostics(
     bars are optimistic. Reported rather than asserted.
 
     **On a `dw3d`-reconstructed mesh, read this block with the measured floor**: `rho_free` is
-    about 50x the reference meshes' own value (median 0.578 against 0.0118 on the 40-case
+    about 50x the reference meshes' own value (median 0.546 against 0.0118 on the 40-case
     equilibrium cohort, every case above the 0.2 alarm threshold), so the three variants are
     fitting a geometry that no tension assignment balances. See
     `foambryo.force_balance_inference`'s module docstring.
