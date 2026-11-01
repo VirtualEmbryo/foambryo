@@ -13,9 +13,9 @@ faces**, and foambryo keeps them out of every equation:
 
 This example builds a foam of Voronoi cells, cuts away a third of it along x, and runs the inference on the cut
 mask. The foam is not at mechanical equilibrium: its tensions show the workflow, not the method's accuracy. (On 433
-plane crops of 47 simulated tissues at equilibrium, the tensions of the interfaces next to the crop had 13 %, 33 %
-and 40 % error with 10 %, 25 % and 40 % of the tissue cut away when crop faces were read as medium contact, and 10 %,
-9 % and 12 % with crop faces kept out.)
+plane crops of 47 simulated tissues at equilibrium, the tensions of the interfaces next to the crop had 14 %, 33 %
+and 39 % error with 10 %, 25 % and 40 % of the tissue cut away when crop faces were read as medium contact, and 10 %,
+9 % and 13 % with crop faces kept out.)
 
 If the tissue really ends on a face of the image (for example on a coverslip), declare that face physical:
 `dcel_mesh_from_segmentation_mask(mask, physical_image_faces=("axis2_low",))`; its triangles are then contact with

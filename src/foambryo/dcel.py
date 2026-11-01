@@ -11,6 +11,7 @@ Matthieu Perez, 2024.
 
 import math
 import pickle
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -343,8 +344,9 @@ def compute_scattered_arrays(mesh: "DcelData", coeff: float) -> None:
     embryo_centroid = np.mean(points, axis=0)
     clusters_displacements = {}
 
+    media = set(getattr(mesh, "media", (0,)))
     for key in sorted(clusters.keys()):
-        if key == 0:
+        if key in media:  # the exterior and the enclosed media (lumens) are not scattered: they are not cells
             continue
         faces = np.array(clusters[key])
 
@@ -495,6 +497,27 @@ def _crop_face_mask(
     return mask
 
 
+def _unresolved(unresolved: Iterable[int] | None, materials: NDArray[np.int64]) -> tuple[int, ...]:
+    """`DcelData`'s `unresolved`: the labels given, ascending; one that a triangle carries raises."""
+    labels = sorted({int(label) for label in (unresolved or ())})
+    present = sorted(set(labels) & {int(m) for m in materials})
+    if present:
+        message = f"unresolved names labels that the mesh carries: {present}"
+        raise ValueError(message)
+    return tuple(labels)
+
+
+def _media(media: Iterable[int] | None, materials: NDArray[np.int64]) -> tuple[int, ...]:
+    """`DcelData`'s `media`: 0 when the mesh has it, then the given labels, ascending; a label it lacks raises."""
+    present = {int(m) for m in materials}
+    given = set() if media is None else {int(m) for m in media}
+    missing = sorted(given - present)
+    if missing:
+        message = f"media names labels that no triangle carries: {missing}"
+        raise ValueError(message)
+    return tuple(sorted(given | ({0} & present)))
+
+
 def _source_spacing(spacing: tuple[float, float, float] | None) -> tuple[float, float, float] | None:
     """`DcelData`'s `source_spacing` as three floats, or `None`; a malformed one raises `ValueError`."""
     if spacing is None:
@@ -523,6 +546,10 @@ class DcelData:
         crop_faces (NDArray[np.bool_]): `(nf,)`, `True` on the crop faces (all `False` without).
         source_spacing (tuple[float, float, float] | None): the source mask's voxel size, if
             recorded.
+        media (tuple[int, ...]): the labels that are media, not cells: 0 when the mesh has it, then the enclosed
+            media (lumens), ascending.
+        unresolved (tuple[int, ...]): labels of the source mask absent from the mesh (no tetrahedron lay in
+            their voxels), ascending; empty unless the mesh records them.
         vertices (list[Vertex]): the DCEL's vertex records, aligned with `v`.
         half_edges (list[HalfEdge]): the DCEL's half-edge records.
         faces (list[Face]): the DCEL's face records, aligned with the rows of `f`.
@@ -536,6 +563,8 @@ class DcelData:
         *,
         crop_faces: NDArray[np.bool_] | NDArray[np.integer] | None = None,
         source_spacing: tuple[float, float, float] | None = None,
+        media: Iterable[int] | None = None,
+        unresolved: Iterable[int] | None = None,
     ) -> None:
         """Take a multimaterial mesh as input.
 
@@ -563,12 +592,24 @@ class DcelData:
                 sets it when given a `spacing`. Keyword-only. Defaults to `None`, unknown. **It
                 changes nothing**: the mesh is already in physical units, and no inference reads
                 it. It is kept so that a mesh says which voxels it came from.
+            media (Iterable[int] | None, optional): the labels that are media, not cells, besides the exterior 0:
+                an enclosed medium such as a lumen, which delaunay-watershed-3d 0.7.1 makes its own region and
+                records in the `.rec` file (`media = 0 L ...`, read by `dcel_mesh_from_file`), or that a user names
+                (`--media`). Keyword-only. Defaults to `None`: 0 alone. A medium is solved like a cell (its
+                interfaces have their own tensions, its pressure is inferred, the exterior's stays the reference),
+                but it is not counted, reported or drawn as a cell: see `media`, `cells` and `cut_cells`.
+            unresolved (Iterable[int] | None, optional): labels of the source mask that are absent from the mesh
+                because no tetrahedron of the reconstruction lay in their voxels (delaunay-watershed-3d 0.7.1 records
+                them in the `.rec` file as `unresolved_regions`, read by `dcel_mesh_from_file`). Keyword-only.
+                Defaults to `None`: none. Kept so that a count of cells can say how many of the mask's are missing;
+                no triangle carries them.
 
         Raises:
             ValueError: If any triangle carries the same material on both sides, or if
                 `crop_faces` is not a mask or a set of rows of `triangles`, or names a
                 triangle that does not carry the medium label 0, or if `source_spacing` is not
-                three positive finite numbers.
+                three positive finite numbers, or if `media` names a label that no triangle carries, or `unresolved`
+                one that a triangle carries.
         """
         self.source_spacing: tuple[float, float, float] | None = _source_spacing(source_spacing)
         triangles_and_labels = np.hstack((triangles, labels), dtype=np.int64)
@@ -582,6 +623,8 @@ class DcelData:
         # self.n_materials = np.amax(Faces[:,[3,4]])+1
         self.materials: NDArray[np.int64] = np.unique(triangles_and_labels[:, [3, 4]])
         self.n_materials = len(self.materials)
+        self.media: tuple[int, ...] = _media(media, self.materials)
+        self.unresolved: tuple[int, ...] = _unresolved(unresolved, self.materials)
         vertices_list, halfedges_list, faces_list = build_lists(points, triangles_and_labels)
         self.vertices = vertices_list
         self.faces = faces_list
@@ -618,7 +661,30 @@ class DcelData:
         if not self.has_crop_faces:
             return ()
         touching = np.isin(self.f[:, :3], self.crop_vertices).any(axis=1)
-        return tuple(int(c) for c in np.unique(self.f[touching, 3:5]) if c != 0)
+        return tuple(int(c) for c in np.unique(self.f[touching, 3:5]) if c not in self.media)
+
+    def set_media(self, media: Iterable[int]) -> None:
+        """Replace the media by `media` (0 is always kept when the mesh has it); a label no triangle carries raises.
+
+        Raises:
+            ValueError: if `media` names a label that no triangle of the mesh carries.
+        """
+        self.media = _media(media, self.materials)
+
+    @property
+    def cells(self) -> NDArray[np.int64]:
+        """The labels that are cells: `materials` without the media, sorted."""
+        return self.materials[~np.isin(self.materials, self.media)]
+
+    @property
+    def n_cells(self) -> int:
+        """The number of cells (`materials` without the media)."""
+        return len(self.cells)
+
+    @property
+    def has_enclosed_media(self) -> bool:
+        """Whether a medium other than the exterior 0 is present (a lumen made its own region)."""
+        return any(label != 0 for label in self.media)
 
     @property
     def crop_interfaces(self) -> tuple[tuple[int, int], ...]:
@@ -1116,15 +1182,17 @@ def update_graph_with_scattered_values(graph: networkx.Graph, mesh: DcelData) ->
     # A new array per node: `x + d`, never `x += d` (the node's array is `mesh.centroids[x]` itself, so an in-place
     # sum moved the mesh's centroids too, and each explode added its displacement to the previous ones).
     new_centroids = {
-        key: centroid if key == 0 else centroid + mesh.clusters_displacements[key]
+        key: centroid if key not in mesh.clusters_displacements else centroid + mesh.clusters_displacements[key]
         for key, centroid in unexploded_centroid.items()
     }
     networkx.set_node_attributes(graph, new_centroids, "centroid")
 
     verts_faces_dict = {}
     for (a, b), v in unexploded_verts.items():
-        if a == 0:
+        if a in mesh.media and b in mesh.clusters_displacements:
             verts_faces_dict[(a, b)] = v + mesh.clusters_displacements[b]
+        elif b in mesh.media and a in mesh.clusters_displacements:
+            verts_faces_dict[(a, b)] = v + mesh.clusters_displacements[a]
         else:
             verts_faces_dict[(a, b)] = v.copy()
 

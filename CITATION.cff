@@ -10,8 +10,8 @@ authors:
     family-names: Perez
   - given-names: Hervé
     family-names: Turlier
-version: 0.7.0
-date-released: 2026-10-17
+version: 0.7.1
+date-released: 2026-10-26
 license: GPL-3.0-or-later
 repository-code: "https://github.com/VirtualEmbryo/foambryo"
 url: "https://pypi.org/project/foambryo/"

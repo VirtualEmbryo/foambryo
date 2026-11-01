@@ -11,6 +11,10 @@ final arrays); `Recorder.replay` then makes the same calls, in the same order, o
 recorder; everywhere else, it is Polyscope itself, looked up at each call (so tests that replace a Polyscope
 function still replace it). Replaying a recording makes exactly the calls a direct drawing makes, with the same
 arrays (tested): nothing drawn changes, only the thread the arrays are computed on.
+
+Either way, `polyscope_target` hands Polyscope (or the recorder) the positions, triangles and vectors in the drawn
+frame, (x, y, z) = the mesh's columns (2, 1, 0) with each triangle's orientation kept (`foambryo._display_frame`):
+the drawing code works in the mesh's own coordinates, and the window shows the tissue, not its mirror image.
 """
 
 from __future__ import annotations
@@ -20,6 +24,8 @@ import threading
 from typing import TYPE_CHECKING, Any
 
 import polyscope as _polyscope
+
+from foambryo._display_frame import in_drawn_frame
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -36,13 +42,15 @@ _KINDS = ("surface_mesh", "curve_network", "point_cloud")
 
 
 class _PolyscopeTarget:
-    """`ps` in the drawing modules: this thread's recorder while one is set, else the `polyscope` module."""
+    """`ps` in the drawing modules: this thread's recorder while one is set, else the `polyscope` module.
+
+    Its positions, triangles and vectors go through the drawn frame (`foambryo._display_frame.in_drawn_frame`).
+    """
 
     def __getattr__(self, name: str) -> Any:  # noqa: ANN401 - whatever Polyscope or the recorder holds
         recorder = getattr(_LOCAL, "recorder", None)
-        if recorder is None:
-            return getattr(_polyscope, name)
-        return recorder.attribute(name)
+        attribute = getattr(_polyscope, name) if recorder is None else recorder.attribute(name)
+        return in_drawn_frame(name, attribute)
 
 
 polyscope_target = _PolyscopeTarget()

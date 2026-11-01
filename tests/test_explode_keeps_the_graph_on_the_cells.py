@@ -145,6 +145,7 @@ def mock_polyscope(monkeypatch):
 
 def test_the_viewer_draws_the_nodes_on_the_cells_and_the_unexploded_residuals(mock_polyscope):
     import foambryo.viewing as viewing
+    from foambryo._display_frame import drawn_points
 
     mesh = dcel_mesh_from_file(require_substitute_mesh())
     tensions, pressures = infer_forces(mesh)
@@ -161,5 +162,5 @@ def test_the_viewer_draws_the_nodes_on_the_cells_and_the_unexploded_residuals(mo
         # the medium (label 0) has volume 0 and no node; the drawn rows are the cells in graph order
         assert len(nodes) == len(drawn_cells)
         tolerance = 1e-12 * float(np.ptp(mesh.v, axis=0).max())
-        for row, cell in enumerate(drawn_cells):
-            assert np.linalg.norm(nodes[row] - barycentres[cell]) <= tolerance, (coeff, cell)
+        for row, cell in enumerate(drawn_cells):  # the nodes as drawn: Polyscope's x, y, z, the columns (2, 1, 0)
+            assert np.linalg.norm(nodes[row] - drawn_points(barycentres[cell])) <= tolerance, (coeff, cell)

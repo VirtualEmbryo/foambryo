@@ -259,12 +259,17 @@ def test_run_record_has_every_schema_1_key(capsys, tmp_path, benchmark_mesh):
     assert record["input"]["bytes"] == benchmark_mesh.stat().st_size
     assert set(record["input"]) == {"path", "sha256", "bytes", "metadata"}
     assert record["options"] == {"tension_method": "young-dupre", "pressure_method": "variational",
-                                 "mean_tension": 1.0, "base_pressure": 0.0, "solver": "auto", "diagnostics": "none"}
+                                 "mean_tension": 1.0, "base_pressure": 0.0, "solver": "auto", "diagnostics": "none",
+                                 "media": None}
     assert record["library_call"] == (
         "infer_forces(mesh, mean_tension=1.0, base_pressure=0.0, mode_tension=TensionComputationMethod.YoungDupre, "
         "mode_pressure=PressureComputationMethod.Variational, solver='auto', diagnostics=False)"
     )
-    assert set(record["mesh"]) == {"points", "triangles", "materials", "crop_faces", "cut_cells"}
+    assert set(record["mesh"]) == {"points", "triangles", "materials", "cells", "media", "unresolved", "crop_faces",
+                                   "cut_cells"}
+    assert record["mesh"]["unresolved"] == []
+    assert record["mesh"]["media"] == [0]
+    assert record["mesh"]["cells"] == record["mesh"]["materials"] - 1
     assert set(record["results"]) == {"tensions", "undetermined_tensions", "pressures", "undetermined_pressures"}
     assert set(record["units"]) == {"tension", "pressure"}
     assert record["status"] == "complete"

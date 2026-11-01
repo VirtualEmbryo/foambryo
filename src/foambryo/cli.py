@@ -189,6 +189,14 @@ def _versions() -> dict[str, str]:
     return library_versions()
 
 
+#: `--media`'s help, shared by `infer` and `view`.
+_MEDIA_HELP = (
+    "the labels of the mesh that are media, not cells, besides the exterior 0 (an enclosed lumen, say): solved like "
+    "cells, but reported (region_kind in pressures.csv, media in run.json) and drawn as media; added to the media "
+    "the .rec file records"
+)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """The command's argument parser, `foambryo {mesh,infer,infer-over-seeds,view}`; its help text is the interface.
 
@@ -298,6 +306,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="record every linear solve in run.json and in solves.csv (basic), and also the singular values in "
              "spectra.npz (spectrum) (default: %(default)s)",
     )
+    infer.add_argument("--media", type=int, nargs="+", metavar="LABEL", help=_MEDIA_HELP)
     infer.add_argument("--overwrite", action="store_true",
                        help="replace the outputs of an earlier run in OUTDIR (only " + ", ".join(tables.INFER_OUTPUTS)
                             + " are deleted)")
@@ -333,6 +342,7 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
     view.add_argument("--results", metavar="OUTDIR", help="read the tensions and pressures from what "
                       "'foambryo infer' wrote in OUTDIR (refused if its run.json names another mesh), or the "
                       "tensions 'foambryo infer-over-seeds' wrote there (matched to MESH's interfaces by label pair)")
+    view.add_argument("--media", type=int, nargs="+", metavar="LABEL", help=_MEDIA_HELP)
     view.add_argument("--colour-bars", metavar="FILE", help="write the colour bars to FILE (.png, .pdf, .svg, ...); "
                       "needs matplotlib")
     view.add_argument("--figure", metavar="FILE", help="write the window's first view with its colour bars and scale "
@@ -579,11 +589,21 @@ def _run_mesh(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------------------------
 # foambryo infer
 # ---------------------------------------------------------------------------------------------
-def _read_mesh(path: Path) -> DcelData:
+def _read_mesh(path: Path, media: Sequence[int] | None = None) -> DcelData:
+    """The mesh of `path` (`dcel_mesh_from_file`), with `media` added to the media the file records (`--media`).
+
+    Exit 3 for an unreadable file; exit 2 for a `--media` label that no triangle of the mesh carries.
+    """
     try:
-        return dcel_mesh_from_file(path)
+        mesh = dcel_mesh_from_file(path)
     except Exception as error:  # every reader error is the same failure for the user
         raise CommandError(EXIT_FILE, f"cannot read the mesh {path.name}: {type(error).__name__}: {error}") from error
+    if media:
+        try:
+            mesh.set_media([*mesh.media, *media])
+        except ValueError as error:
+            raise CommandError(EXIT_USAGE, f"--media: {error} ({path.name})") from error
+    return mesh
 
 
 def _refuse_unused_pressure_options(args: argparse.Namespace) -> None:
@@ -605,6 +625,7 @@ def _infer_record_options(args: argparse.Namespace) -> dict[str, Any]:
         "base_pressure": args.base_pressure,
         "solver": args.solver,
         "diagnostics": args.diagnostics,
+        "media": sorted(set(args.media)) if args.media else None,
     }
     if args.no_pressures:
         options.update(pressure_method=None, base_pressure=None, no_pressures=True)
@@ -634,7 +655,7 @@ def _run_infer(args: argparse.Namespace, arguments: Sequence[str]) -> int:
     appendix = tables.read_rec_metadata(mesh_path)
     relay = _WarningRelay(f"{PROGRAM} infer")
     with relay:
-        mesh = _read_mesh(mesh_path)
+        mesh = _read_mesh(mesh_path, args.media)
         outcome = infer_tensions_then_pressures(
             mesh, args.mean_tension, args.base_pressure, TENSION_METHODS[args.tension_method],
             PRESSURE_METHODS[args.pressure_method], solver=args.solver, diagnostics=DIAGNOSTICS[args.diagnostics],
@@ -650,7 +671,7 @@ def _run_infer(args: argparse.Namespace, arguments: Sequence[str]) -> int:
         tables.write_tension_table(outdir / tables.TENSION_TABLE, tensions)
         outputs.append(tables.TENSION_TABLE)
     if pressures is not None:
-        tables.write_pressure_table(outdir / tables.PRESSURE_TABLE, pressures)
+        tables.write_pressure_table(outdir / tables.PRESSURE_TABLE, pressures, media=mesh.media)
         outputs.append(tables.PRESSURE_TABLE)
     if args.diagnostics != "none":
         tables.write_solve_table(outdir / tables.SOLVE_TABLE, outcome.records)
@@ -934,7 +955,7 @@ def _run_view(args: argparse.Namespace) -> int:
     _require_file(mesh_path, args.mesh)
     inference = _view_inference_args(args)
     with _WarningRelay(f"{PROGRAM} view"):
-        mesh = _read_mesh(mesh_path)
+        mesh = _read_mesh(mesh_path, args.media)
         values = _view_values(args, mesh_path, mesh, inference)
     if args.colour_bars:
         _write_view_colour_bars(Path(args.colour_bars), mesh, values)
@@ -1031,7 +1052,8 @@ def _run_view_mask(args: argparse.Namespace, mask_path: Path) -> int:
     """
     from dw3d import get_default_mesh_reconstruction_algorithm
 
-    for option, value in (("--results", args.results), ("--figure", args.figure), ("--colour-bars", args.colour_bars)):
+    for option, value in (("--results", args.results), ("--figure", args.figure), ("--colour-bars", args.colour_bars),
+                          ("--media", args.media)):
         if value is not None:
             raise CommandError(EXIT_USAGE, f"{option} needs a mesh: {mask_path.name} is a mask, reconstructed in the "
                                            "window (run 'foambryo mesh' first to write it without a window)")

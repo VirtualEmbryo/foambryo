@@ -1,0 +1,213 @@
+# The test suite on Linux, Python 3.12 and 3.13, with the newest releases of the dependencies
+# ("current", resolved when the job runs) and with the declared lower bounds pinned exactly
+# ("floor"), every extra installed. Python 3.13 has no wheel for some lower bounds (numpy 2.0.0,
+# scipy 1.13.0, scikit-image 0.23.1, edt 2.4.1, matplotlib 3.8.4, torch 2.3.0): its floor job
+# pins the oldest release of each that has a CPython 3.13 wheel for Linux.
+#
+# delaunay-watershed-3d comes from PyPI: the newest release in the current jobs, the lower bound
+# (0.7.0) in the floor jobs. torch comes from PyTorch's CPU-only index, which keeps the CUDA
+# libraries out of the install.
+#
+# The suite runs without the datasets that live beside the repository in the development
+# workspace (benchmarking-dataset/, companion/, converged-meshes/), so the tests that need them
+# skip. The skip count is printed in the job summary: a change in it is a finding. The golden master
+# does not need them: it reads three benchmark meshes committed with the tests
+# (tests/data/golden_master_meshes/), and the last step fails the job if any of its tests is skipped
+# or none runs.
+#
+# The same jobs run on macOS 15 on Apple silicon (arm64), in the public repositories only: macOS
+# runner minutes are billed ten times Linux's in a private repository. Every exact pin there has a
+# macOS arm64 wheel for its Python, checked on PyPI and on PyTorch's CPU index, except torch 2.5.0 for
+# Python 3.13, which has none: the macOS floor job for 3.13 pins 2.6.0, the lowest that has one.
+#
+# Every action is pinned by its commit SHA (the tag in the comment). Pull requests from forks run with
+# the read-only token this file grants (contents: read) and no secret; the workflow never uses
+# pull_request_target.
+#
+# It runs on pushes to the default branch and to release branches, on pull requests and by hand
+# (workflow_dispatch), not on other branches, to keep the runner minutes low.
+
+name: Test suites on Linux and macOS
+
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Python ${{ matrix.python }}, ${{ matrix.dependencies }} dependencies
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.12"
+            dependencies: current
+            pins: ""
+          - python: "3.12"
+            dependencies: floor
+            pins: >-
+              delaunay-watershed-3d==0.7.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23 torch==2.3.0
+              scikit-image==0.23.1 edt==2.4.1 meshio==5.3.5
+          - python: "3.13"
+            dependencies: current
+            pins: ""
+          - python: "3.13"
+            dependencies: floor
+            pins: >-
+              delaunay-watershed-3d==0.7.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23 torch==2.5.0
+              scikit-image==0.25.0 edt==3.0.0 meshio==5.3.5
+    env:
+      PINS: ${{ matrix.pins }}
+      JOB_LABEL: Python ${{ matrix.python }}, ${{ matrix.dependencies }} dependencies
+      MPLBACKEND: Agg
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_INPUT: "1"
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.1.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: System libraries that Polyscope loads
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libgl1 libegl1
+      - name: Install the package, every extra, and pytest
+        run: |
+          set -euo pipefail
+          printf '%s\n' ${PINS} > "${RUNNER_TEMP}/constraints.txt"
+          python -m pip install --upgrade pip
+          python -m pip install --only-binary=:all: --no-deps --index-url https://download.pytorch.org/whl/cpu \
+            --constraint "${RUNNER_TEMP}/constraints.txt" torch
+          python -m pip install --only-binary=:all: --constraint "${RUNNER_TEMP}/constraints.txt" \
+            ".[viewing,autodiff,benchmarks,cli]" pytest
+          python -m pip check
+          python -m pip freeze --all
+      - name: Run the test suite
+        run: |
+          set -uo pipefail
+          python -m pytest -q -rs -p no:cacheprovider --junitxml "${RUNNER_TEMP}/junit.xml" tests 2>&1 | tee "${RUNNER_TEMP}/pytest-output.txt"
+          status=${PIPESTATUS[0]}
+          {
+            echo "### ${JOB_LABEL}"
+            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed-3d", "numpy", "scipy", "torch", "polyscope"]))'
+            echo
+            tail -n 1 "${RUNNER_TEMP}/pytest-output.txt"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${status}"
+      - name: The golden master ran and none of its tests was skipped
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/junit.xml" <<'PYTHON' | tee -a "${GITHUB_STEP_SUMMARY}"
+          # tests/test_golden_master.py reads meshes committed with the tests, so nothing it needs can be
+          # missing here: a skip, or no test at all, means the golden master did not run, and fails the job.
+          import sys
+          import xml.etree.ElementTree as ElementTree
+          from collections import Counter
+
+          count, skipped = Counter(), []
+          for case in ElementTree.parse(sys.argv[1]).iter("testcase"):
+              if case.get("classname", "").split(".")[-1] == "test_golden_master":
+                  outcome = next((c.tag for c in case if c.tag in ("skipped", "failure", "error")), "passed")
+                  count[outcome] += 1
+                  if outcome == "skipped":
+                      skipped.append(f"skipped: {case.get('name')}: {case.find('skipped').get('message')}")
+          print("\n".join(["", *skipped, "", "golden master: " + (", ".join(f"{n} {o}" for o, n in sorted(count.items())) or "none ran")]))
+          sys.exit(1 if skipped or not sum(count.values()) else 0)
+          PYTHON
+
+  tests-macos:
+    name: macOS arm64, Python ${{ matrix.python }}, ${{ matrix.dependencies }} dependencies
+    # Public repositories only (see the header). The steps and pins are the Linux job's, without the
+    # apt step; keep them in step with it.
+    if: ${{ !github.event.repository.private }}
+    runs-on: macos-15
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.12"
+            dependencies: current
+            pins: ""
+          - python: "3.12"
+            dependencies: floor
+            pins: >-
+              delaunay-watershed-3d==0.7.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23 torch==2.3.0
+              scikit-image==0.23.1 edt==2.4.1 meshio==5.3.5
+          - python: "3.13"
+            dependencies: current
+            pins: ""
+          - python: "3.13"
+            dependencies: floor
+            pins: >-
+              delaunay-watershed-3d==0.7.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23 torch==2.6.0
+              scikit-image==0.25.0 edt==3.0.0 meshio==5.3.5
+    env:
+      PINS: ${{ matrix.pins }}
+      JOB_LABEL: macOS arm64, Python ${{ matrix.python }}, ${{ matrix.dependencies }} dependencies
+      MPLBACKEND: Agg
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_INPUT: "1"
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.1.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install the package, every extra, and pytest
+        run: |
+          set -euo pipefail
+          printf '%s\n' ${PINS} > "${RUNNER_TEMP}/constraints.txt"
+          python -m pip install --upgrade pip
+          python -m pip install --only-binary=:all: --no-deps --index-url https://download.pytorch.org/whl/cpu \
+            --constraint "${RUNNER_TEMP}/constraints.txt" torch
+          python -m pip install --only-binary=:all: --constraint "${RUNNER_TEMP}/constraints.txt" \
+            ".[viewing,autodiff,benchmarks,cli]" pytest
+          python -m pip check
+          python -m pip freeze --all
+      - name: Run the test suite
+        run: |
+          set -uo pipefail
+          python -m pytest -q -rs -p no:cacheprovider --junitxml "${RUNNER_TEMP}/junit.xml" tests 2>&1 | tee "${RUNNER_TEMP}/pytest-output.txt"
+          status=${PIPESTATUS[0]}
+          {
+            echo "### ${JOB_LABEL}"
+            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed-3d", "numpy", "scipy", "torch", "polyscope"]))'
+            echo
+            tail -n 1 "${RUNNER_TEMP}/pytest-output.txt"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${status}"
+      - name: The golden master ran and none of its tests was skipped
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/junit.xml" <<'PYTHON' | tee -a "${GITHUB_STEP_SUMMARY}"
+          # tests/test_golden_master.py reads meshes committed with the tests, so nothing it needs can be
+          # missing here: a skip, or no test at all, means the golden master did not run, and fails the job.
+          import sys
+          import xml.etree.ElementTree as ElementTree
+          from collections import Counter
+
+          count, skipped = Counter(), []
+          for case in ElementTree.parse(sys.argv[1]).iter("testcase"):
+              if case.get("classname", "").split(".")[-1] == "test_golden_master":
+                  outcome = next((c.tag for c in case if c.tag in ("skipped", "failure", "error")), "passed")
+                  count[outcome] += 1
+                  if outcome == "skipped":
+                      skipped.append(f"skipped: {case.get('name')}: {case.find('skipped').get('message')}")
+          print("\n".join(["", *skipped, "", "golden master: " + (", ".join(f"{n} {o}" for o, n in sorted(count.items())) or "none ran")]))
+          sys.exit(1 if skipped or not sum(count.values()) else 0)
+          PYTHON

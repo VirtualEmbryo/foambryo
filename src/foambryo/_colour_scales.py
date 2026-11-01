@@ -254,7 +254,8 @@ def surface_face_pressures(
 
     Args:
         mesh: the mesh.
-        dict_pressures: pressure per material (0 = medium).
+        dict_pressures: pressure per material (0 = medium). A triangle between a cell and a medium (`mesh.media`:
+            0 or an enclosed lumen) takes its cell's pressure; one between two cells, the higher label's.
         scattered: the triangles of the scattered view (`mesh.f_scattered`, each carrying the
             pressure of the cell it was scattered with), as the viewer draws them with
             `scattered=True`. Keyword-only. Defaults to `False`.
@@ -267,7 +268,19 @@ def surface_face_pressures(
     """
     if scattered:
         return np.array([dict_pressures[idx] for idx in mesh.cluster_idx_scattered], dtype=np.float64)
-    return np.array([dict_pressures[max(face[3], face[4])] for face in mesh.f], dtype=np.float64)
+    media = set(getattr(mesh, "media", (0,)))
+    return np.array([dict_pressures[_cell_side(face[3], face[4], media)] for face in mesh.f], dtype=np.float64)
+
+
+def _cell_side(label_1: int, label_2: int, media: set[int]) -> int:
+    """The label whose pressure colours a triangle: the cell when the other side is a medium, else the higher.
+
+    A triangle against the exterior 0 is coloured by its cell, as before; one between a cell and an enclosed medium
+    (a lumen, whose label is higher than the cells') by the cell too, not by the lumen.
+    """
+    if label_2 in media and label_1 not in media:
+        return label_1
+    return max(label_1, label_2)
 
 
 def surface_pressure_colour_upper(

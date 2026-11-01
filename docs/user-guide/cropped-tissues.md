@@ -24,6 +24,6 @@ What each step does with a cropped mesh:
 | wedge refusal (`refusal=`) | a crop edge is always left out of its line's mean; the policy acts on the rest of the line |
 | viewers | draw the crop faces as see-through glass with their edges; cut cells as undetermined pressures |
 
-**What it buys**, measured on 433 plane crops of the 47 benchmark tissues (`YoungDupre`, relative error of the tensions of the interfaces that touch the crop, median over the 42 tissues at equilibrium): 13 %, 33 % and 40 % error with 10 %, 25 % and 40 % of the tissue cropped away when crop faces were read as medium contact, 10 %, 9 % and 12 % with crop faces kept out. The cut cells' pressures, reported before crop faces were recorded, had 15 % to 46 % error. On a mesh without crop faces every number is what it was before crop faces existed, bit for bit.
+**What it buys**, measured on 433 plane crops of the 47 benchmark tissues (`YoungDupre`, relative error of the tensions of the interfaces that touch the crop, median over the 42 tissues at equilibrium): 14 %, 33 % and 39 % error with 10 %, 25 % and 40 % of the tissue cropped away when crop faces were read as medium contact, 10 %, 9 % and 13 % with crop faces kept out (dw3d 0.7.1's meshes; 13 %, 33 %, 40 % and 10 %, 9 %, 12 % on 0.7.0's). The cut cells' pressures, reported before crop faces were recorded, had 15 % to 46 % error. On a mesh without crop faces every number is what it was before crop faces existed, bit for bit.
 
 Example: [cropped tissue](../examples/cropped-tissue.md).

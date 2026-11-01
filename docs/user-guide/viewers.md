@@ -7,7 +7,7 @@ Two viewers show the tensions and pressures on the tissue. Both compute nothing 
 | ![Benchmark case 000 in the Polyscope window](../images/viewer_polyscope_case_000_tensions.jpg) | ![Benchmark case 000 in napari](../images/viewer_napari_case_000_tensions.jpg) |
 | `foambryo view`, `view_mask`, `plot_force_inference` and the other `plot_*` functions | a Reconstruct, Infer, View, Export and Results dock in napari |
 
-*Both: benchmark case 000 (a simulated 6-cell aggregate at equilibrium), reconstructed from its mask with the default reconstruction and inferred with `infer_forces`; the tensions on the surface (exploded by 0.3 in the Polyscope window), with the same colour bar, 0.4475 to 1.553 around the mean tension, 1.*
+*Both: benchmark case 000 (a simulated 6-cell aggregate at equilibrium), reconstructed from its mask with the default reconstruction and inferred with `infer_forces`; the tensions on the surface, with the same colour scale centred on the mean tension, 1. Left: the figure `foambryo view MESH.rec --no-pressures --scattered 0.3 --figure FILE` writes, on dw3d 0.7.1's mesh (colour bar 0.4490 to 1.551), drawn the right way round (0.7.1's fix). Right: napari's window on dw3d 0.7.0's mesh (0.4475 to 1.553), in napari's default 3-D orientation, which shows the mirror image of the tissue (below, "Which way round").*
 
 ## The colours
 
@@ -40,7 +40,7 @@ view_mask(mask, spacing=(1.0, 0.5, 0.5))                    # starts from the ma
 The window's panel ("foambryo") shows:
 
 * which call produced the colours, and the colour bars of what is drawn; tensions are shown first when both tensions and pressures are inferred, and the panel switches between them;
-* a length scale bar under the tissue when the mesh's unit is known (`length_unit`, or the unit a `.rec` file records), and an optional x, y, z frame;
+* a length scale bar under the tissue when the mesh's unit is known (`length_unit`, or the unit a `.rec` file records), and an optional x, y, z frame along the mask's column, row and slice;
 * **Explode** (each cell moved away from the tissue's centre by a coefficient, followed live) and **Cut** (a plane normal to z, y or x);
 * the background;
 * **Save figure** (the view with its colour bars and scale bar; PNG, PDF or SVG) and **Save colour bars**, which never overwrite a file;
@@ -48,6 +48,8 @@ The window's panel ("foambryo") shows:
 * a choice of tension method, pressure method (or none), solver and diagnostics, **Recompute**, and the `foambryo infer` command line that gives the same numbers.
 
 Started from a mask (`foambryo view MASK --spacing DZ DY DX`, or `view_mask`), the window shows the mask first and reconstructs and infers it in separate processes, one mesh or a seed ensemble, each with its elapsed time, the [estimate](large-tissues.md) and a Cancel button.
+
+**Which way round.** The window draws the tissue as it is, not its mirror image. A mesh is stored in its mask's order, columns (z, y, x), and Polyscope reads the columns it is handed as its own (x, y, z); the window hands it the columns reversed, so that Polyscope's x, y and z are the mask's column, row and slice, and hands every triangle with two corners exchanged, so that it still faces the same side (exchanging two axes is a reflection, which turns every triangle over). Up to foambryo 0.7.0 the columns were handed as stored: every view, and every figure saved from the window, was the mirror image of the tissue, its left and right exchanged; no number was affected. The mesh is never changed: the files keep the mask's column order, (z, y, x), the `.rec` files `foambryo mesh` writes as well as the `.vtk` files delaunay-watershed-3d writes through meshio. A program that reads those columns as (x, y, z), as ParaView and MeshLab do, shows the mirror image of the tissue unless it exchanges columns 0 and 2. napari shows a mask and its mesh in the array's own order, (z, y, x): in its default 3-D camera orientation, `('towards', 'down', 'right')`, the picture is the mirror image in this sense (measured with napari 0.9.2 and the napari plugin 0.1.0 on a test mask that is not its own mirror image); `viewer.camera.orientation = ('away', 'down', 'right')` shows the tissue the right way round, but napari then shades the plugin's surfaces darker.
 
 `scalar_quantities=True` adds the mean and Gaussian curvatures (cotangent formula and angle defect), the vertex area and volume derivatives, the difference between the principal curvatures and the residual of the best sphere fit.
 

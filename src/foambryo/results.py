@@ -39,7 +39,9 @@ from foambryo._result_tables import (
     PER_SEED_TENSION_COLUMNS,
     PER_SEED_TENSION_TABLE,
     PRESSURE_COLUMNS,
+    PRESSURE_COLUMNS_WITH_REGION_KIND,
     PRESSURE_TABLE,
+    REGION_KINDS,
     RUN_RECORD,
     RUN_RECORD_SCHEMA,
     SOLVE_COLUMNS,
@@ -52,6 +54,7 @@ from foambryo._result_tables import (
     json_safe,
     read_ensemble_tension_table,
     read_per_seed_tension_table,
+    read_pressure_region_kinds,
     read_pressure_table,
     read_run_record,
     read_solve_table,
@@ -84,8 +87,10 @@ __all__ = [
     "PER_SEED_TENSION_COLUMNS",
     "PER_SEED_TENSION_TABLE",
     "PRESSURE_COLUMNS",
+    "PRESSURE_COLUMNS_WITH_REGION_KIND",
     "PRESSURE_METHODS",
     "PRESSURE_TABLE",
+    "REGION_KINDS",
     "RUN_RECORD",
     "RUN_RECORD_SCHEMA",
     "SOLVE_COLUMNS",
@@ -107,6 +112,7 @@ __all__ = [
     "option_name",
     "read_ensemble_tension_table",
     "read_per_seed_tension_table",
+    "read_pressure_region_kinds",
     "read_pressure_table",
     "read_rec_metadata",
     "read_run_record",
@@ -285,9 +291,9 @@ def infer_run_record(
 
     Returns:
         dict: the record, for `write_run_record`: `schema`, `command`, `arguments`, `date`, `elapsed_seconds`,
-        `versions`, `input`, `options`, `library_call`, `mesh` (counts and cut cells), `results` (counts of the
-        values and of the undetermined ones), `units`, `status`, `error`, `warnings`, `solves` (`None` with
-        `diagnostics` `"none"`) and `outputs`.
+        `versions`, `input`, `options`, `library_call`, `mesh` (counts, the media and the cut cells), `results`
+        (counts of the values and of the undetermined ones), `units`, `status`, `error`, `warnings`, `solves`
+        (`None` with `diagnostics` `"none"`) and `outputs`.
 
     Raises:
         KeyError: if `options` has no `diagnostics`.
@@ -306,6 +312,9 @@ def infer_run_record(
             "points": len(mesh.v),
             "triangles": len(mesh.f),
             "materials": int(mesh.n_materials),
+            "cells": int(mesh.n_cells),
+            "media": [int(label) for label in mesh.media],
+            "unresolved": [int(label) for label in mesh.unresolved],
             "crop_faces": int(np.count_nonzero(mesh.crop_faces)),
             "cut_cells": list(mesh.cut_cells),
         },

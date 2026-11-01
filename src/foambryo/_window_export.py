@@ -121,7 +121,7 @@ def export_window_values(
     tables.write_tension_table(folder / tables.TENSION_TABLE, outcome.tensions)
     outputs.append(tables.TENSION_TABLE)
     if outcome.pressures is not None:
-        tables.write_pressure_table(folder / tables.PRESSURE_TABLE, outcome.pressures)
+        tables.write_pressure_table(folder / tables.PRESSURE_TABLE, outcome.pressures, media=mesh.media)
         outputs.append(tables.PRESSURE_TABLE)
     diagnostics = inference.options.get("diagnostics", "none")
     if diagnostics != "none" and outcome.records:
@@ -148,7 +148,9 @@ def export_window_values(
         date=inference.date,
         elapsed_seconds=inference.seconds,
         input_record=input_record,
-        options=inference.options,
+        # `media` as `foambryo infer` records it: the labels given with --media, here none (the mesh's own media,
+        # read from its file, are in the record's `mesh.media`).
+        options={"media": None, **inference.options},
         mesh=mesh,
         outcome=outcome,
         units=tables.infer_units(inference.options.get("mean_tension", 1.0), metadata),

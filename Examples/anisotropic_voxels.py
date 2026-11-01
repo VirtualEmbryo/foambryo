@@ -16,8 +16,10 @@ what giving the spacing changes:
 The accuracy gain of resampling first is measured, not shown here: on 12 simulated tissues at equilibrium with cells
 as small as those of real tissues, down-sampled along z, the contact-angle error grew by +0.83, +0.71 and +1.17
 degrees at an anisotropy of 5/3, 2 and 3 when the mask is resampled first, against +1.38, +1.97 and +4.10 when the
-native grid is meshed and the mesh scaled afterwards (each against the same tissue meshed at full resolution; see
-BENCHMARKS.md). One small example cannot show a difference of a degree: its own seed-to-seed spread is larger.
+native grid is meshed and the mesh scaled afterwards (each against the same tissue meshed at full resolution;
+measured on dw3d 0.7.0's meshes, not measured again for 0.7.1, whose meshes differ slightly, because some of
+these runs need 8 to 40 GiB of memory; see BENCHMARKS.md). One small example cannot show a difference of a
+degree: its own seed-to-seed spread is larger.
 
     pip install "foambryo[viewing]"          # matplotlib, for the figure
     python anisotropic_voxels.py             # under a minute; writes ./anisotropic-voxels-output/

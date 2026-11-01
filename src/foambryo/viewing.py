@@ -34,8 +34,8 @@ nodes coloured by pressure) and, with pressures, each cell's principal stresses.
   defaults), or where they were read from;
 * with tensions and pressures, **which one colours the surface** (the tensions by default);
 * **a length scale bar** when the mesh's unit is known (`length_unit`): a segment of round length in the scene,
-  its length written beside it; and an optional **x, y, z frame**, three labelled segments along the mesh's
-  columns (z, y, x);
+  its length written beside it; and an optional **x, y, z frame**, three labelled segments along the mask's
+  column, row and slice (the mesh's columns 2, 1, 0);
 * **the background**: white (Polyscope's), light grey, dark grey or black (`BACKGROUND_COLOURS`, the napari plugin's
   choices too), or a custom colour; on a dark one, the scale bar, the frame, their labels and the graph's black
   nodes are drawn light;
@@ -47,6 +47,11 @@ nodes coloured by pressure) and, with pressures, each cell's principal stresses.
   `run.json`, `colour_bars.png`), in a folder; a file is never overwritten without asking;
 * a choice of tension method, pressure method or no pressures, solver and diagnostics, **Recompute**, and the
   `foambryo infer` command line that gives the same numbers.
+
+The window draws the tissue, not its mirror image: Polyscope's x, y, z are the mask's column, row and slice (the
+mesh's columns 2, 1, 0; the mesh is stored in the mask's order, z, y, x), each triangle facing the side it faces in
+the mesh (`foambryo._display_frame`). Only what is drawn is reordered; the mesh and its files are not. Up to 0.7.0
+the window drew the columns (z, y, x) as Polyscope's x, y, z, a reflection: every view was the tissue's mirror image.
 
 `view_mask` opens the window on a segmentation mask instead (`foambryo view MASK --spacing DZ DY DX`): the mask
 first, then its reconstruction and the inference, run in child processes that the panel follows and can cancel.
@@ -87,9 +92,12 @@ from foambryo._colour_scales import (
 # no Polyscope (so that the colour bars can be written on a machine without a display).
 from foambryo._colour_scales import ColourBarRanges as ColourBarRanges
 from foambryo._colour_scales import save_colour_bars as save_colour_bars
+from foambryo._display_frame import DRAWN_COLUMNS, drawn_points
 from foambryo._polyscope_recording import Recorder, recording
 
-# `ps` is Polyscope, or, on a thread that prepares a scene (`_ForceWindow.prepare`), the recorder of its calls.
+# `ps` is Polyscope, or, on a thread that prepares a scene (`_ForceWindow.prepare`), the recorder of its calls; either
+# way it takes positions, triangles and vectors in the mesh's coordinates and draws them in the drawn frame, (x, y, z) =
+# the mesh's columns (2, 1, 0) (`foambryo._display_frame`).
 from foambryo._polyscope_recording import polyscope_target as ps
 from foambryo._viewer_defaults import DEFAULT_SCATTER_COEFF
 from foambryo._viewer_figures import (
@@ -166,8 +174,11 @@ _UNDETERMINED_OUTLINE = "Undetermined tensions (outline)"
 #: The per-face transparency of the tension view: 0 on the undetermined interfaces and the crop faces, else 1.
 _TENSION_FILL = "tension fill (undetermined and crop faces hidden)"
 _TENSIONS, _PRESSURES = "Surface Tensions", "Pressures Cells"
-#: The x, y, z frame: three segments from the drawn box's lowest corner, along the mesh's columns (z, y, x).
-_FRAME = "Frame (z, y, x)"
+#: The x, y, z frame: three segments from the drawn box's lowest corner, along the mask's column, row and slice.
+_FRAME = "Frame (x, y, z)"
+#: The frame's segments x, y, z, in the mesh's columns (z, y, x): x is the mesh's column 2, y column 1, z column 0.
+_FRAME_AXES = np.eye(3)[list(DRAWN_COLUMNS)]
+_FRAME_LABELS = ("x", "y", "z")
 _FRAME_COLOR = (0.15, 0.15, 0.15)
 #: The point clouds drawn black on Polyscope's white background: the graph's nodes and the stress tensors' centres.
 _BLACK_POINT_CLOUDS = ("Graph Nodes", "Stress tensors principal directions")
@@ -909,9 +920,10 @@ class _ForceWindow:
         The origin is the box's lowest corner moved outwards by 10 % of the box's largest side along each axis, so
         that the segments are not hidden inside the tissue (`show_frame`).
 
-        The mesh's columns are (z, y, x), delaunay-watershed-3d's order: the segment along column 0 is labelled z.
-        Its length is the scale bar's rule (1, 2 or 5 times a power of ten, at most a quarter of the box), in the
-        mesh's unit. The labels are written by the panel (`_label_overlays`) and in saved figures.
+        The segments are drawn along Polyscope's x, y, z, the mask's column, row and slice: the mesh's columns 2, 1, 0
+        (its columns are (z, y, x), delaunay-watershed-3d's order). Their length is the scale bar's rule (1, 2 or 5
+        times a power of ten, at most a quarter of the box), in the mesh's unit. The labels are written by the panel
+        (`_label_overlays`) and in saved figures.
         """
         low, high = self.drawn_box()
         extent = float(np.max(high - low))
@@ -920,7 +932,7 @@ class _ForceWindow:
             return
         length = round_scale_bar_length(extent)
         origin = low - 0.1 * extent
-        nodes = np.vstack([origin, origin + length * np.eye(3)])
+        nodes = np.vstack([origin, origin + length * _FRAME_AXES])
         network = ps.register_curve_network(_FRAME, nodes, np.array([[0, 1], [0, 2], [0, 3]]),
                                             color=_on_background(_FRAME_COLOR), radius=0.005)
         network.set_enabled(self.show_frame)
@@ -930,17 +942,17 @@ class _ForceWindow:
     def frame_labels(self, width: int, height: int) -> list[tuple[str, float, float]]:
         """The frame's labels and where they fall on an image `width` x `height`.
 
-        `z`, `y`, `x` at the tips, the length at the corner. Empty without the frame shown or outside a perspective
+        `x`, `y`, `z` at the tips, the length at the corner. Empty without the frame shown or outside a perspective
         view.
         """
         if self.frame is None or not self.show_frame or ps.get_view_projection_mode() != "perspective":
             return []
         origin, length = self.frame
-        points = np.vstack([origin, origin + length * np.eye(3)])
+        points = drawn_points(np.vstack([origin, origin + length * _FRAME_AXES]))  # where Polyscope's camera sees them
         camera = ps.get_view_camera_parameters()
         pixels = project_to_pixels(points, camera.get_view_mat(), camera.get_fov_vertical_deg(), width, height)
         unit = format_length(length, self.length_unit) if self.length_unit else f"{length:g} (mesh units)"
-        texts = [unit, "z", "y", "x"]
+        texts = [unit, *_FRAME_LABELS]
         return [(text, float(x), float(y)) for text, (x, y) in zip(texts, pixels, strict=True)
                 if np.isfinite(x) and np.isfinite(y)]
 
@@ -997,6 +1009,7 @@ class _ForceWindow:
             clean_before=False,
             clean_after=False,
             show=False,
+            lumen_materials=list(getattr(mesh, "media", (0,))),
         )
         _display_embryo_graph_forces(
             nx_graph,
@@ -1108,8 +1121,8 @@ class _ForceWindow:
         if self.scale_bar is None or ps.get_view_projection_mode() != "perspective":
             return None
         camera = ps.get_view_camera_parameters()
-        return project_to_pixels(np.array([self.scale_bar.start, self.scale_bar.end]), camera.get_view_mat(),
-                                 camera.get_fov_vertical_deg(), width, height)
+        return project_to_pixels(drawn_points(np.array([self.scale_bar.start, self.scale_bar.end])),
+                                 camera.get_view_mat(), camera.get_fov_vertical_deg(), width, height)
 
     def save_figure(self, path: "str | os.PathLike[str]", *, render_first: bool = False) -> Path:
         """Write the current view with its colour bars, its scale bar's length, the frame's labels and its caption.
@@ -2212,7 +2225,9 @@ def _plot_stress_tensor(
         clean_before (bool, optional): Clean viewer before this function. Defaults to True.
         clean_after (bool, optional): Clean viewer after this function. Defaults to True.
         show (bool, optional): Show viewer. Defaults to True.
-        lumen_materials (int | list[int], optional): Materials considered exterior. Defaults to 0.
+        lumen_materials (int | list[int], optional): Materials considered exterior: the mesh's media
+            (`DcelData.media`: 0 and the enclosed media), which get no stress tensor of their own, and against which
+            a membrane counts in full. Defaults to 0.
     """
     # Formula from G. K. BATCHELOR, J Fluid Mech, 1970 -- see foambryo._cell_stress.
     if isinstance(lumen_materials, int):
@@ -2223,7 +2238,7 @@ def _plot_stress_tensor(
     cells = [
         c
         for c in mesh.materials[1 : mesh.n_materials]
-        if nx_graph.nodes.data("volume")[c] > 0 and np.isfinite(dict_pressure[c])
+        if c not in lumen_materials and nx_graph.nodes.data("volume")[c] > 0 and np.isfinite(dict_pressure[c])
     ]
     mean_stresses = cell_mean_stress_tensors(
         mesh,

@@ -15,8 +15,9 @@ make three kinds of error:
 
 Measured on 433 plane crops of the 47 benchmark tissues (`YoungDupre`, median over the 42
 equilibrium cases of the relative error of the gauge-matched tensions of the interfaces that touch
-the crop): 13 %, 33 % and 40 % error with 10 %, 25 % and 40 % of the tissue cropped away when crop
-faces are read as medium contact, against 10 %, 9 % and 12 % when they are kept out; every one of
+the crop, dw3d 0.7.1's meshes): 14 %, 33 % and 39 % error with 10 %, 25 % and 40 % of the tissue
+cropped away when crop faces are read as medium contact, against 10 %, 9 % and 13 % when they are
+kept out (13 %, 33 %, 40 % against 10 %, 9 %, 12 % on 0.7.0's meshes); every one of
 the 13 tension methods improves at 25 % and 40 %, and `LogLami` stops failing on 25 of the crops.
 The interfaces away from the crop are affected too: at 40 % their error was 17 points above the
 uncropped tissue's, and 2 points above it with the crop kept out.

@@ -8,7 +8,7 @@ When a cell of the mask reaches a face of the image box, the mesh closes it with
 * the pressures of the **cut cells** (the cells the crop cuts) are `nan`, with a `CutCellPressureWarning`, because part of their surface and volume was not observed;
 * the Laplace pressure methods have no formulation for crop faces and raise `ValueError` on a cropped mesh (`PressureComputationMethod.has_crop_face_formulation` says which methods accept one: only `Variational`).
 
-This example builds a foam of Voronoi cells, cuts away a third of it along x, and runs the inference on the cut mask. The foam is not at mechanical equilibrium: its tensions show the workflow, not the method's accuracy. (On 433 plane crops of 47 simulated tissues at equilibrium, the tensions of the interfaces next to the crop had 13 %, 33 % and 40 % error with 10 %, 25 % and 40 % of the tissue cut away when crop faces were read as medium contact, and 10 %, 9 % and 12 % with crop faces kept out.)
+This example builds a foam of Voronoi cells, cuts away a third of it along x, and runs the inference on the cut mask. The foam is not at mechanical equilibrium: its tensions show the workflow, not the method's accuracy. (On 433 plane crops of 47 simulated tissues at equilibrium, the tensions of the interfaces next to the crop had 14 %, 33 % and 39 % error with 10 %, 25 % and 40 % of the tissue cut away when crop faces were read as medium contact, and 10 %, 9 % and 13 % with crop faces kept out.)
 
 If the tissue really ends on a face of the image (for example on a coverslip), declare that face physical: `dcel_mesh_from_segmentation_mask(mask, physical_image_faces=("axis2_low",))`; its triangles are then contact with the medium.
 
@@ -27,7 +27,7 @@ On macOS 14 (Apple M3 Max), Python 3.12; times vary with the machine.
 
 ```text
 the cut mask: shape (96, 96, 64), 12 cells
-222 crop faces of 1395 triangles; cut cells (2, 3, 4, 5, 6, 7, 9); interfaces made only of crop faces: ()
+222 crop faces of 1402 triangles; cut cells (2, 3, 4, 5, 6, 7, 9); interfaces made only of crop faces: ()
 47 tensions; any crop interface among them: False
 pressures: 5 cells reported, 7 nan (the cut cells)
   Variational      has a formulation for crop faces: True

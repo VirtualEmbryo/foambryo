@@ -112,6 +112,13 @@ are a closed form the repair moves the reading itself by at most `0.016` degrees
 `0.001` degrees at typical spacings — so it is a repair whose value is the invariance, not an
 accuracy gain, and saying so is part of the repair.
 
+`MEASURED` on reconstructed meshes, the repair does change readings, because the two endpoint samples
+bring more faces over the fit's minimum sample count: on 40 benchmark reconstructions (dw3d 0.4.2,
+dithered, seed 42, `min_distance` 3, without junction relocation), the median over cases of the
+line-mean angle error under the oriented second-order reading moved from `5.270` to `5.403` degrees,
+and single cases by up to `0.917` degrees. The `0.14` degrees above is the unit dependence removed,
+not the change of numbers published before the repair.
+
 The constant term, and the false reason it used to be omitted
 -------------------------------------------------------------
 The height field is fitted **without** a constant term. The reason recorded here used to be that
@@ -225,8 +232,9 @@ Coverage, and why the fallback is reported rather than hidden
 --------------------------------------------------------------
 The fit is not admissible everywhere: an incident face whose window holds fewer than two mesh
 vertices per fit parameter, or whose design matrix is rank-deficient, gets **no** rotation and
-falls back to the chord reading. Measured on dw3d's 47-case benchmark at `min_distance = 3`,
-coverage is `0.919` of incident faces; at `min_distance = 4` it is `0.890`. A result that mixes
+falls back to the chord reading. Measured on dw3d's benchmark (0.7.1's default meshes, the 42
+equilibrium cases) at `min_distance = 3`, coverage is `0.932` of incident faces; at
+`min_distance = 4` it is `0.913`. A result that mixes
 corrected and uncorrected angles without saying so would be unreadable as science, so
 `quadric_angle_rotations` returns an `AngleReadingReport` naming the coverage and every
 trijunction line that is not fully corrected, and the report-less convenience paths in
