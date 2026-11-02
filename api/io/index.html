@@ -2008,7 +2008,9 @@
 <p>Output is always a DcelData mesh. Conventions: label 0 is the exterior medium; a mask's axes are
 (z, y, x) and the mesh's coordinates follow them, column 0 along axis 0; the mesh is in voxel units
 unless a <code>spacing</code> gives a physical one, and the inferred pressures are in the tension unit divided
-by that length unit.</p>
+by that length unit. Mesh files keep that column order, (z, y, x): a program that reads the columns as
+(x, y, z), as ParaView and MeshLab do, shows the mirror image of the tissue. foambryo's Polyscope viewer
+draws (x, y, z) = the columns (2, 1, 0), the tissue as it is (<code>foambryo.viewing</code>).</p>
 <p>Matthieu Perez 2024.</p>
 
 
@@ -2043,7 +2045,7 @@ by that length unit.</p>
   </span>
 
 <a href="#foambryo.io.MaskReconstruction" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MaskReconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rec_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cut_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MaskReconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rec_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cut_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">media</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">unresolved</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">())</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2162,7 +2164,7 @@ records none.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the labels other than the medium that the mesh holds.</p>
+                <p>the labels that are cells (neither the exterior 0 nor an enclosed medium) that the mesh holds.</p>
               </div>
             </td>
           </tr>
@@ -2174,6 +2176,30 @@ records none.</p>
             <td>
               <div class="doc-md-description">
                 <p>the cells the image boundary cuts.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.io.MaskReconstruction.media">media</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the labels that are media: 0, then the enclosed media (lumens) the reconstruction made its own
+regions (delaunay-watershed-3d 0.7.1 and later; <code>(0,)</code> with an earlier one).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.io.MaskReconstruction.unresolved">unresolved</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>labels of the mask absent from the mesh, because no tetrahedron of the reconstruction lay in
+their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts.</p>
               </div>
             </td>
           </tr>
@@ -2255,7 +2281,8 @@ records none.</p>
 
     <div class="doc doc-contents ">
 
-        <p>The counts <code>foambryo mesh</code> prints: points, triangles, cells, and those cut by the image boundary.</p>
+        <p>The counts <code>foambryo mesh</code> prints: points, triangles, cells, those cut by the image boundary, and media.</p>
+<p>The enclosed media (lumens) are named only when there is one, so a summary without is as before 0.7.1.</p>
 
 
     </div>
@@ -2603,7 +2630,8 @@ is returned in the unit of <code>spacing</code>, with <code>DcelData.source_spac
 on 12 simulated tissues of 90 and 165 cells at a real cell size, down-sampled along z,
 against the same tissues meshed at full resolution: resampling first costs +0.83, +0.71
 and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against
-+1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh. Above 3
++1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh (dw3d 0.7.0's
+meshes, not measured again for 0.7.1). Above 3
 nothing was measured at that cell size, and delaunay-watershed-3d warns
 (<code>UnmeasuredAnisotropyWarning</code>); the mesh is built anyway. The cost is that of a mask
 acquired at the short spacing: the anisotropy times the voxels.</p>
@@ -2892,6 +2920,9 @@ a cell, lying flat on a face of the mesh's bounding box over a large patch), an
 <p>The <strong>source voxel size</strong> is read from a <code>.rec</code> file whose appendix says the mesh is in physical
 units (<code>coordinate_frame = physical</code>, <code>spacing = ...</code>), as <code>DcelData.source_spacing</code>; it changes
 no number. Any other file gives <code>None</code>.</p>
+<p>The <strong>media</strong> are read from a <code>.rec</code> file whose appendix records them (<code>media = 0 L ...</code>: the enclosed media,
+lumens, that delaunay-watershed-3d 0.7.1 made their own regions), as <code>DcelData.media</code>. Any other file has the
+exterior 0 alone; name further media with <code>DcelData(..., media=...)</code> or <code>foambryo infer --media</code>.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>

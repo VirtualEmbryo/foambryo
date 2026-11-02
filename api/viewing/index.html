@@ -1955,8 +1955,8 @@ nodes coloured by pressure) and, with pressures, each cell's principal stresses.
   defaults), or where they were read from;</li>
 <li>with tensions and pressures, <strong>which one colours the surface</strong> (the tensions by default);</li>
 <li><strong>a length scale bar</strong> when the mesh's unit is known (<code>length_unit</code>): a segment of round length in the scene,
-  its length written beside it; and an optional <strong>x, y, z frame</strong>, three labelled segments along the mesh's
-  columns (z, y, x);</li>
+  its length written beside it; and an optional <strong>x, y, z frame</strong>, three labelled segments along the mask's
+  column, row and slice (the mesh's columns 2, 1, 0);</li>
 <li><strong>the background</strong>: white (Polyscope's), light grey, dark grey or black (<code>BACKGROUND_COLOURS</code>, the napari plugin's
   choices too), or a custom colour; on a dark one, the scale bar, the frame, their labels and the graph's black
   nodes are drawn light;</li>
@@ -1969,6 +1969,10 @@ nodes coloured by pressure) and, with pressures, each cell's principal stresses.
 <li>a choice of tension method, pressure method or no pressures, solver and diagnostics, <strong>Recompute</strong>, and the
   <code>foambryo infer</code> command line that gives the same numbers.</li>
 </ul>
+<p>The window draws the tissue, not its mirror image: Polyscope's x, y, z are the mask's column, row and slice (the
+mesh's columns 2, 1, 0; the mesh is stored in the mask's order, z, y, x), each triangle facing the side it faces in
+the mesh (<code>foambryo._display_frame</code>). Only what is drawn is reordered; the mesh and its files are not. Up to 0.7.0
+the window drew the columns (z, y, x) as Polyscope's x, y, z, a reflection: every view was the tissue's mirror image.</p>
 <p><code>view_mask</code> opens the window on a segmentation mask instead (<code>foambryo view MASK --spacing DZ DY DX</code>): the mask
 first, then its reconstruction and the inference, run in child processes that the panel follows and can cancel.</p>
 <p><code>save_figure=PATH</code> writes the same figure from Python, without keeping the window open when <code>show=False</code>

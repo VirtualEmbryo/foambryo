@@ -2402,7 +2402,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <li><strong>Voxels longer along one axis</strong> (a z step larger than the pixel size): the mask is first <strong>resampled to cubic voxels</strong> of the shortest spacing by shape-based interpolation (each label's signed distance interpolated between slices), then meshed, and the vertices are multiplied by the shortest spacing. The reconstruction then handles <code>k</code> times the voxels, <code>k</code> being the longest spacing over the shortest, and <code>--min-distance</code> counts cubic voxels.</li>
 <li><strong>Two different short axes</strong> (three different spacings, or two long and one short) are refused.</li>
 </ul>
-<p><strong>Why resample.</strong> Meshing the native voxels and scaling the mesh afterwards samples the surfaces coarsely along the long axis: the junction triangles come out about <code>k</code> times taller and tilted, and every contact angle read from them is off. Measured on 12 simulated tissues of 90 and 165 cells voxelised at a real cell size and down-sampled along z by <code>k</code>, one meshing seed, as the median over tissues of each mesh's median line-mean contact-angle error minus that of the same tissue meshed at full resolution: resampling first costs +0.83, +0.71 and +1.17 degrees at <code>k</code> = 5/3, 2 and 3; meshing the native voxels costs +1.38, +1.97 and +4.10 degrees (<code>BENCHMARKS.md</code>). The tensions follow. <strong>Nothing was measured above <code>k</code> = 3</strong> at that cell size, so the command warns there (§ 3.4) and builds the mesh anyway. The default angle reading stays: the quadric reading was worse on every route at that cell size.</p>
+<p><strong>Why resample.</strong> Meshing the native voxels and scaling the mesh afterwards samples the surfaces coarsely along the long axis: the junction triangles come out about <code>k</code> times taller and tilted, and every contact angle read from them is off. Measured on 12 simulated tissues of 90 and 165 cells voxelised at a real cell size and down-sampled along z by <code>k</code>, one meshing seed, as the median over tissues of each mesh's median line-mean contact-angle error minus that of the same tissue meshed at full resolution: resampling first costs +0.83, +0.71 and +1.17 degrees at <code>k</code> = 5/3, 2 and 3; meshing the native voxels costs +1.38, +1.97 and +4.10 degrees (<code>BENCHMARKS.md</code>). These costs, and the quadric reading's below, were measured on dw3d 0.7.0's meshes and not measured again for 0.7.1, whose meshes differ slightly, because some of these runs need 8 to 40 GiB of memory. The tensions follow. <strong>Nothing was measured above <code>k</code> = 3</strong> at that cell size, so the command warns there (§ 3.4) and builds the mesh anyway. The default angle reading stays: the quadric reading was worse on every route at that cell size.</p>
 <h3 id="31-the-mask">3.1 The mask<a class="headerlink" href="#31-the-mask" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2566,6 +2566,11 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <td><code>diagnostics</code>: <code>none</code> → <code>False</code>, <code>basic</code> → <code>True</code>, <code>spectrum</code> → <code>"spectrum"</code></td>
 </tr>
 <tr>
+<td><code>--media LABEL [LABEL ...]</code></td>
+<td>none</td>
+<td>the labels that are media, not cells, besides the exterior 0 (an enclosed lumen), added to those the <code>.rec</code> file records (<code>media = 0 L ...</code>, written by delaunay-watershed-3d 0.7.1 when it makes a lumen its own region): <code>DcelData.set_media</code>. A label the mesh lacks is refused (exit 2). Media are solved like cells; they are reported (<code>region_kind</code>, <code>run.json</code>'s <code>mesh.media</code>) and drawn as media</td>
+</tr>
+<tr>
 <td><code>--overwrite</code></td>
 <td>off</td>
 <td>see § 4.3</td>
@@ -2591,6 +2596,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 </code></pre></div>
 <ul>
 <li>The same number format. A pressure the library does not report (a cell cut by the crop, or a cell no equation determines) is <code>nan</code>.</li>
+<li><strong>With a medium besides 0</strong> (an enclosed lumen: from the <code>.rec</code> file's <code>media</code>, or <code>--media</code>), a third column, <code>region_kind</code>, says what each row is: <code>exterior</code> (0), <code>medium</code> or <code>cell</code>. The lumen's pressure is then its own row, marked <code>medium</code>. Without such a medium the file is exactly the two columns above, which foambryo 0.7.0's reader requires. <code>foambryo.results.read_pressure_table</code> reads both; <code>read_pressure_region_kinds</code> reads the column.</li>
 <li><strong>Written only when the pressures were computed</strong>: not with <code>--no-pressures</code>, nor when the library refuses them (§ 4.4).</li>
 </ul>
 <p><strong><code>run.json</code></strong>: the run record, schema 1 (§ 5).</p>
@@ -2748,7 +2754,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <tr>
 <td><code>options</code></td>
 <td>object</td>
-<td><code>tension_method</code>, <code>pressure_method</code>, <code>mean_tension</code>, <code>base_pressure</code>, <code>solver</code>, <code>diagnostics</code>: every option, in the command's spelling, defaults included. With <code>--no-pressures</code>, also <code>no_pressures: true</code>, and <code>pressure_method</code> and <code>base_pressure</code> are <code>null</code> (not used); without it there is no <code>no_pressures</code> key</td>
+<td><code>tension_method</code>, <code>pressure_method</code>, <code>mean_tension</code>, <code>base_pressure</code>, <code>solver</code>, <code>diagnostics</code>, <code>media</code> (the <code>--media</code> labels, or <code>null</code>): every option, in the command's spelling, defaults included. With <code>--no-pressures</code>, also <code>no_pressures: true</code>, and <code>pressure_method</code> and <code>base_pressure</code> are <code>null</code> (not used); without it there is no <code>no_pressures</code> key</td>
 </tr>
 <tr>
 <td><code>library_call</code></td>
@@ -2758,7 +2764,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <tr>
 <td><code>mesh</code></td>
 <td>object</td>
-<td><code>points</code>, <code>triangles</code>, <code>materials</code> (medium included), <code>crop_faces</code> (count), <code>cut_cells</code> (list of labels)</td>
+<td><code>points</code>, <code>triangles</code>, <code>materials</code> (medium included), <code>cells</code> (the materials that are not media), <code>media</code> (list of labels: 0, then the enclosed media), <code>unresolved</code> (list of labels of the mask absent from the mesh: no tetrahedron lay in their voxels; recorded by delaunay-watershed-3d 0.7.1 as <code>unresolved_regions</code>), <code>crop_faces</code> (count), <code>cut_cells</code> (list of labels)</td>
 </tr>
 <tr>
 <td><code>results</code></td>
@@ -2871,13 +2877,13 @@ foambryo view MASK [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N]
 </tr>
 </tbody>
 </table>
-<p>The window is <code>foambryo.viewing.plot_force_inference(mesh, tensions, pressures, ...)</code>, or <code>plot_tension_inference(mesh, tensions, ...)</code> when there are no pressures (an ensemble, <code>--no-pressures</code>, or pressures the library refused). It needs Polyscope and a display (<code>foambryo[viewing]</code>). Its panel, <em>foambryo</em>, shows:</p>
+<p>The window is <code>foambryo.viewing.plot_force_inference(mesh, tensions, pressures, ...)</code>, or <code>plot_tension_inference(mesh, tensions, ...)</code> when there are no pressures (an ensemble, <code>--no-pressures</code>, or pressures the library refused). It needs Polyscope and a display (<code>foambryo[viewing]</code>). It draws the tissue as it is, not its mirror image: Polyscope's x, y, z are the mask's column, row and slice, the mesh's columns 2, 1, 0 (the mesh is stored in the mask's order, z, y, x), and every triangle faces the side it faces in the mesh. Only what is drawn is reordered; the mesh files and the tables are not. Its panel, <em>foambryo</em>, shows:</p>
 <ul>
 <li><strong>which values the colours show</strong>: the library call that produced them (<code>inferred by 'foambryo view': infer_forces(mesh, …)</code>), or <code>read from NAME (foambryo infer: &lt;run.json's library_call&gt;)</code>, NAME the results folder's own name, never the path to it;</li>
 <li><strong>the colour bars</strong> of § 6.1, drawn in the window with the library's colours over the library's ranges; an outlined green swatch, <em>undetermined (nan)</em>, when a value is <code>nan</code> (or an interface has no tension), and a glass swatch, <em>crop face</em>, when the mesh has crop faces;</li>
 <li>with tensions and pressures, <strong>colour the surface by</strong> <em>tensions</em> (the default) or <em>pressures</em>. In the tension view an undetermined tension's interface is not filled and its triangles' edges are drawn in the undetermined green (<em>undetermined tensions' outlines</em>, a check box); crop faces are never filled with a value's colour and are drawn as glass, with their edges (<em>crop faces</em>, a check box hides them);</li>
 <li>the <strong>background</strong> (a choice): white (Polyscope's), light grey 0.70, dark grey 0.20, black (<code>BACKGROUND_COLOURS</code>, the napari plugin's choices too) or a custom colour; on a dark background the scale bar, the frame, their labels and the graph view's black nodes are drawn light (the mirror of their grey), on a light one dark; a background set in Polyscope's own menu is followed too. Polyscope tone-maps its background (exposure 1.1, gamma 2.2: 0.20 was shown 0.50): the window gives it <code>(c ** 2.2) / 1.1</code>, which it shows as <code>c</code>;</li>
-<li>the <strong>x, y, z frame</strong> (a check box): three segments along the mesh's columns (z, y, x), from just outside the drawn box's lowest corner (moved out by 10 % of its largest side), of the scale bar's round length, labelled <code>z</code>, <code>y</code>, <code>x</code> at their tips and with their length at the corner, in the window and in saved figures;</li>
+<li>the <strong>x, y, z frame</strong> (a check box): three segments along Polyscope's x, y and z, which are the mask's column, row and slice (the mesh's columns 2, 1, 0), from just outside the drawn box's lowest corner (moved out by 10 % of its largest side), of the scale bar's round length, labelled <code>x</code>, <code>y</code>, <code>z</code> at their tips and with their length at the corner, in the window and in saved figures;</li>
 <li><em>flat colours</em>: draws the surface unlit, so that its colours are exactly the bars' (by default the surface is shaded, as any 3-D view);</li>
 <li>the scale bar's check box (§ 6.3);</li>
 <li><strong>Save figure</strong> and <strong>Save colour bars</strong>, each with a file name (default <code>foambryo_figure.png</code>, <code>foambryo_colour_bars.png</code>, in the working directory): PNG, PDF or SVG by the suffix. <strong>The window never overwrites a file</strong>: an existing name gets <code>_2</code>, <code>_3</code>, …; the panel says which file it wrote;</li>
@@ -3226,6 +3232,9 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 <p>On success each sub-command prints, on standard output, one <code>wrote &lt;path&gt;…</code> line per file written.</p>
 <h2 id="11-changes-since-the-first-version">11. Changes since the first version<a class="headerlink" href="#11-changes-since-the-first-version" title="Permanent link">&para;</a></h2>
 <ul>
+<li>
+<p><strong>25 Oct 2026: the window draws the tissue, not its mirror image</strong> (§ 6): it drew the mesh's columns (z, y, x) as Polyscope's x, y, z, an exchange of two axes; it now draws x, y, z as the mask's column, row and slice, each triangle facing its own side, and the frame is labelled <code>x</code>, <code>y</code>, <code>z</code> along them. The scale bar lies along x.</p>
+</li>
 <li>
 <p><strong>14 Oct 2026: the text agrees with the command</strong> (§ 2, § 4.1, § 4b, § 6, § 7, § 10): <code>solves.csv</code> in the pipeline, the order of the tension methods, the four values of <code>--angle-reading</code>, <code>--spacing</code> optional for an <code>.npz</code> that records it in <code>view MASK</code>, the window's diagnostics choice, <code>--no-pressures</code> in the choice of window. The warning for interfaces missing from an ensemble now says they are drawn undetermined (it said grey; they are drawn as undetermined values are, since the green outlines).</p>
 </li>

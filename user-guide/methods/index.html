@@ -1981,7 +1981,7 @@
 <h2 id="flat-junction-lines">Flat junction lines<a class="headerlink" href="#flat-junction-lines" title="Permanent link">&para;</a></h2>
 <p><code>Cotan</code>, <code>InvCotan</code>, <code>Lami</code> and <code>LogLami</code> have coefficients that are infinite at a wedge of exactly 0 or 180 degrees (<code>1/sin</code>, <code>cot(phi/2)</code>, <code>log sin</code>). Such wedges occur on short triple lines whose faces are exactly coplanar, because mesh vertices sit on the voxel lattice. These four methods leave such a line's equations out, with a <code>DegenerateWedgeWarning</code> that says how many lines were left out and how many interfaces were left without an equation (those are <code>nan</code>). The other methods' coefficients stay finite there.</p>
 <h2 id="error-bars-and-diagnostics">Error bars and diagnostics<a class="headerlink" href="#error-bars-and-diagnostics" title="Permanent link">&para;</a></h2>
-<p><code>infer_tensions_with_uncertainty</code> returns the tensions of <code>infer_tensions</code> with an interval, and <code>compute_inference_diagnostics</code> says how well the mesh determines them. <strong>No interval is a calibrated error bar on a reconstructed mesh.</strong> The first-order interval of the <code>YoungDupre</code> tensions (<code>UncertaintyModel.AnglePropagation</code>) is a <strong>lower bound</strong> on the error: on 2 400 reconstructions with known tensions, one reconstruction's <code>± std</code> held the true tension for 26–54 % of the interfaces (68 % for a calibrated interval) and <code>± 2 std</code> for 48–79 % (95 %), because the error is mostly the reconstruction's bias, which no propagated scatter measures. Neither function has a formulation for crop faces yet: both raise <code>ValueError</code> on a cropped mesh. <strong>Both stop at about 1 300 cells</strong> of real size: they compute the diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy cannot take past <code>2**31 - 1</code> entries, so both raise <code>ValueError</code> at once on a larger mesh, whatever the method (<a href="../large-tissues/#error-bars">large tissues</a>). See the <code>foambryo.uncertainty</code> module in the <a href="../../api/uncertainty/">API reference</a> for every interval and its measured calibration.</p>
+<p><code>infer_tensions_with_uncertainty</code> returns the tensions of <code>infer_tensions</code> with an interval, and <code>compute_inference_diagnostics</code> says how well the mesh determines them. <strong>No interval is a calibrated error bar on a reconstructed mesh.</strong> The first-order interval of the <code>YoungDupre</code> tensions (<code>UncertaintyModel.AnglePropagation</code>) is a <strong>lower bound</strong> on the error: on 2 400 reconstructions with known tensions, one reconstruction's <code>± std</code> held the true tension for 26–54 % of the interfaces (68 % for a calibrated interval) and <code>± 2 std</code> for 48–79 % (95 %) (measured on meshes from dw3d's 0.6.0 code, never published and part of 0.7.0; not measured again on 0.7.1's meshes), because the error is mostly the reconstruction's bias, which no propagated scatter measures. Neither function has a formulation for crop faces yet: both raise <code>ValueError</code> on a cropped mesh. <strong>Both stop at about 1 300 cells</strong> of real size: they compute the diagnostics from the dense force-balance operator (three rows per mesh vertex, one column per interface and per cell) and its singular value decomposition, which scipy cannot take past <code>2**31 - 1</code> entries, so both raise <code>ValueError</code> at once on a larger mesh, whatever the method (<a href="../large-tissues/#error-bars">large tissues</a>). See the <code>foambryo.uncertainty</code> module in the <a href="../../api/uncertainty/">API reference</a> for every interval and its measured calibration.</p>
 <h2 id="how-the-contact-angle-is-read-angle_reading">How the contact angle is read: <code>angle_reading</code><a class="headerlink" href="#how-the-contact-angle-is-read-angle_reading" title="Permanent link">&para;</a></h2>
 <p>Every tension method that reads angles — the six angle-reading ones plus <code>Cotan</code> and <code>InvCotan</code> — takes an <code>angle_reading</code> keyword. It selects <strong>how a contact angle is measured on the mesh</strong>, not how tensions are solved for once it has been measured:</p>
 <ul>
@@ -2006,23 +2006,23 @@
 <tbody>
 <tr>
 <td>length-weighted junction-angle flattening slope, <code>chord</code></td>
-<td style="text-align: right;">−0.2135</td>
-<td style="text-align: right;">−0.2176</td>
+<td style="text-align: right;">−0.2118</td>
+<td style="text-align: right;">−0.2169</td>
 </tr>
 <tr>
 <td>the same, <code>quadric</code></td>
-<td style="text-align: right;"><strong>−0.0496</strong></td>
-<td style="text-align: right;"><strong>−0.0072</strong></td>
+<td style="text-align: right;"><strong>−0.0475</strong></td>
+<td style="text-align: right;"><strong>−0.0051</strong></td>
 </tr>
 <tr>
 <td>tension contrast (1.000 is perfect), <code>chord</code></td>
-<td style="text-align: right;">0.791</td>
-<td style="text-align: right;">0.766</td>
+<td style="text-align: right;">0.787</td>
+<td style="text-align: right;">0.770</td>
 </tr>
 <tr>
 <td>the same, <code>quadric</code></td>
-<td style="text-align: right;"><strong>1.022</strong></td>
-<td style="text-align: right;"><strong>1.059</strong></td>
+<td style="text-align: right;"><strong>1.024</strong></td>
+<td style="text-align: right;"><strong>1.066</strong></td>
 </tr>
 <tr>
 <td>median per-line angle error, <code>chord</code></td>
@@ -2031,7 +2031,7 @@
 </tr>
 <tr>
 <td>the same, <code>quadric</code></td>
-<td style="text-align: right;"><strong>4.73°</strong></td>
+<td style="text-align: right;"><strong>4.76°</strong></td>
 <td style="text-align: right;"><strong>5.46°</strong></td>
 </tr>
 </tbody>
@@ -2044,16 +2044,16 @@
 <span class="o">*</span><span class="n">_values</span><span class="p">,</span> <span class="n">report</span> <span class="o">=</span> <span class="n">infer_tensions_and_residuals_with_report</span><span class="p">(</span>
     <span class="n">mesh</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">angle_reading</span><span class="o">=</span><span class="s2">"quadric"</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">report</span><span class="o">.</span><span class="n">coverage_fraction</span>    <span class="c1"># e.g. 0.919 -- the fraction of trijunction faces corrected</span>
+<span class="n">report</span><span class="o">.</span><span class="n">coverage_fraction</span>    <span class="c1"># e.g. 0.932 -- the fraction of trijunction faces corrected</span>
 <span class="n">report</span><span class="o">.</span><span class="n">uncorrected_lines</span>    <span class="c1"># the trijunction lines that are only partly corrected</span>
 <span class="n">report</span><span class="o">.</span><span class="n">is_complete</span>          <span class="c1"># False when any face fell back</span>
 </code></pre></div>
-<p>Calling <code>infer_tensions</code> or <code>compute_angles_tri</code> directly, which drop the report, emits an <code>AngleReadingCoverageWarning</code> carrying the same numbers instead. On the benchmark meshes coverage is 0.919 of faces at <code>min_distance = 3</code> and 0.890 at 4 — but only <strong>0.220</strong> and <strong>0.178</strong> of <em>lines</em> are corrected throughout, so most lines carry a mixture. Look at <code>uncorrected_lines</code>, not only at the fraction.</p>
-<p><strong>When <em>not</em> to use it, and this is the most important caveat.</strong> The correction removes a <code>κL/2</code> chord deficit, and on a <strong>well-resolved</strong> mesh that deficit is already small while the reader's known over-application is not. Measured on the 47 ground-truth simulation meshes that ship with the benchmark — far finer than any reconstruction — the chord reading's contrast is already 1.000 to within 2×10⁻⁵, and <code>angle_reading="quadric"</code> moves it to a median of 1.080, <strong>worse on 47 of 47 cases</strong>. Use it on <code>dw3d</code>-reconstructed meshes, not on simulator output or any mesh whose elements are already much smaller than the interface's radius of curvature.</p>
+<p>Calling <code>infer_tensions</code> or <code>compute_angles_tri</code> directly, which drop the report, emits an <code>AngleReadingCoverageWarning</code> carrying the same numbers instead. On the benchmark meshes coverage is 0.932 of faces at <code>min_distance = 3</code> and 0.913 at 4 — but only <strong>0.328</strong> and <strong>0.288</strong> of <em>lines</em> are corrected throughout, so most lines carry a mixture. Look at <code>uncorrected_lines</code>, not only at the fraction.</p>
+<p><strong>When <em>not</em> to use it, and this is the most important caveat.</strong> The correction removes a <code>κL/2</code> chord deficit, and on a <strong>well-resolved</strong> mesh that deficit is already small while the reader's known over-application is not. Measured on the 47 ground-truth simulation meshes that ship with the benchmark — far finer than any reconstruction — the chord reading's contrast is already 1.000 to within 2×10⁻⁵, and <code>angle_reading="quadric"</code> moves it to a median of 1.081, <strong>worse on 47 of 47 cases</strong>. Use it on <code>dw3d</code>-reconstructed meshes, not on simulator output or any mesh whose elements are already much smaller than the interface's radius of curvature.</p>
 <p><strong>The honest residual.</strong> The correction is not exact, and four measured facts qualify it:</p>
 <ol>
 <li>It <strong>over-applies at fine spacing.</strong> On a coarsened reference mesh, where the true angles are known, the reader removes about 26 % more rotation than the chord deficit it exists to remove at <code>min_distance = 3</code>; by <code>min_distance = 7</code> it under-applies instead. The reference-mesh result above is the same effect at its most extreme.</li>
-<li>Consequently a residual slope survives: the corrected arm sits <strong>+0.0487</strong> above its own corrected floor at <code>min_distance = 3</code>, while at <code>min_distance = 4</code> the excess contains zero (−0.0102, CI [−0.0288, +0.0127]).</li>
+<li>On <code>dw3d</code>'s default meshes (junction relocation on) the corrected arm's excess over its own corrected floor is not resolved: +0.0112 [−0.0093, +0.0315] at <code>min_distance = 3</code> and −0.0221 [−0.0295, +0.0053] at 4, both intervals including zero (<code>BENCHMARKS.md</code>). This bounds the residual, it does not show that there is none. On meshes without junction relocation it was +0.0487 at <code>min_distance = 3</code>.</li>
 <li><code>YoungDupreLocal</code> is the one method whose <strong>tension</strong> error gets worse under the quadric reading even though its angles improve — it imposes the balance per edge and so never performs the along-line average that cancels the correction's per-edge scatter. Use <code>YoungDupre</code> with <code>angle_reading="quadric"</code>, not <code>YoungDupreLocal</code>.</li>
 <li>It reads angles a second-order surface fit reports; it does <strong>not</strong> move any vertex, so it cannot repair a mesh whose junction line is in the wrong place.</li>
 </ol>

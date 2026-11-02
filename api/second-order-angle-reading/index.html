@@ -2471,6 +2471,12 @@ The two readings are now equally invariant, to rounding. On a smooth surface who
 are a closed form the repair moves the reading itself by at most <code>0.016</code> degrees and by about
 <code>0.001</code> degrees at typical spacings — so it is a repair whose value is the invariance, not an
 accuracy gain, and saying so is part of the repair.</p>
+<p><code>MEASURED</code> on reconstructed meshes, the repair does change readings, because the two endpoint samples
+bring more faces over the fit's minimum sample count: on 40 benchmark reconstructions (dw3d 0.4.2,
+dithered, seed 42, <code>min_distance</code> 3, without junction relocation), the median over cases of the
+line-mean angle error under the oriented second-order reading moved from <code>5.270</code> to <code>5.403</code> degrees,
+and single cases by up to <code>0.917</code> degrees. The <code>0.14</code> degrees above is the unit dependence removed,
+not the change of numbers published before the repair.</p>
 <h3 id="foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted">The constant term, and the false reason it used to be omitted<a class="headerlink" href="#foambryo.second_order_angle_reading--the-constant-term-and-the-false-reason-it-used-to-be-omitted" title="Permanent link">&para;</a></h3>
 <p>The height field is fitted <strong>without</strong> a constant term. The reason recorded here used to be that
 "the junction-edge midpoint is the midpoint of two mesh vertices lying on this interface, so the
@@ -2568,8 +2574,9 @@ meshes that are not on trial — which is what makes measuring it admissible at 
 <h3 id="foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden">Coverage, and why the fallback is reported rather than hidden<a class="headerlink" href="#foambryo.second_order_angle_reading--coverage-and-why-the-fallback-is-reported-rather-than-hidden" title="Permanent link">&para;</a></h3>
 <p>The fit is not admissible everywhere: an incident face whose window holds fewer than two mesh
 vertices per fit parameter, or whose design matrix is rank-deficient, gets <strong>no</strong> rotation and
-falls back to the chord reading. Measured on dw3d's 47-case benchmark at <code>min_distance = 3</code>,
-coverage is <code>0.919</code> of incident faces; at <code>min_distance = 4</code> it is <code>0.890</code>. A result that mixes
+falls back to the chord reading. Measured on dw3d's benchmark (0.7.1's default meshes, the 42
+equilibrium cases) at <code>min_distance = 3</code>, coverage is <code>0.932</code> of incident faces; at
+<code>min_distance = 4</code> it is <code>0.913</code>. A result that mixes
 corrected and uncorrected angles without saying so would be unreadable as science, so
 <code>quadric_angle_rotations</code> returns an <code>AngleReadingReport</code> naming the coverage and every
 trijunction line that is not fully corrected, and the report-less convenience paths in

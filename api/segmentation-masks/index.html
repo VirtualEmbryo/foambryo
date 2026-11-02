@@ -2073,7 +2073,7 @@ at a corner are two pieces, as the mesh will see them.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the number of labels other than 0.</p>
+                <p>the number of labels other than 0 (and other than the <code>media</code> given to the report).</p>
               </div>
             </td>
           </tr>
@@ -2516,7 +2516,7 @@ are refused), or a label is negative.</p>
 
 
 <a href="#foambryo.segmentation_masks.segmentation_mask_report" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">segmentation_mask_report</span><span class="p">(</span><span class="n">mask</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">small_label_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SMALL_LABEL_FRACTION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationMaskReport</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">segmentation_mask_report</span><span class="p">(</span><span class="n">mask</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">small_label_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SMALL_LABEL_FRACTION</span><span class="p">,</span> <span class="n">media</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">())</span> <span class="o">-&gt;</span> <span class="n">SegmentationMaskReport</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2566,6 +2566,25 @@ small. Defaults to 0.05 (<code>DEFAULT_SMALL_LABEL_FRACTION</code>). Keyword-onl
             </td>
             <td>
                   <code><span title="foambryo.segmentation_masks.DEFAULT_SMALL_LABEL_FRACTION">DEFAULT_SMALL_LABEL_FRACTION</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>media</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Iterable">Iterable</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>labels other than 0 that are media, not cells (a lumen the mask already labels): left out of the cell
+count, the cells touching the image box, the cells in several pieces and the cell sizes. Keyword-only.
+Defaults to none. (Pieces of label 0 that the tissue encloses are counted as <code>enclosed_medium_pieces</code>
+either way; delaunay-watershed-3d 0.7.1 makes the deep ones their own regions.)</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
             </td>
           </tr>
       </tbody>

@@ -2028,7 +2028,8 @@ error bar on a reconstructed mesh. The first-order interval of the <code>YoungDu
 (<code>AnglePropagation</code>) is a <strong>lower bound</strong> on the error: measured on 2 400 reconstructions with
 ground truth, one reconstruction's <code>+- std</code> contained the true tension for 26-54 % of interfaces
 (nominal 68 %), because the error is mostly the reconstruction's bias, which no propagated scatter
-measures. The calibration figures below are for the simulator's reference meshes.</p>
+measures (on meshes from dw3d's 0.6.0 code, part of 0.7.0; not measured again on 0.7.1's). The
+calibration figures below are for the simulator's reference meshes.</p>
 <p>The goal here is not "add error bars" — it is <em>produce an interval whose <code>error/std</code> is
 O(1), or state plainly that we cannot</em>. <code>error/std</code> (the ratio of the actual error against
 ground truth to the reported standard deviation, gauge-matched) is <strong>the</strong> calibration
@@ -2121,7 +2122,8 @@ uninformative). Measured over the 42 equilibrium cases of <code>benchmarking-dat
 <p><code>AnglePropagation</code>'s row is on the reference meshes, whose angles are nearly exact. On 2 400
 reconstructions of five tissue populations with ground truth, one reconstruction's <code>+- std</code>
 contains the true tension for only 26-54 % of interfaces (nominal 68 %), <code>+- 2 std</code> for 48-79 %
-(nominal 95 %): it is not a calibrated interval there, and no single factor makes it one.</p>
+(nominal 95 %), on meshes from dw3d's 0.6.0 code (part of 0.7.0; not measured again on 0.7.1's): it is not a
+calibrated interval there, and no single factor makes it one.</p>
 <p><strong>So that goal is met: <code>ProbeResidual</code> is an interval with <code>error/std</code> = O(1), and it
 errs on the safe side on every one of the 42 cases.</strong></p>
 <p><strong>Why the naive posterior fails by 250x, and why the fix is one factor.</strong> The i.i.d. model
@@ -2455,7 +2457,7 @@ and the minimum of the ratio.
 Gauge-invariant. ~1e-10 for a mesh that minimises <code>M</code>;
 0.0007-0.036 on the 42 simulation meshes; 0.26-0.28 on the five non-equilibrium
 cases excluded from every accuracy claim. <strong>On <code>dw3d</code>-reconstructed meshes of the
-same cases it is about 50x the reference value: median 0.578 (range 0.48-0.72) on the 40-case equilibrium
+same cases it is about 50x the reference value: median 0.546 (range 0.46-0.67) on the 40-case equilibrium
 cohort, every case above the 0.2 alarm below</strong>, so the force-balance family's
 numbers on reconstructions stand on a floor no gauge choice can lower.</p>
               </div>
@@ -2985,8 +2987,9 @@ junction graph is in one piece. The returned <code>calibration_note</code> state
 <p><strong>The interval is not a calibrated error bar on a reconstructed mesh.</strong> The first-order
 <code>AnglePropagation</code> interval of <code>YoungDupre</code> is a lower bound on the error: one
 reconstruction's <code>+- std</code> held the true tension for 26-54 % of interfaces (nominal 68 %) and
-<code>+- 2 std</code> for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth.
-The force-balance family's error is floored by <code>rho_free</code> on reconstructed meshes (see the
+<code>+- 2 std</code> for 48-79 % (nominal 95 %), measured on 2 400 reconstructions with ground truth
+(meshes from dw3d's 0.6.0 code, part of 0.7.0; not measured again on 0.7.1's). The force-balance
+family's error is floored by <code>rho_free</code> on reconstructed meshes (see the
 module docstring and <code>InferenceDiagnostics</code>).</p>
 <p>Only the estimators whose intervals have been calibrated are accepted. That is deliberate:
 an interval for a method nobody measured would be exactly the failure mode this module

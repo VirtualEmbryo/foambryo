@@ -2028,11 +2028,12 @@ operator is inverted on the mesh it is given, and a <code>dw3d</code>-reconstruc
 balance for <em>any</em> tension assignment: its <code>rho_free</code> (<code>foambryo.uncertainty</code>) is about fifty
 times the reference meshes' own value, on every case and independent of which sampler
 produced it. Measured on the 40 equilibrium cases of the benchmark cohort against their own
-reference meshes (shipped default reconstruction: dithered point placement, seed 42, <code>min_distance =
-3</code>): <code>rho_free</code> median 0.578, range 0.479-0.718, against the references' 0.0118, range 0.00066-0.036
--- a ratio of medians of 49, a median per-case ratio of 50, per-case ratios from 17 to 850 -- and
-every one of the 40 above the 0.2 alarm threshold; the deterministic variant reads 0.623. The five
-non-equilibrium cases' references already sit at 0.26 and their reconstructions at 0.59.
+reference meshes (dw3d 0.7.1's default reconstruction: dithered point placement, seed 42,
+<code>min_distance = 3</code>, junction relocation): <code>rho_free</code> median 0.546, range 0.457-0.672, against the
+references' 0.0118, range 0.00066-0.036 -- a ratio of medians of 46, a median per-case ratio of 46,
+per-case ratios from 15 to 819 -- and every one of the 40 above the 0.2 alarm threshold; the
+deterministic variant reads 0.516. The five non-equilibrium cases' references already sit at 0.26
+and their reconstructions at 0.53.
 <code>rho</code> at the <code>Kkt</code> solution equals <code>rho_free</code> by construction, so the solve cannot lower it.
 Every <code>ForceBalance*</code> tension and pressure inferred on a reconstruction, and every comparison
 of one reconstruction against another through this family, stands on that floor until the
@@ -2486,7 +2487,7 @@ cells)</code>, with <code>M</code> of shape <code>(3 nv, ni + nc)</code> and bot
 (tensions from angles, then pressures from a second variational solve) the two are
 consistent by construction.</p>
 <p><strong>Warning -- reconstructed meshes.</strong> On <code>dw3d</code> output the returned <code>rho</code> is about fifty
-times what the same operator reads on the simulator's reference meshes (median 0.578
+times what the same operator reads on the simulator's reference meshes (median 0.546
 against 0.0118 on the 40-case equilibrium cohort, all 40 above the 0.2 alarm threshold
 of <code>InferenceDiagnostics.identifiability_report</code>); no tension assignment balances such a
 mesh, so the tensions and pressures returned are the least-bad fit to a geometry that is

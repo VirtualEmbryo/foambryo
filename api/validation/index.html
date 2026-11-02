@@ -4285,7 +4285,7 @@ surface and mean line tension), the scale of each tension block is fixed.</p>
 
 
 <a href="#foambryo.validation.check_label_orientation_convention" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_label_orientation_convention</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">exterior</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_label_orientation_convention</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">exterior</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4370,13 +4370,14 @@ is looking at.</p>
                 <code>exterior</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
+                  <code><span title="int">int</span> | <span title="collections.abc.Iterable">Iterable</span>[<span title="int">int</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Label of the external medium, excluded from the
-positivity requirement since its volume is legitimately negative.
-Defaults to 0.</p>
+positivity requirement since its volume is legitimately negative; or the labels of
+every medium (<code>DcelData.media</code>: 0 and the enclosed media), which are then not
+counted as cells either. Defaults to 0.</p>
               </div>
             </td>
             <td>
@@ -5143,7 +5144,7 @@ neither <code>.rec</code> nor <code>.arec</code>. A <code>.rec</code> is read by
 
 
 <a href="#foambryo.validation.require_label_orientation_convention" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_label_orientation_convention</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">exterior</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_label_orientation_convention</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">regions</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">exterior</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5217,11 +5218,12 @@ is checked, why label order alone cannot settle it, and the closed-mesh assumpti
                 <code>exterior</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
+                  <code><span title="int">int</span> | <span title="collections.abc.Iterable">Iterable</span>[<span title="int">int</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Label of the external medium. Defaults to 0.</p>
+                <p>Label of the external medium, or the labels of
+every medium (see <code>check_label_orientation_convention</code>). Defaults to 0.</p>
               </div>
             </td>
             <td>

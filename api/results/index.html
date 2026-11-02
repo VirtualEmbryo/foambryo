@@ -1591,6 +1591,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#foambryo.results.read_pressure_region_kinds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        read_pressure_region_kinds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#foambryo.results.read_pressure_table" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2095,6 +2106,17 @@
     <span class="md-ellipsis">
       
         read_per_seed_tension_table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.results.read_pressure_region_kinds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        read_pressure_region_kinds
       
     </span>
   </a>
@@ -2694,6 +2716,50 @@ a reader that meets a bare <code>NaN</code> token (which Python's <code>json</co
 <div class="doc doc-object doc-function">
 
 
+<h2 id="foambryo.results.read_pressure_region_kinds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">read_pressure_region_kinds</span>
+
+
+<a href="#foambryo.results.read_pressure_region_kinds" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_pressure_region_kinds</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Read the <code>region_kind</code> column of a <code>pressures.csv</code>: label -&gt; <code>exterior</code>, <code>medium</code> or <code>cell</code>.</p>
+<p>A file without the column (a mesh without an enclosed medium) gives <code>exterior</code> for 0 and <code>cell</code> for the rest.</p>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as <code>read_pressure_table</code>, or for a kind not in <code>REGION_KINDS</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="foambryo.results.read_pressure_table" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">read_pressure_table</span>
 
@@ -2776,7 +2842,8 @@ a reader that meets a bare <code>NaN</code> token (which Python's <code>json</co
             </td>
             <td>
               <div class="doc-md-description">
-                <p>if the header is not <code>label,pressure</code> or a row cannot be parsed.</p>
+                <p>if the header is neither <code>label,pressure</code> nor <code>label,pressure,region_kind</code>, or a row cannot be
+parsed.</p>
               </div>
             </td>
           </tr>
@@ -3214,12 +3281,16 @@ seed's interfaces sorted by label pair.</p>
 
 
 <a href="#foambryo.results.write_pressure_table" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">write_pressure_table</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dict_pressures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">write_pressure_table</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dict_pressures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">media</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Write <code>pressures.csv</code>: <code>label,pressure</code>, one row per material (the medium, 0, included), sorted by label.</p>
+<p>With a medium other than 0 among <code>media</code> (an enclosed medium, a lumen, made its own region by
+delaunay-watershed-3d 0.7.1 or named with <code>--media</code>), a third column, <code>region_kind</code>, says what each row is:
+<code>exterior</code> (0), <code>medium</code> or <code>cell</code>. Without one the file is <code>label,pressure</code> exactly as before 0.7.1, which
+foambryo 0.7.0's reader requires.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3264,6 +3335,22 @@ seed's interfaces sorted by label pair.</p>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>media</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Iterable">Iterable</span>[<span title="int">int</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the labels that are media (<code>DcelData.media</code>). Keyword-only. Defaults to <code>None</code>: 0 alone.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -4114,7 +4201,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>versions</code>, <code>input</code>, <code>options</code>, <code>library_call</code>, <code>mesh</code> (counts and cut cells), <code>results</code> (counts of the</p>
+                <p><code>versions</code>, <code>input</code>, <code>options</code>, <code>library_call</code>, <code>mesh</code> (counts, the media and the cut cells), <code>results</code></p>
               </div>
             </td>
           </tr>
@@ -4124,7 +4211,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
-                <p>values and of the undetermined ones), <code>units</code>, <code>status</code>, <code>error</code>, <code>warnings</code>, <code>solves</code> (<code>None</code> with</p>
+                <p>(counts of the values and of the undetermined ones), <code>units</code>, <code>status</code>, <code>error</code>, <code>warnings</code>, <code>solves</code></p>
               </div>
             </td>
           </tr>
@@ -4134,7 +4221,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>diagnostics</code> <code>"none"</code>) and <code>outputs</code>.</p>
+                <p>(<code>None</code> with <code>diagnostics</code> <code>"none"</code>) and <code>outputs</code>.</p>
               </div>
             </td>
           </tr>
