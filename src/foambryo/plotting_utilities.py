@@ -8,7 +8,17 @@ Polyscope (`pip install "foambryo[viewing]"`), and `show=True` needs a display. 
 library's tension colours (`view_tensions_on_mesh`: `coolwarm`, centred on the mean tension); other per-interface
 or per-vertex quantities with `jet` unless another map is given. An undetermined value (`nan`) is drawn in
 `UNDETERMINED_COLOR` (green, #1b9e77); crop faces are drawn apart, as see-through glass (`view_crop_faces`).
+
+What the viewers draw of a 2-D mesh is here too (provisional, as every 2-D name): `planar_mesh_drawing` cuts each cell
+into triangles (ear clipping, exact for non-convex cells) and returns them with the interfaces, junctions and
+image-border segments as a `PlanarMeshDrawing`, in the mesh's own frame `(row, column)` and unit. foambryo's Polyscope
+window and the napari plugin draw from it; it needs neither Polyscope nor a display.
+
+Importing this module never imports Polyscope: a function imports it when it draws, so a front end without Polyscope
+(the napari plugin) can import `planar_mesh_drawing` from here.
 """
+
+from __future__ import annotations
 
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
@@ -34,6 +44,8 @@ from foambryo._colour_scales import (
 
 # `ps` is Polyscope, or, on a thread that prepares the viewer's scene, the recorder of its calls
 # (`foambryo._polyscope_recording`).
+from foambryo._planar_drawing import PlanarMeshDrawing as PlanarMeshDrawing
+from foambryo._planar_drawing import planar_mesh_drawing as planar_mesh_drawing
 from foambryo._polyscope_recording import polyscope_target as ps
 
 if TYPE_CHECKING:
@@ -48,11 +60,11 @@ CROP_FACES_HIDDEN = "crop faces hidden (drawn as glass)"
 
 
 def view_faces_values_on_embryo(
-    mesh: "DcelData",
+    mesh: DcelData,
     face_values: NDArray[np.float64],
     name_values: str = "Values",
     ps_mesh: ps.SurfaceMesh | None = None,
-    colormap: "cm.colors.ColorMap" = cm.jet,
+    colormap: cm.colors.ColorMap = cm.jet,
     min_to_zero: bool = True,
     clean_before: bool = True,
     clean_after: bool = True,
@@ -140,7 +152,7 @@ def view_faces_values_on_embryo(
 
 
 def view_vertex_values_on_embryo(  # noqa: C901
-    mesh: "DcelData",
+    mesh: DcelData,
     value_on_vertices: NDArray[np.float64],
     remove_trijunctions: bool = True,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -236,7 +248,7 @@ def view_vertex_values_on_embryo(  # noqa: C901
 
 
 def view_dict_values_on_mesh(
-    mesh: "DcelData",
+    mesh: DcelData,
     dict_values: dict[tuple[int, int], float],
     alpha: float = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -248,7 +260,7 @@ def view_dict_values_on_mesh(
     alpha_values: bool = True,
     min_value: float | None = None,
     max_value: float | None = None,
-    cmap: "cm.colors.ColorMap" = cm.jet,
+    cmap: cm.colors.ColorMap = cm.jet,
 ) -> ps.SurfaceMesh:
     """Colour a surface mesh's triangles by a value per interface (a seed spread, a residual), with `jet`.
 
@@ -324,7 +336,7 @@ def view_dict_values_on_mesh(
 
 
 def view_tensions_on_mesh(
-    mesh: "DcelData",
+    mesh: DcelData,
     dict_tensions: dict[tuple[int, int], float],
     alpha: float = 0.05,
     ps_mesh: ps.SurfaceMesh | None = None,
@@ -375,7 +387,7 @@ def view_tensions_on_mesh(
     return ps_mesh
 
 
-def hide_crop_faces(mesh: "DcelData", ps_mesh: ps.SurfaceMesh, scattered: bool = False) -> None:
+def hide_crop_faces(mesh: DcelData, ps_mesh: ps.SurfaceMesh, scattered: bool = False) -> None:
     """Hide the crop faces of a coloured surface (a per-face transparency, `CROP_FACES_HIDDEN`): they carry no value.
 
     They are drawn by `view_crop_faces` as glass instead. Does nothing on a mesh without crop faces.
@@ -393,7 +405,7 @@ def hide_crop_faces(mesh: "DcelData", ps_mesh: ps.SurfaceMesh, scattered: bool =
     ps_mesh.set_transparency_quantity(CROP_FACES_HIDDEN)
 
 
-def view_crop_faces(mesh: "DcelData", scattered: bool = False) -> ps.SurfaceMesh | None:
+def view_crop_faces(mesh: DcelData, scattered: bool = False) -> ps.SurfaceMesh | None:
     """Draw the mesh's crop faces as their own surface, "Crop faces": see-through glass with its edges drawn.
 
     Crop faces lie on the boundary of the imaged volume, where the tissue was cut (see
@@ -429,14 +441,14 @@ def view_crop_faces(mesh: "DcelData", scattered: bool = False) -> ps.SurfaceMesh
 
 
 def plot_trijunctions(  # noqa: C901
-    mesh: "DcelData",
+    mesh: DcelData,
     dict_trijunctional_values: dict[Iterable[int], float] | None = None,
     clean_before: bool = True,
     clean_after: bool = True,
     show: bool = True,
     color: Literal["values"] | Literal["uniform"] = "values",
     value_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
-    cmap: "cm.colors.ColorMap" = cm.jet,
+    cmap: cm.colors.ColorMap = cm.jet,
 ) -> None:
     """Draw a mesh's triple lines as a Polyscope curve network, "trijunctions", in one colour or by value.
 
@@ -533,7 +545,7 @@ def plot_trijunctions(  # noqa: C901
 
 
 def plot_trijunctions_topo_change_viewer(  # noqa: C901
-    mesh: "DcelData",
+    mesh: DcelData,
     dict_trijunctional_values: dict[Iterable[int], float] | None = None,
     clean_before: bool = True,
     clean_after: bool = True,

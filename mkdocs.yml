@@ -60,10 +60,13 @@ nav:
       - Anisotropic voxels: user-guide/anisotropic-voxels.md
       - Large tissues: user-guide/large-tissues.md
       - Seed ensembles: user-guide/seed-ensembles.md
+      - Two-dimensional tissues: user-guide/two-dimensional-tissues.md
       - Viewers: user-guide/viewers.md
       - Command line: command_line_specification.md
   - Examples:
       - examples/index.md
+      - examples/two-dimensional-tissue.md
+      - examples/choosing-an-angle-reading-inside-an-eggshell.md
       - examples/anisotropic-voxels.md
       - examples/cropped-tissue.md
       - examples/seed-ensembles.md
@@ -93,6 +96,8 @@ nav:
       - api/segmentation-masks.md
       - api/results.md
       - api/colour-scales.md
+      - api/two-dimensional.md
+      - api/plotting-utilities.md
       - api/viewing.md
       - api/geometry.md
       - api/curvature.md

@@ -4,7 +4,8 @@ The viewer (`foambryo.viewing`) colours the surface tensions with `coolwarm` (bl
 the mean tension, red for high) over a range centred on the mean tension and symmetric around it
 (`tension_colour_range`), and the pressures with `magma`, reversed and trimmed to its 10-90 % range
 (`PRESSURE_COLOUR_MAP_RANGE`), between 0 and an upper quantile of the pressures over the surface's triangles
-(`surface_pressure_colour_upper`), on the surface and on the graph view's cell nodes alike. Other per-interface
+(`surface_pressure_colour_upper`), on the surface and on the graph view's cell nodes alike; for a 2-D mesh, whose cells
+are polygons, over its cells, each once. Other per-interface
 quantities (a seed spread, a residual) keep `jet` (`quantity_colours`): they are not tensions, and a diverging map
 centred on their mean would mean nothing.
 
@@ -14,7 +15,8 @@ Two things on a surface are not values and are drawn so that no colour of either
   napari's black backgrounds. A viewer that can draw outlines draws an undetermined interface as its outline
   in this green, without fill; a viewer that cannot fills it with the green;
 * a **crop face** (where the image box cut the tissue): see-through "glass", `CROP_FACE_COLOR` at
-  `CROP_FACE_OPACITY`, with its triangles' edges in `CROP_FACE_EDGE_COLOR`.
+  `CROP_FACE_OPACITY`, with its triangles' edges in `CROP_FACE_EDGE_COLOR`; in 2D, an **image-border segment** (one
+  that closes a cut cell along the image border) is drawn in `CROP_FACE_EDGE_COLOR`, the edge of that glass.
 
 A colour without its scale cannot be read, so `save_colour_bars` draws the scales, and both the viewer and the
 bars compute them with the functions of this module: a bar's ends are then the viewer's clipped range by
@@ -244,6 +246,36 @@ def pressure_colours(fractions: NDArray[np.float64]) -> NDArray[np.float64]:
     return colours
 
 
+def _is_planar(mesh: object) -> bool:
+    """Whether `mesh` is a 2-D mesh (`foambryo.planar_mesh.dimension_of`); a 3-D `DcelData` is recognised first."""
+    if hasattr(mesh, "f"):
+        return False
+    from foambryo.planar_mesh import dimension_of
+
+    return dimension_of(mesh) == 2
+
+
+def _planar_cells(mesh: object) -> tuple[int, ...]:
+    from foambryo.planar_mesh import PlanarMesh
+
+    return PlanarMesh.from_any(mesh).cells
+
+
+def _has_border_segments(mesh: object) -> bool:
+    """Whether a 2-D mesh has image-border segments (that close a cut cell along the image border)."""
+    from foambryo._planar_drawing import image_border_segments
+    from foambryo.planar_mesh import PlanarMesh
+
+    return bool(image_border_segments(PlanarMesh.from_any(mesh)).any())
+
+
+def _has_no_value_faces(mesh: object) -> bool:
+    """Crop faces (3D) or image-border segments (2D): what the viewers draw as glass, without a value."""
+    if _is_planar(mesh):
+        return _has_border_segments(mesh)
+    return bool(getattr(mesh, "has_crop_faces", False))
+
+
 def surface_face_pressures(
     mesh: DcelData,
     dict_pressures: dict[int, float],
@@ -251,6 +283,9 @@ def surface_face_pressures(
     scattered: bool = False,
 ) -> NDArray[np.float64]:
     """The pressure the viewer's surface gives each triangle: that of its higher-labelled material.
+
+    A 2-D mesh (`foambryo.PlanarMesh`) draws each cell as one filled polygon: its pressures are one per cell, each
+    cell once, in ascending label order (exploded or not, the same cells).
 
     Args:
         mesh: the mesh.
@@ -261,11 +296,14 @@ def surface_face_pressures(
             `scattered=True`. Keyword-only. Defaults to `False`.
 
     Returns:
-        NDArray[np.float64]: one pressure per row of `mesh.f` (or of `mesh.f_scattered`).
+        NDArray[np.float64]: one pressure per row of `mesh.f` (or of `mesh.f_scattered`); for a 2-D mesh, one per
+        cell.
 
     Raises:
         KeyError: if a material of the mesh has no pressure in `dict_pressures`.
     """
+    if _is_planar(mesh):
+        return np.array([dict_pressures[cell] for cell in _planar_cells(mesh)], dtype=np.float64)
     if scattered:
         return np.array([dict_pressures[idx] for idx in mesh.cluster_idx_scattered], dtype=np.float64)
     media = set(getattr(mesh, "media", (0,)))
@@ -295,7 +333,8 @@ def surface_pressure_colour_upper(
     The one place the pressure range is computed: the viewer's surface ("Pressures Cells"), its
     graph view's cell nodes ("Graph Nodes") and the colour bars all take it from here, so one
     pressure has one colour in all three. It is the `1 - alpha` quantile of the finite pressures
-    over the triangles the surface draws (`surface_face_pressures`); the bottom is 0.
+    over the triangles the surface draws (`surface_face_pressures`); the bottom is 0. For a 2-D mesh, over its
+    cells, each once.
 
     Args:
         mesh: the mesh the pressures belong to.
@@ -414,13 +453,14 @@ def save_colour_bars(
     if ranges.tension is None:
         message = "no tension is finite: there is no colour scale to draw"
         raise ValueError(message)
+    planar = _is_planar(mesh)
     any_undetermined = not np.isfinite(np.array(list(dict_tensions.values()), dtype=np.float64)).all()
     bars = [(tension_label, ranges.tension, _tension_bar_colours(ranges.tension))]
     if ranges.pressure is not None:
         bars.append((pressure_label, ranges.pressure, _pressure_bar_colours(ranges.pressure[1])))
     if dict_pressures is not None:
         any_undetermined |= not np.isfinite(np.array(list(dict_pressures.values()), dtype=np.float64)).all()
-    with_crop = bool(getattr(mesh, "has_crop_faces", False))
+    with_crop = _has_no_value_faces(mesh)
     legend = any_undetermined or with_crop
 
     figure = Figure(figsize=(5.0, 1.15 * len(bars) + (0.35 if legend else 0.0)), dpi=200)
@@ -445,17 +485,22 @@ def save_colour_bars(
         else:
             axes.set_xticks([left, right])
             axes.set_xticklabels([f"{lowest:.4g}", f"{highest:.4g}"])
-            title = f"{label} (from 0, clipped at the {100 * (1 - alpha):g}% quantile over triangles)"
+            over = "cells" if planar else "triangles"
+            title = f"{label} (from 0, clipped at the {100 * (1 - alpha):g}% quantile over {over})"
         axes.set_title(title, fontsize=7 if row else 6.2, loc="left")
         axes.tick_params(labelsize=7)
     if legend:
-        _draw_legend(figure.add_subplot(grid[len(bars)]), undetermined=any_undetermined, crop=with_crop)
+        _draw_legend(figure.add_subplot(grid[len(bars)]), undetermined=any_undetermined, crop=with_crop,
+                     planar=planar)
     figure.savefig(Path(path))
     return ranges
 
 
-def _draw_legend(axes: Axes, *, undetermined: bool, crop: bool) -> None:
-    """The swatches under the bars: undetermined (green, outlined, no fill) and crop face (glass with edges)."""
+def _draw_legend(axes: Axes, *, undetermined: bool, crop: bool, planar: bool = False) -> None:
+    """The swatches under the bars: undetermined (green, outlined, no fill) and crop face (glass with edges).
+
+    For a 2-D mesh (`planar`), the second swatch is the image-border segment, a line in the glass's edge colour.
+    """
     from matplotlib.patches import Rectangle
 
     axes.set_xlim(0, 1)
@@ -466,7 +511,10 @@ def _draw_legend(axes: Axes, *, undetermined: bool, crop: bool) -> None:
         axes.add_patch(Rectangle((x, 0.1), 0.06, 0.8, facecolor="none", edgecolor=UNDETERMINED_COLOR, linewidth=1.5))
         axes.text(x + 0.08, 0.5, "undetermined (nan): green outline, or green", fontsize=7, va="center")
         x = 0.55
-    if crop:
+    if crop and planar:
+        axes.plot([x, x + 0.06], [0.5, 0.5], color=CROP_FACE_EDGE_COLOR, linewidth=2.0)
+        axes.text(x + 0.08, 0.5, "image border (no value)", fontsize=7, va="center")
+    elif crop:
         axes.add_patch(Rectangle((x, 0.1), 0.06, 0.8, facecolor=(*CROP_FACE_COLOR, CROP_FACE_OPACITY),
                                  edgecolor=CROP_FACE_EDGE_COLOR, linewidth=1.0, hatch="//"))
         axes.text(x + 0.08, 0.5, "crop face (no value)", fontsize=7, va="center")

@@ -349,6 +349,9 @@ def infer_force_balance(
     Warns:
         CutCellPressureWarning: on a cropped mesh, naming the cut cells whose pressure is `nan`.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_force_balance")
     result, withheld = _infer_force_balance(mesh, mean_tension, normalisation)
     warn_on_cut_cell_pressures(withheld, stacklevel=3)
     return result

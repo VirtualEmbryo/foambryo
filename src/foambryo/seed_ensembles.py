@@ -93,6 +93,19 @@ from foambryo.tension_inference import (
 )
 from foambryo.wedge_refusal import line_averaged_angles
 
+__all__ = [
+    "COMBINE_ANGLES",
+    "COMBINE_OPTIONS",
+    "COMBINE_TENSIONS",
+    "DEFAULT_ENSEMBLE_SEEDS",
+    "Interface",
+    "SeedEnsembleExperimentalWarning",
+    "SeedEnsembleResult",
+    "SeedReconstruction",
+    "Wedge",
+    "infer_tensions_over_seeds",
+]
+
 Interface = tuple[int, int]
 Wedge = tuple[int, int, int]
 
@@ -438,7 +451,8 @@ def infer_tensions_over_seeds(
             interface `(label_1, label_2)`, `label_1 < label_2`, over the union of the seeds' interfaces.
 
     Raises:
-        ValueError: on an empty or repeated seed list, an unknown `combine`, `combine="angles"` with a method
+        ValueError: on a 2-D mask (delaunay-watershed-2d has no dither seed: no 2-D counterpart yet);
+            on an empty or repeated seed list, an unknown `combine`, `combine="angles"` with a method
             other than `YoungDupre`, an unknown `angle_reading`, or `max_workers < 1`; and, from a seed's
             reconstruction or inference, as `dcel_mesh_from_segmentation_mask` and `infer_tensions` (for
             example a non-chord `angle_reading` with a method that reads no angle).
@@ -451,6 +465,12 @@ def infer_tensions_over_seeds(
             `"seed N: "`, whatever `max_workers` is; deprecation notices stay in the seed's record only. With
             `combine="angles"`, `JunctionGraphGaugeWarning` for the single solve too.
     """
+    if np.ndim(mask) == 2:
+        message = (
+            "infer_tensions_over_seeds has no 2-D counterpart yet: it reconstructs the mask at several dither seeds, "
+            "and delaunay-watershed-2d's reconstruction has none (got a 2-D mask)"
+        )
+        raise ValueError(message)
     seeds = _checked_arguments(seeds, mode, angle_reading, combine, max_workers)
 
     spacing = None if spacing is None else tuple(float(v) for v in spacing)

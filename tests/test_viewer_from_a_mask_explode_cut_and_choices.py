@@ -130,7 +130,11 @@ def test_the_choices_default_to_the_librarys_signatures():
     forces = inspect.signature(infer_forces).parameters
     seeds = inspect.signature(infer_tensions_over_seeds).parameters
     assert tables.TENSION_METHODS[choices.tension_method] is forces["mode_tension"].default
-    assert tables.PRESSURE_METHODS[choices.pressure_method] is forces["mode_pressure"].default
+    # The library's pressure default is per dimension (None); the window draws 3-D meshes: Variational.
+    from foambryo.pressure_inference import default_pressure_method
+
+    assert forces["mode_pressure"].default is None
+    assert tables.PRESSURE_METHODS[choices.pressure_method] is default_pressure_method(3)
     assert (choices.mean_tension, choices.base_pressure) == (forces["mean_tension"].default,
                                                              forces["base_pressure"].default)
     assert choices.solver == forces["solver"].default
@@ -401,10 +405,9 @@ def test_view_mask_opens_a_workflow_with_the_commands_spacing_and_defaults(capsy
     workflow, kwargs = recorded_workflows[-1]
     assert np.array_equal(workflow.mask, mask)
     assert (workflow.spacing, workflow.unit, workflow.mask_name) == ((1.0, 1.0, 1.0), "voxel", "mask.npy")
-    from dw3d import get_default_mesh_reconstruction_algorithm
+    from foambryo.io import default_min_distance
 
-    assert workflow.min_distance == inspect.signature(get_default_mesh_reconstruction_algorithm).parameters[
-        "min_distance"].default
+    assert workflow.min_distance == default_min_distance(3)  # the library's (dw3d's) default for a 3-D mask
     assert workflow.choices.pressures is False
     from foambryo.viewing import plot_force_inference
 
@@ -439,3 +442,63 @@ def test_mask_options_on_a_mesh_are_refused(capsys, extra):
     code, _, err = _run(capsys, "view", require_substitute_mesh(), *extra)
     assert code == cli.EXIT_USAGE
     assert "applies to a mask" in err
+
+
+@pytest.mark.parametrize("stress", [None, "deviatoric"])
+def test_view_mask_passes_the_stress_to_the_workflow_window(capsys, tmp_path, mask, recorded_workflows, stress):
+    path = tmp_path / "mask.npy"
+    np.save(path, mask)
+    options = [] if stress is None else ["--stress", stress]
+    code, _, err = _run(capsys, "view", path, "--spacing", "1", "1", "1", *options)
+    assert code == cli.EXIT_OK, err
+    assert recorded_workflows[-1][1]["stress"] == (stress or "full")
+
+
+@pytest.mark.parametrize("stress", [None, "full", "deviatoric"])
+def test_the_library_view_mask_passes_the_stress_as_the_command_does(mask, recorded_workflows, stress):
+    """`foambryo.view_mask(..., stress=...)` hands the window what `foambryo view MASK --stress` hands it."""
+    from foambryo import viewing
+
+    viewing.view_mask(mask, (1.0, 1.0, 1.0), **({} if stress is None else {"stress": stress}))
+    assert recorded_workflows[-1][1]["stress"] == (stress or "full")
+
+
+def test_the_library_view_mask_refuses_what_the_command_refuses(mask, recorded_workflows):
+    """An unknown stress part, and the deviatoric stress without pressures (`--no-pressures`), are refused."""
+    from foambryo import viewing
+
+    with pytest.raises(ValueError, match="deviatoric"):
+        viewing.view_mask(mask, (1.0, 1.0, 1.0), stress="isotropic")
+    with pytest.raises(ValueError, match="pressures=True"):
+        viewing.view_mask(mask, (1.0, 1.0, 1.0), stress="deviatoric", pressures=False)
+    assert not recorded_workflows
+
+
+def test_view_mask_and_the_command_offer_the_same_stress_choices():
+    """One experience: the keyword's default and values are the command's `--stress` default and choices."""
+    pytest.importorskip("polyscope")
+    import argparse
+
+    from foambryo import viewing
+    from foambryo._cell_stress import STRESS_PARTS
+
+    parameter = inspect.signature(viewing.view_mask).parameters["stress"]
+    assert parameter.kind is inspect.Parameter.KEYWORD_ONLY
+    view = next(action for action in cli.build_parser()._actions if isinstance(action, argparse._SubParsersAction))
+    stress = next(action for action in view.choices["view"]._actions if action.dest == "stress")
+    assert parameter.default == stress.default == "full"
+    assert tuple(stress.choices) == tuple(STRESS_PARTS)
+
+
+def test_the_mask_windows_hand_the_stress_to_their_values_window():
+    pytest.importorskip("polyscope")
+    import inspect
+
+    from foambryo import viewing
+    from foambryo._planar_viewer import planar_mask_window_class
+
+    assert inspect.signature(viewing._MaskWindow).parameters["stress"].default == "full"
+    with pytest.raises(ValueError, match="deviatoric"):
+        viewing._MaskWindow.__init__(object.__new__(viewing._MaskWindow), None, stress="isotropic")
+    assert "stress=self.stress" in inspect.getsource(viewing._MaskWindow.show_values)
+    assert "stress=self.stress" in inspect.getsource(planar_mask_window_class().show_values)

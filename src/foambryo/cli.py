@@ -1,6 +1,9 @@
 """The `foambryo` command: mesh a segmentation mask, infer its tensions and pressures, view them.
 
-Four sub-commands, each a thin layer over the library:
+Four sub-commands, each a thin layer over the library. The input's dimension decides (a mask's `ndim`, a `.rec`
+file's recorded `dimension` or layout): `mesh`, `infer` and `infer-over-seeds` (which refuses it, exit 2) take 2-D
+masks and meshes as well as 3-D ones; `view` draws both (a 2-D tissue in a 2-D window: interfaces as curves, cells as
+polygons, rows downward as in napari and matplotlib).
 
 * `foambryo mesh MASK -o MESH.rec --spacing DZ DY DX`: delaunay-watershed-3d's default
   reconstruction of the mask in physical units (`construct_mesh_in_physical_units`: a mask whose
@@ -44,6 +47,7 @@ The behaviour, files and messages are specified in the README's "Command line" s
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import inspect
 import math
 import sys
@@ -57,7 +61,9 @@ import numpy as np
 
 from foambryo import results as tables
 from foambryo.force_inference import infer_tensions_then_pressures
-from foambryo.io import dcel_mesh_from_file, reconstruct_mask
+from foambryo.io import dcel_mesh_from_file, default_min_distance, reconstruct_mask
+from foambryo.planar_mesh import dimension_of
+from foambryo.pressure_inference import default_pressure_method
 from foambryo.results import (
     DIAGNOSTICS,
     PRESSURE_METHODS,
@@ -76,7 +82,7 @@ from foambryo.segmentation_masks import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable, Mapping, Sequence
 
     from foambryo.dcel import DcelData
 
@@ -189,6 +195,19 @@ def _versions() -> dict[str, str]:
     return library_versions()
 
 
+#: `infer --tension-method`'s value for the 2-D global fit, which is not a `TensionComputationMethod`.
+EQUILIBRIUM_TILING = "equilibrium-tiling"
+
+
+def _default_min_distance_text(dimension: int | None = None) -> str:
+    """The library's default `min_distance` as `--help` states it: per dimension, or one dimension's."""
+    from foambryo.io import default_min_distance
+
+    if dimension is not None:
+        return str(default_min_distance(dimension))
+    return f"{default_min_distance(3)} voxels for a 3-D mask, {default_min_distance(2)} pixels for a 2-D one"
+
+
 #: `--media`'s help, shared by `infer` and `view`.
 _MEDIA_HELP = (
     "the labels of the mesh that are media, not cells, besides the exterior 0 (an enclosed lumen, say): solved like "
@@ -214,7 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=PROGRAM,
         description=(
-            "Infer relative surface tensions and cell pressures from a 3D segmentation mask: "
+            "Infer relative surface tensions and cell pressures from a 3D or 2D segmentation mask: "
             "'foambryo mesh' reconstructs the mask's multimaterial mesh, 'foambryo infer' infers the "
             "tensions and pressures, 'foambryo infer-over-seeds' combines the tensions of several "
             "reconstructions of the mask, 'foambryo view' shows them. Every default is the library's."
@@ -223,11 +242,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--version", action="version",
-        version=f"foambryo {versions['foambryo']} (delaunay-watershed-3d {versions['delaunay-watershed-3d']})",
+        version=(f"foambryo {versions['foambryo']} (delaunay-watershed-3d {versions['delaunay-watershed-3d']}, "
+                 f"delaunay-watershed-2d {versions['delaunay-watershed-2d']}, iorec {versions['iorec']})"),
     )
     commands = parser.add_subparsers(dest="command", metavar="{mesh,infer,infer-over-seeds,view}")
     commands.required = True
 
+    # None: the library's default per dimension, 3 voxels (dw3d) or 4 pixels (dw2d).
     default_min_distance = _library_default(get_default_mesh_reconstruction_algorithm, "min_distance")
     mesh = commands.add_parser(
         "mesh",
@@ -240,24 +261,33 @@ def build_parser() -> argparse.ArgumentParser:
             "by shape-based interpolation, which was measured to be more accurate than meshing the "
             "native voxels. The mask is a 3-D array of non-negative integer labels (0 is the medium), "
             "axis 0 being z, axis 1 y and axis 2 x. Every face of the image box is a crop: a cell "
-            "that reaches it is a cut cell."
+            "that reaches it is a cut cell. A 2-D mask (axis 0 y, axis 1 x) is meshed by delaunay-watershed-2d "
+            "(square pixels only), and the .rec file records dimension = 2."
         ),
     )
     mesh.add_argument("mask", metavar="MASK", help="the mask: .npy, .npz (array 'mask', optionally "
                       "'spacing' and 'spacing_unit'), or .tif/.tiff (needs foambryo[cli])")
     mesh.add_argument("-o", "--output", required=True, metavar="MESH.rec", help="the mesh file to write")
     mesh.add_argument(
-        "--spacing", nargs=3, type=_positive_finite_float, metavar=("DZ", "DY", "DX"),
-        help="voxel size along axes 0, 1, 2 (z, y, x); one axis may be longer than the other two, which must "
-             "be equal. Required unless the .npz records it: there is no default, because a wrong spacing "
-             "changes every angle silently. --spacing 1 1 1 keeps voxel units",
+        "--spacing", nargs="+", type=_positive_finite_float, metavar="D",
+        help="voxel size along each axis of the mask: DZ DY DX (z, y, x) for a 3-D mask, DY DX for a 2-D one; "
+             "in 3D one axis may be longer than the other two, which must be equal; in 2D the two must be equal. "
+             "Required unless the .npz records it: there is no default, because a wrong spacing "
+             "changes every angle silently. --spacing 1 1 1 (or 1 1) keeps voxel units",
     )
     mesh.add_argument("--spacing-unit", type=_unit, metavar="UNIT",
                       help="unit of the spacing, recorded in the mesh file (default: the .npz's, else um)")
     mesh.add_argument(
         "--min-distance", type=_positive_integer, default=default_min_distance, metavar="N",
         help="minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing "
-             "(default: %(default)s, the library's)",
+             f"(default: {_default_min_distance_text()}, the library's)",
+    )
+    mesh.add_argument(
+        "--pad-thin-medium-margins", action=argparse.BooleanOptionalAction, default=None,
+        help="pad with medium the faces of the image box (the sides of a 2-D image) that no cell reaches when their "
+             "margin of medium is thin, so that a cell a few voxels from such a face does not take the medium "
+             "between them (default: delaunay-watershed's, on for cubic voxels and square pixels, off for a mask "
+             "resampled to cubic voxels, where the padding made the watershed lose cells more often)",
     )
     mesh.add_argument("--overwrite", action="store_true", help="replace MESH.rec if it exists")
 
@@ -269,7 +299,10 @@ def build_parser() -> argparse.ArgumentParser:
             "infer_forces does with the same options (the tensions only with --no-pressures), and write "
             "tensions.csv, pressures.csv and a run record, run.json, in OUTDIR (and with --diagnostics the "
             "solves as a table, solves.csv, and with spectrum their singular values, spectra.npz). Numbers are "
-            "written exactly (they read back as the same 64-bit floats); undetermined ones are nan."
+            "written exactly (they read back as the same 64-bit floats); undetermined ones are nan. A 2-D mesh "
+            "(dimension = 2 in its .rec file, or two coordinates per point) is inferred in 2D: Young-Dupre at each "
+            "junction, each junction-graph component gauged alone, then Laplace's law; or, with --tension-method "
+            "equilibrium-tiling --mask MASK, the global fit of an equilibrium tiling of circular arcs to the mask."
         ),
     )
     infer.add_argument("mesh", metavar="MESH", help="the mesh: .rec/.arec, or a file meshio reads with label1/label2 "
@@ -277,14 +310,29 @@ def build_parser() -> argparse.ArgumentParser:
     infer.add_argument("-o", "--output", required=True, metavar="OUTDIR",
                        help="the output directory (created if missing)")
     infer.add_argument(
-        "--tension-method", choices=list(TENSION_METHODS), metavar="METHOD",
+        "--tension-method", choices=[*TENSION_METHODS, EQUILIBRIUM_TILING], metavar="METHOD",
         default=option_name(_library_default(infer_forces, "mode_tension")),
-        help="tension method, one of: " + ", ".join(TENSION_METHODS) + " (default: %(default)s)",
+        help="tension method, one of: " + ", ".join(TENSION_METHODS) + " (default: %(default)s); a 2-D mesh takes "
+             f"young-dupre, or {EQUILIBRIUM_TILING} with --mask (2D only: the tensions and pressures of the "
+             "equilibrium tiling of circular arcs fitted to the mask, infer_forces_by_equilibrium_tiling; provisional)",
+    )
+    infer.add_argument(
+        "--mask", metavar="MASK",
+        help=f"with --tension-method {EQUILIBRIUM_TILING} (2D only): the label image the mesh was built from (.npy, "
+             ".npz, .tif)",
     )
     infer.add_argument(
         "--pressure-method", choices=list(PRESSURE_METHODS), metavar="METHOD", action=_StoreAndNoteGiven,
-        default=option_name(_library_default(infer_forces, "mode_pressure")),
-        help="pressure method, one of: " + ", ".join(PRESSURE_METHODS) + " (default: %(default)s)",
+        default=None,
+        help="pressure method, one of: " + ", ".join(PRESSURE_METHODS) + " (default: "
+             f"{option_name(default_pressure_method(3))} for a 3-D mesh, {option_name(default_pressure_method(2))} "
+             "for a 2-D one, the only one there)",
+    )
+    infer.add_argument(
+        "--angle-reading", choices=_infer_angle_readings(), metavar="READING", default=None,
+        help="how the junction angles are read: for a 3-D mesh one of " + ", ".join(ANGLE_READINGS)
+             + " (for the methods that read angles), for a 2-D one " + ", ".join(_two_dimensional_angle_readings())
+             + " (default: chord for a 3-D mesh, arc for a 2-D one, the library's; run.json records it when given)",
     )
     infer.add_argument("--no-pressures", action="store_true",
                        help="infer the tensions only (infer_tensions, with the same options): no pressures.csv, and "
@@ -311,15 +359,26 @@ def build_parser() -> argparse.ArgumentParser:
                        help="replace the outputs of an earlier run in OUTDIR (only " + ", ".join(tables.INFER_OUTPUTS)
                             + " are deleted)")
 
-    _add_infer_over_seeds_parser(commands, default_min_distance)
+    _add_infer_over_seeds_parser(commands)
 
     _add_view_parser(commands)
     return parser
 
 
+def _two_dimensional_angle_readings() -> tuple[str, ...]:
+    """The 2-D angle readings (`foambryo.ANGLE_READINGS_2D`)."""
+    from foambryo._two_dimensional import ANGLE_READINGS as ANGLE_READINGS_2D
+
+    return tuple(ANGLE_READINGS_2D)
+
+
+def _infer_angle_readings() -> list[str]:
+    """`infer --angle-reading`'s choices: the 3-D readings, then the 2-D ones not already listed."""
+    return [*ANGLE_READINGS, *(r for r in _two_dimensional_angle_readings() if r not in ANGLE_READINGS)]
+
+
 def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subparsers
     """`foambryo view`: its options; the inference options are `infer`'s, their defaults read off `infer_forces`."""
-    from dw3d import get_default_mesh_reconstruction_algorithm
 
     from foambryo._viewer_defaults import DEFAULT_SCATTER_COEFF
     from foambryo.force_inference import infer_forces
@@ -334,7 +393,9 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
             "tensions and pressures are inferred exactly as 'foambryo infer' does with the same options. Given a "
             "mask (.npy, .npz, .tif, .tiff) with its voxel size, the window shows the mask, reconstructs it as "
             "'foambryo mesh' does and infers as 'foambryo infer' or 'foambryo infer-over-seeds' does, each in a "
-            "child process that the window follows and can cancel."
+            "child process that the window follows and can cancel. A 2-D mesh or mask opens the 2-D window: the "
+            "interfaces as curves coloured by tension, the cells as polygons coloured by pressure, the junctions as "
+            "points, the image (--image) or the mask under them, rows downward as in napari and matplotlib."
         ),
     )
     view.add_argument("mesh", metavar="MESH|MASK", help="the mesh, as for 'foambryo infer'; or a mask, as for "
@@ -347,6 +408,9 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
                       "needs matplotlib")
     view.add_argument("--figure", metavar="FILE", help="write the window's first view with its colour bars and scale "
                       "bar to FILE (.png, .pdf, .svg, ...); needs Polyscope and a display")
+    view.add_argument("--image", metavar="FILE",
+                      help="a 2-D mesh only: an image drawn under the mesh, on the pixel grid the mesh was built on "
+                           "(.npy, .npz, .tif, .tiff; grey, or RGB): the image the mask was segmented from")
     view.add_argument("--no-show", action="store_true",
                       help="do not open the viewer: only write the colour bars (no display or Polyscope needed), "
                            "or the figure (the window closes once it is written)")
@@ -360,15 +424,21 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
                       metavar="COEFF", help="explode the view: each cell moved away from the tissue's centre by COEFF "
                       "x (its centroid - the tissue's centroid) (COEFF default: %(const)s, the viewer's); the panel "
                       "changes it")
+    view.add_argument("--stress", choices=["full", "deviatoric"], default="full",
+                      help="the cells' stress glyphs in the force view: full, each cell's mean stress tensor "
+                           "(default), or deviatoric, its deviatoric part sigma - (tr sigma / d) I, computed from the "
+                           "tensions alone, for a tissue whose pressures are not measurements (an embryo in its "
+                           "eggshell, cells on a substrate); the cells are then not coloured by pressure and the "
+                           "bars are the tension bar and the deviatoric stress's, as plot_force_inference(stress=...)")
     mask = view.add_argument_group("mask options", "as for 'foambryo mesh', when MASK is a mask")
-    mask.add_argument("--spacing", nargs=3, type=_positive_finite_float, metavar=("DZ", "DY", "DX"),
-                      help="voxel size along axes 0, 1, 2 (z, y, x); required unless the .npz records it")
+    mask.add_argument("--spacing", nargs="+", type=_positive_finite_float, metavar="D",
+                      help="voxel size DZ DY DX along axes 0, 1, 2 (z, y, x), or DY DX for a 2-D mask (square pixels); "
+                           "required unless the .npz records it")
     mask.add_argument("--spacing-unit", type=_unit, metavar="UNIT",
                       help="unit of the spacing (default: the .npz's, else um)")
     mask.add_argument("--min-distance", type=_positive_integer, metavar="N",
-                      help="minimum distance between the reconstruction's points, in cubic voxels (default: "
-                           f"{_library_default(get_default_mesh_reconstruction_algorithm, 'min_distance')}, the "
-                           "library's); the panel changes it")
+                      help="minimum distance between the reconstruction's points, in cubic voxels or square pixels "
+                           f"(default: {_default_min_distance_text()}, the library's); the panel changes it")
     inference = view.add_argument_group(
         "inference options", "as for 'foambryo infer', used when the viewer infers (not with --results)")
     inference.add_argument(
@@ -379,7 +449,12 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
     inference.add_argument(
         "--pressure-method", choices=list(PRESSURE_METHODS), metavar="METHOD",
         help="pressure method, one of: " + ", ".join(PRESSURE_METHODS)
-             + f" (default: {option_name(_library_default(infer_forces, 'mode_pressure'))})",
+             + f" (default: {option_name(default_pressure_method(3))} for a 3-D mesh, "
+             f"{option_name(default_pressure_method(2))} for a 2-D one, the only one there)",
+    )
+    inference.add_argument(
+        "--angle-reading", choices=_infer_angle_readings(), metavar="READING",
+        help="as for 'foambryo infer' (default: chord for a 3-D mesh, arc for a 2-D one)",
     )
     inference.add_argument("--mean-tension", type=_finite_float, metavar="T",
                            help="the mean the tensions are gauged to "
@@ -394,7 +469,7 @@ def _add_view_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subpar
                            help="infer the tensions only, as 'foambryo infer --no-pressures'")
 
 
-def _add_infer_over_seeds_parser(commands: Any, default_min_distance: int) -> None:  # noqa: ANN401 - argparse's subparsers
+def _add_infer_over_seeds_parser(commands: Any) -> None:  # noqa: ANN401 - argparse's subparsers
     """`foambryo infer-over-seeds`: its options, every default read off `infer_tensions_over_seeds`."""
     from foambryo.seed_ensembles import COMBINE_OPTIONS, DEFAULT_ENSEMBLE_SEEDS, infer_tensions_over_seeds
 
@@ -412,19 +487,20 @@ def _add_infer_over_seeds_parser(commands: Any, default_min_distance: int) -> No
             "lower bound on the error, not an error bar. Fix N in advance: never choose seeds by their result."
         ),
     )
-    command.add_argument("mask", metavar="MASK", help="the mask, as for 'foambryo mesh'")
+    command.add_argument("mask", metavar="MASK", help="the mask, as for 'foambryo mesh' (3-D only: a 2-D mask is "
+                         "refused, since delaunay-watershed-2d has no dither seed)")
     command.add_argument("-o", "--output", required=True, metavar="OUTDIR",
                          help="the output directory (created if missing)")
     command.add_argument(
-        "--spacing", nargs=3, type=_positive_finite_float, metavar=("DZ", "DY", "DX"),
-        help="voxel size along axes 0, 1, 2, as for 'foambryo mesh' (required unless the .npz records it)",
+        "--spacing", nargs="+", type=_positive_finite_float, metavar="D",
+        help="voxel size DZ DY DX along axes 0, 1, 2, as for 'foambryo mesh' (required unless the .npz records it)",
     )
     command.add_argument("--spacing-unit", type=_unit, metavar="UNIT",
                          help="unit of the spacing, recorded in run.json (default: the .npz's, else um)")
     command.add_argument(
-        "--min-distance", type=_positive_integer, default=default_min_distance, metavar="N",
-        help="minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing "
-             "(default: %(default)s, the library's)",
+        "--min-distance", type=_positive_integer, default=_library_default(infer_tensions_over_seeds, "min_distance"),
+        metavar="N", help="minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing "
+                          "(default: %(default)s, the library's)",
     )
     command.add_argument(
         "--seeds", type=_positive_integer, default=len(DEFAULT_ENSEMBLE_SEEDS), metavar="N",
@@ -464,15 +540,27 @@ class _WarningRelay(WarningCollector):
     Each distinct warning is printed once on standard error, with its count.
     """
 
-    def __init__(self, program: str) -> None:
+    def __init__(self, program: str, hints: Mapping[str, Mapping[str, str]] | None = None) -> None:
         super().__init__()
         self.program = program
+        #: Per warning category, the library's wording replaced by the command's (an option named for a keyword).
+        self.hints = dict(hints or {})
 
     def __exit__(self, *exc_info: object) -> None:
         super().__exit__(*exc_info)
         for entry in self.summary:
             times = f" ({entry['count']} times)" if entry["count"] > 1 else ""
-            print(f"{self.program}: warning: {entry['category']}: {entry['message']}{times}", file=sys.stderr)
+            message = entry["message"]
+            for library, command in self.hints.get(entry["category"], {}).items():
+                message = message.replace(library, command)
+            print(f"{self.program}: warning: {entry['category']}: {message}{times}", file=sys.stderr)
+
+
+#: What `foambryo mesh` says instead of delaunay-watershed's keyword in `ThinMediumMarginWarning` (3D and 2D).
+_THIN_MARGIN_HINTS = {"ThinMediumMarginWarning": {
+    "pass pad_thin_medium_margins=True to construct_mesh_in_physical_units": "pass --pad-thin-medium-margins",
+    "pad_thin_medium_margins is off": "--no-pad-thin-medium-margins was given",
+}}
 
 
 # ---------------------------------------------------------------------------------------------
@@ -506,14 +594,23 @@ def read_mask(path: Path) -> tuple[np.ndarray, tuple[float, float, float] | None
 def _resolve_spacing(
     args: argparse.Namespace,
     mask_path: Path,
-    recorded_spacing: tuple[float, float, float] | None,
+    recorded_spacing: tuple[float, ...] | None,
     recorded_unit: str | None,
-) -> tuple[tuple[float, float, float], str]:
-    """The spacing and unit to use: the command line's, else the file's; never a default spacing."""
+    dimension: int = 3,
+) -> tuple[tuple[float, ...], str]:
+    """The spacing and unit to use: the command line's, else the file's; never a default spacing.
+
+    `dimension` is the mask's: `--spacing` must give one value per axis (exit 2 otherwise).
+    """
     spacing = tuple(args.spacing) if args.spacing is not None else recorded_spacing
+    names = "DZ DY DX" if dimension == 3 else "DY DX"
     if spacing is None:
-        message = (f"{mask_path.name} records no voxel spacing: give it with --spacing DZ DY DX "
-                   "(for example --spacing 1 1 1 to keep voxel units)")
+        message = (f"{mask_path.name} records no voxel spacing: give it with --spacing {names} "
+                   f"(for example --spacing {' '.join(['1'] * dimension)} to keep voxel units)")
+        raise CommandError(EXIT_USAGE, message)
+    if args.spacing is not None and len(args.spacing) != dimension:
+        message = (f"--spacing takes {dimension} values ({names}) for the {dimension}-D mask {mask_path.name}, "
+                   f"got {len(args.spacing)}")
         raise CommandError(EXIT_USAGE, message)
     if args.spacing is not None and recorded_spacing is not None and tuple(args.spacing) != recorded_spacing:
         warnings.warn(f"--spacing {' '.join(f'{v:g}' for v in args.spacing)} replaces the spacing "
@@ -526,14 +623,23 @@ def _resolve_spacing(
     return spacing, unit
 
 
-def _check_spacing(spacing: tuple[float, float, float], unit: str, from_file: str | None) -> None:
+def _check_spacing(spacing: tuple[float, ...], unit: str, from_file: str | None) -> None:
     """Refuse a spacing the resampling cannot handle; say what is done with an anisotropic one.
 
     Raises:
         CommandError: (exit 2, or 3 when the spacing comes from the mask file) when the two
-            shorter spacings differ: only one axis may be longer than the other two.
+            shorter spacings differ: only one axis may be longer than the other two; in 2D, when the two
+            pixel sizes differ (square pixels only).
     """
     from dw3d.mask_preprocessing import coarse_axis_and_factor, isotropic_spacing
+
+    if len(spacing) == 2:
+        if abs(spacing[0] - spacing[1]) > 1e-6 * max(spacing):
+            error = (f"pixel size {spacing[0]:g} x {spacing[1]:g}: a 2-D mask is meshed with square pixels only "
+                     "(anisotropic pixels are not measured yet)")
+            raise CommandError(EXIT_USAGE if from_file is None else EXIT_FILE,
+                               error if from_file is None else f"{from_file}: {error}")
+        return
 
     try:
         found = coarse_axis_and_factor(spacing)
@@ -568,16 +674,18 @@ def _run_mesh(args: argparse.Namespace) -> int:
     if output.exists() and not args.overwrite:
         raise CommandError(EXIT_FILE, f"{args.output} exists: pass --overwrite to replace it")
     if not hasattr(MeshReconstructionAlgorithm, "construct_mesh_in_physical_units"):
-        raise CommandError(EXIT_FILE, "foambryo mesh needs delaunay-watershed-3d 0.7 or later (installed: "
-                                      f"{_versions()['delaunay-watershed-3d']}): pip install -U delaunay-watershed-3d")
+        raise CommandError(EXIT_FILE, "foambryo mesh needs delaunay-watershed 0.8.0 or later, as foambryo "
+                                      "requires (installed: delaunay-watershed-3d "
+                                      f"{_versions()['delaunay-watershed-3d']}): pip install -U delaunay-watershed")
     mask, recorded_spacing, recorded_unit = read_mask(mask_path)
-    with _WarningRelay(f"{PROGRAM} mesh"):
-        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit)
+    with _WarningRelay(f"{PROGRAM} mesh", _THIN_MARGIN_HINTS):
+        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit, mask.ndim)
         _check_spacing(spacing, unit, None if args.spacing is not None else mask_path.name)
         # What the reconstruction will meet, before the long step: a report only, the mask is not changed.
         print(segmentation_mask_report(mask).summary(), flush=True)
         try:
-            reconstruction = reconstruct_mask(mask, spacing, spacing_unit=unit, min_distance=args.min_distance)
+            reconstruction = reconstruct_mask(mask, spacing, spacing_unit=unit, min_distance=args.min_distance,
+                                              pad_thin_medium_margins=args.pad_thin_medium_margins)
         except ValueError as error:
             raise CommandError(EXIT_REFUSED, f"the reconstruction refused {mask_path.name}: {error}") from error
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -592,12 +700,15 @@ def _run_mesh(args: argparse.Namespace) -> int:
 def _read_mesh(path: Path, media: Sequence[int] | None = None) -> DcelData:
     """The mesh of `path` (`dcel_mesh_from_file`), with `media` added to the media the file records (`--media`).
 
-    Exit 3 for an unreadable file; exit 2 for a `--media` label that no triangle of the mesh carries.
+    Exit 3 for an unreadable file; exit 2 for a `--media` label that no triangle of the mesh carries, or for
+    `--media` on a 2-D mesh (enclosed media are not labelled in 2D yet).
     """
     try:
         mesh = dcel_mesh_from_file(path)
     except Exception as error:  # every reader error is the same failure for the user
         raise CommandError(EXIT_FILE, f"cannot read the mesh {path.name}: {type(error).__name__}: {error}") from error
+    if media and dimension_of(mesh) == 2:
+        raise CommandError(EXIT_USAGE, f"--media applies to 3-D meshes only: {path.name} is a 2-D mesh")
     if media:
         try:
             mesh.set_media([*mesh.media, *media])
@@ -627,9 +738,71 @@ def _infer_record_options(args: argparse.Namespace) -> dict[str, Any]:
         "diagnostics": args.diagnostics,
         "media": sorted(set(args.media)) if args.media else None,
     }
+    if getattr(args, "mask", None) is not None:
+        options["mask"] = args.mask
+    if getattr(args, "angle_reading", None) is not None:  # absent: the dimension's default (chord 3D, arc 2D)
+        options["angle_reading"] = args.angle_reading
     if args.no_pressures:
         options.update(pressure_method=None, base_pressure=None, no_pressures=True)
     return options
+
+
+def _check_the_options_of_the_dimension(args: argparse.Namespace, dimension: int) -> None:
+    """Refuse (exit 2) the options that do not apply to the mesh's dimension; resolve `--pressure-method`'s default.
+
+    2D: `--tension-method young-dupre` or `equilibrium-tiling` (with `--mask`), `--pressure-method laplace` only.
+    3D: every method but `equilibrium-tiling`; no `--mask`.
+    """
+    if args.tension_method == EQUILIBRIUM_TILING:
+        if dimension != 2:
+            raise CommandError(EXIT_USAGE, f"--tension-method {EQUILIBRIUM_TILING} applies to 2-D meshes only")
+        if args.mask is None:
+            raise CommandError(EXIT_USAGE, f"--tension-method {EQUILIBRIUM_TILING} needs --mask MASK, the label "
+                                           "image the mesh was built from")
+        if args.diagnostics != "none":
+            raise CommandError(EXIT_USAGE, f"--diagnostics applies to the linear solves: --tension-method "
+                                           f"{EQUILIBRIUM_TILING} is a nonlinear fit")
+    elif args.mask is not None:
+        raise CommandError(EXIT_USAGE, f"--mask applies to --tension-method {EQUILIBRIUM_TILING} only")
+    reading = getattr(args, "angle_reading", None)
+    if reading is not None:
+        if args.tension_method == EQUILIBRIUM_TILING:
+            raise CommandError(EXIT_USAGE, f"--angle-reading applies to the junction readings: --tension-method "
+                                           f"{EQUILIBRIUM_TILING} fits arcs to the mask and reads no angle")
+        offered = _two_dimensional_angle_readings() if dimension == 2 else ANGLE_READINGS
+        if reading not in offered:
+            raise CommandError(EXIT_USAGE, f"--angle-reading {reading} is not offered for a {dimension}-D mesh: "
+                                           f"one of {', '.join(offered)}")
+    if dimension == 2 and args.tension_method not in ("young-dupre", EQUILIBRIUM_TILING):
+        raise CommandError(EXIT_USAGE, f"--tension-method {args.tension_method} is not offered for a 2-D mesh: "
+                                       f"young-dupre or {EQUILIBRIUM_TILING}")
+    default = option_name(default_pressure_method(dimension))
+    if args.pressure_method is None:
+        args.pressure_method = default
+    elif dimension == 2 and args.pressure_method != default:
+        raise CommandError(EXIT_USAGE, f"--pressure-method {args.pressure_method} is not offered for a 2-D mesh: "
+                                       f"{default} only")
+
+
+def _infer_by_equilibrium_tiling(args: argparse.Namespace, mesh: Any) -> Any:  # noqa: ANN401 - a 2-D mesh; an InferenceOutcome
+    """`infer_forces_by_equilibrium_tiling(mesh, mask, mean_tension)`, as an `InferenceOutcome` (its pressures shifted
+    by `--base-pressure`, the fit's medium being 0); a refusal of the inputs is the status `"failed"`."""
+    from foambryo._two_dimensional import infer_forces_by_equilibrium_tiling
+    from foambryo.force_inference import INFERENCE_COMPLETE, INFERENCE_FAILED, InferenceOutcome
+
+    mask_path = Path(args.mask)
+    _require_file(mask_path, args.mask)
+    mask, _, _ = read_mask(mask_path)
+    call = (f"infer_forces_by_equilibrium_tiling(mesh, labels, mean_tension={args.mean_tension!r})"
+            + (f", pressures + {args.base_pressure!r}" if args.base_pressure else ""))
+    try:
+        solution, pressures = infer_forces_by_equilibrium_tiling(mesh, mask, args.mean_tension)
+    except ValueError as error:
+        return InferenceOutcome(None, None, [], INFERENCE_FAILED, str(error), call)
+    if args.no_pressures:
+        return InferenceOutcome(solution.dict_tensions, None, [], INFERENCE_COMPLETE, None, call)
+    shifted = {label: value + args.base_pressure for label, value in pressures.items()}
+    return InferenceOutcome(solution.dict_tensions, shifted, [], INFERENCE_COMPLETE, None, call)
 
 
 def _run_infer(args: argparse.Namespace, arguments: Sequence[str]) -> int:
@@ -656,11 +829,16 @@ def _run_infer(args: argparse.Namespace, arguments: Sequence[str]) -> int:
     relay = _WarningRelay(f"{PROGRAM} infer")
     with relay:
         mesh = _read_mesh(mesh_path, args.media)
-        outcome = infer_tensions_then_pressures(
-            mesh, args.mean_tension, args.base_pressure, TENSION_METHODS[args.tension_method],
-            PRESSURE_METHODS[args.pressure_method], solver=args.solver, diagnostics=DIAGNOSTICS[args.diagnostics],
-            with_pressures=not args.no_pressures,
-        )
+        dimension = dimension_of(mesh)
+        _check_the_options_of_the_dimension(args, dimension)
+        if args.tension_method == EQUILIBRIUM_TILING:
+            outcome = _infer_by_equilibrium_tiling(args, mesh)
+        else:
+            outcome = infer_tensions_then_pressures(
+                mesh, args.mean_tension, args.base_pressure, TENSION_METHODS[args.tension_method],
+                PRESSURE_METHODS[args.pressure_method], solver=args.solver, diagnostics=DIAGNOSTICS[args.diagnostics],
+                with_pressures=not args.no_pressures, angle_reading=args.angle_reading,
+            )
     tensions, pressures, status, error = outcome.tensions, outcome.pressures, outcome.status, outcome.error
 
     outdir.mkdir(parents=True, exist_ok=True)
@@ -726,17 +904,22 @@ def _run_infer_over_seeds(args: argparse.Namespace, arguments: Sequence[str]) ->
         raise CommandError(EXIT_FILE, f"{args.output} already holds {', '.join(existing)}: pass --overwrite to "
                                       "replace them")
     if not hasattr(MeshReconstructionAlgorithm, "construct_mesh_in_physical_units"):
-        raise CommandError(EXIT_FILE, "foambryo infer-over-seeds needs delaunay-watershed-3d 0.7 or later (installed: "
-                                      f"{_versions()['delaunay-watershed-3d']}): pip install -U delaunay-watershed-3d")
+        raise CommandError(EXIT_FILE, "foambryo infer-over-seeds needs delaunay-watershed 0.8.0 or later, as foambryo "
+                                      "requires (installed: delaunay-watershed-3d "
+                                      f"{_versions()['delaunay-watershed-3d']}): pip install -U delaunay-watershed")
     started = datetime.now(UTC).isoformat(timespec="seconds")
     clock = time.perf_counter()
     sha256 = tables.file_sha256(mask_path)
     mask, recorded_spacing, recorded_unit = read_mask(mask_path)
+    if mask.ndim == 2:
+        raise CommandError(EXIT_USAGE, f"{mask_path.name} is a 2-D mask: infer-over-seeds reconstructs at several "
+                                       "dither seeds, and delaunay-watershed-2d has none; use 'foambryo mesh' then "
+                                       "'foambryo infer'")
     seeds = list(range(args.seeds))
     result, status, error = None, "complete", None
     relay = _WarningRelay(f"{PROGRAM} infer-over-seeds")
     with relay:
-        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit)
+        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit, mask.ndim)
         _check_spacing(spacing, unit, None if args.spacing is not None else mask_path.name)
         try:
             result = infer_tensions_over_seeds(
@@ -819,23 +1002,41 @@ def _read_results(outdir: Path, mesh_path: Path) -> tuple[dict, dict | None]:
 
 #: `foambryo view`'s inference options: `infer`'s, without `--diagnostics` (the window's Export has its own
 #: diagnostics choice).
-_VIEW_INFERENCE_OPTIONS = ("tension_method", "pressure_method", "mean_tension", "base_pressure", "solver")
+_VIEW_INFERENCE_OPTIONS = ("tension_method", "pressure_method", "mean_tension", "base_pressure", "solver",
+                           "angle_reading")
 
 
-def _view_inference_args(args: argparse.Namespace) -> argparse.Namespace:
-    """The view's inference options as `infer` takes them: those given, `infer`'s (the library's) defaults otherwise."""
+def _view_inference_args(args: argparse.Namespace, dimension: int = 3) -> argparse.Namespace:
+    """The view's inference options as `infer` takes them: those given, `infer`'s (the library's) defaults otherwise.
+
+    The defaults are the dimension's (`--pressure-method`: variational in 3D, laplace in 2D; the angle reading,
+    `None`: chord in 3D, arc in 2D). In 2D, a method or a reading not offered there is refused (exit 2).
+    """
     from foambryo.force_inference import infer_forces
 
     defaults = {
         "tension_method": option_name(_library_default(infer_forces, "mode_tension")),
-        "pressure_method": option_name(_library_default(infer_forces, "mode_pressure")),
+        "pressure_method": option_name(default_pressure_method(dimension)),
         "mean_tension": float(_library_default(infer_forces, "mean_tension")),
         "base_pressure": float(_library_default(infer_forces, "base_pressure")),
         "solver": _library_default(infer_forces, "solver"),
     }
     given = {name: getattr(args, name) for name in defaults}
     values = {name: default if given[name] is None else given[name] for name, default in defaults.items()}
-    return argparse.Namespace(**values, diagnostics="none")
+    reading = getattr(args, "angle_reading", None)
+    if dimension == 2:
+        if values["tension_method"] != "young-dupre":
+            raise CommandError(EXIT_USAGE, f"--tension-method {values['tension_method']} is not offered for a 2-D "
+                                           "tissue in the viewer: young-dupre")
+        if values["pressure_method"] != defaults["pressure_method"]:
+            raise CommandError(EXIT_USAGE, f"--pressure-method {values['pressure_method']} is not offered for a 2-D "
+                                           f"tissue: {defaults['pressure_method']} only")
+    if reading is not None:
+        offered = _two_dimensional_angle_readings() if dimension == 2 else ANGLE_READINGS
+        if reading not in offered:
+            raise CommandError(EXIT_USAGE, f"--angle-reading {reading} is not offered for a {dimension}-D tissue: one "
+                                           f"of {', '.join(offered)}")
+    return argparse.Namespace(**values, diagnostics="none", angle_reading=reading)
 
 
 class _ViewValues:
@@ -948,23 +1149,70 @@ def _run_view(args: argparse.Namespace) -> int:
                                        "are read from OUTDIR")
     if args.no_show and not args.colour_bars and not args.figure:
         raise CommandError(EXIT_USAGE, "--no-show needs --colour-bars: there would be nothing to do")
+    _refuse_a_stress_without_the_force_view(args)
     given = [f"--{name.replace('_', '-')}" for name in _VIEW_INFERENCE_OPTIONS if getattr(args, name) is not None]
     if args.results is not None and given:
         raise CommandError(EXIT_USAGE, f"{given[0]} applies when 'foambryo view' infers: with --results the values "
                                        "are read from OUTDIR")
     _require_file(mesh_path, args.mesh)
-    inference = _view_inference_args(args)
     with _WarningRelay(f"{PROGRAM} view"):
         mesh = _read_mesh(mesh_path, args.media)
+        dimension = dimension_of(mesh)
+        image = _read_view_image(args, mesh, dimension)
+        inference = _view_inference_args(args, dimension)
         values = _view_values(args, mesh_path, mesh, inference)
+    if args.stress != "full" and (values.ensemble is not None or values.pressures is None):
+        shown = "a seed ensemble's tensions" if values.ensemble is not None else "tensions without pressures"
+        raise CommandError(EXIT_USAGE, f"--stress {args.stress} is drawn by the force view: {mesh_path.name} is "
+                                       f"shown with {shown}, without stress glyphs")
     if args.colour_bars:
-        _write_view_colour_bars(Path(args.colour_bars), mesh, values)
+        _write_view_colour_bars(Path(args.colour_bars), mesh, values, stress=args.stress)
     if args.no_show and not args.figure:
         return EXIT_OK
-    _open_the_viewer(args, mesh_path, mesh, values, inference)
+    _open_the_viewer(args, mesh_path, mesh, values, inference, image=image)
     if args.figure:
         print(f"wrote {args.figure}")
     return EXIT_OK
+
+
+def _read_view_image(args: argparse.Namespace, mesh: Any, dimension: int) -> Any:  # noqa: ANN401 - an array or None
+    """`--image FILE` (2-D meshes only): the image as an array, checked against the mesh's image shape (exit 2, 3)."""
+    if args.image is None:
+        return None
+    if dimension != 2:
+        raise CommandError(EXIT_USAGE, "--image is drawn under a 2-D mesh only: a 3-D mesh is drawn over its mask "
+                                       "('foambryo view MASK')")
+    path = Path(args.image)
+    _require_file(path, args.image)
+    try:
+        image = _read_image_file(path)
+    except (OSError, ValueError, KeyError) as error:
+        raise CommandError(EXIT_FILE, f"cannot read the image {path.name}: {error}") from error
+    shape = getattr(mesh, "image_shape", None)
+    if image.ndim not in (2, 3) or (image.ndim == 3 and image.shape[2] not in (3, 4)):
+        raise CommandError(EXIT_FILE, f"{path.name} holds an array of shape {image.shape}: an image is (rows, "
+                                      "columns), grey, or (rows, columns, 3), RGB")
+    if shape is not None and tuple(image.shape[:2]) != tuple(shape):
+        raise CommandError(EXIT_USAGE, f"{path.name} is {image.shape[0]} x {image.shape[1]} pixels, the mesh was "
+                                       f"built from a {shape[0]} x {shape[1]} image")
+    return image
+
+
+def _read_image_file(path: Path) -> np.ndarray:
+    """An image array from `.npy`, `.npz` (its only array, or `image`) or a TIFF."""
+    suffix = path.suffix.lower()
+    if suffix == ".npy":
+        return np.load(path, allow_pickle=False)
+    if suffix == ".npz":
+        with np.load(path, allow_pickle=False) as data:
+            name = "image" if "image" in data.files else data.files[0]
+            return np.asarray(data[name])
+    if suffix in (".tif", ".tiff"):
+        import tifffile
+
+        return np.asarray(tifffile.imread(path))
+    message = f"unknown image format {suffix!r} (.npy, .npz, .tif, .tiff)"
+    raise ValueError(message)
 
 
 def _view_values(
@@ -980,6 +1228,7 @@ def _view_values(
         mesh, inference.mean_tension, inference.base_pressure, TENSION_METHODS[inference.tension_method],
         PRESSURE_METHODS[inference.pressure_method], solver=inference.solver,
         with_pressures=not getattr(args, "no_pressures", False),
+        **({} if inference.angle_reading is None else {"angle_reading": inference.angle_reading}),
     )
     if outcome.status == "failed":
         raise CommandError(EXIT_REFUSED, f"failed: {outcome.error}")
@@ -988,8 +1237,21 @@ def _view_values(
     return _ViewValues(outcome.tensions, outcome.pressures, f"inferred by 'foambryo view': {outcome.library_call}")
 
 
-def _write_view_colour_bars(path: Path, mesh: DcelData, values: _ViewValues) -> None:
-    """`--colour-bars FILE`: `save_colour_bars` on what the viewer colours (for an ensemble, the mesh's interfaces)."""
+def _refuse_a_stress_without_the_force_view(args: argparse.Namespace) -> None:
+    """`--stress deviatoric` needs the force view: refused with `--no-pressures` (exit 2)."""
+    if args.stress != "full" and args.no_pressures:
+        raise CommandError(EXIT_USAGE, f"--stress {args.stress} is drawn by the force view: leave out --no-pressures "
+                                       "(with the deviatoric stress the pressures are inferred but not drawn)")
+
+
+def _write_view_colour_bars(path: Path, mesh: DcelData, values: _ViewValues, *, stress: str = "full") -> None:
+    """`--colour-bars FILE`: `save_colour_bars` on what the viewer colours (for an ensemble, the mesh's interfaces).
+
+    With `stress="deviatoric"`, the bars of that view: the tension bar and the deviatoric stress's (no pressure).
+    """
+    if stress != "full":
+        _write_deviatoric_view_colour_bars(path, mesh, values)
+        return
     try:
         from foambryo.colour_scales import save_colour_bars
     except ImportError as error:
@@ -1003,12 +1265,43 @@ def _write_view_colour_bars(path: Path, mesh: DcelData, values: _ViewValues) -> 
     print(f"wrote {path}: tension {ranges.tension[0]:.6g} to {ranges.tension[1]:.6g}{pressure_text}")
 
 
+def _write_deviatoric_view_colour_bars(path: Path, mesh: DcelData, values: _ViewValues) -> None:
+    """`--colour-bars FILE --stress deviatoric`: the force view's bars with the deviatoric stress, without Polyscope."""
+    try:
+        from foambryo._viewer_figures import (
+            DEVIATORIC_STRESS_TITLE,
+            TENSION_TITLE,
+            compose_figure,
+            deviatoric_stress_principal_values,
+            principal_stress_colour_scale,
+            viewer_colour_scales,
+        )
+
+        import matplotlib  # noqa: F401 - the bars are drawn by matplotlib
+    except ImportError as error:
+        raise CommandError(EXIT_FILE, f"the colour bars need matplotlib: pip install 'foambryo[viewing]' "
+                                      f"({error})") from error
+    scales = viewer_colour_scales(mesh, values.tensions, None, 0.05)
+    tension = scales.scale(TENSION_TITLE)
+    if tension is None:
+        raise CommandError(EXIT_REFUSED, "no colour bar: no tension is finite")
+    stress = principal_stress_colour_scale(DEVIATORIC_STRESS_TITLE,
+                                           deviatoric_stress_principal_values(mesh, values.tensions))
+    if stress is not None:
+        scales = dataclasses.replace(scales, scales=(*scales.scales, stress))
+    compose_figure(None, scales, path, caption=f"Values: {values.values_from}")
+    stress_text = "" if stress is None else f", deviatoric stress {stress.low:.6g} to {stress.high:.6g}"
+    print(f"wrote {path}: tension {tension.low:.6g} to {tension.high:.6g}{stress_text}")
+
+
 def _open_the_viewer(
     args: argparse.Namespace,
     mesh_path: Path,
     mesh: DcelData,
     values: _ViewValues,
     inference: argparse.Namespace,
+    *,
+    image: Any = None,  # noqa: ANN401 - an array, for a 2-D mesh
 ) -> None:
     """The Polyscope window (and `--figure`): the force viewer, or the tension viewer when there are no pressures."""
     try:
@@ -1034,13 +1327,18 @@ def _open_the_viewer(
     }
     if args.scattered is not None:
         common["scatter_coeff"] = args.scattered
+    if inference.angle_reading is not None:
+        common["angle_reading"] = inference.angle_reading
+    if image is not None:
+        common["image"] = image
     if values.ensemble is not None:
         viewing.plot_tension_inference(mesh, seed_ensemble=values.ensemble, **common)
     elif values.pressures is None:
         viewing.plot_tension_inference(mesh, values.tensions, **common)
     else:
         viewing.plot_force_inference(mesh, values.tensions, values.pressures, base_pressure=inference.base_pressure,
-                                     mode_pressure=PRESSURE_METHODS[inference.pressure_method], **common)
+                                     mode_pressure=PRESSURE_METHODS[inference.pressure_method], stress=args.stress,
+                                     **common)
 
 
 def _run_view_mask(args: argparse.Namespace, mask_path: Path) -> int:
@@ -1050,23 +1348,23 @@ def _run_view_mask(args: argparse.Namespace, mask_path: Path) -> int:
     inference options are `infer`'s, resolved to the library's defaults; the window does the rest
     (`foambryo.viewing._view_mask_workflow`). What needs a mesh beforehand is refused.
     """
-    from dw3d import get_default_mesh_reconstruction_algorithm
 
     for option, value in (("--results", args.results), ("--figure", args.figure), ("--colour-bars", args.colour_bars),
-                          ("--media", args.media)):
+                          ("--media", args.media), ("--image", args.image)):
         if value is not None:
             raise CommandError(EXIT_USAGE, f"{option} needs a mesh: {mask_path.name} is a mask, reconstructed in the "
                                            "window (run 'foambryo mesh' first to write it without a window)")
     if args.no_show:
         raise CommandError(EXIT_USAGE, f"--no-show: a mask is opened in the window to be reconstructed there "
                                        f"({mask_path.name})")
+    _refuse_a_stress_without_the_force_view(args)
     if args.no_pressures and (args.pressure_method is not None or args.base_pressure is not None):
         name = "--pressure-method" if args.pressure_method is not None else "--base-pressure"
         raise CommandError(EXIT_USAGE, f"{name} applies to the pressures: --no-pressures infers the tensions only")
     _require_file(mask_path, args.mesh)
     mask, recorded_spacing, recorded_unit = read_mask(mask_path)
     with _WarningRelay(f"{PROGRAM} view"):
-        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit)
+        spacing, unit = _resolve_spacing(args, mask_path, recorded_spacing, recorded_unit, mask.ndim)
         _check_spacing(spacing, unit, None if args.spacing is not None else mask_path.name)
         print(segmentation_mask_report(mask).summary(), flush=True)
     try:
@@ -1075,20 +1373,28 @@ def _run_view_mask(args: argparse.Namespace, mask_path: Path) -> int:
     except ImportError as error:
         message = f"the viewer needs Polyscope: pip install 'foambryo[viewing]' ({error})"
         raise CommandError(EXIT_FILE, message) from error
-    inference = _view_inference_args(args)
+    inference = _view_inference_args(args, mask.ndim)
+    extra: dict[str, Any] = {}
+    if mask.ndim == 2:
+        from foambryo._two_dimensional import DEFAULT_ANGLE_READING
+
+        extra = {"dimension": 2, "angle_reading": inference.angle_reading or DEFAULT_ANGLE_READING}
+    elif inference.angle_reading is not None:
+        raise CommandError(EXIT_USAGE, "--angle-reading applies to a mesh, or to a 2-D mask: a 3-D mask's seed "
+                                       "ensemble chooses its reading in the window")
     choices = ViewerChoices.library(
         tension_method=inference.tension_method, pressure_method=inference.pressure_method,
         mean_tension=inference.mean_tension, base_pressure=inference.base_pressure, solver=inference.solver,
-        pressures=not args.no_pressures,
+        pressures=not args.no_pressures, **extra,
     )
-    min_distance = (args.min_distance if args.min_distance is not None
-                    else _library_default(get_default_mesh_reconstruction_algorithm, "min_distance"))
+    min_distance = args.min_distance if args.min_distance is not None else default_min_distance(mask.ndim)
     workflow = MaskWorkflow(mask, tuple(spacing), unit, mask_path.name, int(min_distance), choices)
     scale_bar = False if args.no_scale_bar else (True if args.scale_bar is None else args.scale_bar)
     if args.scattered is not None:
-        viewing._view_mask_workflow(workflow, scattered=True, scatter_coeff=args.scattered, scale_bar=scale_bar)
+        viewing._view_mask_workflow(workflow, scattered=True, scatter_coeff=args.scattered, scale_bar=scale_bar,
+                                    stress=args.stress)
     else:
-        viewing._view_mask_workflow(workflow, scale_bar=scale_bar)
+        viewing._view_mask_workflow(workflow, scale_bar=scale_bar, stress=args.stress)
     return EXIT_OK
 
 

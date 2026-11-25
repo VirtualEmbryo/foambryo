@@ -55,7 +55,7 @@ Since 0.5.1, `ForceBalanceMAP` no longer depends on the mesh's length unit or on
 
 Length-weighted regression of signed line-mean angle error on the line's true deviation from 120°. There is one row per wedge of each trijunction line: `y` is the wedge angle read on the reconstruction, averaged along the line, minus its true value (the Neumann angle implied by the ground-truth tensions), and `x` is that true angle minus 120°. The slope is a weighted least-squares fit with an intercept, pooled over all lines of the 42 cases, each row weighted by the junction length foambryo accumulates for it. A slope of 0 means no systematic pull toward 120°; a negative slope means angles are flattened toward 120°. Each reading is quoted against **its own** floor — a floor read with the chord reader does not bound a reading with the quadric one.
 
-- **Matched-spacing floor**: the ground-truth reference mesh, registered to the reconstruction and coarsened until its median transverse lever — the distance from a junction triangle's apex to the midpoint of its junction edge — matches the reconstruction's (8.716 voxels at `md=3`, 11.213 at `md=4`), then read with the stated reader. It is what a geometrically perfect mesh at the same spacing reads.
+- **Matched-spacing floor**: the ground-truth reference mesh, registered to the reconstruction and coarsened until its median transverse lever — the distance from a junction triangle's apex to the midpoint of its junction edge — matches the reconstruction's (8.706 voxels at `md=3`, 11.213 at `md=4`), then read with the stated reader. It is what a geometrically perfect mesh at the same spacing reads.
 - **Excess over own floor**: |slope| − |floor|, paired per bootstrap draw.
 - **Shuffled-curvature null**: the same correction with each junction face's fitted curvature replaced by another face's, randomly permuted within the mesh (seed `20260902`). It should do nothing.
 
@@ -140,18 +140,102 @@ Both meshes have 93 097 points, 233 675 triangles and the same labels, but they 
 
 **Anisotropic voxels.** 0.5.1 could only mesh an anisotropic mask on its own grid and scale the mesh afterwards. 0.7.0 resamples it to cubic voxels first (`dcel_mesh_from_segmentation_mask(mask, spacing=...)`, and `dw3d`'s `construct_mesh_in_physical_units`). Measured on masks down-sampled along z by a factor `k` (each coarse voxel takes the label covering most of it), with the mask at full resolution as the control, one seed, the shipped code: the median over cases of each mesh's median absolute line-mean angle error, as the difference with the control, paired per case:
 
-| `k` | 12 simulated tissues of 90 and 165 cells at real cell size (control 5.57°), 0.7.0's meshes | | 42 benchmark cases (control 6.00°), 0.7.1's meshes | |
+| `k` | 12 simulated tissues of 90 and 165 cells at real cell size (control 5.57°), 0.7.0's meshes | | 42 benchmark cases (control 6.00°): resampled on 0.7.1's meshes, native grid on 0.8.0's | |
 |---|---:|---:|---:|---:|
 | | resampled (0.7.0) | native grid (0.5.1's only route) | resampled | native grid |
 | 5/3 | +0.83° | +1.38° | +0.43° | +1.59° |
 | 2 | +0.71° | +1.97° | +1.45° | +2.25° |
-| 3 | +1.17° | +4.10° | +1.27° | +5.85° |
+| 3 | +1.17° | +4.10° | +1.27° | +5.91° |
 
-The benchmark columns were measured again on 0.7.1's meshes (on 0.7.0's: +0.43°, +1.54°, +1.27° resampled and +1.43°, +2.43°, +5.58° native). The tissue columns are 0.7.0's: most of their meshes need more than 8 GiB to reconstruct and were not measured again; on the five of the six 90-cell tissues that were, the costs move by at most 0.13°.
+The benchmark columns were measured again on 0.7.1's meshes (on 0.7.0's: +0.43°, +1.54°, +1.27° resampled and +1.43°, +2.43°, +5.58° native), and the native-grid column again on 0.8.0's, which pads thin margins of medium on the native grid (the resampled route is not padded by default). With the padding turned off, every case gives 0.7.1's number bit for bit; with it, no mask is padded at `k` = 5/3 and 2, and at `k` = 3, 18 of the 42 masks are padded and 17 of them change, which moves the cost from +5.85° (0.7.1) to +5.91° (per case −1.72° to +3.96°, median 0). The padding loses no cell and rescues none: case 038 loses its 26-voxel cell 7 with and without it at every `k`, and case 031 its cell 2 at `k` = 5/3 and 2. The tissue columns are 0.7.0's, measured before 0.8.0's padding: most of their meshes need more than 8 GiB to reconstruct and were not measured again; on the five of the six 90-cell tissues that were measured on 0.7.1, the costs move by at most 0.13°.
 
 The resampled route keeps a valid mesh: on both populations and at every `k`, every mesh is watertight, with no nonlocal self-intersection and no degenerate triangle. Since 0.7.1 mesh surgery leaves no abnormal non-manifold edge on any route: none on the 294 benchmark meshes of the table (measured again), and none on the tissues' meshes, where 0.7.0 left one edge on 4 of 36 resampled meshes, one on one control mesh and 28 on 15 native-grid meshes (`dw3d`'s `CHANGELOG.md`, 0.7.1). On the tissues (0.7.0's meshes), the resampled route's trijunction lines are rougher than the control's (tangent error +1.1° to +1.8°, position +0.15 to +0.40 voxel) and smoother than the native grid's at `k` = 2 and 3 (tangent error −1.3° and −4.2°, lower on all 12 tissues). Above `k` = 3 nothing was measured, and a warning says so.
 
 **The Laplace pressures.** 0.5.1's `Laplace` and `WeightedLaplace` pressures added `base_pressure` twice: every cell came out `base_pressure` too high. With the default `base_pressure=0`, no number changes.
+
+## Two-dimensional tissues
+
+**Every tissue in this section is synthetic.** No real two-dimensional image has known tensions or pressures, so no accuracy number below was measured on real data; the noise tiers are calibrated on real masks for boundary roughness only.
+
+**Which code.** Measured during the development of 0.8.0, with foambryo's 2D inference and delaunay-watershed's 2D mesher (dw2d) at their 0.8.0 defaults: arc reading, junction relocation on, junctions on the image border excluded by the mesher's mark, ill-conditioned lenses refused. Two later changes came after these runs. dw2d's edges were reversed to follow the orientation rule shared with 3D, which changes no tension or pressure, bit for bit. Thin margins of medium are padded, which changes a mesh only where a cell lies within `2 * min_distance + 2` pixels (10 at the default 4) of an image side that no cell reaches; the decision is read on the mask, so it was evaluated on every image: of the 661 images of the comparison, it pads 11, all with 2 px of noise (8 at r = 20 px, 3 at r = 40 px), and of the 614 images with 2 px of noise of the global fit's held-out set it pads 41; it pads no image of any other tier, crop, Cellpose segmentation or large tissue. The comparison's noise tier was measured again with 0.8.0's code: without the padding it gives the earlier numbers bit for bit on all 318 images, and with it 2 images change (both at 2 px and r = 40 px), which moves one number below, the paired pressure difference against the CellFIT equations at 2 px and r = 40 px, from −0.084 to −0.087 (its interval unchanged). The arc-against-chord table and the global fit's 2 px rows were measured again in the same way, on the tissues of the padded images, with the padding off as the control: the arc readings' tensions and angles of the first table's runs and every record of the global fit's runs came out bit for bit, so an unpadded image keeps its numbers. In the comparison set the same 2 images change, and the arc-against-chord table does not move (tension −0.0603, pressure −0.0853, angle −3.47° with relocation off; −0.0682, −0.0908, −4.23° with it). In the global fit's set 6 of the 41 padded images change; its 2 px rows move by less than their printed digits (the paired difference at r = 40 px from −0.0596 to −0.0595, its interval unchanged). The research code behind the arc-against-chord table scores pressures with 0.1.5's edge orientation, which 0.8.0 reversed: its pressures were therefore scored on the edges reversed back, and with them every arc reading reproduced its earlier records bit for bit, pressures included.
+
+**What is measured.** 53 simulated two-dimensional foams at mechanical equilibrium, 4 to 64 cells, with known tensions, pressures and junction angles, drawn as label masks with a mean cell radius r of 10, 20 or 40 px, in five tiers. *exact*: the masks of the true circular-arc interfaces; *crop*: the same masks cut by a straight line (26 crops per scale); *noise*: each mask warped by a smooth random displacement field (correlation length 4 px, RMS displacement a = 0.5, 1 or 2 px); *calibrated*: the warp at a = 0.75 px, the level whose boundary roughness matches the median of seven real two-dimensional segmentations from three sources (per mask 0.52, 0.66, 0.67, beyond 2 and beyond 2 px; the upper quartile lies beyond 2 px, which is why the 2 px tier is kept). Every image is meshed by dw2d and then read by foambryo, so the numbers include the mesh's own error: they are reconstructions end to end, not readings on exact geometry. None of these foams was used to choose the reading: the choice was made on 17 other foams (211 images) and fixed before these were read.
+
+**Statistics.** Tension error: |γ̂ − γ| / γ per interface between two cells, after rescaling the inferred tensions to the true mean; pressure error: |p̂ − p| over the root-mean-square true pressure; angle error: the mean of a junction's three absolute wedge errors, in degrees. Each is the median over the image's interfaces, cells or junctions, then the median over the images of a tier, with a 95 % bootstrap interval over the foams. Differences are paired per image, on the interfaces both methods score, with a 95 % bootstrap interval over the foams (10 000 draws); a difference is "not resolved" when its interval contains 0.
+
+### The default reading: an arc per interface
+
+foambryo 0.8.0 reads each interface of the 2D mesh as a circular arc (the geometric least-squares circle through the interface's mesh vertices, its tangent taken at the circle's point nearest the junction; an interface with fewer than 4 vertices is read by its chord). Against the chord reading of earlier versions (relocation off), over all 661 images:
+
+| change | tension error | pressure error | angle error (°) |
+|---|---|---|---|
+| arc reading, relocation off | −0.060 [−0.067, −0.054] | −0.085 [−0.091, −0.081] | −3.5 [−3.8, −3.0] |
+| arc reading, relocation on (the default) | −0.068 [−0.075, −0.063] | −0.091 [−0.098, −0.085] | −4.2 [−4.5, −4.0] |
+
+No tier is significantly worse under the default. An interface with fewer than 4 mesh vertices (or whose circle fit fails) is read by its chord from end to end and gives no Laplace equation: 68 % of the interfaces at r = 10 px, where the mesh's vertices are about 5 px apart, 11 % at r = 20 px and 1 % at r = 40 px (medians over images). How much of the gain at r = 10 px comes from that chord rather than from the arcs is not measured.
+
+### Against CellFIT and pycellfit
+
+CellFIT (G. W. Brodland, J. H. Veldhuis, S. Kim, M. Perrone, D. Mashburn and M. S. Hutson, *PLoS ONE* 9(6): e99116, 2014, doi:10.1371/journal.pone.0099116) fits a circular arc to each interface of the segmented image and solves junction force balance and Laplace's law. Two implementations were run on the same images, from the masks: **the CellFIT equations**, re-implemented from the paper (this is not the authors' software), and **pycellfit** 0.2.3, the public implementation, which reads interfaces as chords and is not deterministic (one 1 024-cell image failed in two of three runs). pycellfit failed to build on 7, 4 and 1 of the 26 crops at r = 10, 20 and 40 px, and on 1 to 3 of the 53 images at 1 and 2 px of noise; foambryo and the CellFIT equations built on every image.
+
+Medians per tier (tension error T, pressure error P, angle error A in degrees):
+
+| tier | r (px) | T foambryo 0.8.0 | T pycellfit | T CellFIT equations | P foambryo 0.8.0 | P CellFIT equations | A foambryo 0.8.0 | A CellFIT equations |
+|---|---|---|---|---|---|---|---|---|
+| exact | 10 | 0.134 [0.115, 0.141] | 0.341 | 0.094 [0.074, 0.112] | 0.165 | 0.123 | 8.07 | 5.05 |
+| exact | 20 | 0.070 [0.061, 0.088] | 0.350 | 0.037 [0.028, 0.043] | 0.060 | 0.064 | 3.77 | 1.81 |
+| exact | 40 | 0.040 [0.030, 0.050] | 0.343 | 0.013 [0.010, 0.015] | 0.031 | 0.019 | 1.59 | 0.57 |
+| calibrated 0.75 px | 20 | 0.092 [0.079, 0.126] | 0.349 | 0.120 [0.097, 0.133] | 0.089 | 0.143 | 6.03 | 6.97 |
+| calibrated 0.75 px | 40 | 0.064 [0.054, 0.074] | 0.356 | 0.061 [0.054, 0.068] | 0.050 | 0.085 | 3.37 | 3.62 |
+| noise 0.5 px | 20 | 0.094 [0.078, 0.116] | 0.348 | 0.072 [0.062, 0.084] | 0.087 | 0.095 | 4.76 | 4.73 |
+| noise 0.5 px | 40 | 0.061 [0.043, 0.072] | 0.345 | 0.041 [0.033, 0.053] | 0.042 | 0.060 | 2.70 | 2.50 |
+| noise 1 px | 20 | 0.113 [0.101, 0.143] | 0.347 | 0.147 [0.114, 0.155] | 0.103 | 0.162 | 7.52 | 9.17 |
+| noise 1 px | 40 | 0.074 [0.059, 0.092] | 0.343 | 0.083 [0.070, 0.102] | 0.058 | 0.123 | 4.45 | 5.00 |
+| noise 2 px | 20 | 0.216 [0.198, 0.240] | 0.337 | 0.284 [0.255, 0.331] | 0.170 | 0.310 | 13.57 | 17.38 |
+| noise 2 px | 40 | 0.152 [0.118, 0.175] | 0.340 | 0.169 [0.149, 0.185] | 0.114 | 0.208 | 8.29 | 9.55 |
+| crop | 10 | 0.162 [0.152, 0.193] | 0.376 | 0.159 [0.129, 0.196] | 0.222 | 0.209 | 8.65 | 6.01 |
+| crop | 20 | 0.132 [0.112, 0.147] | 0.365 | 0.076 [0.054, 0.089] | 0.103 | 0.102 | 4.41 | 2.18 |
+| crop | 40 | 0.070 [0.063, 0.082] | 0.388 | 0.028 [0.019, 0.033] | 0.053 | 0.035 | 2.15 | 0.73 |
+
+Paired differences, foambryo 0.8.0 minus the other tool (negative: foambryo better):
+
+| tier | r (px) | tension, vs pycellfit | tension, vs CellFIT equations | pressure, vs CellFIT equations | angle (°), vs CellFIT equations |
+|---|---|---|---|---|---|
+| exact | 10 / 20 / 40 | −0.193 / −0.262 / −0.297 | +0.033 [+0.013, +0.043] / +0.025 [+0.015, +0.043] / +0.026 [+0.017, +0.032] | +0.032 / +0.001 (not resolved) / +0.008 | +2.86 / +1.98 / +1.03 |
+| calibrated 0.75 px | 20 / 40 | −0.215 / −0.278 | −0.002 [−0.009, +0.010] / −0.001 [−0.006, +0.004] (not resolved) | −0.037 [−0.051, −0.022] / −0.026 [−0.040, −0.018] | −0.95 / −0.20 |
+| noise 0.5 px | 20 / 40 | −0.233 / −0.274 | +0.012 [+0.000, +0.034] / +0.013 [+0.008, +0.023] | −0.009 (not resolved) / −0.013 | −0.03 (not resolved) / +0.17 |
+| noise 1 px | 20 / 40 | −0.198 / −0.249 | −0.013 [−0.027, −0.000] / −0.006 [−0.008, −0.002] | −0.046 / −0.044 | −1.28 / −0.37 |
+| noise 2 px | 20 / 40 | −0.099 / −0.175 | −0.071 [−0.087, −0.045] / −0.021 [−0.035, −0.007] | −0.095 / −0.087 | −4.07 / −1.39 |
+| crop | 10 / 20 / 40 | −0.195 / −0.246 / −0.308 | +0.016 [−0.025, +0.056] (not resolved) / +0.039 [+0.030, +0.082] / +0.042 [+0.032, +0.051] | +0.027 (not resolved) / +0.003 (not resolved) / +0.023 | +2.56 / +2.30 / +1.31 |
+
+Every difference against pycellfit favours foambryo, with its interval below zero. Against the CellFIT equations: on exact masks and crops the equations are better, by 0.02 to 0.04 in tension error; at the noise measured on real masks (0.75 px) the tensions are tied and foambryo's pressures and angles are better; from 1 px of noise foambryo is better on every metric. Exact circular arcs are exactly the model the CellFIT equations fit, and they fit each arc to every pixel crack of the mask's boundary with the junctions on the mask's own corners, where foambryo reads the mesher's vertices, about 5 px apart at the default `min_distance` of 4. Under noise that sparser sampling smooths the boundary. A fit to the boundary cracks inside foambryo's reading closes the gap on exact masks (−0.000 [−0.001, +0.000] at r = 40 px) but is worse under 2 px of noise (+0.034 [+0.021, +0.055] in tension error at r = 20 px), so the default keeps the mesh's vertices: foambryo reads the mesh, not the mask. Given the same geometry, foambryo's inference matches or beats the CellFIT equations from r = 20 px; their remaining lead end to end on clean masks comes from their boundary extraction.
+
+### The opt-in global fit (`infer_forces_by_equilibrium_tiling`)
+
+The global fit adjusts one equilibrium tiling of circular arcs (every interface a circle, Young's and Laplace's laws exact; Noll, Streichan and Shraiman, *Phys. Rev. X* 10, 011072, 2020) to the label image's crack points, starting from the arc reading of dw2d's mesh. It was evaluated on a second held-out set, built and sealed before any fit: 307 synthetic equilibrium foams of 4 to 64 cells, with the tiers above, Cellpose segmentations of rendered images of the foams, and an off-equilibrium tier whose membranes are displaced smoothly by 0.75 px. Tension error (statistics as above), global fit against the arc reading, paired:
+
+| tier | r (px) | global fit | arc reading | difference [95 %] |
+|---|---|---|---|---|
+| exact | 10 / 20 / 40 | 0.034 / 0.011 / 0.004 | 0.129 / 0.077 / 0.042 | −0.092 [−0.098, −0.086] / −0.064 [−0.068, −0.060] / −0.038 [−0.043, −0.032] |
+| Cellpose segmentations | 10 / 20 / 40 | 0.111 / 0.043 / 0.024 | 0.227 / 0.119 / 0.074 | −0.111 [−0.117, −0.101] / −0.077 [−0.082, −0.072] / −0.051 [−0.054, −0.047] |
+| calibrated 0.75 px | 20 / 40 | 0.070 / 0.029 | 0.106 / 0.065 | −0.035 [−0.040, −0.026] / −0.035 [−0.038, −0.030] |
+| noise 0.5 px | 20 / 40 | 0.047 / 0.020 | 0.086 / 0.052 | −0.039 [−0.044, −0.033] / −0.031 [−0.035, −0.027] |
+| noise 1 px | 20 / 40 | 0.097 / 0.039 | 0.126 / 0.076 | −0.030 [−0.034, −0.023] / −0.038 [−0.040, −0.034] |
+| noise 2 px | 20 / 40 | 0.207 / 0.082 | 0.214 / 0.142 | −0.005 [−0.014, +0.005] / −0.060 [−0.067, −0.050] |
+| crop | 10 / 20 / 40 | 0.055 / 0.020 / 0.007 | 0.163 / 0.128 / 0.082 | −0.107 [−0.117, −0.102] / −0.104 [−0.115, −0.093] / −0.072 [−0.081, −0.067] |
+| off equilibrium, 0.75 px | 20 / 40 | 0.073 / 0.036 | 0.134 / 0.085 | −0.056 [−0.064, −0.052] / −0.047 [−0.050, −0.044] |
+
+On larger synthetic tissues: 4 096 cells at r = 10 px, 0.077 against 0.156 for the arc reading, every one of the 12 285 interfaces kept, in 74 s and 0.57 GiB (dw2d's mesh, separately, 14 to 20 s in two measurements on a shared machine); 1 024 cells, 0.068 against 0.161 at r = 10 px and 0.023 against 0.248 at r = 20 px. Each large tissue is one draw.
+
+**Why it is opt-in.** It refuses whole images where the arc reading refuses none: 11 of 453 crops (the arc reading: 0), and 4 more images than the arc reading on each of the Cellpose and the off-equilibrium tiers (4-cell tissues). A refusal is an honest `nan` with its reason in the report, not a wrong number. The fit assumes that every interface is a circular arc and that Laplace's law holds, so it is not for confined tissues (an embryo in its eggshell, cells on a substrate); it needs the label image as well as the mesh.
+
+### Ill-conditioned lenses
+
+On 70 synthetic tissues (the tiers and crops above at r = 10, 20 and 40 px, and the calibrated 0.75 px tier) and dw2d's five real masks, at `min_distance` 4 and 3, read with the arc and the chord readings (1 761 meshes, 3 522 readings), the 2D tension system was singular in 2 readings, both a crop at r = 10 px in which a lens (a cell with two sides) has a single junction on the crop's border; without the guard they returned two opposite tensions of about 1e11 to 1e12, without a warning. With the guard (`MAX_LENS_CONDITION = 20`) no reading keeps a component condition number above 1e6 (the largest is 214); the guard fires on 90 readings (2.6 %), almost all crops, where the median tension error moves by −0.001, and the 3 432 other readings are unchanged, bit for bit.
+
+### What these numbers do not show
+
+No real two-dimensional image has ground truth here: the calibrated tier matches real masks in boundary roughness only, measured on seven masks. The foams have 4 to 64 cells, apart from the large tissues of the global fit. The off-equilibrium tier displaces membranes smoothly; it is not a model of non-equilibrium mechanics. None of the tissues is confined: nothing here measures the readings inside an eggshell or on a substrate, where the cells are compressed and only the tensions read near the junctions (`angle_reading="chord"`, with `"fitted_tangent"` as a check) and the deviatoric stress, as the cortical tensions' contribution, hold (see the user guide's page on two-dimensional tissues). Run times against pycellfit were not measured with 0.8.0's defaults.
 
 ## Package renamed `benchmarks` -> `foambryo_benchmarks`
 

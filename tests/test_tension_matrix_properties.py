@@ -355,7 +355,9 @@ def test_volume_derivatives_satisfy_euler_identity(golden_mesh):
     A cell volume is a homogeneous degree-3 function of the vertex coordinates, so Euler's
     homogeneous-function theorem pins the closed-form derivative dictionary against the
     independently computed volumes. This covers the function the dead `faces_material` table
-    lived in, which no golden master reaches (`compute_volume_derivatives` uses autodiff).
+    lived in. (When this test was written `compute_volume_derivatives` used an autodiff route and no golden
+    master reached the closed form; the closed form has since become the only one, and the complex-step check
+    in `test_variational_sparse_assembly.py` covers it too.)
     """
     derivatives = compute_volume_derivative_dict(golden_mesh)
     volumes = compute_volume_cells(golden_mesh)

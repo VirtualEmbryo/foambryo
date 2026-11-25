@@ -14,7 +14,7 @@ The foam is not at mechanical equilibrium: its tensions show the workflow and th
     python large_tissue_solvers.py                # about a minute and 5 GiB; writes ./large-tissue-output/
     python large_tissue_solvers.py --cells 300    # smaller and faster
 
-The script: [`Examples/large_tissue_solvers.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/large_tissue_solvers.py). It needs only foambryo; it generates its own tissue.
+The script: [`Examples/large_tissue_solvers.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/large_tissue_solvers.py). It needs only foambryo; it generates its own tissue.
 
 ## Output of one run
 

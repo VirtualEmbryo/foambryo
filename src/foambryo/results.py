@@ -1,6 +1,6 @@
 """The result files of the `foambryo` command, for every front end that writes or reads them.
 
-`foambryo infer` and `foambryo infer-over-seeds` write CSV tables and a JSON run record, `run.json` (schema 1);
+`foambryo infer` and `foambryo infer-over-seeds` write CSV tables and a JSON run record, `run.json` (schema 2);
 the napari plugin writes the same files. Both use this module, so a table written by either reads back as the
 library's 64-bit numbers, and a run record has the same keys:
 
@@ -152,7 +152,7 @@ DIAGNOSTICS = {"none": False, "basic": True, "spectrum": "spectrum"}
 # what a run record names
 # ---------------------------------------------------------------------------------------------
 def library_versions(extra: Iterable[str] = ()) -> dict[str, str]:
-    """The versions a run record names: Python, foambryo, delaunay-watershed-3d, NumPy, SciPy, then `extra`.
+    """The versions a run record names: Python, foambryo, delaunay-watershed-3d and -2d, iorec, NumPy, SciPy, `extra`.
 
     Args:
         extra: further distributions to name, for example a front end's own (`"napari"`).
@@ -161,7 +161,7 @@ def library_versions(extra: Iterable[str] = ()) -> dict[str, str]:
         dict[str, str]: distribution -> version, `"not installed"` when it is not.
     """
     found = {"python": python_version()}
-    for distribution in ("foambryo", "delaunay-watershed-3d", "numpy", "scipy", *extra):
+    for distribution in ("foambryo", "delaunay-watershed-3d", "delaunay-watershed-2d", "iorec", "numpy", "scipy", *extra):
         try:
             found[distribution] = version(distribution)
         except PackageNotFoundError:
@@ -233,6 +233,7 @@ def infer_units(mean_tension: float, metadata: dict[str, Any] | None) -> dict[st
     Returns:
         dict[str, str]: `{"tension": "relative, gauged to a mean tension of <T>", "pressure": "tension per <unit>"}`,
         the unit being the appendix's `spacing_unit` for physical coordinates, `voxel` for voxel coordinates,
+        `pixel` for a 2-D mesh in pixels (its appendix records `dimension = 2` and no physical frame),
         else `mesh length unit (not recorded in the mesh file)`.
     """
     frame = (metadata or {}).get("coordinate_frame")
@@ -241,6 +242,8 @@ def infer_units(mean_tension: float, metadata: dict[str, Any] | None) -> dict[st
         length = unit
     elif frame == "voxel_index":
         length = "voxel"
+    elif (metadata or {}).get("dimension") == 2:
+        length = "pixel"
     else:
         length = "mesh length unit (not recorded in the mesh file)"
     return {"tension": f"relative, gauged to a mean tension of {mean_tension!r}", "pressure": f"tension per {length}"}
@@ -271,7 +274,7 @@ def infer_run_record(
     outputs: list[str],
     versions: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """The run record of an inference on one mesh, schema 1, as `foambryo infer` writes it.
+    """The run record of an inference on one mesh, schema 2, as `foambryo infer` writes it.
 
     Args:
         command: the command that ran (`"foambryo infer"`, or a front end's name).
@@ -290,16 +293,21 @@ def infer_run_record(
         versions: `library_versions()` by default.
 
     Returns:
-        dict: the record, for `write_run_record`: `schema`, `command`, `arguments`, `date`, `elapsed_seconds`,
-        `versions`, `input`, `options`, `library_call`, `mesh` (counts, the media and the cut cells), `results`
+        dict: the record, for `write_run_record`: `schema`, `dimension` (3, or 2 for a 2-D mesh), `command`,
+        `arguments`, `date`, `elapsed_seconds`, `versions`, `input`, `options`, `library_call`, `mesh` (counts, the
+        media and the cut cells: `triangles` and `crop_faces` in 3D, `segments` and `image_border_vertices` in 2D), `results`
         (counts of the values and of the undetermined ones), `units`, `status`, `error`, `warnings`, `solves`
         (`None` with `diagnostics` `"none"`) and `outputs`.
 
     Raises:
         KeyError: if `options` has no `diagnostics`.
     """
+    from foambryo.planar_mesh import dimension_of
+
+    dimension = dimension_of(mesh)
     return {
         "schema": RUN_RECORD_SCHEMA,
+        "dimension": dimension,
         "command": command,
         "arguments": list(arguments),
         "date": date,
@@ -308,7 +316,7 @@ def infer_run_record(
         "input": input_record,
         "options": options,
         "library_call": outcome.library_call,
-        "mesh": {
+        "mesh": _two_dimensional_mesh_record(mesh) if dimension == 2 else {
             "points": len(mesh.v),
             "triangles": len(mesh.f),
             "materials": int(mesh.n_materials),
@@ -330,6 +338,24 @@ def infer_run_record(
         "warnings": warnings_summary,
         "solves": None if options["diagnostics"] == "none" else [record.scalars() for record in outcome.records],
         "outputs": outputs,
+    }
+
+
+def _two_dimensional_mesh_record(mesh: object) -> dict[str, Any]:
+    """The `mesh` block of a 2-D run record: counts, the media (0), the image-border vertices and the cut cells."""
+    from foambryo.planar_mesh import PlanarMesh
+
+    planar = PlanarMesh.from_any(mesh)
+    border = planar.image_border_vertices
+    return {
+        "points": len(planar.points),
+        "segments": len(planar.segments),
+        "materials": len(planar.materials),
+        "cells": len(planar.cells),
+        "media": [0],
+        "unresolved": [],
+        "image_border_vertices": None if border is None else len(border),
+        "cut_cells": list(planar.cut_cells),
     }
 
 
@@ -374,7 +400,7 @@ def ensemble_run_record(
     outputs: list[str],
     versions: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """The run record of a seed ensemble, schema 1, as `foambryo infer-over-seeds` writes it.
+    """The run record of a seed ensemble, schema 2 (3-D only: `dimension` 3), as `foambryo infer-over-seeds` writes it.
 
     Args:
         command: the command that ran.
@@ -401,6 +427,7 @@ def ensemble_run_record(
     """
     return {
         "schema": RUN_RECORD_SCHEMA,
+        "dimension": 3,
         "command": command,
         "arguments": list(arguments),
         "date": date,

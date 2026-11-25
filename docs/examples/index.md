@@ -1,9 +1,11 @@
 # Examples
 
-Each example is a short script in the repository's [`Examples/`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples) folder. The first six generate their own tissue (foams of Voronoi cells, or a doublet at equilibrium whose answer is known), so they need nothing but foambryo; each writes its outputs in a folder of the current directory.
+Each example is a short script or notebook in the repository's [`Examples/`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples) folder. The two 2D notebooks read real images of *C. elegans* embryos shipped in `Examples/data/` (CC BY-SA 4.0). The next six generate their own tissue (foams of Voronoi cells, or a doublet at equilibrium whose answer is known), so they need nothing but foambryo; each writes its outputs in a folder of the current directory.
 
 | example | what it shows | time |
 |---|---|---|
+| [A free 2D tissue](two-dimensional-tissue.md) | a real 4-cell embryo without eggshell: mask, mesh, tensions (arc reading), pressures, stresses, the global fit | seconds |
+| [Choosing an angle reading inside an eggshell](choosing-an-angle-reading-inside-an-eggshell.md) | an embryo compressed by its shell: the chord (with `fitted_tangent` as a check), why the arc reading, the global fit and the pressures do not apply, the deviatoric stress as the cortical tensions' contribution | seconds |
 | [Anisotropic voxels](anisotropic-voxels.md) | `spacing`, the resampling to cubic voxels, what forgetting the spacing does | under a minute |
 | [Cropped tissue](cropped-tissue.md) | crop faces, cut cells, `nan` pressures, a pressure method that refuses | under a minute |
 | [Seed ensembles](seed-ensembles.md) | eight seeds, the relative spread, the flags, the caveat | under a minute |
@@ -14,6 +16,6 @@ Each example is a short script in the repository's [`Examples/`](https://github.
 | [Folded trijunction observations](refusing-folded-trijunction-wedges.md) | the wedge-refusal policies | seconds |
 | [Junction relocation](default-junction-relocation.md) | what delaunay-watershed-3d's relocation changes, on your own mask | seconds |
 
-The [introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/Example.ipynb) walks through the API on a benchmark aggregate; its data are downloaded separately (see `data/alternative_link_to_data`). The napari plugin has its own examples: a quick start on benchmark case 000, and *From a segmentation plugin to foambryo*.
+The [introductory notebook](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/Example.ipynb) walks through the API on a benchmark aggregate; its data are downloaded separately (see `data/alternative_link_to_data`). The napari plugin has its own examples: a quick start on benchmark case 000, and *From a segmentation plugin to foambryo*.
 
 Times were measured on one machine (Apple M3 Max); the Polyscope examples need a display.

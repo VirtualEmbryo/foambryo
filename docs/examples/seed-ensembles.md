@@ -12,7 +12,7 @@ Fix the seed list in advance, and never choose seeds by their result. `combine="
     pip install "foambryo[viewing]"          # matplotlib, for the figure
     python seed_ensembles.py                 # one to two minutes; writes ./seed-ensembles-output/
 
-The script: [`Examples/seed_ensembles.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/seed_ensembles.py). It needs only foambryo (and matplotlib, from `foambryo[viewing]`, for its figure); it generates its own tissue.
+The script: [`Examples/seed_ensembles.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/seed_ensembles.py). It needs only foambryo (and matplotlib, from `foambryo[viewing]`, for its figure); it generates its own tissue.
 
 ![Left: the doublet's three tensions at each of the 8 seeds (grey) and their ensemble with its seed SD (black); the true tension is 1 (red line). The error is two to three times the spread. Right: the foam's 49 ensemble tensions with their seed SD; in red the interfaces found by fewer than half of the seeds.](figures/seed_ensembles.png)
 

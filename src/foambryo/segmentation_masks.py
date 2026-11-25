@@ -1,6 +1,8 @@
 """Segmentation masks as front ends receive them: read, checked, and described before a reconstruction.
 
-A **mask** is a 3-D array of non-negative integer labels, 0 the medium, axis 0 = z, axis 1 = y, axis 2 = x.
+A **mask** is a 3-D array of non-negative integer labels, 0 the medium, axis 0 = z, axis 1 = y, axis 2 = x, or a 2-D
+one, axis 0 = y (rows), axis 1 = x (columns). Connectivity is by shared faces: 6 neighbours in 3D, 4 in 2D (shared
+pixel sides), the 2-D analogue.
 The `foambryo` command and the napari plugin read and check masks with these functions, so both accept and
 refuse the same arrays with the same messages:
 
@@ -54,18 +56,18 @@ class SegmentationMaskError(ValueError):
     """A mask file that cannot be read, or an array that is not a mask; the message says which and why."""
 
 
-def read_segmentation_mask(path: str | Path) -> tuple[np.ndarray, tuple[float, float, float] | None, str | None]:
+def read_segmentation_mask(path: str | Path) -> tuple[np.ndarray, tuple[float, ...] | None, str | None]:
     """Read a mask file: the label array, and the spacing and unit an `.npz` records (else `None`).
 
     Args:
         path: a `.npy`, `.npz` or `.tif`/`.tiff` file (the suffix in any case). An `.npz` holds the mask as `mask`
-            (or as its only array other than `spacing` and `spacing_unit`), optionally `spacing` (three finite
-            numbers > 0, `(dz, dy, dx)` along axes 0, 1, 2) and `spacing_unit` (one ASCII word of letters, digits
+            (or as its only array other than `spacing` and `spacing_unit`), optionally `spacing` (one finite number
+            > 0 per axis of the mask, `(dz, dy, dx)` or `(dy, dx)`) and `spacing_unit` (one ASCII word of letters, digits
             and `_ . - / ^`). A TIFF's resolution tags are not read, and neither `.npy` nor TIFF records a spacing.
 
     Returns:
-        tuple: the mask (checked by `check_segmentation_mask`, axis 0 = z), the recorded spacing `(dz, dy, dx)`
-        or `None`, the recorded unit or `None`.
+        tuple: the mask (checked by `check_segmentation_mask`, axis 0 = z in 3D, y in 2D), the recorded spacing
+        (one value per axis) or `None`, the recorded unit or `None`.
 
     Raises:
         SegmentationMaskError: on an unreadable file, an unsupported suffix, a missing `tifffile` for a TIFF, or an
@@ -94,10 +96,14 @@ def read_segmentation_mask(path: str | Path) -> tuple[np.ndarray, tuple[float, f
     except Exception as error:  # every reader error is the same failure for the user
         message = f"cannot read {path.name}: {error}"
         raise SegmentationMaskError(message) from error
-    return check_segmentation_mask(mask, name=path.name), spacing, unit
+    mask = check_segmentation_mask(mask, name=path.name)
+    if spacing is not None and len(spacing) != mask.ndim:
+        message = f"{path.name}: 'spacing' has {len(spacing)} values for a {mask.ndim}-D mask (one per axis)"
+        raise SegmentationMaskError(message)
+    return mask, spacing, unit
 
 
-def _read_npz_mask(path: Path) -> tuple[np.ndarray, tuple[float, float, float] | None, str | None]:
+def _read_npz_mask(path: Path) -> tuple[np.ndarray, tuple[float, ...] | None, str | None]:
     with np.load(path, allow_pickle=False) as data:
         names = list(data.keys())
         candidates = [name for name in names if name not in _NPZ_SPACING_KEYS]
@@ -112,10 +118,10 @@ def _read_npz_mask(path: Path) -> tuple[np.ndarray, tuple[float, float, float] |
         spacing = unit = None
         if "spacing" in names:
             values = np.asarray(data["spacing"], dtype=np.float64).ravel()
-            if values.size != 3 or not np.all(np.isfinite(values)) or np.any(values <= 0):
-                message = f"{path.name}: 'spacing' must be three finite numbers > 0, not {values}"
+            if values.size not in (2, 3) or not np.all(np.isfinite(values)) or np.any(values <= 0):
+                message = f"{path.name}: 'spacing' must be two or three finite numbers > 0, not {values}"
                 raise SegmentationMaskError(message)
-            spacing = (float(values[0]), float(values[1]), float(values[2]))
+            spacing = tuple(float(v) for v in values)
         if "spacing_unit" in names:
             unit = str(data["spacing_unit"])
             if not SPACING_UNIT_PATTERN.fullmatch(unit):
@@ -125,7 +131,7 @@ def _read_npz_mask(path: Path) -> tuple[np.ndarray, tuple[float, float, float] |
 
 
 def check_segmentation_mask(mask: Any, *, name: str = "the mask") -> np.ndarray:  # noqa: ANN401 - any array-like
-    """Check that an array is a mask: 3-D, integer labels, none negative.
+    """Check that an array is a mask: 3-D or 2-D, integer labels, none negative.
 
     Args:
         mask: the array (anything `np.asarray` accepts; a lazy array is read into memory).
@@ -135,12 +141,19 @@ def check_segmentation_mask(mask: Any, *, name: str = "the mask") -> np.ndarray:
         np.ndarray: `np.asarray(mask)`, unchanged.
 
     Raises:
-        SegmentationMaskError: if it is not 3-D, its values are not integers (floating-point and boolean values
+        SegmentationMaskError: if it is neither 3-D nor 2-D, or 3-D with an axis of length 1 (never squeezed
+            silently: the message suggests `mask[0]`), its values are not integers (floating-point and boolean values
             are refused), or a label is negative.
     """
     mask = np.asarray(mask)
-    if mask.ndim != 3:
-        message = f"{name} holds a {mask.ndim}-D array; a mask is 3-D"
+    if mask.ndim not in (2, 3):
+        message = f"{name} holds a {mask.ndim}-D array; a mask is 3-D (z, y, x) or 2-D (y, x)"
+        raise SegmentationMaskError(message)
+    if mask.ndim == 3 and 1 in mask.shape:
+        message = (
+            f"{name} holds a 3-D array of shape {mask.shape}, with an axis of length 1; a single plane is meshed as a "
+            "2-D mask: pass mask[0] (or numpy.squeeze(mask)), or the full stack"
+        )
         raise SegmentationMaskError(message)
     if not np.issubdtype(mask.dtype, np.integer):
         message = f"{name} holds {mask.dtype} values; a mask holds integer labels"
@@ -155,8 +168,9 @@ def check_segmentation_mask(mask: Any, *, name: str = "the mask") -> np.ndarray:
 class SegmentationMaskReport:
     """What a reconstruction of a mask will meet, counted; nothing in the mask is changed.
 
-    Connectivity is by shared voxel faces (6 neighbours): two pieces of a label that touch only along an edge or
-    at a corner are two pieces, as the mesh will see them.
+    Connectivity is by shared voxel faces (6 neighbours; in 2D shared pixel sides, 4 neighbours): two pieces of a
+    label that touch only along an edge or at a corner are two pieces, as the mesh will see them. In 2D "voxels" are
+    pixels and the image box is the image's border.
 
     Attributes:
         shape: the mask's shape.
@@ -248,12 +262,12 @@ def segmentation_mask_report(
     is_cell = (labels > 0) & ~np.isin(labels, np.asarray(list(media), dtype=labels.dtype))
     cells, cell_voxels = labels[is_cell], voxels[is_cell]
 
-    faces = [mask[0], mask[-1], mask[:, 0], mask[:, -1], mask[:, :, 0], mask[:, :, -1]]
+    faces = _faces_of_the_box(mask)
     on_box = np.unique(np.concatenate([np.unique(face) for face in faces]))
     cell_set = set(cells.tolist())
     touching = tuple(int(label) for label in on_box if label in cell_set)
 
-    six = ndimage.generate_binary_structure(3, 1)
+    six = ndimage.generate_binary_structure(mask.ndim, 1)  # 6 neighbours in 3D, 4 in 2D
     several: dict[int, int] = {}
     for label, box in _bounding_boxes(mask, cells):
         _, pieces = ndimage.label(mask[box] == label, structure=six)
@@ -264,10 +278,7 @@ def segmentation_mask_report(
     if medium_voxels:
         components, count = ndimage.label(mask == 0, structure=six, output=np.int32)
         if count:
-            on_border = np.unique(np.concatenate([np.unique(face) for face in (
-                components[0], components[-1], components[:, 0], components[:, -1], components[:, :, 0],
-                components[:, :, -1],
-            )]))
+            on_border = np.unique(np.concatenate([np.unique(face) for face in _faces_of_the_box(components)]))
             sizes = np.bincount(components.ravel(), minlength=count + 1)
             inside = np.setdiff1d(np.arange(1, count + 1), on_border)
             enclosed_pieces, enclosed_voxels = int(inside.size), int(sizes[inside].sum())
@@ -327,3 +338,11 @@ def _bounding_boxes(mask: np.ndarray, cells: NDArray[np.int64]) -> list[tuple[in
     compact[mask == 0] = 0
     boxes = ndimage.find_objects(compact)
     return [(int(label), boxes[index]) for index, label in enumerate(cells)]
+
+
+def _faces_of_the_box(array: np.ndarray) -> list[np.ndarray]:
+    """The array's outermost slices along every axis: 6 faces of a 3-D array, the 4 sides of a 2-D one."""
+    faces = []
+    for axis in range(array.ndim):
+        faces += [np.take(array, 0, axis=axis), np.take(array, -1, axis=axis)]
+    return faces

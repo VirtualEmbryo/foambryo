@@ -1,4 +1,4 @@
-"""The sparse-assembly work — sparse variational assembly, closed-form derivatives, autodiff gradient check.
+"""The sparse-assembly work — sparse variational assembly, closed-form derivatives, float64 gradient check.
 
 Three things are pinned here:
 
@@ -9,11 +9,11 @@ Three things are pinned here:
    tensions agree with baseline to rtol=1e-10", read the only way it can be self-consistent:
    *given identical (closed-form) derivatives*, the sparse route equals the dense route.
 
-2. **The closed-form derivatives are correct**, cross-checked against the independent
-   PyTorch autodiff path (`foambryo._autodiff_derivatives`). They agree to ~1e-5 normwise —
-   float32 autodiff is the limiter, not the closed form. A sign or
-   factor error in the closed form would show up as an O(1) disagreement here, not 1e-5.
-   `torch` is optional, so this test skips cleanly when it is absent.
+2. **The closed-form derivatives are correct**, cross-checked in float64 against the complex-step
+   derivatives of each triangle's area and volume term and each trijunction edge's length
+   (`tests/derivative_references.py`), on the three golden-master meshes. They agree to 1e-13
+   normwise or better (measured 3e-16 to 4e-14); a planted sign error or factor of 2 gives 0.3 to 2.
+   This replaced a float32 PyTorch autodiff check, which agreed only to about 1e-5.
 
 3. **The variational tensions moved only by the float32->float64 derivative switch** (~2e-7),
    documented and expected, not by the sparse assembly.
@@ -26,6 +26,7 @@ from foambryo import TensionComputationMethod, dcel_mesh_from_file
 from foambryo.geometry import (
     compute_area_derivative_dict,
     compute_area_derivative_sparse,
+    compute_length_derivative_dict,
     compute_volume_derivative_dict,
     compute_volume_derivative_sparse,
 )
@@ -34,7 +35,13 @@ from foambryo.tension_inference import (
     _build_matrix_discrete_sparse,
     infer_tensions_and_residuals,
 )
-from tests.conftest import require_substitute_mesh
+from tests.conftest import GOLDEN_MASTER_CASES, golden_master_mesh, require_substitute_mesh
+from tests.derivative_references import (
+    reference_area_derivatives,
+    reference_length_derivatives,
+    reference_volume_derivatives,
+    relative_normwise_disagreement,
+)
 
 
 @pytest.fixture(scope="module")
@@ -145,28 +152,36 @@ def test_the_default_route_differs_from_route_p_by_the_measured_shift(golden_mes
     assert 1e-6 < shift.max() < 1e-2, shift.max()
 
 
-def test_closed_form_derivatives_match_autodiff_gradient_check(golden_mesh):
-    """Autodiff (float32) cross-checks the closed-form (float64) derivatives.
+CLOSED_FORMS = {
+    "area": (compute_area_derivative_dict, reference_area_derivatives),
+    "volume": (compute_volume_derivative_dict, reference_volume_derivatives),
+    "length": (compute_length_derivative_dict, reference_length_derivatives),
+}
 
-    Agreement is limited to ~1e-5 normwise by float32 autodiff, not by the closed form. A wrong
-    closed-form derivation would disagree at O(1); 1e-4 is a comfortable guard against that while
-    tolerating the float32 noise.
-    """
-    torch = pytest.importorskip("torch")  # noqa: F841 — optional autodiff dependency
-    from foambryo._autodiff_derivatives import (
-        compute_area_derivative_autodiff,
-        compute_volume_derivative_autodiff_dict,
+
+@pytest.fixture(scope="module", params=GOLDEN_MASTER_CASES)
+def committed_golden_mesh(request, tmp_path_factory):
+    """Each committed golden-master mesh (000, 002, 011), so the check runs without the benchmarking dataset."""
+    return dcel_mesh_from_file(str(golden_master_mesh(request.param, tmp_path_factory.mktemp(request.param))))
+
+
+@pytest.mark.parametrize("quantity", sorted(CLOSED_FORMS))
+def test_closed_form_derivatives_match_the_complex_step(committed_golden_mesh, quantity):
+    """The float64 closed form agrees with the complex step to 1e-13 normwise (measured 3e-16 to 4e-14)."""
+    closed_form, reference = CLOSED_FORMS[quantity]
+    disagreement = relative_normwise_disagreement(
+        closed_form(committed_golden_mesh), reference(committed_golden_mesh, "complex_step"),
     )
+    assert disagreement <= 1e-13, disagreement
 
-    area_cf = compute_area_derivative_dict(golden_mesh)
-    area_ad = compute_area_derivative_autodiff(golden_mesh)
-    volume_cf = compute_volume_derivative_dict(golden_mesh)
-    volume_ad = compute_volume_derivative_autodiff_dict(golden_mesh)
 
-    a_cf = np.concatenate([area_cf[k].ravel() for k in sorted(area_cf)])
-    a_ad = np.concatenate([area_ad[k].ravel() for k in sorted(area_cf)])
-    v_cf = np.concatenate([volume_cf[k].ravel() for k in sorted(volume_cf)])
-    v_ad = np.concatenate([volume_ad[k].ravel() for k in sorted(volume_cf)])
-
-    assert np.linalg.norm(a_ad - a_cf) / np.linalg.norm(a_cf) < 1e-4
-    assert np.linalg.norm(v_ad - v_cf) / np.linalg.norm(v_cf) < 1e-4
+@pytest.mark.parametrize("quantity", sorted(CLOSED_FORMS))
+@pytest.mark.parametrize("planted", ["sign flipped", "factor of 2"])
+def test_the_gradient_check_catches_a_planted_error(committed_golden_mesh, quantity, planted):
+    """Negative control: one key's derivative negated or doubled is far outside the bound (measured 0.3 to 2)."""
+    closed_form, reference = CLOSED_FORMS[quantity]
+    derivatives = closed_form(committed_golden_mesh)
+    largest = max(derivatives, key=lambda key: np.linalg.norm(derivatives[key]))
+    factor = -1.0 if planted == "sign flipped" else 2.0
+    wrong = {**derivatives, largest: factor * derivatives[largest]}
+    assert relative_normwise_disagreement(wrong, reference(committed_golden_mesh, "complex_step")) > 1e-3

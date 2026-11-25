@@ -15,7 +15,7 @@ If the tissue really ends on a face of the image (for example on a coverslip), d
     pip install "foambryo[viewing]"          # matplotlib, for the figure
     python cropped_tissue.py                 # under a minute; writes ./cropped-tissue-output/
 
-The script: [`Examples/cropped_tissue.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/cropped_tissue.py). It needs only foambryo (and matplotlib, from `foambryo[viewing]`, for its figure); it generates its own tissue.
+The script: [`Examples/cropped_tissue.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/cropped_tissue.py). It needs only foambryo (and matplotlib, from `foambryo[viewing]`, for its figure); it generates its own tissue.
 
 ![The middle z section of the generated foam: the image box starts at the black line; the cut cells, whose pressures are nan, in red.](figures/cut_cells_in_a_section.png)
 
@@ -23,12 +23,13 @@ The script: [`Examples/cropped_tissue.py`](https://github.com/VirtualEmbryo/foam
 
 ## Output of one run
 
-On macOS 14 (Apple M3 Max), Python 3.12; times vary with the machine.
+On macOS 27 (Apple silicon), Python 3.13, with the code of foambryo 0.8.0 and delaunay-watershed 0.8.0 (thin margins of medium padded by default); times vary with the machine.
 
 ```text
 the cut mask: shape (96, 96, 64), 12 cells
-222 crop faces of 1402 triangles; cut cells (2, 3, 4, 5, 6, 7, 9); interfaces made only of crop faces: ()
+226 crop faces of 1348 triangles; cut cells (2, 3, 4, 5, 6, 7, 9); interfaces made only of crop faces: ()
 47 tensions; any crop interface among them: False
+CutCellPressureWarning: the pressure of 7 cut cell(s) is not reported and is nan: 2, 3, 4, 5, 6, 7, 9. These cells touch the crop faces of the m
 pressures: 5 cells reported, 7 nan (the cut cells)
   Variational      has a formulation for crop faces: True
   Laplace          has a formulation for crop faces: False

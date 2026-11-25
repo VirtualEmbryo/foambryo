@@ -74,7 +74,7 @@ import numpy as np
 import polyscope.imgui as psim
 from matplotlib import cm
 
-from foambryo._cell_stress import cell_mean_stress_tensors, split_principal_stresses
+from foambryo._cell_stress import cell_mean_stress_tensors, check_stress_part, split_principal_stresses
 from foambryo._colour_scales import (
     BACKGROUND_COLOURS,
     CROP_FACE_COLOR,
@@ -101,7 +101,10 @@ from foambryo._polyscope_recording import Recorder, recording
 from foambryo._polyscope_recording import polyscope_target as ps
 from foambryo._viewer_defaults import DEFAULT_SCATTER_COEFF
 from foambryo._viewer_figures import (
+    COMPRESSIVE_AXIS_COLOR,
+    DEVIATORIC_STRESS_TITLE,
     SEED_SPREAD_TITLE,
+    TENSILE_AXIS_COLOR,
     TENSION_TITLE,
     ColourScale,
     EnsembleOnMesh,
@@ -112,6 +115,7 @@ from foambryo._viewer_figures import (
     ensemble_on_mesh,
     format_length,
     next_free_path,
+    principal_stress_colour_scale,
     project_to_pixels,
     quantity_colour_scale,
     round_scale_bar_length,
@@ -137,7 +141,7 @@ from foambryo.plotting_utilities import (
     view_tensions_on_mesh,
     view_vertex_values_on_embryo,
 )
-from foambryo.pressure_inference import PressureComputationMethod, infer_pressures
+from foambryo.pressure_inference import PressureComputationMethod, default_pressure_method, infer_pressures
 from foambryo.tension_inference import (
     TensionComputationMethod,
     compute_residual_junctions_dict,
@@ -180,8 +184,13 @@ _FRAME = "Frame (x, y, z)"
 _FRAME_AXES = np.eye(3)[list(DRAWN_COLUMNS)]
 _FRAME_LABELS = ("x", "y", "z")
 _FRAME_COLOR = (0.15, 0.15, 0.15)
+#: The point cloud of the stress glyphs, by the part of the stress drawn (`plot_force_inference`'s `stress`).
+_STRESS_GLYPH_NAMES = {
+    "full": "Stress tensors principal directions",
+    "deviatoric": "Deviatoric stress principal directions",
+}
 #: The point clouds drawn black on Polyscope's white background: the graph's nodes and the stress tensors' centres.
-_BLACK_POINT_CLOUDS = ("Graph Nodes", "Stress tensors principal directions")
+_BLACK_POINT_CLOUDS = ("Graph Nodes", *_STRESS_GLYPH_NAMES.values())
 #: The window's background: Polyscope's (white) until one is chosen in a panel. Polyscope keeps one background for
 #: the process, so this does too; the drawing reads it on the worker thread, where Polyscope cannot be asked.
 _BACKGROUND = {"rgb": (1.0, 1.0, 1.0), "custom": False}
@@ -271,7 +280,7 @@ def plot_force_inference(
     mean_tension: float = _INFER_FORCES_DEFAULTS["mean_tension"],
     base_pressure: float = _INFER_FORCES_DEFAULTS["base_pressure"],
     mode_tension: TensionComputationMethod = _INFER_FORCES_DEFAULTS["mode_tension"],
-    mode_pressure: PressureComputationMethod = _INFER_FORCES_DEFAULTS["mode_pressure"],
+    mode_pressure: PressureComputationMethod | None = _INFER_FORCES_DEFAULTS["mode_pressure"],
     solver: str = _INFER_FORCES_DEFAULTS["solver"],
     length_unit: str | None = None,
     scale_bar: bool | float = True,
@@ -279,6 +288,9 @@ def plot_force_inference(
     show: bool = True,
     values_from: str | None = None,
     mesh_file: str | None = None,
+    angle_reading: str | None = None,
+    image: "np.ndarray | None" = None,
+    stress: str = "full",
 ) -> None:
     """Show a mesh's tensions and pressures in Polyscope's window, with their colour bars; what `foambryo view` opens.
 
@@ -287,6 +299,11 @@ def plot_force_inference(
     its interface's green outline, without fill, and an undetermined pressure fills its cell green; crop faces
     are see-through glass. The graph of the tissue and each cell's principal stresses are drawn too. The module
     docstring lists what the panel offers.
+
+    A 2-D mesh (`foambryo.PlanarMesh`, delaunay-watershed-2d's `DCEL_Data`) opens the 2-D window
+    (`foambryo._planar_viewer`): its interfaces as curves coloured by tension, its cells as polygons coloured by
+    pressure, its junctions as points, each cell's principal stresses, rows downward as in napari and matplotlib, with
+    `image` under it when given.
 
     Needs Polyscope (`pip install "foambryo[viewing]"`) and a display, also with `show=False` (Polyscope renders
     the figure). Returns when the window is closed.
@@ -303,7 +320,8 @@ def plot_force_inference(
             range reaches the farther of the `alpha` and `1 - alpha` quantiles from the mean, the pressure range
             runs from 0 to the `1 - alpha` quantile. Defaults to 0.05.
         scalar_quantities (bool, optional): also add the sphere-fit residual, the area and volume derivatives
-            and the curvatures as surface quantities (`jet`). Defaults to False.
+            and the curvatures as surface quantities (`jet`); for a 2-D mesh, the interfaces' curvatures (arc and
+            local) as quantities of the curves. Defaults to False.
         scattered (bool, optional): open the window exploded: each cell moved away from the tissue's centre by
             `scatter_coeff` times (its centroid - the tissue's centroid). The panel changes it. Defaults to False.
         scatter_coeff (float, optional): the explode coefficient. Defaults to 0.2 (`DEFAULT_SCATTER_COEFF`).
@@ -311,7 +329,7 @@ def plot_force_inference(
         base_pressure (float, optional): the pressure of the medium, label 0. Defaults to 0. Keyword-only.
         mode_tension (TensionComputationMethod, optional): the tension method. Defaults to `YoungDupre`.
             Keyword-only.
-        mode_pressure (PressureComputationMethod, optional): the pressure method. Defaults to `Variational`.
+        mode_pressure (PressureComputationMethod, optional): the pressure method. Defaults to None, `infer_forces`' default: `Variational` for a 3-D mesh.
             Keyword-only.
         solver (str, optional): `"auto"`, `"dense"` or `"sparse"`. Defaults to `"auto"`. Keyword-only.
             These five are `infer_forces`' options, with its defaults, passed to it unchanged when the viewer
@@ -330,20 +348,62 @@ def plot_force_inference(
             figure. Defaults to None. Keyword-only.
         mesh_file (str | None, optional): the mesh's file name, for the `foambryo infer` command line the panel
             shows for values inferred in the window. Defaults to None (no command line). Keyword-only.
+        angle_reading (str | None, optional): `infer_forces`' junction-angle reading, used when the viewer infers.
+            Defaults to None, the dimension's default (`"chord"` in 3D, `"arc"` in 2D). Keyword-only.
+        image (np.ndarray | None, optional): a 2-D mesh only: an image drawn under the mesh, on the mesh's pixel grid
+            (`(rows, columns)` grey, or `(rows, columns, 3)` RGB): the image the mask was segmented from, or the
+            mask's labels. Defaults to None. Keyword-only.
+        stress (str, optional): the cells' stress glyphs: `"full"`, each cell's mean stress tensor (the default), or
+            `"deviatoric"`, its deviatoric part `sigma - (tr sigma / d) I`, drawn as "Deviatoric stress principal
+            directions". The deviatoric part depends on the tensions and the geometry only, never on the pressures:
+            it shows each cell's anisotropy and principal directions, and holds for a confined embryo (an eggshell,
+            a substrate) when the tensions are read near the junctions (in 2D, `angle_reading="fitted_tangent"`),
+            where pressures, hence the full stress, are not measurements; it leaves out the isotropic part, the
+            mean normal stress (`foambryo._cell_stress`). A cell with an undetermined pressure gets a deviatoric
+            glyph, not a full one. Keyword-only.
 
     Raises:
         ValueError: when the viewer infers and the library refuses the tensions or the pressures (the library's
             message; `UndeterminedTensionError`, a `ValueError`, when the given tensions are not all finite on a
-            mesh without crop faces).
+            mesh without crop faces); for an `image` with a 3-D mesh, or one whose shape is not the 2-D mesh's
+            image's; for a `stress` other than `"full"` or `"deviatoric"`.
     """
-    options = _InferenceOptions(mode_tension, mode_pressure, mean_tension, base_pressure, solver)
+    check_stress_part(stress)
+    dimension = _dimension_and_image(mesh, image)
+    options = _InferenceOptions(mode_tension, mode_pressure, mean_tension, base_pressure, solver,
+                                angle_reading=angle_reading, dimension=dimension)
     tensions, pressures, values_from = options.infer(mesh, "force", dict_tensions, dict_pressure, values_from)
-    window = _ForceWindow(
+    window = _window_class(dimension)(
         mesh, "force", tensions, pressures, options, values_from,
         alpha=alpha, scalar_quantities=scalar_quantities, scattered=scattered, scatter_coeff=scatter_coeff,
-        length_unit=length_unit, scale_bar=scale_bar, mesh_name=mesh_file,
+        length_unit=length_unit, scale_bar=scale_bar, mesh_name=mesh_file, **_image_argument(dimension, image),
+        stress=stress,
     )
     window.open(save_figure=save_figure, show=show)
+
+
+def _dimension_and_image(mesh: object, image: "np.ndarray | None") -> int:
+    """The mesh's dimension (`foambryo.dimension_of`); refuses an image under a 3-D mesh."""
+    from foambryo.planar_mesh import dimension_of
+
+    dimension = dimension_of(mesh)
+    if dimension == 3 and image is not None:
+        message = "image= is drawn under a 2-D mesh only: a 3-D mesh is drawn over its mask in view_mask"
+        raise ValueError(message)
+    return dimension
+
+
+def _window_class(dimension: int) -> type:
+    """The 3-D window, or the 2-D one (`foambryo._planar_viewer`)."""
+    if dimension == 2:
+        from foambryo._planar_viewer import planar_window_class
+
+        return planar_window_class()
+    return _ForceWindow
+
+
+def _image_argument(dimension: int, image: "np.ndarray | None") -> dict:
+    return {"image": image} if dimension == 2 else {}
 
 
 def plot_pressure_inference(
@@ -356,13 +416,15 @@ def plot_pressure_inference(
     mean_tension: float = _INFER_FORCES_DEFAULTS["mean_tension"],
     base_pressure: float = _INFER_FORCES_DEFAULTS["base_pressure"],
     mode_tension: TensionComputationMethod = _INFER_FORCES_DEFAULTS["mode_tension"],
-    mode_pressure: PressureComputationMethod = _INFER_FORCES_DEFAULTS["mode_pressure"],
+    mode_pressure: PressureComputationMethod | None = _INFER_FORCES_DEFAULTS["mode_pressure"],
     solver: str = _INFER_FORCES_DEFAULTS["solver"],
     length_unit: str | None = None,
     scale_bar: bool | float = True,
     save_figure: "str | os.PathLike[str] | None" = None,
     show: bool = True,
     values_from: str | None = None,
+    angle_reading: str | None = None,
+    image: "np.ndarray | None" = None,
 ) -> None:
     """Show a mesh's cell pressures in Polyscope's window, with their colour bar.
 
@@ -387,7 +449,7 @@ def plot_pressure_inference(
         base_pressure (float, optional): the pressure of the medium, label 0. Defaults to 0. Keyword-only.
         mode_tension (TensionComputationMethod, optional): the tension method. Defaults to `YoungDupre`.
             Keyword-only.
-        mode_pressure (PressureComputationMethod, optional): the pressure method. Defaults to `Variational`.
+        mode_pressure (PressureComputationMethod, optional): the pressure method. Defaults to None, `infer_forces`' default: `Variational` for a 3-D mesh.
             Keyword-only.
         solver (str, optional): `"auto"`, `"dense"` or `"sparse"`. Defaults to `"auto"`. Keyword-only.
             These five are `infer_forces`' options, with its defaults, passed to it unchanged when the viewer
@@ -403,17 +465,24 @@ def plot_pressure_inference(
             True. Keyword-only.
         values_from (str | None, optional): where given values come from, shown in the panel and under a saved
             figure. Defaults to None. Keyword-only.
+        angle_reading (str | None, optional): as for `plot_force_inference`. Keyword-only.
+        image (np.ndarray | None, optional): as for `plot_force_inference` (a 2-D mesh only). Keyword-only.
+
+    A 2-D mesh opens the 2-D window, its cells filled with their pressures (see `plot_force_inference`).
 
     Raises:
         ValueError: when the viewer infers and the library refuses the tensions or the pressures (the library's
-            message).
+            message); for an `image` as `plot_force_inference` says.
     """
+    dimension = _dimension_and_image(mesh, image)
     ps.remove_all_structures()
-    options = _InferenceOptions(mode_tension, mode_pressure, mean_tension, base_pressure, solver)
+    options = _InferenceOptions(mode_tension, mode_pressure, mean_tension, base_pressure, solver,
+                                angle_reading=angle_reading, dimension=dimension)
     tensions, pressures, values_from = options.infer(mesh, "pressure", None, dict_pressure, values_from)
-    window = _ForceWindow(
+    window = _window_class(dimension)(
         mesh, "pressure", tensions, pressures, options, values_from,
         alpha=alpha, scattered=scattered, scatter_coeff=scatter_coeff, length_unit=length_unit, scale_bar=scale_bar,
+        **_image_argument(dimension, image),
     )
     window.open(save_figure=save_figure, show=show)
 
@@ -436,6 +505,8 @@ def plot_tension_inference(
     show: bool = True,
     values_from: str | None = None,
     mesh_file: str | None = None,
+    angle_reading: str | None = None,
+    image: "np.ndarray | None" = None,
 ) -> None:
     """Show a mesh's surface tensions in Polyscope's window, with their colour bar.
 
@@ -455,7 +526,8 @@ def plot_tension_inference(
         alpha (float, optional): the quantile at each end of the colour scale, in [0, 0.5): the range reaches the
             farther of the `alpha` and `1 - alpha` quantiles from the mean. Defaults to 0.05.
         scalar_quantities (bool, optional): also add the sphere-fit residual, the area and volume derivatives
-            and the curvatures as surface quantities (`jet`). Defaults to False.
+            and the curvatures as surface quantities (`jet`); for a 2-D mesh, the interfaces' curvatures (arc and
+            local) as quantities of the curves. Defaults to False.
         scattered (bool, optional): open the window exploded: each cell moved away from the tissue's centre by
             `scatter_coeff` times (its centroid - the tissue's centroid). Defaults to False.
         scatter_coeff (float, optional): the explode coefficient. Defaults to 0.2 (`DEFAULT_SCATTER_COEFF`).
@@ -485,14 +557,24 @@ def plot_tension_inference(
             figure. Defaults to None. Keyword-only.
         mesh_file (str | None, optional): the mesh's file name, for the `foambryo infer` command line the panel
             shows for values inferred in the window. Defaults to None (no command line). Keyword-only.
+        angle_reading (str | None, optional): as for `plot_force_inference`. Keyword-only.
+        image (np.ndarray | None, optional): as for `plot_force_inference` (a 2-D mesh only). Keyword-only.
+
+    A 2-D mesh opens the 2-D window, its interfaces as curves coloured by tension (see `plot_force_inference`).
 
     Raises:
         ValueError: if both `dict_tensions` and `seed_ensemble` are given, or when the viewer infers and the
-            library refuses the tensions (the library's message).
+            library refuses the tensions (the library's message); for a seed ensemble on a 2-D mesh (there is no 2-D
+            ensemble), or an `image` as `plot_force_inference` says.
     """
+    dimension = _dimension_and_image(mesh, image)
+    if dimension == 2 and seed_ensemble is not None:
+        message = "seed_ensemble: there is no 2-D seed ensemble (delaunay-watershed-2d has no dither seed)"
+        raise ValueError(message)
     ps.remove_all_structures()
     options = _InferenceOptions(mode_tension, _INFER_FORCES_DEFAULTS["mode_pressure"], mean_tension,
-                                _INFER_FORCES_DEFAULTS["base_pressure"], solver, pressures=False)
+                                _INFER_FORCES_DEFAULTS["base_pressure"], solver, pressures=False,
+                                angle_reading=angle_reading, dimension=dimension)
     ensemble = None
     if seed_ensemble is not None:
         if dict_tensions is not None:
@@ -503,10 +585,11 @@ def plot_tension_inference(
         dict_tensions = ensemble.tensions
         values_from = values_from or "tensions combined over seeds (infer_tensions_over_seeds)"
     tensions, _, values_from = options.infer(mesh, "tension", dict_tensions, None, values_from)
-    window = _ForceWindow(
+    window = _window_class(dimension)(
         mesh, "tension", tensions, None, options, values_from,
         alpha=alpha, scalar_quantities=scalar_quantities, scattered=scattered, scatter_coeff=scatter_coeff,
         length_unit=length_unit, scale_bar=scale_bar, ensemble=ensemble, mesh_name=mesh_file,
+        **_image_argument(dimension, image),
     )
     window.open(save_figure=save_figure, show=show)
 
@@ -520,15 +603,22 @@ class _InferenceOptions:
     def __init__(
         self,
         mode_tension: TensionComputationMethod,
-        mode_pressure: PressureComputationMethod,
+        mode_pressure: PressureComputationMethod | None,
         mean_tension: float,
         base_pressure: float,
         solver: str,
         pressures: bool = True,
         diagnostics: str = "none",
+        *,
+        angle_reading: str | None = None,
+        dimension: int = 3,
     ) -> None:
         self.mode_tension = mode_tension
-        self.mode_pressure = mode_pressure
+        # None is `infer_forces`' default, per dimension: Variational for a 3-D mesh, Laplace for a 2-D one.
+        self.mode_pressure = default_pressure_method(dimension) if mode_pressure is None else mode_pressure
+        #: The junction-angle reading passed to the library; `None` is the dimension's default, and no call names it.
+        self.angle_reading = angle_reading
+        self.dimension = dimension
         self.mean_tension = mean_tension
         self.base_pressure = base_pressure
         self.solver = solver
@@ -544,6 +634,8 @@ class _InferenceOptions:
         options = {"tension_method": option_name(self.mode_tension), "pressure_method": option_name(self.mode_pressure),
                    "mean_tension": self.mean_tension, "base_pressure": self.base_pressure, "solver": self.solver,
                    "diagnostics": self.diagnostics}
+        if self.angle_reading is not None:  # as `foambryo infer` records it: only when given
+            options["angle_reading"] = self.angle_reading
         if not with_pressures:
             options.update(pressure_method=None, base_pressure=None, no_pressures=True)
         return options
@@ -564,7 +656,8 @@ class _InferenceOptions:
                 warnings.simplefilter("ignore", category)
             outcome = infer_tensions_then_pressures(
                 mesh, self.mean_tension, self.base_pressure, self.mode_tension, self.mode_pressure, solver=self.solver,
-                diagnostics=DIAGNOSTICS[self.diagnostics], with_pressures=with_pressures)
+                diagnostics=DIAGNOSTICS[self.diagnostics], with_pressures=with_pressures,
+                **({} if self.angle_reading is None else {"angle_reading": self.angle_reading}))
         counts: dict[tuple[str, str], int] = {}
         for warning in caught:
             warnings.showwarning(warning.message, warning.category, warning.filename, warning.lineno)
@@ -583,13 +676,17 @@ class _InferenceOptions:
 
         pressure = (["--pressure-method", option_name(self.mode_pressure), "--base-pressure", repr(self.base_pressure)]
                     if self.pressures else ["--no-pressures"])
-        return ["--tension-method", option_name(self.mode_tension), *pressure, "--mean-tension",
+        reading = [] if self.angle_reading is None else ["--angle-reading", self.angle_reading]
+        return ["--tension-method", option_name(self.mode_tension), *reading, *pressure, "--mean-tension",
                 repr(self.mean_tension), "--solver", self.solver]
+
+    def _reading_text(self) -> str:
+        return "" if self.angle_reading is None else f", angle_reading={self.angle_reading!r}"
 
     def tension_call(self) -> str:
         """The tension call, as text."""
         return (f"infer_tensions(mesh, mean_tension={self.mean_tension!r}, mode=TensionComputationMethod."
-                f"{self.mode_tension.name}, solver={self.solver!r})")
+                f"{self.mode_tension.name}, solver={self.solver!r}{self._reading_text()})")
 
     def pressure_call(self) -> str:
         """The pressure call, as text."""
@@ -600,7 +697,8 @@ class _InferenceOptions:
         """The `infer_forces` call, as text."""
         return (f"infer_forces(mesh, mean_tension={self.mean_tension!r}, base_pressure={self.base_pressure!r}, "
                 f"mode_tension=TensionComputationMethod.{self.mode_tension.name}, "
-                f"mode_pressure=PressureComputationMethod.{self.mode_pressure.name}, solver={self.solver!r})")
+                f"mode_pressure=PressureComputationMethod.{self.mode_pressure.name}, solver={self.solver!r}"
+                f"{self._reading_text()})")
 
     def infer(
         self,
@@ -622,13 +720,16 @@ class _InferenceOptions:
         """
         if kind == "tension":
             if dict_tensions is None:
-                return self._infer(mesh, with_pressures=False).tensions, None, f"inferred here: {self.tension_call()}"
+                outcome = self._infer(mesh, with_pressures=False)
+                call = outcome.library_call if self.dimension == 2 else self.tension_call()
+                return outcome.tensions, None, f"inferred here: {call}"
             return dict(dict_tensions), None, values_from or "tensions given to the viewer"
         if kind == "pressure" and dict_pressures is not None:
             return None, dict(dict_pressures), values_from or "pressures given to the viewer"
         if dict_tensions is None:
             outcome = self._infer(mesh, with_pressures=True)
-            return outcome.tensions, outcome.pressures, f"inferred here: {self.forces_call()}"
+            call = outcome.library_call if self.dimension == 2 else self.forces_call()
+            return outcome.tensions, outcome.pressures, f"inferred here: {call}"
         if dict_pressures is None:
             pressures = infer_pressures(mesh, dict_tensions, mode=self.mode_pressure, base_pressure=self.base_pressure,
                                         solver=self.solver)
@@ -673,9 +774,15 @@ class _ForceWindow:
         mesh_name: str | None = None,
         inference: WindowInference | None = None,
         rec_bytes: bytes | None = None,
+        stress: str = "full",
     ) -> None:
+        check_stress_part(stress)
         self.mesh = mesh
         self.kind = kind
+        #: The stress glyphs of the force view: `"full"` or `"deviatoric"` (`plot_force_inference`).
+        self.stress = stress
+        #: The principal values of the stress glyphs last drawn (the deviatoric stress's bar), or `None`.
+        self._stress_principal_values: list[float] | None = None
         self.base_kind = kind  # a force viewer drawn with the tensions only can draw its pressures again
         self.mesh_name = mesh_name
         #: Called at the end of every `draw`: a host window adds its own structures (the mask) there.
@@ -735,9 +842,21 @@ class _ForceWindow:
     def prepare(self, scattered: bool, coeff: float) -> tuple[Recorder, ViewerColourScales]:
         """Compute the scene for this explode state and record Polyscope's calls; any thread, no Polyscope call."""
         recorder = Recorder()
+        self._stress_principal_values = None
         with recording(recorder):
             self._draw_scene(scattered, coeff)
         return recorder, self._colour_scales(scattered)
+
+    @property
+    def _pressures_drawn(self) -> dict[int, float] | None:
+        """The pressures the window colours: none in a force view drawn with the deviatoric stress.
+
+        The deviatoric stress is drawn where pressures are not measurements (a confined tissue): the cells are then
+        not coloured by pressure, and the figure has the stress's bar, no pressure bar.
+        """
+        if self.kind == "force" and self.stress == "deviatoric":
+            return None
+        return self.pressures
 
     def install(self, recorder: Recorder, scales: ViewerColourScales) -> None:
         """Replace this window's structures by a prepared scene's, on the window's thread; then what is shown."""
@@ -993,15 +1112,17 @@ class _ForceWindow:
 
     def _draw_forces(self, nx_graph: nx.Graph, scattered: bool, dict_sphere_fit_residual: dict | None) -> None:
         mesh, alpha = self.mesh, self.alpha
+        pressures = self._pressures_drawn
         ps_mesh = view_tensions_on_mesh(mesh, self.tensions, alpha=alpha, scattered=scattered, name_values=_TENSIONS)
-        ps_mesh = _view_pressures_on_mesh(
-            mesh,
-            self.pressures,
-            ps_mesh=ps_mesh,
-            alpha=alpha,
-            scattered=scattered,
-        )
-        _plot_stress_tensor(
+        if pressures is not None:
+            ps_mesh = _view_pressures_on_mesh(
+                mesh,
+                pressures,
+                ps_mesh=ps_mesh,
+                alpha=alpha,
+                scattered=scattered,
+            )
+        drawn = _plot_stress_tensor(
             mesh,
             nx_graph,
             self.tensions,
@@ -1010,7 +1131,9 @@ class _ForceWindow:
             clean_after=False,
             show=False,
             lumen_materials=list(getattr(mesh, "media", (0,))),
+            stress=self.stress,
         )
+        self._stress_principal_values = [float(v) for tensor in drawn.values() for v in np.linalg.eigvalsh(tensor)]
         _display_embryo_graph_forces(
             nx_graph,
             alpha=alpha,
@@ -1018,8 +1141,9 @@ class _ForceWindow:
             clean_after=False,
             show=False,
             base_pressure=0,
-            plot_pressures=True,
-            pressure_upper=surface_pressure_colour_upper(mesh, self.pressures, alpha, scattered=scattered),
+            plot_pressures=pressures is not None,
+            pressure_upper=(None if pressures is None
+                            else surface_pressure_colour_upper(mesh, pressures, alpha, scattered=scattered)),
         )
         if self.scalar_quantities:
             _view_scalar_quantities(mesh, ps_mesh, dict_sphere_fit_residual, alpha, scattered)
@@ -1086,8 +1210,12 @@ class _ForceWindow:
     def _colour_scales(self, scattered: bool | None = None) -> ViewerColourScales:
         scattered = self.scattered if scattered is None else scattered
         tensions = self.tensions if self.kind != "pressure" else None
-        pressures = self.pressures if self.kind != "tension" else None
+        pressures = self._pressures_drawn if self.kind != "tension" else None
         scales = viewer_colour_scales(self.mesh, tensions, pressures, self.alpha, scattered=scattered)
+        if self.kind == "force" and self.stress == "deviatoric" and self._stress_principal_values is not None:
+            stress = principal_stress_colour_scale(DEVIATORIC_STRESS_TITLE, self._stress_principal_values)
+            if stress is not None:
+                scales = replace(scales, scales=(*scales.scales, stress))
         if self.ensemble is not None:
             spread = quantity_colour_scale(SEED_SPREAD_TITLE, self.ensemble.tension_seed_sd, self.alpha)
             if spread is not None:
@@ -1151,7 +1279,7 @@ class _ForceWindow:
         """
         titles = [scale.title for scale in self.scales.scales]
         if not self.scattered and self.ensemble is None and self.kind in ("force", "tension") and (
-                titles and titles[0] == TENSION_TITLE):
+                titles and titles[0] == TENSION_TITLE) and self._pressures_drawn is self.pressures:
             save_colour_bars(self.mesh, self.tensions, self.pressures, path, self.alpha)
             return Path(path)
         return compose_figure(None, self.scales, path, caption=self.caption())
@@ -1248,7 +1376,7 @@ class _ForceWindow:
 
     def _panel_showing(self) -> None:
         """With tensions and pressures: which one colours the surface (the tensions first)."""
-        if self.tensions is None or self.pressures is None or self.kind != "force":
+        if self.tensions is None or self._pressures_drawn is None or self.kind != "force":
             return
         psim.TextUnformatted("colour the surface by")
         for value, name in (("tension", "tensions"), ("pressure", "pressures")):
@@ -1429,10 +1557,14 @@ class _MaskWindow:
         scatter_coeff: float = DEFAULT_SCATTER_COEFF,
         scale_bar: bool | float = True,
         alpha: float = 0.05,
+        stress: str = "full",
     ) -> None:
         from foambryo._mask_workflow import mask_point_cloud
 
+        check_stress_part(stress)
         self.workflow = workflow
+        #: The stress glyphs of the values' force view (`plot_force_inference`'s `stress`).
+        self.stress = stress
         self.cloud = mask_point_cloud(workflow.mask, workflow.spacing)
         self.show_mask = True
         self.scattered, self.scatter_coeff = scattered, scatter_coeff
@@ -1499,7 +1631,7 @@ class _MaskWindow:
                                         workflow.inferred_seconds, workflow.warnings)
             window = _ForceWindow(workflow.mesh, kind, outcome.tensions, outcome.pressures, options,
                                   f"inferred here: {outcome.library_call}", inference=inference,
-                                  rec_bytes=workflow.reconstruction.rec_bytes, **common)
+                                  rec_bytes=workflow.reconstruction.rec_bytes, stress=self.stress, **common)
         window.after_draw = self._after_values_drawn
         window.cut, window.slice_plane = self.cut, self.slice_plane
         self.window = window
@@ -1681,6 +1813,7 @@ def _view_mask_workflow(
     scattered: bool = False,
     scatter_coeff: float = DEFAULT_SCATTER_COEFF,
     scale_bar: bool | float = True,
+    stress: str = "full",
 ) -> None:
     """Open the viewer on a segmentation mask (`foambryo view MASK --spacing ...`) until the window is closed.
 
@@ -1694,26 +1827,37 @@ def _view_mask_workflow(
         scattered: draw the values exploded, as `plot_force_inference(scattered=...)`.
         scatter_coeff: how far, as `plot_force_inference(scatter_coeff=...)`.
         scale_bar: as for `plot_force_inference` (the length unit is the workflow's).
+        stress: the force view's stress glyphs, as `plot_force_inference(stress=...)`: `"full"` or `"deviatoric"`.
     """
-    _MaskWindow(workflow, scattered=scattered, scatter_coeff=scatter_coeff, scale_bar=scale_bar).open()
+    check_stress_part(stress)
+    if np.ndim(workflow.mask) == 2:
+        from foambryo._planar_viewer import planar_mask_window_class
+
+        planar_mask_window_class()(workflow, scattered=scattered, scatter_coeff=scatter_coeff,
+                                   scale_bar=scale_bar, stress=stress).open()
+        return
+    _MaskWindow(workflow, scattered=scattered, scatter_coeff=scatter_coeff, scale_bar=scale_bar,
+                stress=stress).open()
 
 
 def view_mask(
     mask: "np.ndarray",
-    spacing: tuple[float, float, float],
+    spacing: tuple[float, ...],
     *,
     spacing_unit: str = "um",
     min_distance: int | None = None,
     mean_tension: float = _INFER_FORCES_DEFAULTS["mean_tension"],
     base_pressure: float = _INFER_FORCES_DEFAULTS["base_pressure"],
     mode_tension: TensionComputationMethod = _INFER_FORCES_DEFAULTS["mode_tension"],
-    mode_pressure: PressureComputationMethod = _INFER_FORCES_DEFAULTS["mode_pressure"],
+    mode_pressure: PressureComputationMethod | None = _INFER_FORCES_DEFAULTS["mode_pressure"],
     solver: str = _INFER_FORCES_DEFAULTS["solver"],
     pressures: bool = True,
     scattered: bool = False,
     scatter_coeff: float = DEFAULT_SCATTER_COEFF,
     scale_bar: bool | float = True,
     mask_name: str = "mask.npz",
+    angle_reading: str | None = None,
+    stress: str = "full",
 ) -> None:
     """Open the viewer on a segmentation mask: the window `foambryo view MASK --spacing DZ DY DX` opens.
 
@@ -1724,22 +1868,28 @@ def view_mask(
     drawn with their colour bars, explode, cut and export, as by `plot_force_inference`. Returns when the window is
     closed (a job still running is cancelled then).
 
-    Needs Polyscope (`pip install "foambryo[viewing]"`), delaunay-watershed-3d and a display.
+    Needs Polyscope (`pip install "foambryo[viewing]"`), delaunay-watershed and a display.
+
+    A 2-D mask (axis 0 = y, axis 1 = x) opens the 2-D window: the mask as an image (one colour per label), meshed by
+    delaunay-watershed-2d, inferred in 2D (Young-Dupré with the 2-D angle readings, Laplace pressures), the values
+    drawn as `plot_force_inference` draws a 2-D mesh; there is no seed ensemble and no cut in 2D.
 
     Args:
         mask: the segmentation, a 3-D array of non-negative integer labels, axis 0 = z, axis 1 = y, axis 2 = x,
-            0 the medium (`check_segmentation_mask`'s checks).
+            0 the medium (`check_segmentation_mask`'s checks); or a 2-D one, axis 0 = y, axis 1 = x.
         spacing: the voxel size `(dz, dy, dx)`, three finite numbers > 0, in `spacing_unit`; an anisotropic mask
             is resampled to cubic voxels of the shortest spacing before meshing, as by `foambryo mesh` (only one
-            axis may be longer than the other two). There is no default: a wrong spacing changes every angle.
+            axis may be longer than the other two). For a 2-D mask, the pixel size `(dy, dx)`, square (`dy == dx`).
+            There is no default: a wrong spacing changes every angle.
         spacing_unit: the spacing's unit, the mesh's length unit, written on the scale bar (`--spacing-unit`).
             Defaults to `"um"`. Keyword-only.
-        min_distance: the reconstruction's `--min-distance`, in cubic voxels of the shortest spacing; `None` (the
-            default) is delaunay-watershed-3d's default (3). The panel changes it. Keyword-only.
+        min_distance: the reconstruction's `--min-distance`, in cubic voxels of the shortest spacing (square pixels
+            in 2D); `None` (the default) is the library's default (3 voxels, 4 pixels). The panel changes it.
+            Keyword-only.
         mean_tension: `infer_forces`' option, with its default (1); the panel starts with it. Keyword-only.
         base_pressure: likewise (default 0). Keyword-only.
         mode_tension: likewise (default `TensionComputationMethod.YoungDupre`). Keyword-only.
-        mode_pressure: likewise (default `PressureComputationMethod.Variational`). Keyword-only.
+        mode_pressure: likewise (default None: `PressureComputationMethod.Variational` for a 3-D mask). Keyword-only.
         solver: likewise (default `"auto"`). Keyword-only.
         pressures: `False` infers the tensions only (`--no-pressures`). Defaults to True. Keyword-only.
         scattered: draw the values exploded (`--scattered`). Defaults to False. Keyword-only.
@@ -1747,31 +1897,62 @@ def view_mask(
         scale_bar: as for `plot_force_inference`, in `spacing_unit`. Defaults to True. Keyword-only.
         mask_name: the mask's file name in the equivalent command lines the panel shows and in the messages of a
             refused mask. Defaults to `"mask.npz"`. Keyword-only.
+        angle_reading: a 2-D mask only: the junction-angle reading the panel starts with (`ANGLE_READINGS_2D`);
+            `None` is the 2-D default, `"arc"`. Keyword-only.
+        stress: the cells' stress glyphs in the force view (`--stress`), as `plot_force_inference(stress=...)`:
+            `"full"`, each cell's mean stress tensor, or `"deviatoric"`, its traceless part, which needs no pressure
+            (for a confined tissue, whose pressures are not measurements; the cells are then not coloured by
+            pressure). Defaults to `"full"`. Keyword-only.
 
     Raises:
         ValueError: if the mask or the spacing is refused (the messages of `foambryo mesh`'s checks; a refused
-            mask raises `foambryo.segmentation_masks.SegmentationMaskError`, a `ValueError`).
+            mask raises `foambryo.segmentation_masks.SegmentationMaskError`, a `ValueError`); if `stress` is not
+            `"full"` or `"deviatoric"`; or if `stress="deviatoric"` comes with `pressures=False`, as
+            `foambryo view MASK` refuses `--stress deviatoric` with `--no-pressures`.
     """
-    from dw3d import get_default_mesh_reconstruction_algorithm
     from dw3d.mask_preprocessing import coarse_axis_and_factor
 
     from foambryo._mask_workflow import MaskWorkflow, ViewerChoices
+    from foambryo.io import default_min_distance
     from foambryo.results import option_name
     from foambryo.segmentation_masks import check_segmentation_mask
 
-    mask = check_segmentation_mask(mask, name=mask_name)
-    spacing = tuple(float(value) for value in spacing)
-    if len(spacing) != 3 or not all(np.isfinite(value) and value > 0 for value in spacing):
-        message = f"spacing must be three positive finite numbers (dz, dy, dx), not {spacing!r}"
+    check_stress_part(stress)
+    if stress != "full" and not pressures:
+        message = (f"stress={stress!r} is drawn by the force view: leave pressures=True (with the deviatoric stress "
+                   "the pressures are inferred but not drawn)")
         raise ValueError(message)
-    coarse_axis_and_factor(spacing)  # refuses a spacing the resampling cannot handle, with its message
+    mask = check_segmentation_mask(mask, name=mask_name)
+    dimension = mask.ndim
+    spacing = tuple(float(value) for value in spacing)
+    names = "(dz, dy, dx)" if dimension == 3 else "(dy, dx)"
+    if len(spacing) != dimension or not all(np.isfinite(value) and value > 0 for value in spacing):
+        message = f"spacing must be {dimension} positive finite numbers {names}, not {spacing!r}"
+        raise ValueError(message)
+    if dimension == 3:
+        coarse_axis_and_factor(spacing)  # refuses a spacing the resampling cannot handle, with its message
+    elif spacing[0] != spacing[1]:
+        message = f"pixel size {spacing[0]:g} x {spacing[1]:g}: a 2-D mask is meshed with square pixels only"
+        raise ValueError(message)
+    if dimension == 3 and angle_reading is not None:
+        message = "angle_reading applies to a 2-D mask here (a 3-D seed ensemble's reading is chosen in the panel)"
+        raise ValueError(message)
     if min_distance is None:
-        min_distance = inspect.signature(get_default_mesh_reconstruction_algorithm).parameters["min_distance"].default
+        min_distance = default_min_distance(dimension)
+    if mode_pressure is None:
+        mode_pressure = default_pressure_method(dimension)
+    extra = {}
+    if dimension == 2:
+        from foambryo._two_dimensional import DEFAULT_ANGLE_READING
+
+        extra = {"dimension": 2, "angle_reading": DEFAULT_ANGLE_READING if angle_reading is None else angle_reading}
     choices = ViewerChoices.library(
         tension_method=option_name(mode_tension), pressure_method=option_name(mode_pressure),
-        mean_tension=float(mean_tension), base_pressure=float(base_pressure), solver=solver, pressures=pressures)
+        mean_tension=float(mean_tension), base_pressure=float(base_pressure), solver=solver, pressures=pressures,
+        **extra)
     workflow = MaskWorkflow(mask, spacing, spacing_unit, mask_name, int(min_distance), choices)
-    _view_mask_workflow(workflow, scattered=scattered, scatter_coeff=scatter_coeff, scale_bar=scale_bar)
+    _view_mask_workflow(workflow, scattered=scattered, scatter_coeff=scatter_coeff, scale_bar=scale_bar,
+                        stress=stress)
 
 
 def _begin_panel() -> None:
@@ -1801,6 +1982,10 @@ def _imgui_colour_bar(scale: ColourScale, width: float = 300.0, height: float = 
         middle = f"{(scale.low + scale.high) / 2:.4g}"
         psim.SameLine(start + (width - psim.CalcTextSize(middle)[0]) / 2)
         psim.TextUnformatted(middle)
+    elif scale.colour_function == "stress" and scale.low < 0 < scale.high:  # where the colour changes
+        zero = width * (0.0 - scale.low) / (scale.high - scale.low)
+        psim.SameLine(start + zero - psim.CalcTextSize("0")[0] / 2)
+        psim.TextUnformatted("0")
     psim.SameLine(start + width - psim.CalcTextSize(high)[0])
     psim.TextUnformatted(high)
 
@@ -2205,6 +2390,38 @@ def _view_discrepancy_of_principal_curvatures(
 ###
 
 
+def _stress_tensors_to_draw(
+    mesh: "DcelData",
+    nx_graph: nx.Graph,
+    dict_tensions: dict[tuple[int, int], float],
+    dict_pressure: dict[int, float],
+    lumen_materials: list[int],
+    stress: str,
+) -> dict[int, np.ndarray]:
+    """The tensors `_plot_stress_tensor` draws: each cell's full stress, or its deviatoric part (`stress`)."""
+    volumes = mesh.compute_volumes_cells()
+    # A cell with an undetermined pressure (nan, from a Laplace method) has no stress: none is drawn. Its
+    # deviatoric stress needs no pressure.
+    cells = [
+        c
+        for c in mesh.materials[1 : mesh.n_materials]
+        if c not in lumen_materials and nx_graph.nodes.data("volume")[c] > 0
+        and (stress == "deviatoric" or np.isfinite(dict_pressure[c]))
+    ]
+    if stress == "full":
+        return cell_mean_stress_tensors(
+            mesh,
+            dict_tensions,
+            dict_pressure,
+            volumes,
+            cells,
+            lumen_materials=lumen_materials,
+        )
+    tensors = cell_mean_stress_tensors(mesh, dict_tensions, None, volumes, cells, lumen_materials=lumen_materials,
+                                       part=stress)
+    return {c: tensor for c, tensor in tensors.items() if np.all(np.isfinite(tensor))}
+
+
 def _plot_stress_tensor(
     mesh: "DcelData",
     nx_graph: nx.Graph,
@@ -2214,8 +2431,9 @@ def _plot_stress_tensor(
     clean_after: bool = True,
     show: bool = True,
     lumen_materials: int | list[int] = 0,
-) -> None:
-    """Show stress tensor on a polyscope viewer.
+    stress: str = "full",
+) -> dict[int, np.ndarray]:
+    """Show each cell's mean stress tensor, or its deviatoric part, on a polyscope viewer.
 
     Args:
         mesh (DcelData): Mesh to analyze.
@@ -2228,26 +2446,14 @@ def _plot_stress_tensor(
         lumen_materials (int | list[int], optional): Materials considered exterior: the mesh's media
             (`DcelData.media`: 0 and the enclosed media), which get no stress tensor of their own, and against which
             a membrane counts in full. Defaults to 0.
+        stress (str, optional): `"full"` (the default) or `"deviatoric"`: each cell's deviatoric stress
+            (`foambryo._cell_stress`), from the tensions alone, drawn as "Deviatoric stress principal directions";
+            a cell with an undetermined pressure gets one, a cell with an undetermined tension none.
     """
     # Formula from G. K. BATCHELOR, J Fluid Mech, 1970 -- see foambryo._cell_stress.
     if isinstance(lumen_materials, int):
         lumen_materials = [lumen_materials]
-
-    volumes = mesh.compute_volumes_cells()
-    # A cell with an undetermined pressure (nan, from a Laplace method) has no stress: none is drawn.
-    cells = [
-        c
-        for c in mesh.materials[1 : mesh.n_materials]
-        if c not in lumen_materials and nx_graph.nodes.data("volume")[c] > 0 and np.isfinite(dict_pressure[c])
-    ]
-    mean_stresses = cell_mean_stress_tensors(
-        mesh,
-        dict_tensions,
-        dict_pressure,
-        volumes,
-        cells,
-        lumen_materials=lumen_materials,
-    )
+    mean_stresses = _stress_tensors_to_draw(mesh, nx_graph, dict_tensions, dict_pressure, lumen_materials, stress)
 
     # Tension-positive convention: negative principal values are compressive, non-negative ones
     # tensile. Column k of each array is the k-th principal axis scaled by its principal value.
@@ -2281,15 +2487,15 @@ def _plot_stress_tensor(
     # ps_mesh.set_color((0.3, 0.6, 0.8)) # rgb triple on [0,1]
     # ps_mesh.set_transparency(0.2)
 
-    ps_cloud = ps.register_point_cloud("Stress tensors principal directions", centroids, color=(0, 0, 0), radius=0.004)
+    ps_cloud = ps.register_point_cloud(_STRESS_GLYPH_NAMES[stress], centroids, color=(0, 0, 0), radius=0.004)
 
     # Compression in red, tension in teal; each axis drawn both ways from the cell centroid.
     has_volume = np.array(nx_graph.nodes.data("volume"))[1:, 1] > 0
     radius = 0.005
     length = 0.1
     for name, vectors, color in (
-        ("compression", compression_vectors, (0.7, 0.0, 0.0)),
-        ("tension", tension_vectors, (0.2, 0.5, 0.5)),
+        ("compression", compression_vectors, COMPRESSIVE_AXIS_COLOR),
+        ("tension", tension_vectors, TENSILE_AXIS_COLOR),
     ):
         for k in range(3):
             axis = vectors[:, :, k][has_volume]
@@ -2307,6 +2513,7 @@ def _plot_stress_tensor(
         ps.show()
     if clean_after:
         ps.remove_all_structures()
+    return mean_stresses
 
 
 def _display_embryo_graph_forces(

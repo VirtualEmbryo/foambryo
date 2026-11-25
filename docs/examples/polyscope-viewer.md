@@ -17,7 +17,7 @@ This example generates a foam of Voronoi cells imaged with voxels of 1.0 x 0.5 x
 
     pip install "foambryo[viewing]" python polyscope_viewer.py                   # writes ./polyscope-viewer-output/ python polyscope_viewer.py --show            # and opens the windows python polyscope_viewer.py --from-mask       # the window that starts from the mask
 
-The script: [`Examples/polyscope_viewer.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/polyscope_viewer.py). It needs only foambryo and `foambryo[viewing]`; it generates its own tissue.
+The script: [`Examples/polyscope_viewer.py`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/polyscope_viewer.py). It needs only foambryo and `foambryo[viewing]`; it generates its own tissue.
 
 ![The figure `plot_tension_inference(..., scattered=True, save_figure=...)` writes: the generated foam's tensions, exploded, with the colour bar and the length scale bar.](figures/polyscope_viewer_tensions_exploded.png)
 
