@@ -1,0 +1,4962 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../colour-scales/">
+      
+      
+        <link rel="next" href="../plotting-utilities/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Two-dimensional tissues - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#two-dimensional-tissues" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Two-dimensional tissues
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-2-d-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2-D mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PlanarMesh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PlanarMesh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        e
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cells
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.media" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        media
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.unresolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unresolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.cut_cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cut_cells
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.from_any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_any
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.dimension_of" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dimension_of
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.require_three_dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_three_dimensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces-junctions-and-the-image-border" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces, junctions and the image border
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces, junctions and the image border">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.interface_arcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interface_arcs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.InterfaceArc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterfaceArc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        junction_table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.image_border_vertices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_border_vertices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reports-warnings-and-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reports, warnings and constants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reports, warnings and constants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.TwoDimensionalReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TwoDimensionalReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.TwoDimensionalPressureReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TwoDimensionalPressureReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.IllConditionedLensWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IllConditionedLensWarning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.NoJunctionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NoJunctionError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.MAX_LENS_CONDITION" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAX_LENS_CONDITION
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.ANGLE_READINGS_2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ANGLE_READINGS_2D
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.DEFAULT_ANGLE_READING_2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFAULT_ANGLE_READING_2D
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-global-fit-opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The global fit (opt-in)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The global fit (opt-in)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.infer_forces_by_equilibrium_tiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_forces_by_equilibrium_tiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.EquilibriumTilingReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EquilibriumTilingReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EQUILIBRIUM_TILING_MAX_EVALUATIONS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drawing-a-2-d-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing a 2-D mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-2-d-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 2-D mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PlanarMesh
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PlanarMesh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        e
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cells
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.media" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        media
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.unresolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unresolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.cut_cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cut_cells
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.PlanarMesh.from_any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_any
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.dimension_of" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dimension_of
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.planar_mesh.require_three_dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        require_three_dimensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces-junctions-and-the-image-border" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces, junctions and the image border
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces, junctions and the image border">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.interface_arcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interface_arcs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.InterfaceArc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterfaceArc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.junction_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        junction_table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.image_border_vertices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_border_vertices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reports-warnings-and-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reports, warnings and constants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reports, warnings and constants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.TwoDimensionalReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TwoDimensionalReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.TwoDimensionalPressureReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TwoDimensionalPressureReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.IllConditionedLensWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IllConditionedLensWarning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.NoJunctionError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NoJunctionError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.MAX_LENS_CONDITION" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAX_LENS_CONDITION
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.ANGLE_READINGS_2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ANGLE_READINGS_2D
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.DEFAULT_ANGLE_READING_2D" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFAULT_ANGLE_READING_2D
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-global-fit-opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The global fit (opt-in)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The global fit (opt-in)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.infer_forces_by_equilibrium_tiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        infer_forces_by_equilibrium_tiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.EquilibriumTilingReport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EquilibriumTilingReport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EQUILIBRIUM_TILING_MAX_EVALUATIONS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drawing-a-2-d-mesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing a 2-D mesh
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="two-dimensional-tissues">Two-dimensional tissues<a class="headerlink" href="#two-dimensional-tissues" title="Permanent link">&para;</a></h1>
+<p>The package-level functions (<code>infer_tensions</code>, <code>infer_tensions_by_junction_component</code>, <code>infer_pressures</code>, <code>infer_forces</code>, <code>infer_tensions_then_pressures</code>, <code>dcel_mesh_from_segmentation_mask</code>, <code>dcel_mesh_from_file</code>) take 2-D meshes and masks: their pages are those of the 3-D functions (<a href="../tension-inference/">tension inference</a>, <a href="../pressure-inference/">pressure inference</a>, <a href="../force-inference/">force inference</a>, <a href="../io/">input and output</a>). This page lists the names that exist only in 2D. <strong>Provisional:</strong> they may change in any release until they are declared stable. The user guide's page on <a href="../../user-guide/two-dimensional-tissues/">two-dimensional tissues</a> explains them.</p>
+<h2 id="the-2-d-mesh">The 2-D mesh<a class="headerlink" href="#the-2-d-mesh" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>foambryo's 2-D mesh, <code>PlanarMesh</code>, and the rule that tells a 2-D mesh from a 3-D one.</p>
+<p>foambryo's package-level functions (<code>infer_tensions</code>, <code>infer_pressures</code>, <code>infer_forces</code>, ...) take a 3-D mesh
+(<code>foambryo.dcel.DcelData</code>, triangles) or a 2-D one (<code>PlanarMesh</code>, segments) and dispatch on its type
+(<code>dimension_of</code>). A 2-D mesh is the one delaunay-watershed's 2-D reconstruction (dw2d) builds:</p>
+<ul>
+<li><code>points</code> <code>(n, 2)</code> float64, in the mask's index order <code>(row, column)</code>, in pixels (or in the unit of an isotropic
+  pixel size);</li>
+<li><code>segments</code> <code>(m, 2)</code> int64, the two vertex indices of each edge;</li>
+<li><code>labels</code> <code>(m, 2)</code> int64, the two materials each edge separates, smaller first (0 is the medium).</li>
+</ul>
+<p><strong>Orientation: one rule in 2D and 3D, in index order.</strong> Each mesh element is the positively oriented boundary of its
+first label: a triangle's right-hand normal <code>(p1 - p0) x (p2 - p0)</code> in <code>(z, y, x)</code> points out of <code>labels[k, 0]</code>, and
+material <code>labels[k, 0]</code> lies on the left of the edge <code>segments[k, 0] -&gt; segments[k, 1]</code> in <code>(row, column)</code>, so that the
+normal <code>(dc, -dr)</code> of an edge of tangent <code>(dr, dc)</code> points out of <code>labels[k, 0]</code> too. dw2d follows it since 0.8.0;
+dw2d 0.1.5 and the development versions of 0.8.0 stored every edge the other way round. The 2-D pressures rely on it
+(which side of an interface each cell is on).</p>
+<p>foambryo does not trust a 2-D mesh's orientation, it measures it: on input (<code>PlanarMesh</code>, a mesh file, dw2d's
+<code>DCEL_Data</code> or arrays given to any 2-D function), the signed area of each cell's boundary, <code>A = (1/2) sum (r0 c1 -
+c0 r1)</code> over its edges (each counted as stored where the cell is the first label, reversed where it is the second), is
+positive for every cell under the one rule and negative for every cell under the former one. A mesh in the former
+orientation has every edge reversed, so the results are the same from either; a mesh whose cells disagree is refused
+(<code>ValueError</code>). Only cells with a closed boundary vote, and the cells cut by the image border only when no other cell
+can (dw2d 0.1.5 left its image-border edges in an arbitrary order: a cut cell then votes with its area taken along its
+own loops, each image-border edge in the direction its loop runs); a mesh with no closed cell is taken as given.</p>
+<p>dw2d's own <code>DCEL_Data</code>, any object with <code>v</code> <code>(n, 2)</code> and <code>e</code> <code>(m, 4)</code> (<code>e</code> = segments and labels side by side), a
+<code>(points, segments, labels)</code> triple and a <code>(vertices, edges)</code> pair are accepted too, and read the same way.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="foambryo.planar_mesh.PlanarMesh" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PlanarMesh</span>
+
+
+<a href="#foambryo.planar_mesh.PlanarMesh" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PlanarMesh</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">floating</span><span class="p">],</span> <span class="n">segments</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">image_border_vertices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A 2-D multimaterial polyline mesh: points, segments and the two materials each segment separates.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.points">points</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(n, 2)</code> float64 vertex positions, <code>(row, column)</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.segments">segments</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(m, 2)</code> int64 vertex indices.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.labels">labels</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(m, 2)</code> int64 materials, smaller first.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.image_border_vertices">image_border_vertices</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>sorted int64 indices of the vertices on the image border (dw2d's mark), or <code>None</code>
+when unknown; the 2-D inference excludes the junctions there by default.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.image_shape">image_shape</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(rows, columns)</code> of the label image the mesh was built from, or <code>None</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.spacing">spacing</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the pixel size the points were scaled by (<code>None</code>: the points are in pixels).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.unit">unit</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the unit of <code>spacing</code>, or <code>None</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.planar_mesh.PlanarMesh.v,">v,</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="e
+
+
+  
+      property
+   (foambryo.planar_mesh.PlanarMesh.e)" href="#foambryo.planar_mesh.PlanarMesh.e">e</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the points, and segments and labels side by side <code>(m, 4)</code>, under the names of dw2d's <code>DCEL_Data</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+        <p>Check and store the arrays (copied to float64 and int64).</p>
+<p>The segments are stored in the one orientation rule: given in the former one, every segment is reversed (the
+module docstring says how foambryo measures it; <code>_reversed_on_input</code> records it).</p>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if <code>points</code> is not <code>(n, 2)</code>, <code>segments</code> and <code>labels</code> not <code>(m, 2)</code>, an index is out of range, a
+row of <code>labels</code> is not in ascending order, or the cells' boundaries follow no single orientation.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.v" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">v</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.v" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">v</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The points, under the name of dw2d's <code>DCEL_Data</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.e" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">e</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.e" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">e</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><code>(m, 4)</code> rows <code>[v1, v2, m1, m2]</code>: segments and labels side by side, as dw2d's <code>DCEL_Data.e</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.materials" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">materials</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.materials" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">materials</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Every material of the mesh, ascending (0, the medium, included when present).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.cells" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">cells</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.cells" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">cells</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The cells: every material but 0.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.media" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">media</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.media" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">media</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The media: <code>(0,)</code> (enclosed media are not labelled in 2D).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.unresolved" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">unresolved</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.unresolved" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">unresolved</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Labels of the mask absent from the mesh: not recorded on a <code>PlanarMesh</code> (empty).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.cut_cells" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">cut_cells</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.cut_cells" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">cut_cells</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The cells with a vertex on the image border (dw2d's <code>cut_cells</code>), ascending; empty when the border is not
+known (<code>image_border_vertices</code> is None).</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.planar_mesh.PlanarMesh.from_any" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">from_any</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#foambryo.planar_mesh.PlanarMesh.from_any" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_any</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlanarMesh</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A <code>PlanarMesh</code> from any accepted 2-D mesh (see the module docstring); a <code>PlanarMesh</code> is returned as is.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.planar_mesh.dimension_of" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">dimension_of</span>
+
+
+<a href="#foambryo.planar_mesh.dimension_of" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dimension_of</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>3 for a 3-D mesh (<code>DcelData</code>), 2 for a 2-D one; the rule every package-level function dispatches on.</p>
+<ul>
+<li>3: a <code>foambryo.dcel.DcelData</code>, or any object with a face array <code>f</code> (the 3-D half-edge layout).</li>
+<li>2: a <code>PlanarMesh</code>; an object with <code>v</code> <code>(n, 2)</code> and <code>e</code> <code>(m, 4)</code> (dw2d's <code>DCEL_Data</code>); a <code>(points (n, 2),
+  segments (m, 2), labels (m, 2))</code> triple; a <code>(vertices (n, 2), edges (m, 4))</code> pair.</li>
+</ul>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for anything else, naming the accepted types.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="foambryo.planar_mesh.require_three_dimensions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">require_three_dimensions</span>
+
+
+<a href="#foambryo.planar_mesh.require_three_dimensions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_three_dimensions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Refuse a 2-D mesh in a function that has no 2-D counterpart yet.</p>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>naming the function, when <code>mesh</code> is a 2-D mesh.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="interfaces-junctions-and-the-image-border">Interfaces, junctions and the image border<a class="headerlink" href="#interfaces-junctions-and-the-image-border" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.interface_arcs" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">foambryo.interface_arcs</span>
+
+
+<a href="#foambryo.interface_arcs" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">interface_arcs</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exclude_image_border</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">excluded_vertices</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">())</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceArc</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Every interface of a 2D mesh with the circular arc <code>angle_reading="arc"</code> reads on it.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a dw2d <code>DCEL_Data</code>, an object with <code>v</code> and <code>e</code>, or a <code>(vertices, edges)</code> pair.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exclude_image_border</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>also stop interfaces at the vertices on the image border and drop the
+interfaces with an edge along it (<code>image_border_vertices</code>). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>excluded_vertices</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Collection">Collection</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>further vertices where interfaces stop (and whose junctions give no row).
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="foambryo.InterfaceArc
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.InterfaceArc)" href="#foambryo.InterfaceArc">InterfaceArc</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list[InterfaceArc]: one per interface (module docstring, "Interfaces").</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.InterfaceArc" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.InterfaceArc</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.InterfaceArc" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">InterfaceArc</span><span class="p">(</span><span class="n">materials</span><span class="p">:</span> <span class="n">Interface</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vertices</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">curvature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">centre</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tangent_start</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">tangent_end</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tangent_noise</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">curvature_noise</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_edges_against_the_majority</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>One interface of a 2D mesh (a chain of edges of one material pair) and the circular arc read on it.</p>
+<p>Read-only data (a frozen dataclass of numbers and tuples), returned by <code>interface_arcs</code>.</p>
+<p>Vectors and positions are in the mesh's own (row, column) frame, in pixels; "left" and "right" are
+those of the traversal <code>vertices[0] -&gt; vertices[-1]</code> in the frame <code>(x, y) = (column, row)</code> (where <code>m1</code> lies on the
+right of each edge <code>v1 -&gt; v2</code>, being on its left in <code>(row, column)</code>).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.materials">materials</span></code></td>
+            <td>
+                  <code><span title="foambryo._two_dimensional.Interface">Interface</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the sorted material pair.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.left">left</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the material on the left of the traversal (the majority over its edges; on a dw2d mesh every
+edge agrees, see <code>n_edges_against_the_majority</code>); <code>right</code> the other one.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.right">right</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the material on the right of the traversal.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.vertices">vertices</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the vertex indices along the interface (<code>vertices[0] == vertices[-1]</code> when <code>closed</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.closed">closed</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether the interface is a closed loop without junction (a cell enclosed by one material).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.fit">fit</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"circle"</code>, <code>"line"</code> (zero curvature) or <code>"chord"</code> (fewer than <code>MIN_ARC_VERTICES</code> vertices, or
+no circle could be fitted: tangents along the whole-interface chord, no curvature).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.curvature">curvature</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the signed curvature (1/px): <code>1/R</code>, positive when the circle's centre lies on the left of
+the traversal (the interface bulges into its right material); 0 for a line; <code>nan</code> for <code>"chord"</code>.
+Laplace's law reads <code>tension * curvature = p_left - p_right</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.centre">centre</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the circle's centre, <code>(row, column)</code>, or None for a line or a chord.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.radius">radius</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the circle's radius (px); <code>inf</code> for a line, <code>nan</code> for a chord.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.tangent_start">tangent_start</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unit tangent at <code>vertices[0]</code>, pointing into the interface.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.tangent_end">tangent_end</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unit tangent at <code>vertices[-1]</code>, pointing into the interface.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.length">length</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the length of the polyline (px).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.n_points">n_points</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the number of distinct vertices fitted (a closed loop counts its first vertex once).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.tangent_noise">tangent_noise</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the standard deviation of an end tangent's angle (rad) per pixel of independent
+vertex noise, <code>sqrt(192 / n) / length</code> (a shallow arc of evenly spaced vertices); for a chord
+<code>sqrt(2) / chord length</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.curvature_noise">curvature_noise</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the standard deviation of the curvature (1/px) per pixel of independent vertex
+noise, <code>sqrt(720 / n) / length^2</code>; <code>nan</code> for a chord.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.InterfaceArc.n_edges_against_the_majority">n_edges_against_the_majority</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how many of its edges put the other material on the left.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.junction_table" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">foambryo.junction_table</span>
+
+
+<a href="#foambryo.junction_table" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">junction_table</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_ANGLE_READING</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exclude_image_border</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">excluded_vertices</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">())</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>The junctions of a 2D mesh with their three wedge angles, and the vertices where four or more regions meet.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a dw2d <code>DCEL_Data</code>, or any object with <code>v</code> (<code>(V, 2)</code>) and <code>e</code> (<code>(E, 4)</code>), or a
+<code>(vertices, edges)</code> pair (module docstring).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>"arc"</code> (default), <code>"chord"</code> or <code>"fitted_tangent"</code> (module docstring).</p>
+              </div>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="foambryo.DEFAULT_ANGLE_READING_2D
+
+
+  
+      module-attribute
+   (foambryo._two_dimensional.DEFAULT_ANGLE_READING)" href="#foambryo.DEFAULT_ANGLE_READING_2D">DEFAULT_ANGLE_READING</a></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exclude_image_border</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for <code>"arc"</code>, interfaces stop at the image border and those along it are
+dropped, as in <code>interface_arcs</code>. The junctions on excluded vertices are listed all the same
+(<code>infer_tensions</code> does not use them). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>excluded_vertices</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Collection">Collection</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for <code>"arc"</code>, further vertices where interfaces stop. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<span title="dict">dict</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(junctions, higher_order)</code>, sorted by vertex index. Each junction is a dict with <code>vertex</code></p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<span title="dict">dict</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(index into the vertices), <code>materials</code> (the sorted triple) and <code>wedges_rad</code> (material -&gt;</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="list">list</span>[<span title="dict">dict</span>], <span title="list">list</span>[<span title="dict">dict</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>angle inside it, radians; the three sum to 2 pi on a junction whose interfaces do not cross).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="list">list</span>[<span title="dict">dict</span>], <span title="list">list</span>[<span title="dict">dict</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Each higher-order vertex is a dict with <code>vertex</code> and <code>materials</code>. A wedge is <code>nan</code> where it</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="list">list</span>[<span title="dict">dict</span>], <span title="list">list</span>[<span title="dict">dict</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cannot be read: a material whose boundary passes through the junction more than once (a pinch),</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="list">list</span>[<span title="dict">dict</span>], <span title="list">list</span>[<span title="dict">dict</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>or, for <code>"arc"</code>, a material pair without exactly one interface ending at the junction.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.image_border_vertices" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">foambryo.image_border_vertices</span>
+
+
+<a href="#foambryo.image_border_vertices" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">image_border_vertices</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Vertices of a 2D mesh that lie on the image border: dw2d's mark, or else the vertex positions.</p>
+<p>Where a junction lies on the image border, the border cuts a cell-cell interface and dw2d's medium
+edge along the border makes a straight 180-degree wedge that is not a contact angle.</p>
+<ul>
+<li><strong>dw2d's mark</strong> (a mesh with an <code>image_border_vertices</code> attribute that is not None: dw2d 0.8.0's
+  <code>DCEL_Data</code>, from <code>geometry_reconstruction_2d(...).return_dcel()</code>): those vertices, which dw2d
+  takes from its triangulation's structure (the endpoints of its hull edges) before any vertex moves,
+  and which its junction relocation never moves.</li>
+<li><strong>Otherwise, the positions</strong> (a <code>(vertices, edges)</code> pair, or an object without the mark): dw2d
+  adds the four image corners to its Delaunay points and keeps them as mesh vertices, so the image
+  rectangle is the bounding box of the vertices and the border vertices are those on its sides.
+  Exact on a mesh whose border vertices did not move. If the four corners of the bounding box are
+  not vertices (a mesh that did not come from dw2d), the border cannot be located: a <code>UserWarning</code>
+  is raised and no vertex is returned. To exclude the border of a relocated mesh given as arrays,
+  pass dw2d's mark as <code>excluded_vertices</code> (with <code>exclude_image_border=False</code>).</li>
+</ul>
+
+
+    </div>
+
+</div><h2 id="reports-warnings-and-constants">Reports, warnings and constants<a class="headerlink" href="#reports-warnings-and-constants" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.TwoDimensionalReport" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.TwoDimensionalReport</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.TwoDimensionalReport" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TwoDimensionalReport</span><span class="p">(</span><span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_border_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_junctions_used</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_junctions_excluded</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_junctions_nonfinite</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_higher_order_vertices</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_interfaces_undetermined</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">component_of</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">components</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span> <span class="n">n_interfaces_by_fit</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">solves</span><span class="p">:</span> <span class="n">SolveDiagnostics</span><span class="p">,</span> <span class="n">n_junctions_refused</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">refused_lenses</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">())</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>What a 2D tension inference read and solved: the second value returned with <code>diagnostics</code>.</p>
+<p>Frozen: its fields cannot be reassigned (the dicts it holds are plain dicts, as in 3D's
+<code>ComponentTensionSolution</code>, so that it can be pickled; they are not meant to be modified).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.angle_reading">angle_reading</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the reading of the junction angles (<code>"arc"</code>, <code>"chord"</code> or <code>"fitted_tangent"</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.image_border_from">image_border_from</span></code></td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how the image border was found: <code>"dw2d mark"</code> (the mesh's
+<code>image_border_vertices</code>), <code>"vertex positions"</code> (<code>image_border_vertices</code>), or <code>None</code> when
+<code>exclude_image_border</code> was off.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_junctions_used">n_junctions_used</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>junctions that gave their three Young-Dupre rows.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_junctions_excluded">n_junctions_excluded</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>junctions on an excluded vertex (the image border or <code>excluded_vertices</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_junctions_nonfinite">n_junctions_nonfinite</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>junctions not excluded whose wedges could not all be read.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_higher_order_vertices">n_higher_order_vertices</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>vertices where four or more materials meet (counted, never used).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_rows">n_rows</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Young-Dupre rows (three per used junction).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_components">n_components</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>connected components of the junction graph, each gauged alone.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_interfaces_undetermined">n_interfaces_undetermined</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interfaces touched by no used junction (<code>nan</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.component_of">component_of</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo._two_dimensional.Interface">Interface</span>, <span title="int">int</span> | None]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interface -&gt; component index (<code>None</code> where undetermined).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.components">components</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>], ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one dict per component, largest first (ties by the smallest interface): <code>index</code>,
+<code>n_interfaces</code>, <code>n_junctions</code>, <code>n_rows</code>, <code>gauge</code>, <code>mean_tension</code>, <code>rank_deficiency</code> (the dimension
+the exact gauge leaves undetermined, 0 when the ratios are unique; <code>None</code> on the sparse path, which
+does not compute it), <code>solver</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_interfaces_by_fit">n_interfaces_by_fit</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="int">int</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for the arc reading, how many interfaces were read by a <code>"circle"</code>, a <code>"line"</code> or
+their <code>"chord"</code>; <code>None</code> for the other readings.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.solves">solves</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="SolveDiagnostics
+
+
+  
+      dataclass
+   (foambryo.linear_solves.SolveDiagnostics)" href="../linear-solves/#foambryo.linear_solves.SolveDiagnostics">SolveDiagnostics</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the <code>foambryo.linear_solves.SolveDiagnostics</code> of the solves this call ran, as in 3D.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.n_junctions_refused">n_junctions_refused</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>junctions that gave no row because they are the junctions of a refused lens.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalReport.refused_lenses">refused_lenses</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>], ...]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one dict per refused group of interfaces whose rows came from the same junctions only
+(module docstring, "Lenses"): <code>interfaces</code> (their material pairs, sorted), <code>junction_vertices</code> (the
+vertex indices of those junctions, one or more) and <code>condition_number</code> (the largest over the pairs of
+interfaces in the group, <code>inf</code> when two columns are equal to rounding).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.TwoDimensionalPressureReport" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.TwoDimensionalPressureReport</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.TwoDimensionalPressureReport" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TwoDimensionalPressureReport</span><span class="p">(</span><span class="n">image_border_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">per_component</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">n_interfaces</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_rows_without_tension</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_interfaces_without_curvature</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cells_determined</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cells_undetermined</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cells_in_several_components</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_edges_against_the_majority</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">junction_noise_reference</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">solves</span><span class="p">:</span> <span class="n">SolveDiagnostics</span><span class="p">,</span> <span class="n">component_of_cell</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(),</span> <span class="n">pressures_by_component</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">())</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>What a 2D pressure inference read and solved: the second value returned with <code>diagnostics</code>.</p>
+<p>Frozen, as <code>TwoDimensionalReport</code>.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.image_border_from">image_border_from</span></code></td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as in <code>TwoDimensionalReport</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.per_component">per_component</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether the tensions were a <code>ComponentTensionSolution</code>, each component's Laplace rows
+solved alone (on that component's tension scale).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_interfaces">n_interfaces</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interfaces read (<code>interface_arcs</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_rows">n_rows</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Laplace rows solved.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_rows_without_tension">n_rows_without_tension</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interfaces read by a circle or a line whose tension is not finite (no row).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_interfaces_without_curvature">n_interfaces_without_curvature</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interfaces read by their chord (no curvature, no row).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_cells_determined">n_cells_determined</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cells given a pressure.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_cells_undetermined">n_cells_undetermined</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cells left <code>nan</code>, including those of <code>n_cells_in_several_components</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_cells_in_several_components">n_cells_in_several_components</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cells that the rows of two or more components determine (per component
+only); their pressures are in <code>pressures_by_component</code>, and <code>nan</code> in the returned map.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.n_edges_against_the_majority">n_edges_against_the_majority</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>edges that put the other material on the left of their interface (0 on a
+mesh that follows the orientation rule, module docstring).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.junction_noise_reference">junction_noise_reference</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the median junction-row noise that sets the Laplace weights (rad per pixel of
+vertex noise).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.component_of_cell">component_of_cell</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="int">int</span> | None]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cell -&gt; the component that determined it (per component only; <code>None</code> when
+undetermined or determined by several); empty when <code>per_component</code> is false.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.pressures_by_component">pressures_by_component</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>component -&gt; {cell: pressure} (per component only); empty otherwise.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.solver">solver</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the record of the last least-squares solve (as <code>foambryo.junction_graph</code>'s solver notes).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.TwoDimensionalPressureReport.solves">solves</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="SolveDiagnostics
+
+
+  
+      dataclass
+   (foambryo.linear_solves.SolveDiagnostics)" href="../linear-solves/#foambryo.linear_solves.SolveDiagnostics">SolveDiagnostics</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the <code>foambryo.linear_solves.SolveDiagnostics</code> of the solves this call ran.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.IllConditionedLensWarning" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.IllConditionedLensWarning</span>
+
+
+<a href="#foambryo.IllConditionedLensWarning" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="UserWarning">UserWarning</span></code></p>
+
+
+
+        <p>Interfaces whose rows come from the same junctions only were refused: the angles cannot separate their tensions.</p>
+<p>Their tensions are <code>nan</code> and those junctions give no row (module docstring, "Lenses"). The usual cause is a small
+lens (a cell or a pocket of medium with only two sides) whose two sides are read by their chords, which
+coincide. The report's <code>refused_lenses</code> lists each group, its junction vertices and its condition number.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.NoJunctionError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.NoJunctionError</span>
+
+
+<a href="#foambryo.NoJunctionError" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NoJunctionError</span><span class="p">(</span><span class="n">interfaces</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="UndeterminedInferenceError (foambryo.pressure_inference.UndeterminedInferenceError)" href="../pressure-inference/#foambryo.pressure_inference.UndeterminedInferenceError">UndeterminedInferenceError</a></code></p>
+
+
+
+        <p>The 2D mesh has no junction, so no tension can be inferred: its cells never meet.</p>
+<p>A tension is read from the angles at a junction, a vertex where three or more regions meet. On a
+label mask whose cells are separated from one another by background pixels (a common output of
+segmentation tools), every interface is a cell-medium loop, no junction exists, and every tension
+would be undetermined. Such a result carries no value, so the inference refuses it. The remedy is
+to grow the labels until neighbouring cells meet, with dw2d's <code>expansion_labels</code> argument,
+<code>geometry_reconstruction_2d(labels, expansion_labels=...)</code> (a distance in pixels).</p>
+<p>Fires only when the mesh has no vertex where three or more regions meet; a mesh whose interfaces
+are only partly undetermined is not refused (those interfaces are <code>nan</code>).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.NoJunctionError.interfaces">interfaces</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the interfaces of the mesh (sorted material pairs), every one undetermined.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+        <p>Build the error and its message from the interfaces of the mesh.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.MAX_LENS_CONDITION" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">foambryo.MAX_LENS_CONDITION</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#foambryo.MAX_LENS_CONDITION" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">MAX_LENS_CONDITION</span> <span class="o">=</span> <span class="mf">20.0</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.ANGLE_READINGS_2D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">foambryo.ANGLE_READINGS_2D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#foambryo.ANGLE_READINGS_2D" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ANGLE_READINGS_2D</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'arc'</span><span class="p">,</span> <span class="s1">'chord'</span><span class="p">,</span> <span class="s1">'fitted_tangent'</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.DEFAULT_ANGLE_READING_2D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">foambryo.DEFAULT_ANGLE_READING_2D</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#foambryo.DEFAULT_ANGLE_READING_2D" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_ANGLE_READING_2D</span> <span class="o">=</span> <span class="s1">'arc'</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div><h2 id="the-global-fit-opt-in">The global fit (opt-in)<a class="headerlink" href="#the-global-fit-opt-in" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="foambryo.infer_forces_by_equilibrium_tiling" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">foambryo.infer_forces_by_equilibrium_tiling</span>
+
+
+<a href="#foambryo.infer_forces_by_equilibrium_tiling" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_forces_by_equilibrium_tiling</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">],</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_evaluations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">EQUILIBRIUM_TILING_MAX_EVALUATIONS</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ComponentTensionSolution</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ComponentTensionSolution</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">EquilibriumTilingReport</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Tensions and pressures by a global fit of an equilibrium tiling of circular arcs (provisional, opt-in).</p>
+<p>The label image's crack points (the middle of every side shared by two 4-adjacent pixels of different labels) are
+fitted by a Möbius tiling (Noll N. et al., Phys. Rev. X 10, 011072, 2020, doi:10.1103/PhysRevX.10.011072): every
+material carries <code>f(x) = A |x|^2 + B . x + C</code>, every interface is the circle where two <code>f</code> are equal, Young's and
+Laplace's laws hold exactly, and the fit minimises the squared distance of the points to their circles
+(Levenberg-Marquardt, sparse analytic Jacobian). Start: Noll's algebraic problem with each interface's residual
+divided by the tension of foambryo's arc reading of <code>mesh</code> (<code>infer_tensions_by_junction_component</code> at its defaults)
+and one anchor per interface, so that the start is measured in pixels; this is what makes large tissues and crops
+converge to the true tiling. Tensions share a scale only within a block (biconnected component) of the
+graph of materials linked by interfaces: each block is fitted alone and gauged to <code>mean(tension) = mean_tension</code>.</p>
+<p>Named after what it returns, tensions and pressures in one call, like <code>foambryo.infer_forces</code>; the mesh comes first,
+as in every <code>infer_*</code> function (<code>infer_by_arc_tiling(labels, mesh)</code> before 0.8.0, never released).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mesh</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the 2-D mesh of <code>labels</code> (a <code>foambryo.PlanarMesh</code>, dw2d's <code>DCEL_Data</code>, ...), for the start. A mesh in
+physical units (<code>PlanarMesh.spacing</code>) is read in pixels, and the pressures are returned per unit of length.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>labels</code>
+            </td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.integer">integer</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the label image (<code>(rows, columns)</code> integers, 0 the medium) that <code>mesh</code> was built from.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean_tension</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>each block's mean tension.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_evaluations</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the fit's largest number of residual evaluations.</p>
+              </div>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS
+
+
+  
+      module-attribute
+   (foambryo._two_dimensional.EQUILIBRIUM_TILING_MAX_EVALUATIONS)" href="#foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS">EQUILIBRIUM_TILING_MAX_EVALUATIONS</a></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>diagnostics</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>also return an <code>EquilibriumTilingReport</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]] | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>], <a class="autorefs autorefs-internal" title="foambryo.EquilibriumTilingReport
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.EquilibriumTilingReport)" href="#foambryo.EquilibriumTilingReport">EquilibriumTilingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(solution, pressures)</code>, or <code>(solution, pressures, report)</code> with <code>diagnostics</code>. <code>solution</code> is a</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]] | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>], <a class="autorefs autorefs-internal" title="foambryo.EquilibriumTilingReport
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.EquilibriumTilingReport)" href="#foambryo.EquilibriumTilingReport">EquilibriumTilingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>ComponentTensionSolution</code> (interface -&gt; tension; <code>component_of</code> the block; <code>nan</code> where refused, with the</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]] | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>], <a class="autorefs autorefs-internal" title="foambryo.EquilibriumTilingReport
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.EquilibriumTilingReport)" href="#foambryo.EquilibriumTilingReport">EquilibriumTilingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>reason in <code>report.refused</code>). <code>pressures</code>: cell -&gt; pressure relative to the medium, on the scale of its block's</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]] | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>], <a class="autorefs autorefs-internal" title="foambryo.EquilibriumTilingReport
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.EquilibriumTilingReport)" href="#foambryo.EquilibriumTilingReport">EquilibriumTilingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tensions, per pixel; <code>nan</code> for a cell of a block without the medium or one the check refuses (reason in</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>]] | <span title="tuple">tuple</span>[<a class="autorefs autorefs-internal" title="ComponentTensionSolution
+
+
+  
+      dataclass
+   (foambryo.junction_graph.ComponentTensionSolution)" href="../junction-graph/#foambryo.junction_graph.ComponentTensionSolution">ComponentTensionSolution</a>, <span title="dict">dict</span>[<span title="int">int</span>, <span title="float">float</span>], <a class="autorefs autorefs-internal" title="foambryo.EquilibriumTilingReport
+
+
+  
+      dataclass
+   (foambryo._two_dimensional.EquilibriumTilingReport)" href="#foambryo.EquilibriumTilingReport">EquilibriumTilingReport</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>report.pressure_refused</code>); the medium is 0.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>when <code>labels</code> is not the image <code>mesh</code> was built from, as far as it can be checked: not 2-D, a shape
+other than the mesh's <code>image_shape</code> (when the mesh records it), or a cell of the mesh absent from <code>labels</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Refusals (local, never the whole image): an interface with fewer than 3 crack points; an interface that is a block
+by itself; an interface of a cell whose fitted pressure is not above the medium's (an unbounded region), or that is
+empty in the fitted tiling; an interface of the data that the fitted tiling does not have in the image.</p>
+<p>Measured on synthetic equilibrium foams with known tensions and pressures (307 held-out tissues of 4 to 64 cells,
+exact masks, crops, smooth boundary noise of 0.5 to 2 px, the 0.75 px measured on real 2D masks, Cellpose
+segmentations of rendered images, and images whose membranes are displaced 0.75 px off equilibrium; cells of 10 to
+40 px radius), against the arc reading of <code>infer_tensions_by_junction_component</code>: the median relative tension error
+is lower in every tier and scale, by 0.03 to 0.11 (95 % intervals below 0), except at 2 px of noise and 20 px radius
+(-0.005, interval -0.014 to +0.005); on a 4 096-cell tissue (10 px radius) 0.077 against 0.156, every interface
+kept, in 74 s and 0.6 GiB. It refuses whole images where the arc reading refuses none: 11 of 453 crops (the fit
+slides along the one direction of the cost that a cut tissue barely determines, the ratio of the cell-medium to
+the cell-cell tensions), so it is offered beside the arc reading, not as the default.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="foambryo.EquilibriumTilingReport" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">foambryo.EquilibriumTilingReport</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#foambryo.EquilibriumTilingReport" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">EquilibriumTilingReport</span><span class="p">(</span><span class="n">refused</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Interface</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">pressure_refused</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">converged</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">valid</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">validity</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>What <code>infer_forces_by_equilibrium_tiling</code> fitted, checked and refused.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.refused">refused</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="foambryo._two_dimensional.Interface">Interface</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>interface -&gt; the reason it has no tension (<code>nan</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.pressure_refused">pressure_refused</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="int">int</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cell -&gt; the reason it has no pressure (<code>nan</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.converged">converged</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether every block's fit met its stopping rule within <code>max_evaluations</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.valid">valid</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether the fitted tiling reproduces the data's junctions and gives every cell one bounded, connected
+region (the check of <code>_global_fit_2d.fit_tiling</code>); refusals are local, so a tiling can be invalid and
+still give tensions where it agrees with the data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.validity">validity</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the check's details (missing and extra junctions, empty, disconnected and unbounded cells).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.blocks">blocks</span></code></td>
+            <td>
+                  <code><span title="list">list</span>[<span title="dict">dict</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>per block (<code>component_of</code>'s index): its interfaces, its reference material, its fit's status.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.n_points">n_points</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the crack points fitted.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.EquilibriumTilingReport.seconds">seconds</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>wall time of each stage.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#foambryo.EQUILIBRIUM_TILING_MAX_EVALUATIONS" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EQUILIBRIUM_TILING_MAX_EVALUATIONS</span> <span class="o">=</span> <span class="mi">200</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div><h2 id="drawing-a-2-d-mesh">Drawing a 2-D mesh<a class="headerlink" href="#drawing-a-2-d-mesh" title="Permanent link">&para;</a></h2>
+<p><code>planar_mesh_drawing</code> and <code>PlanarMeshDrawing</code>, what the viewers draw of a 2-D mesh, are on the <a href="../plotting-utilities/">plotting utilities</a> page.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

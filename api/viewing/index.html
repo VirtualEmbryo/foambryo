@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../colour-scales/">
+        <link rel="prev" href="../plotting-utilities/">
       
       
         <link rel="next" href="../geometry/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1518,6 +1602,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2006,7 +2146,7 @@ first, then its reconstruction and the inference, run in child processes that th
 
 
 <a href="#foambryo.viewing.plot_force_inference" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_force_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_force_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stress</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'full'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2017,6 +2157,10 @@ to the pressures (reversed <code>magma</code>, trimmed to its 10-90 % range). An
 its interface's green outline, without fill, and an undetermined pressure fills its cell green; crop faces
 are see-through glass. The graph of the tissue and each cell's principal stresses are drawn too. The module
 docstring lists what the panel offers.</p>
+<p>A 2-D mesh (<code>foambryo.PlanarMesh</code>, delaunay-watershed-2d's <code>DCEL_Data</code>) opens the 2-D window
+(<code>foambryo._planar_viewer</code>): its interfaces as curves coloured by tension, its cells as polygons coloured by
+pressure, its junctions as points, each cell's principal stresses, rows downward as in napari and matplotlib, with
+<code>image</code> under it when given.</p>
 <p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>) and a display, also with <code>show=False</code> (Polyscope renders
 the figure). Returns when the window is closed.</p>
 
@@ -2112,7 +2256,8 @@ runs from 0 to the <code>1 - alpha</code> quantile. Defaults to 0.05.</p>
             <td>
               <div class="doc-md-description">
                 <p>also add the sphere-fit residual, the area and volume derivatives
-and the curvatures as surface quantities (<code>jet</code>). Defaults to False.</p>
+and the curvatures as surface quantities (<code>jet</code>); for a 2-D mesh, the interfaces' curvatures (arc and
+local) as quantities of the curves. Defaults to False.</p>
               </div>
             </td>
             <td>
@@ -2210,7 +2355,7 @@ Keyword-only.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the pressure method. Defaults to <code>Variational</code>.
+                <p>the pressure method. Defaults to None, <code>infer_forces</code>' default: <code>Variational</code> for a 3-D mesh.
 Keyword-only.</p>
               </div>
             </td>
@@ -2340,6 +2485,64 @@ shows for values inferred in the window. Defaults to None (no command line). Key
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>infer_forces</code>' junction-angle reading, used when the viewer infers.
+Defaults to None, the dimension's default (<code>"chord"</code> in 3D, <code>"arc"</code> in 2D). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>image</code>
+            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a 2-D mesh only: an image drawn under the mesh, on the mesh's pixel grid
+(<code>(rows, columns)</code> grey, or <code>(rows, columns, 3)</code> RGB): the image the mask was segmented from, or the
+mask's labels. Defaults to None. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stress</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the cells' stress glyphs: <code>"full"</code>, each cell's mean stress tensor (the default), or
+<code>"deviatoric"</code>, its deviatoric part <code>sigma - (tr sigma / d) I</code>, drawn as "Deviatoric stress principal
+directions". The deviatoric part depends on the tensions and the geometry only, never on the pressures:
+it shows each cell's anisotropy and principal directions, and holds for a confined embryo (an eggshell,
+a substrate) when the tensions are read near the junctions (in 2D, <code>angle_reading="fitted_tangent"</code>),
+where pressures, hence the full stress, are not measurements; it leaves out the isotropic part, the
+mean normal stress (<code>foambryo._cell_stress</code>). A cell with an undetermined pressure gets a deviatoric
+glyph, not a full one. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;full&#39;</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -2361,7 +2564,8 @@ shows for values inferred in the window. Defaults to None (no command line). Key
               <div class="doc-md-description">
                 <p>when the viewer infers and the library refuses the tensions or the pressures (the library's
 message; <code>UndeterminedTensionError</code>, a <code>ValueError</code>, when the given tensions are not all finite on a
-mesh without crop faces).</p>
+mesh without crop faces); for an <code>image</code> with a 3-D mesh, or one whose shape is not the 2-D mesh's
+image's; for a <code>stress</code> other than <code>"full"</code> or <code>"deviatoric"</code>.</p>
               </div>
             </td>
           </tr>
@@ -2381,7 +2585,7 @@ mesh without crop faces).</p>
 
 
 <a href="#foambryo.viewing.plot_pressure_inference" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_pressure_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_pressure_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_pressure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2547,7 +2751,7 @@ Keyword-only.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the pressure method. Defaults to <code>Variational</code>.
+                <p>the pressure method. Defaults to None, <code>infer_forces</code>' default: <code>Variational</code> for a 3-D mesh.
 Keyword-only.</p>
               </div>
             </td>
@@ -2659,8 +2863,41 @@ figure. Defaults to None. Keyword-only.</p>
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as for <code>plot_force_inference</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>image</code>
+            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as for <code>plot_force_inference</code> (a 2-D mesh only). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
+        <p>A 2-D mesh opens the 2-D window, its cells filled with their pressures (see <code>plot_force_inference</code>).</p>
 
 
 <p><span class="doc-section-title">Raises:</span></p>
@@ -2679,7 +2916,7 @@ figure. Defaults to None. Keyword-only.</p>
             <td>
               <div class="doc-md-description">
                 <p>when the viewer infers and the library refuses the tensions or the pressures (the library's
-message).</p>
+message); for an <code>image</code> as <code>plot_force_inference</code> says.</p>
               </div>
             </td>
           </tr>
@@ -2699,7 +2936,7 @@ message).</p>
 
 
 <a href="#foambryo.viewing.plot_tension_inference" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_tension_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">seed_ensemble</span><span class="p">:</span> <span class="n">SeedEnsembleMaps</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">plot_tension_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">dict_tensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">scalar_quantities</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">seed_ensemble</span><span class="p">:</span> <span class="n">SeedEnsembleMaps</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">length_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">save_figure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">values_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2785,7 +3022,8 @@ farther of the <code>alpha</code> and <code>1 - alpha</code> quantiles from the 
             <td>
               <div class="doc-md-description">
                 <p>also add the sphere-fit residual, the area and volume derivatives
-and the curvatures as surface quantities (<code>jet</code>). Defaults to False.</p>
+and the curvatures as surface quantities (<code>jet</code>); for a 2-D mesh, the interfaces' curvatures (arc and
+local) as quantities of the curves. Defaults to False.</p>
               </div>
             </td>
             <td>
@@ -3001,8 +3239,41 @@ shows for values inferred in the window. Defaults to None (no command line). Key
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as for <code>plot_force_inference</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>image</code>
+            </td>
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>as for <code>plot_force_inference</code> (a 2-D mesh only). Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
+        <p>A 2-D mesh opens the 2-D window, its interfaces as curves coloured by tension (see <code>plot_force_inference</code>).</p>
 
 
 <p><span class="doc-section-title">Raises:</span></p>
@@ -3021,7 +3292,8 @@ shows for values inferred in the window. Defaults to None (no command line). Key
             <td>
               <div class="doc-md-description">
                 <p>if both <code>dict_tensions</code> and <code>seed_ensemble</code> are given, or when the viewer infers and the
-library refuses the tensions (the library's message).</p>
+library refuses the tensions (the library's message); for a seed ensemble on a 2-D mesh (there is no 2-D
+ensemble), or an <code>image</code> as <code>plot_force_inference</code> says.</p>
               </div>
             </td>
           </tr>
@@ -3041,7 +3313,7 @@ library refuses the tensions (the library's message).</p>
 
 
 <a href="#foambryo.viewing.view_mask" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">view_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'um'</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">pressures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mask_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'mask.npz'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">view_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'um'</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mean_tension'</span><span class="p">],</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'base_pressure'</span><span class="p">],</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_tension'</span><span class="p">],</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'mode_pressure'</span><span class="p">],</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_INFER_FORCES_DEFAULTS</span><span class="p">[</span><span class="s1">'solver'</span><span class="p">],</span> <span class="n">pressures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">scattered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">scatter_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SCATTER_COEFF</span><span class="p">,</span> <span class="n">scale_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mask_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'mask.npz'</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stress</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'full'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3053,7 +3325,10 @@ library refuses the tensions (the library's message).</p>
 process with its elapsed time, the estimate (<code>foambryo.reconstruction_cost</code>) and Cancel; the values are then
 drawn with their colour bars, explode, cut and export, as by <code>plot_force_inference</code>. Returns when the window is
 closed (a job still running is cancelled then).</p>
-<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>), delaunay-watershed-3d and a display.</p>
+<p>Needs Polyscope (<code>pip install "foambryo[viewing]"</code>), delaunay-watershed and a display.</p>
+<p>A 2-D mask (axis 0 = y, axis 1 = x) opens the 2-D window: the mask as an image (one colour per label), meshed by
+delaunay-watershed-2d, inferred in 2D (Young-Dupré with the 2-D angle readings, Laplace pressures), the values
+drawn as <code>plot_force_inference</code> draws a 2-D mesh; there is no seed ensemble and no cut in 2D.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3077,7 +3352,7 @@ closed (a job still running is cancelled then).</p>
             <td>
               <div class="doc-md-description">
                 <p>the segmentation, a 3-D array of non-negative integer labels, axis 0 = z, axis 1 = y, axis 2 = x,
-0 the medium (<code>check_segmentation_mask</code>'s checks).</p>
+0 the medium (<code>check_segmentation_mask</code>'s checks); or a 2-D one, axis 0 = y, axis 1 = x.</p>
               </div>
             </td>
             <td>
@@ -3089,13 +3364,14 @@ closed (a job still running is cancelled then).</p>
                 <code>spacing</code>
             </td>
             <td>
-                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>the voxel size <code>(dz, dy, dx)</code>, three finite numbers &gt; 0, in <code>spacing_unit</code>; an anisotropic mask
 is resampled to cubic voxels of the shortest spacing before meshing, as by <code>foambryo mesh</code> (only one
-axis may be longer than the other two). There is no default: a wrong spacing changes every angle.</p>
+axis may be longer than the other two). For a 2-D mask, the pixel size <code>(dy, dx)</code>, square (<code>dy == dx</code>).
+There is no default: a wrong spacing changes every angle.</p>
               </div>
             </td>
             <td>
@@ -3128,8 +3404,9 @@ Defaults to <code>"um"</code>. Keyword-only.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the reconstruction's <code>--min-distance</code>, in cubic voxels of the shortest spacing; <code>None</code> (the
-default) is delaunay-watershed-3d's default (3). The panel changes it. Keyword-only.</p>
+                <p>the reconstruction's <code>--min-distance</code>, in cubic voxels of the shortest spacing (square pixels
+in 2D); <code>None</code> (the default) is the library's default (3 voxels, 4 pixels). The panel changes it.
+Keyword-only.</p>
               </div>
             </td>
             <td>
@@ -3189,11 +3466,11 @@ default) is delaunay-watershed-3d's default (3). The panel changes it. Keyword-o
                 <code>mode_pressure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>likewise (default <code>PressureComputationMethod.Variational</code>). Keyword-only.</p>
+                <p>likewise (default None: <code>PressureComputationMethod.Variational</code> for a 3-D mask). Keyword-only.</p>
               </div>
             </td>
             <td>
@@ -3297,6 +3574,42 @@ refused mask. Defaults to <code>"mask.npz"</code>. Keyword-only.</p>
                   <code>&#39;mask.npz&#39;</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a 2-D mask only: the junction-angle reading the panel starts with (<code>ANGLE_READINGS_2D</code>);
+<code>None</code> is the 2-D default, <code>"arc"</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stress</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the cells' stress glyphs in the force view (<code>--stress</code>), as <code>plot_force_inference(stress=...)</code>:
+<code>"full"</code>, each cell's mean stress tensor, or <code>"deviatoric"</code>, its traceless part, which needs no pressure
+(for a confined tissue, whose pressures are not measurements; the cells are then not coloured by
+pressure). Defaults to <code>"full"</code>. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;full&#39;</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -3317,7 +3630,9 @@ refused mask. Defaults to <code>"mask.npz"</code>. Keyword-only.</p>
             <td>
               <div class="doc-md-description">
                 <p>if the mask or the spacing is refused (the messages of <code>foambryo mesh</code>'s checks; a refused
-mask raises <code>foambryo.segmentation_masks.SegmentationMaskError</code>, a <code>ValueError</code>).</p>
+mask raises <code>foambryo.segmentation_masks.SegmentationMaskError</code>, a <code>ValueError</code>); if <code>stress</code> is not
+<code>"full"</code> or <code>"deviatoric"</code>; or if <code>stress="deviatoric"</code> comes with <code>pressures=False</code>, as
+<code>foambryo view MASK</code> refuses <code>--stress deviatoric</code> with <code>--no-pressures</code>.</p>
               </div>
             </td>
           </tr>
@@ -3588,10 +3903,10 @@ with that function's default method.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

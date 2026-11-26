@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1131,6 +1215,17 @@
     <span class="md-ellipsis">
       
         load_rec_appendix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.io.default_min_distance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        default_min_distance
       
     </span>
   </a>
@@ -1673,6 +1768,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -1927,6 +2078,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#foambryo.io.default_min_distance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        default_min_distance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#foambryo.io.reconstruct_mask" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2000,12 +2162,14 @@
 
     <div class="doc doc-contents first">
 
-        <p>The meshes every inference reads: a <code>DcelData</code> from a segmentation mask, raw mesh arrays or a mesh file.</p>
+        <p>The meshes every inference reads: a <code>DcelData</code> (3D) or a <code>PlanarMesh</code> (2D) from a mask, mesh arrays or a file.</p>
 <p>Inputs can be:
-- a segmentation mask (3D uint array) ;
-- a multimaterial mesh: points, triangles, labels ;
-- a file (.rec, or opened by meshio) containing a multimaterial mesh.</p>
-<p>Output is always a DcelData mesh. Conventions: label 0 is the exterior medium; a mask's axes are
+- a segmentation mask (3D or 2D integer array; its <code>ndim</code> decides) ;
+- a multimaterial mesh: points, triangles (or segments), labels ;
+- a file (.rec, or opened by meshio) containing a multimaterial mesh; a 2-D <code>.rec</code> file is recognised by the
+  <code>dimension</code> its appendix records, else by its layout (<code>dw3d.io.rec_dimension</code>).</p>
+<p>Output is a DcelData mesh in 3D, a <code>foambryo.PlanarMesh</code> in 2D (points in the mask's <code>(row, column)</code> order, in pixels
+unless an isotropic <code>spacing</code> is given). Conventions: label 0 is the exterior medium; a mask's axes are
 (z, y, x) and the mesh's coordinates follow them, column 0 along axis 0; the mesh is in voxel units
 unless a <code>spacing</code> gives a physical one, and the inferred pressures are in the tension unit divided
 by that length unit. Mesh files keep that column order, (z, y, x): a program that reads the columns as
@@ -2045,7 +2209,7 @@ draws (x, y, z) = the columns (2, 1, 0), the tissue as it is (<code>foambryo.vie
   </span>
 
 <a href="#foambryo.io.MaskReconstruction" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MaskReconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rec_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cut_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">media</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">unresolved</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">())</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MaskReconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rec_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cut_cells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">media</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">unresolved</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(),</span> <span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">image_border_vertices</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2086,7 +2250,7 @@ mesh</code> writes, byte for byte, because it holds the bytes delaunay-watershed
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the triangles, as the reconstruction returned them.</p>
+                <p>the triangles, as the reconstruction returned them; in 2D the segments <code>(m, 2)</code>.</p>
               </div>
             </td>
           </tr>
@@ -2120,7 +2284,7 @@ records none.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the voxel size the mask was reconstructed with, <code>(dz, dy, dx)</code>.</p>
+                <p>the voxel size the mask was reconstructed with, <code>(dz, dy, dx)</code>; in 2D the pixel size <code>(dy, dx)</code>.</p>
               </div>
             </td>
           </tr>
@@ -2199,7 +2363,40 @@ regions (delaunay-watershed-3d 0.7.1 and later; <code>(0,)</code> with an earlie
             <td>
               <div class="doc-md-description">
                 <p>labels of the mask absent from the mesh, because no tetrahedron of the reconstruction lay in
-their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts.</p>
+their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts (pixel counts in 2D).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.io.MaskReconstruction.dimension">dimension</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>3, or 2 for a 2-D mask (meshed by delaunay-watershed's dw2d).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.io.MaskReconstruction.image_border_vertices">image_border_vertices</span></code></td>
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>2D only: the vertices on the image border (dw2d's mark).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="foambryo.io.MaskReconstruction.image_shape">image_shape</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="int">int</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>2D only: the shape of the label image.</p>
               </div>
             </td>
           </tr>
@@ -2235,13 +2432,14 @@ their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts.</
 
 
 <a href="#foambryo.io.MaskReconstruction.mesh" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">mesh</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DcelData</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">mesh</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DcelData</span> <span class="o">|</span> <span class="n">PlanarMesh</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>The mesh for inference, as <code>dcel_mesh_from_segmentation_mask(mask, spacing=...)</code> builds it.</p>
-<p>Built from copies of the arrays, so the reconstruction is unchanged by any use of the mesh.</p>
+<p>Built from copies of the arrays, so the reconstruction is unchanged by any use of the mesh. In 2D
+(<code>dimension == 2</code>) a <code>PlanarMesh</code>, whose <code>triangles</code> are the segments.</p>
 
 
     </div>
@@ -2346,12 +2544,86 @@ dw3d &gt;= 0.4.0.</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="foambryo.io.default_min_distance" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">default_min_distance</span>
+
+
+<a href="#foambryo.io.default_min_distance" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">default_min_distance</span><span class="p">(</span><span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The reconstruction's point spacing when none is given (<code>min_distance=None</code>): delaunay-watershed's own defaults.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>dimension</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>3 for a 3-D mask, 2 for a 2-D one.</p>
+              </div>
+            </td>
+            <td>
+                  <code>3</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>int</code></td>            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>3 voxels in 3D (dw3d's), 4 pixels in 2D (dw2d's).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="foambryo.io.reconstruct_mask" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">reconstruct_mask</span>
 
 
 <a href="#foambryo.io.reconstruct_mask" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">reconstruct_mask</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">uint</span><span class="p">],</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'um'</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MaskReconstruction</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">reconstruct_mask</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">uint</span><span class="p">],</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">spacing_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'um'</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pad_thin_medium_margins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MaskReconstruction</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2398,7 +2670,7 @@ file depends on <code>spacing_unit</code>.</p>
                 <code>spacing</code>
             </td>
             <td>
-                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2432,20 +2704,46 @@ command's.</p>
                 <code>min_distance</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
+                  <code><span title="int">int</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>minimum distance between the reconstruction's points, in cubic voxels of the shortest
-spacing. Keyword-only. Defaults to 3, delaunay-watershed-3d's.</p>
+spacing. Keyword-only. Defaults to None: 3 voxels (delaunay-watershed-3d's), 4 pixels for a 2-D mask
+(dw2d's).</p>
               </div>
             </td>
             <td>
-                  <code>3</code>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pad_thin_medium_margins</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether delaunay-watershed pads with medium the faces of the image box (sides of
+the image in 2D) that no cell reaches when their margin of medium is thin, so that a cell a few voxels
+from such a face does not take the medium between them (<code>construct_mesh_in_physical_units</code>'
+keyword, <code>foambryo mesh --pad-thin-medium-margins</code> / <code>--no-pad-thin-medium-margins</code>). Keyword-only.
+Defaults to None, delaunay-watershed's own default: on for cubic voxels and square pixels, off for a
+mask it resamples (voxels longer along one axis), where the padding made its watershed lose cells more
+often.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
     </table>
+        <p>A 2-D mask (<code>segmentation_mask.ndim == 2</code>) is meshed by dw2d through the same call (delaunay-watershed-3d hands
+it over), with <code>spacing</code> the pixel size <code>(dy, dx)</code>, square pixels only, and <code>axis_order="yx"</code>; the result has
+<code>dimension == 2</code> and its <code>mesh()</code> is a <code>PlanarMesh</code>.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -2512,7 +2810,7 @@ installed delaunay-watershed-3d has no <code>construct_mesh_in_physical_units</c
 
 
 <a href="#foambryo.io.dcel_mesh_from_segmentation_mask" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_segmentation_mask</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">uint</span><span class="p">],</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">print_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">physical_image_faces</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_segmentation_mask</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">uint</span><span class="p">],</span> <span class="n">min_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">print_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">physical_image_faces</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span> <span class="o">|</span> <span class="n">PlanarMesh</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2549,7 +2847,9 @@ they cut as <code>nan</code>.</p>
               <div class="doc-md-description">
                 <p>Instance segmentation image: 3-D integer labels,
 axes (z, y, x), label 0 the medium, one label per cell. The mesh's coordinates follow
-the mask's axes, column 0 along axis 0.</p>
+the mask's axes, column 0 along axis 0. <strong>A 2-D mask</strong> (axes (y, x)) is meshed by dw2d, through
+delaunay-watershed-3d's algorithm, and returned as a <code>foambryo.PlanarMesh</code> (with dw2d's image-border
+vertices, and its points in the unit of an isotropic <code>spacing</code> when given).</p>
               </div>
             </td>
             <td>
@@ -2561,18 +2861,18 @@ the mask's axes, column 0 along axis 0.</p>
                 <code>min_distance</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
+                  <code><span title="int">int</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>minimum distance between points of the output mesh, in voxels.
-Defaults to 3, dw3d's own default (it was 5 up to foambryo 0.4.2). Pass 5 to reproduce the
-0.4 spacing; at 5 or more dw3d emits <code>CoarseSpacingRelocationWarning</code> once per
-reconstruction.</p>
+Defaults to None: 3 in 3D, dw3d's own default (it was 5 up to foambryo 0.4.2), and 4 pixels in 2D,
+dw2d's. Pass 5 to reproduce the 0.4 spacing; at 5 or more dw3d emits <code>CoarseSpacingRelocationWarning</code>
+once per reconstruction.</p>
               </div>
             </td>
             <td>
-                  <code>3</code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2631,7 +2931,7 @@ on 12 simulated tissues of 90 and 165 cells at a real cell size, down-sampled al
 against the same tissues meshed at full resolution: resampling first costs +0.83, +0.71
 and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against
 +1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh (dw3d 0.7.0's
-meshes, not measured again for 0.7.1). Above 3
+meshes, before 0.8.0 pads thin margins of medium on the native grid; not measured again). Above 3
 nothing was measured at that cell size, and delaunay-watershed-3d warns
 (<code>UnmeasuredAnisotropyWarning</code>); the mesh is built anyway. The cost is that of a mask
 acquired at the short spacing: the anisotropy times the voxels.</p>
@@ -2656,7 +2956,7 @@ acquired at the short spacing: the anisotropy times the voxels.</p>
       <tbody>
           <tr class="doc-section-item">
 <td><code>DcelData</code></td>            <td>
-                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a> | <a class="autorefs autorefs-internal" title="PlanarMesh (foambryo.planar_mesh.PlanarMesh)" href="../two-dimensional/#foambryo.planar_mesh.PlanarMesh">PlanarMesh</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2732,12 +3032,14 @@ at most one longer axis, or is given to a dw3d without
 
 
 <a href="#foambryo.io.dcel_mesh_from_multimaterial_mesh" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_multimaterial_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">source_spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_multimaterial_mesh</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float64</span><span class="p">],</span> <span class="n">triangles</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">int64</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">crop_faces</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">bool_</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">integer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">source_spacing</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span> <span class="o">|</span> <span class="n">PlanarMesh</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Obtain a DcelData mesh for force inference from raw multimaterial mesh data.</p>
+<p><code>(n, 2)</code> points with <code>(m, 2)</code> segments in place of triangles give a 2-D mesh, <code>foambryo.PlanarMesh</code> (dw2d's
+layout; crop faces and a source spacing are 3-D only).</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2853,7 +3155,7 @@ not used (see <code>DcelData</code>). Keyword-only. Defaults to <code>None</code
       <tbody>
           <tr class="doc-section-item">
 <td><code>DcelData</code></td>            <td>
-                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a> | <a class="autorefs autorefs-internal" title="PlanarMesh (foambryo.planar_mesh.PlanarMesh)" href="../two-dimensional/#foambryo.planar_mesh.PlanarMesh">PlanarMesh</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2901,12 +3203,15 @@ not used (see <code>DcelData</code>). Keyword-only. Defaults to <code>None</code
 
 
 <a href="#foambryo.io.dcel_mesh_from_file" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dcel_mesh_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DcelData</span> <span class="o">|</span> <span class="n">PlanarMesh</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Obtain a DcelData mesh for force inference from a multimaterial mesh file.</p>
+<p>A 2-D <code>.rec</code> file (its appendix records <code>dimension = 2</code>, or its layout has two coordinates per point:
+<code>dw3d.io.rec_dimension</code>) is read by dw2d's reader into a <code>foambryo.PlanarMesh</code>, with the image-border vertices and,
+for a mesh in physical units, the pixel size and unit its appendix records.</p>
 <p>It can be either a <code>.rec</code> (or <code>.arec</code>) file created from Delaunay-Watershed 3D, or a mesh
 that can be opened by meshio and contains a "label1" and "label2" data.
 The .vtk meshes saved by Delaunay-Watershed 3D are an example of such meshes. The mesh is
@@ -2967,7 +3272,7 @@ exterior 0 alone; name further media with <code>DcelData(..., media=...)</code> 
       <tbody>
           <tr class="doc-section-item">
 <td><code>DcelData</code></td>            <td>
-                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a></code>
+                  <code><a class="autorefs autorefs-internal" title="DcelData (foambryo.dcel.DcelData)" href="../mesh/#foambryo.dcel.DcelData">DcelData</a> | <a class="autorefs autorefs-internal" title="PlanarMesh (foambryo.planar_mesh.PlanarMesh)" href="../two-dimensional/#foambryo.planar_mesh.PlanarMesh">PlanarMesh</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3097,10 +3402,10 @@ triangles that look like them.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

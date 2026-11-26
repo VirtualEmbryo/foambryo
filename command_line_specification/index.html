@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -535,6 +535,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../user-guide/viewers/" class="md-nav__link">
         
   
@@ -778,10 +806,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-runjson-schema-1" class="md-nav__link">
+  <a href="#5-runjson-schema-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. run.json, schema 1
+        5. run.json, schema 2
       
     </span>
   </a>
@@ -915,6 +943,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#12-two-dimensional-input-foambryo-080-provisional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Two-dimensional input (foambryo 0.8.0, provisional)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -998,6 +1037,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1861,6 +1956,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/viewing/" class="md-nav__link">
         
   
@@ -2209,10 +2360,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-runjson-schema-1" class="md-nav__link">
+  <a href="#5-runjson-schema-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. run.json, schema 1
+        5. run.json, schema 2
       
     </span>
   </a>
@@ -2346,6 +2497,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#12-two-dimensional-input-foambryo-080-provisional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Two-dimensional input (foambryo 0.8.0, provisional)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2367,7 +2529,7 @@
 
 
 <h1 id="the-foambryo-command-behavioural-specification-version-1">The <code>foambryo</code> command — behavioural specification, version 1<a class="headerlink" href="#the-foambryo-command-behavioural-specification-version-1" title="Permanent link">&para;</a></h1>
-<p>Version 1, for foambryo 0.7.0 (October 2026; § 11 lists the changes since the first version). The implementation follows this text; where the two disagree, the text is the intent and the code is a defect. § 9 lists possible extensions.</p>
+<p>Version 1, for foambryo 0.7.0 (October 2026), extended to two-dimensional input in foambryo 0.8.0 (§ 12; § 11 lists the changes since the first version). The implementation follows this text; where the two disagree, the text is the intent and the code is a defect. § 9 lists possible extensions.</p>
 <p>This specification describes <strong>behaviour only</strong>: commands, options, defaults, files, columns, exit codes and messages. Every number the command writes is a number the library returns for the same options: the command adds file handling and records, and <strong>no default of its own</strong>.</p>
 <h2 id="1-installation-and-invocation">1. Installation and invocation<a class="headerlink" href="#1-installation-and-invocation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>pip install foambryo                  the command, .npy / .npz masks
@@ -2426,11 +2588,11 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <tr>
 <td><code>.tif</code>, <code>.tiff</code></td>
 <td><code>tifffile.imread</code> (<code>foambryo[cli]</code>)</td>
-<td>one 3-D image; <strong>the TIFF's resolution tags are not read</strong> (§ 9, <em>TIFF metadata</em>)</td>
+<td>one 3-D (or, § 12, 2-D) image; <strong>the TIFF's resolution tags are not read</strong> (§ 9, <em>TIFF metadata</em>)</td>
 </tr>
 </tbody>
 </table>
-<p>The array must be <strong>three-dimensional, of an integer type, with no negative value</strong>. Label 0 is the medium (exterior); every other label is a cell. <strong>Axis 0 is z, axis 1 is y, axis 2 is x</strong>: the order in which numpy and tifffile return a z-stack. The array is passed to the reconstruction unchanged (same values, same type).</p>
+<p>The array must be <strong>three-dimensional (or two-dimensional, § 12), of an integer type, with no negative value</strong>. Label 0 is the medium (exterior); every other label is a cell. <strong>Axis 0 is z, axis 1 is y, axis 2 is x</strong>: the order in which numpy and tifffile return a z-stack. The array is passed to the reconstruction unchanged (same values, same type).</p>
 <h3 id="32-options">3.2 Options<a class="headerlink" href="#32-options" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2465,6 +2627,11 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <td><code>--min-distance N</code></td>
 <td><code>3</code>, the library's</td>
 <td>minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing, an integer ≥ 1</td>
+</tr>
+<tr>
+<td><code>--pad-thin-medium-margins</code>, <code>--no-pad-thin-medium-margins</code></td>
+<td>delaunay-watershed's own: padded on cubic voxels and square pixels, not on a mask resampled to cubic voxels</td>
+<td>pad, or not, the thin margins of medium on the image faces no cell reaches before meshing (delaunay-watershed 0.8.0; <code>reconstruct_mask(..., pad_thin_medium_margins=...)</code>). Without either, the mesh is bitwise that of a command without the option. <code>ThinMediumMarginWarning</code>, as the command prints it, names the option</td>
 </tr>
 <tr>
 <td><code>--overwrite</code></td>
@@ -2599,7 +2766,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 <li><strong>With a medium besides 0</strong> (an enclosed lumen: from the <code>.rec</code> file's <code>media</code>, or <code>--media</code>), a third column, <code>region_kind</code>, says what each row is: <code>exterior</code> (0), <code>medium</code> or <code>cell</code>. The lumen's pressure is then its own row, marked <code>medium</code>. Without such a medium the file is exactly the two columns above, which foambryo 0.7.0's reader requires. <code>foambryo.results.read_pressure_table</code> reads both; <code>read_pressure_region_kinds</code> reads the column.</li>
 <li><strong>Written only when the pressures were computed</strong>: not with <code>--no-pressures</code>, nor when the library refuses them (§ 4.4).</li>
 </ul>
-<p><strong><code>run.json</code></strong>: the run record, schema 1 (§ 5).</p>
+<p><strong><code>run.json</code></strong>: the run record, schema 2 (§ 5).</p>
 <p><strong><code>solves.csv</code></strong>: only with <code>--diagnostics basic</code> or <code>spectrum</code>. One row per linear solve, in the order they ran, with the columns</p>
 <div class="highlight"><pre><span></span><code>index,system,solver,n_rows,n_unknowns,rank,residual_norm,condition_number,condition_number_source,seconds,lsqr_istop,lsqr_iterations,spectrum_seconds,spectrum_note,n_singular_values
 0,"tensions YoungDupre, junction-graph component 0",dense lstsq,57,30,30,1.43…e-15,8.21…,…
@@ -2697,7 +2864,7 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 0,1,2,1.0511...
 1,0,1,0.8774...
 </code></pre></div>
-<p><strong><code>run.json</code></strong>, schema 1 (§ 5), with <code>command</code> = <code>"foambryo infer-over-seeds"</code> and these keys in place of the mesh-related ones:
+<p><strong><code>run.json</code></strong>, schema 2 (§ 5), with <code>command</code> = <code>"foambryo infer-over-seeds"</code> and these keys in place of the mesh-related ones:
 * <code>input</code>: <code>path</code>, <code>sha256</code> and <code>bytes</code> of the mask file, its <code>shape</code>, the <code>spacing</code> used, its <code>spacing_unit</code>, and <code>spacing_from</code> (<code>"command line"</code> or the file's name);
 * <code>options</code>: <code>seeds</code> (N), <code>combine</code>, <code>angle_reading</code>, <code>tension_method</code>, <code>min_distance</code>, <code>max_workers</code>;
 * <code>seeds</code>: the seed list, <code>[0, 1, …, N−1]</code>;
@@ -2705,8 +2872,9 @@ mask --foambryo infer-over-seeds--&gt; OUTDIR/ tensions.csv (with the seed sprea
 * <code>results</code>: <code>tensions</code>, <code>undetermined_tensions</code> and <code>found_by_fewer_than_half_the_seeds</code> (counts);
 * <code>units</code>: <code>tension</code> (relative, each seed gauged to a mean of 1) and <code>length</code> (the spacing's unit).</p>
 <p><code>library_call</code>, <code>status</code> (<code>complete</code> or <code>failed</code>), <code>error</code>, <code>warnings</code> and <code>outputs</code> are as in § 5.</p>
-<h2 id="5-runjson-schema-1">5. <code>run.json</code>, schema 1<a class="headerlink" href="#5-runjson-schema-1" title="Permanent link">&para;</a></h2>
-<p>A JSON object, UTF-8, indented. Non-finite numbers are written as the strings <code>"nan"</code>, <code>"inf"</code>, <code>"-inf"</code> (JSON has no such numbers). <strong>Keys may be added within schema 1; a reader must ignore keys it does not know.</strong> Removing or renaming a key, or changing a key's meaning, makes a new schema number and is announced in the CHANGELOG.</p>
+<h2 id="5-runjson-schema-2">5. <code>run.json</code>, schema 2<a class="headerlink" href="#5-runjson-schema-2" title="Permanent link">&para;</a></h2>
+<p>Schema 2 (foambryo 0.8.0) is schema 1 with the key <code>dimension</code> (3 or 2); a 3-D record is a schema-1 record plus <code>dimension</code>, its <code>versions</code> also naming <code>delaunay-watershed-2d</code> and <code>iorec</code>. A 2-D record's <code>mesh</code> object counts <code>segments</code> and <code>image_border_vertices</code> instead of <code>triangles</code> and <code>crop_faces</code> (§ 12), so a reader that requires <code>triangles</code> fails on it. <code>options</code> records <code>angle_reading</code> only when it was given. The table below is schema 1's.</p>
+<p>A JSON object, UTF-8, indented. Non-finite numbers are written as the strings <code>"nan"</code>, <code>"inf"</code>, <code>"-inf"</code> (JSON has no such numbers). <strong>Keys may be added within a schema; a reader must ignore keys it does not know.</strong> Removing or renaming a key, or changing a key's meaning, makes a new schema number and is announced in the CHANGELOG.</p>
 <table>
 <thead>
 <tr>
@@ -2856,6 +3024,11 @@ foambryo view MASK [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N]
 <td>draw no length scale bar</td>
 </tr>
 <tr>
+<td><code>--stress full\|deviatoric</code></td>
+<td><code>full</code></td>
+<td>the cells' stress glyphs in the force view (<code>plot_force_inference(stress=...)</code>): each cell's mean stress tensor, or its deviatoric part, computed from the tensions alone, for a tissue whose pressures are not measurements (an embryo in its eggshell, cells on a substrate), where it is the contribution of the cortical tensions, not the cell's total stress anisotropy; with <code>deviatoric</code> the cells are not coloured by pressure, and the colour bars (<code>--colour-bars</code>, <code>--figure</code>) are the tension bar and the "Deviatoric stress" bar. Refused (exit 2) with <code>--no-pressures</code>, with <code>--results</code> of <code>infer --no-pressures</code>, and with a seed ensemble's results</td>
+</tr>
+<tr>
 <td><code>--scattered [COEFF]</code></td>
 <td>off; <code>COEFF</code> 0.2, the viewer functions' <code>scatter_coeff</code></td>
 <td>open the window exploded: each cell moved by <code>COEFF × (its centroid − the tissue's centroid)</code> (<code>DcelData.compute_scattered_arrays</code>); the panel changes it</td>
@@ -2920,7 +3093,7 @@ foambryo view MASK [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N]
 <li><strong>Inference</strong>: <em>one mesh</em> (<code>infer_tensions_then_pressures</code> on the reconstruction, <code>foambryo infer</code>'s call) or <em>seed ensemble</em> (<code>infer_tensions_over_seeds</code> on the mask, <code>foambryo infer-over-seeds</code>' call, with the number of seeds, workers and combination; its progress seed by seed), the tension method, the pressure method or <em>pressures</em> unticked, the solver, the diagnostics (one mesh); <strong>Infer</strong> and <strong>Cancel</strong>, also in a child process; and the command lines that give the same numbers (<code>foambryo mesh …</code> then <code>foambryo infer …</code>, or <code>foambryo infer-over-seeds …</code>). Once values are drawn the mask is hidden (its points would speckle the surface); its check box shows it again.</li>
 </ul>
 <p>With a mask, <code>--results</code>, <code>--figure</code>, <code>--colour-bars</code> and <code>--no-show</code> are refused (exit 2): they need a mesh; <code>foambryo mesh</code> writes it without a window. The values are drawn once prepared in the background: the mask and the reconstruction stay on screen until then.</p>
-<p>From Python, <code>foambryo.viewing.view_mask(mask, spacing, *, spacing_unit="um", min_distance=None, mean_tension, base_pressure, mode_tension, mode_pressure, solver, pressures=True, scattered=False, scatter_coeff=0.2, scale_bar=True, mask_name="mask.npz")</code> opens the same window (every default the library's; <code>min_distance=None</code> is delaunay-watershed-3d's); a mask or spacing the command refuses raises <code>ValueError</code>.</p>
+<p>From Python, <code>foambryo.viewing.view_mask(mask, spacing, *, spacing_unit="um", min_distance=None, mean_tension, base_pressure, mode_tension, mode_pressure, solver, pressures=True, scattered=False, scatter_coeff=0.2, scale_bar=True, mask_name="mask.npz", angle_reading=None, stress="full")</code> opens the same window (every default the library's; <code>min_distance=None</code> is delaunay-watershed-3d's); a mask or spacing the command refuses raises <code>ValueError</code>, and so does <code>stress="deviatoric"</code> with <code>pressures=False</code>, as <code>--stress deviatoric</code> with <code>--no-pressures</code>.</p>
 <h2 id="7-messages-and-exit-codes">7. Messages and exit codes<a class="headerlink" href="#7-messages-and-exit-codes" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Errors</strong> go to standard error as one line, <code>foambryo &lt;sub-command&gt;: error: &lt;message&gt;</code>, followed by the exit code below. No Python traceback, except for an unexpected error (code 1).</li>
@@ -2980,7 +3153,7 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 </ol>
 <p>Synthetic masks and benchmark meshes only.</p>
 <h2 id="9-possible-extensions">9. Possible extensions<a class="headerlink" href="#9-possible-extensions" title="Permanent link">&para;</a></h2>
-<p>None of these is in schema 1; each would be a change to this specification. Requests and comments are welcome on the issue tracker.</p>
+<p>None of these is in schema 2; each would be a change to this specification. Requests and comments are welcome on the issue tracker.</p>
 <ul>
 <li><strong>Formats.</strong> Masks are read from <code>.npy</code>, <code>.npz</code> and <code>.tif</code>, meshes from <code>.rec</code>; <code>mesh</code> could also write <code>.vtk</code>.</li>
 <li><strong>TIFF metadata.</strong> <code>mesh</code> does not read the spacing from a TIFF (ImageJ <code>spacing</code> and the resolution tags), because these tags are often missing or wrong and a wrong spacing is silent; it could, for software whose tags are reliable.</li>
@@ -3110,7 +3283,7 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 <tr>
 <td style="text-align: right;">3</td>
 <td>mesh</td>
-<td><code>foambryo mesh needs delaunay-watershed-3d 0.7 or later (installed: &lt;version&gt;): pip install -U delaunay-watershed-3d</code></td>
+<td><code>foambryo mesh needs delaunay-watershed 0.8.0 or later, as foambryo requires (installed: delaunay-watershed-3d &lt;version&gt;): pip install -U delaunay-watershed</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -3215,7 +3388,7 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 <tr>
 <td style="text-align: right;">3</td>
 <td>infer-over-seeds</td>
-<td><code>foambryo infer-over-seeds needs delaunay-watershed-3d 0.7 or later (installed: &lt;version&gt;): pip install -U delaunay-watershed-3d</code></td>
+<td><code>foambryo infer-over-seeds needs delaunay-watershed 0.8.0 or later, as foambryo requires (installed: delaunay-watershed-3d &lt;version&gt;): pip install -U delaunay-watershed</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -3233,6 +3406,9 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 <h2 id="11-changes-since-the-first-version">11. Changes since the first version<a class="headerlink" href="#11-changes-since-the-first-version" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
+<p><strong>foambryo 0.8.0: two-dimensional input</strong> (§ 12): <code>mesh</code>, <code>infer</code> and <code>view</code> take 2-D masks and meshes; <code>infer-over-seeds</code> refuses them; <code>run.json</code> is schema 2 (§ 5); <code>--angle-reading</code> on <code>infer</code> and <code>view</code> takes the 2-D readings; <code>--tension-method equilibrium-tiling --mask MASK</code> on <code>infer</code> (2D only); <code>--image</code> on <code>view</code> (2D only); <code>--stress full|deviatoric</code> on <code>view</code> (2D and 3D); <code>--pad-thin-medium-margins</code> / <code>--no-pad-thin-medium-margins</code> on <code>mesh</code> (2D and 3D); <code>foambryo --version</code> also names delaunay-watershed-2d and iorec.</p>
+</li>
+<li>
 <p><strong>25 Oct 2026: the window draws the tissue, not its mirror image</strong> (§ 6): it drew the mesh's columns (z, y, x) as Polyscope's x, y, z, an exchange of two axes; it now draws x, y, z as the mask's column, row and slice, each triangle facing its own side, and the frame is labelled <code>x</code>, <code>y</code>, <code>z</code> along them. The scale bar lies along x.</p>
 </li>
 <li>
@@ -3249,6 +3425,15 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
 </li>
 <li><strong>11 Oct 2026: a fourth sub-command, <code>foambryo infer-over-seeds</code> (§ 4b).</strong> Several reconstructions of one mask at fixed dither seeds, with the tensions combined over them, and the three new <code>tensions.csv</code> columns <code>tension_seed_sd</code>, <code>n_seeds_found</code> and <code>found_by_fewer_than_half_the_seeds</code>, and a second table, <code>tensions_per_seed.csv</code>, with every seed's own tensions. <code>run.json</code> gains <code>seeds</code> and <code>reconstructions</code>. Its acceptance test is § 8, item 7, its messages are in § 10, and its possible extensions are in § 9, <em>Seed ensembles</em>.</li>
 <li><strong>12 Oct 2026: the viewer's window</strong> (§ 6): the colour bars drawn in the window, the coloured surface's back faces drawn like its front faces, a length scale bar (§ 6.3), <code>--figure</code> (§ 6.4) and <em>Save figure</em> / <em>Save colour bars</em> in the window, <code>infer</code>'s inference options for <code>view</code> (refused with <code>--results</code>), the results of <code>infer-over-seeds</code> (§ 6.2), and a choice of methods with <em>Recompute</em> in the window. A refused tension inference in <code>view</code> now exits 4 with <code>failed: …</code> (it raised a traceback, exit 1).</li>
+</ul>
+<h2 id="12-two-dimensional-input-foambryo-080-provisional">12. Two-dimensional input (foambryo 0.8.0, provisional)<a class="headerlink" href="#12-two-dimensional-input-foambryo-080-provisional" title="Permanent link">&para;</a></h2>
+<p>The input decides the dimension: a 2-D mask is meshed in 2D, a 2-D mesh is inferred in 2D, with the same sub-commands and options. Everything 2D is provisional, as in the library.</p>
+<ul>
+<li><strong><code>foambryo mesh</code></strong> takes a 2-D mask (axis 0 y, axis 1 x), meshed by delaunay-watershed-2d. <code>--spacing DY DX</code> (the two equal: square pixels only; an <code>.npz</code> may record two numbers); <code>--min-distance</code> defaults to 4 pixels (3 voxels in 3D), the library's. The <code>.rec</code> file's appendix records <code>dimension = 2</code>, the image-border vertices and, in physical units, the frame and spacing. A 3-D mask with an axis of length 1 is refused, suggesting <code>mask[0]</code>.</li>
+<li><strong><code>foambryo infer</code></strong> reads a 2-D mesh (a <code>.rec</code> file whose appendix records <code>dimension = 2</code>, else one with two coordinates per point) and infers it as <code>infer_forces</code> does in 2D: Young's law at each junction, each junction-graph component gauged alone, then Laplace's law per component. <code>--tension-method</code> takes <code>young-dupre</code>, or <code>equilibrium-tiling</code> with <code>--mask MASK</code> (the label image the mesh was built from: <code>.npy</code>, <code>.npz</code>, <code>.tif</code>), which runs <code>infer_forces_by_equilibrium_tiling</code>; <code>--pressure-method</code> defaults to <code>laplace</code>, the only one in 2D; <code>--angle-reading</code> takes <code>arc</code> (the default in 2D), <code>chord</code> or <code>fitted_tangent</code>, and a reading of the other dimension exits 2. <code>--media</code> is refused on a 2-D mesh.</li>
+<li><strong><code>foambryo infer-over-seeds</code></strong> refuses a 2-D mask (delaunay-watershed-2d has no dither seed), with exit code 2 and the reason.</li>
+<li><strong><code>foambryo view</code></strong> opens the 2-D window on a 2-D mesh or mask: the interfaces as curves coloured by tension, the cells as polygons coloured by pressure, the junctions as points, each uncut cell's stress glyph; rows run downward, as in napari and matplotlib. <code>--image FILE</code> draws the image the mask was segmented from under the mesh, on its pixel grid (2D only); a 2-D mask is given with <code>--spacing DY DX</code>.</li>
+<li><strong>Which numbers to trust</strong> (the user guide's page on two-dimensional tissues): the pressures, and the stresses built on them, are measurements only for a tissue deformed by its own tensions and pressures; for compressed or confined cells (an eggshell, a substrate) use <code>foambryo infer MESH --angle-reading chord --no-pressures</code>, and <code>foambryo view MESH --angle-reading chord --stress deviatoric</code> to draw the deviatoric stress, the cortical tensions' contribution.</li>
 </ul>
 
 
@@ -3309,10 +3494,10 @@ foambryo mesh: error: mask.npy records no voxel spacing: give it with --spacing 
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1601,6 +1685,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -2025,12 +2165,15 @@ refused them) or <code>"failed"</code> (the library refused the options or the m
 
 
 <a href="#foambryo.force_inference.infer_forces" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_forces</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">PressureComputationMethod</span><span class="o">.</span><span class="n">Variational</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_forces</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Infer the relative tensions, then the pressures, of a 3D mesh.</p>
+        <p>Infer the relative tensions, then the pressures, of a 3D mesh (or of a 2D one).</p>
+<p>A 2-D mesh (<code>foambryo.PlanarMesh</code>, dw2d's <code>DCEL_Data</code>) is inferred in 2D: the tensions of each junction-graph
+component, gauged alone (<code>infer_tensions_by_junction_component</code>, the arc reading), then the pressures of each
+component on its own tensions' scale (Laplace's law); see <code>foambryo._inference_by_dimension.forces</code>.</p>
 <p><code>infer_tensions(mesh, mean_tension, mode_tension, ...)</code> then <code>infer_pressures(mesh, tensions,
 mode_pressure, base_pressure, ...)</code>, with the same solver options; see those two functions for
 every convention, warning and failure.</p>
@@ -2119,16 +2262,16 @@ Defaults to <code>TensionComputationMethod.YoungDupre</code>.</p>
                 <code>mode_pressure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Method for pressure computation.
-Defaults to <code>PressureComputationMethod.Variational</code>.</p>
+Defaults to None: <code>PressureComputationMethod.Variational</code> in 3D, <code>Laplace</code> (the only one) in 2D.</p>
               </div>
             </td>
             <td>
-                  <code><span title="foambryo.pressure_inference.PressureComputationMethod.Variational">Variational</span></code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2185,6 +2328,25 @@ solves then of the pressure solve. Keyword-only.</p>
             </td>
             <td>
                   <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how the junction angles are read, passed to the tension solve: in 3D
+one of <code>foambryo.second_order_angle_reading.ANGLE_READINGS</code> (for the methods that read angles, as
+<code>infer_tensions</code>), in 2D one of <code>ANGLE_READINGS_2D</code>. Defaults to None: <code>"chord"</code> in 3D, <code>"arc"</code> in 2D,
+the numbers of the call without it. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -2272,7 +2434,7 @@ cropped mesh with a Laplace pressure method.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.linalg.LinAlgError">LinAlgError</span></code>
+                  <code>LinAlgError</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2369,7 +2531,7 @@ cropped mesh with a Laplace pressure method.</p>
 
 
 <a href="#foambryo.force_inference.infer_tensions_then_pressures" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_then_pressures</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">=</span> <span class="n">PressureComputationMethod</span><span class="o">.</span><span class="n">Variational</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">with_pressures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InferenceOutcome</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_then_pressures</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode_tension</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">mode_pressure</span><span class="p">:</span> <span class="n">PressureComputationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">with_pressures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InferenceOutcome</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2467,15 +2629,16 @@ tensions are bitwise those of <code>infer_forces</code>), <code>base_pressure</c
                 <code>mode_pressure</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a></code>
+                  <code><a class="autorefs autorefs-internal" title="PressureComputationMethod (foambryo.pressure_inference.PressureComputationMethod)" href="../pressure-inference/#foambryo.pressure_inference.PressureComputationMethod">PressureComputationMethod</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the pressure method. Defaults to <code>Variational</code>.</p>
+                <p>the pressure method. Defaults to None:
+<code>Variational</code> in 3D, <code>Laplace</code> in 2D (where the calls are those <code>infer_forces</code> makes in 2D).</p>
               </div>
             </td>
             <td>
-                  <code><span title="foambryo.pressure_inference.PressureComputationMethod.Variational">Variational</span></code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2529,6 +2692,24 @@ Keyword-only.</p>
                   <code>True</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle_reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how the junction angles are read, as for <code>infer_forces</code>. Defaults to
+None: the dimension's default (<code>"chord"</code> in 3D, <code>"arc"</code> in 2D); <code>library_call</code> names it only when given.
+Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -2575,7 +2756,7 @@ pressure call as <code>"pressures refused"</code>; nothing of these is raised.</
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="numpy.linalg.LinAlgError">LinAlgError</span></code>
+                  <code>LinAlgError</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2680,10 +2861,10 @@ pressure call as <code>"pressures refused"</code>; nothing of these is raised.</
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

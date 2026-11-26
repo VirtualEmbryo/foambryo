@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1651,6 +1735,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -1957,7 +2097,9 @@
     <div class="doc doc-contents first">
 
         <p>Segmentation masks as front ends receive them: read, checked, and described before a reconstruction.</p>
-<p>A <strong>mask</strong> is a 3-D array of non-negative integer labels, 0 the medium, axis 0 = z, axis 1 = y, axis 2 = x.
+<p>A <strong>mask</strong> is a 3-D array of non-negative integer labels, 0 the medium, axis 0 = z, axis 1 = y, axis 2 = x, or a 2-D
+one, axis 0 = y (rows), axis 1 = x (columns). Connectivity is by shared faces: 6 neighbours in 3D, 4 in 2D (shared
+pixel sides), the 2-D analogue.
 The <code>foambryo</code> command and the napari plugin read and check masks with these functions, so both accept and
 refuse the same arrays with the same messages:</p>
 <ul>
@@ -2041,8 +2183,9 @@ refuse the same arrays with the same messages:</p>
 
 
         <p>What a reconstruction of a mask will meet, counted; nothing in the mask is changed.</p>
-<p>Connectivity is by shared voxel faces (6 neighbours): two pieces of a label that touch only along an edge or
-at a corner are two pieces, as the mesh will see them.</p>
+<p>Connectivity is by shared voxel faces (6 neighbours; in 2D shared pixel sides, 4 neighbours): two pieces of a
+label that touch only along an edge or at a corner are two pieces, as the mesh will see them. In 2D "voxels" are
+pixels and the image box is the image's border.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -2291,7 +2434,7 @@ encloses them (a hole in the segmentation, read as medium).</p>
 
 
 <a href="#foambryo.segmentation_masks.read_segmentation_mask" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_segmentation_mask</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_segmentation_mask</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2320,9 +2463,11 @@ encloses them (a hole in the segmentation, read as medium).</p>
             <td>
               <div class="doc-md-description">
                 <p>a <code>.npy</code>, <code>.npz</code> or <code>.tif</code>/<code>.tiff</code> file (the suffix in any case). An <code>.npz</code> holds the mask as <code>mask</code>
-(or as its only array other than <code>spacing</code> and <code>spacing_unit</code>), optionally <code>spacing</code> (three finite
-numbers &gt; 0, <code>(dz, dy, dx)</code> along axes 0, 1, 2) and <code>spacing_unit</code> (one ASCII word of letters, digits
+(or as its only array other than <code>spacing</code> and <code>spacing_unit</code>), optionally <code>spacing</code> (one finite number</p>
+<blockquote>
+<p>0 per axis of the mask, <code>(dz, dy, dx)</code> or <code>(dy, dx)</code>) and <code>spacing_unit</code> (one ASCII word of letters, digits
 and <code>_ . - / ^</code>). A TIFF's resolution tags are not read, and neither <code>.npy</code> nor TIFF records a spacing.</p>
+</blockquote>
               </div>
             </td>
             <td>
@@ -2348,17 +2493,17 @@ and <code>_ . - / ^</code>). A TIFF's resolution tags are not read, and neither 
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the mask (checked by <code>check_segmentation_mask</code>, axis 0 = z), the recorded spacing <code>(dz, dy, dx)</code></p>
+                <p>the mask (checked by <code>check_segmentation_mask</code>, axis 0 = z in 3D, y in 2D), the recorded spacing</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
 <td></td>            <td>
-                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>] | None</code>
+                  <code><span title="tuple">tuple</span>[<span title="float">float</span>, ...] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>or <code>None</code>, the recorded unit or <code>None</code>.</p>
+                <p>(one value per axis) or <code>None</code>, the recorded unit or <code>None</code>.</p>
               </div>
             </td>
           </tr>
@@ -2407,7 +2552,7 @@ array that is not a mask. The message names the file.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Check that an array is a mask: 3-D, integer labels, none negative.</p>
+        <p>Check that an array is a mask: 3-D or 2-D, integer labels, none negative.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2495,7 +2640,8 @@ array that is not a mask. The message names the file.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>if it is not 3-D, its values are not integers (floating-point and boolean values
+                <p>if it is neither 3-D nor 2-D, or 3-D with an axis of length 1 (never squeezed
+silently: the message suggests <code>mask[0]</code>), its values are not integers (floating-point and boolean values
 are refused), or a label is negative.</p>
               </div>
             </td>
@@ -2712,10 +2858,10 @@ either way; delaunay-watershed-3d 0.7.1 makes the deep ones their own regions.)<
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

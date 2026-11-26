@@ -14,14 +14,14 @@
         <link rel="prev" href="../command_line_specification/">
       
       
-        <link rel="next" href="anisotropic-voxels/">
+        <link rel="next" href="two-dimensional-tissue/">
       
       
         
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../user-guide/viewers/" class="md-nav__link">
         
   
@@ -676,6 +704,62 @@
 
       </a>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1531,6 +1615,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/viewing/" class="md-nav__link">
         
   
@@ -1736,7 +1876,7 @@
 
 
 <h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
-<p>Each example is a short script in the repository's <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples"><code>Examples/</code></a> folder. The first six generate their own tissue (foams of Voronoi cells, or a doublet at equilibrium whose answer is known), so they need nothing but foambryo; each writes its outputs in a folder of the current directory.</p>
+<p>Each example is a short script or notebook in the repository's <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples"><code>Examples/</code></a> folder. The two 2D notebooks read real images of <em>C. elegans</em> embryos shipped in <code>Examples/data/</code> (CC BY-SA 4.0). The next six generate their own tissue (foams of Voronoi cells, or a doublet at equilibrium whose answer is known), so they need nothing but foambryo; each writes its outputs in a folder of the current directory.</p>
 <table>
 <thead>
 <tr>
@@ -1746,6 +1886,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><a href="two-dimensional-tissue/">A free 2D tissue</a></td>
+<td>a real 4-cell embryo without eggshell: mask, mesh, tensions (arc reading), pressures, stresses, the global fit</td>
+<td>seconds</td>
+</tr>
+<tr>
+<td><a href="choosing-an-angle-reading-inside-an-eggshell/">Choosing an angle reading inside an eggshell</a></td>
+<td>an embryo compressed by its shell: the chord (with <code>fitted_tangent</code> as a check), why the arc reading, the global fit and the pressures do not apply, the deviatoric stress as the cortical tensions' contribution</td>
+<td>seconds</td>
+</tr>
 <tr>
 <td><a href="anisotropic-voxels/">Anisotropic voxels</a></td>
 <td><code>spacing</code>, the resampling to cubic voxels, what forgetting the spacing does</td>
@@ -1793,7 +1943,7 @@
 </tr>
 </tbody>
 </table>
-<p>The <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/Example.ipynb">introductory notebook</a> walks through the API on a benchmark aggregate; its data are downloaded separately (see <code>data/alternative_link_to_data</code>). The napari plugin has its own examples: a quick start on benchmark case 000, and <em>From a segmentation plugin to foambryo</em>.</p>
+<p>The <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/Example.ipynb">introductory notebook</a> walks through the API on a benchmark aggregate; its data are downloaded separately (see <code>data/alternative_link_to_data</code>). The napari plugin has its own examples: a quick start on benchmark case 000, and <em>From a segmentation plugin to foambryo</em>.</p>
 <p>Times were measured on one machine (Apple M3 Max); the Polyscope examples need a display.</p>
 
 
@@ -1854,10 +2004,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

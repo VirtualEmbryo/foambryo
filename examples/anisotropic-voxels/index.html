@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../choosing-an-angle-reading-inside-an-eggshell/">
       
       
         <link rel="next" href="../cropped-tissue/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -658,6 +686,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1590,6 +1674,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/viewing/" class="md-nav__link">
         
   
@@ -1833,21 +1973,21 @@
 <li>the cells' volumes, in um^3, agree with their voxel counts times the voxel volume;</li>
 <li>without the spacing, the same stack is meshed in voxel units and squashed along z: every volume is half what it should be, and every contact angle is read on a deformed tissue.</li>
 </ul>
-<p>The accuracy gain of resampling first is measured, not shown here: on 12 simulated tissues at equilibrium with cells as small as those of real tissues, down-sampled along z, the contact-angle error grew by +0.83, +0.71 and +1.17 degrees at an anisotropy of 5/3, 2 and 3 when the mask is resampled first, against +1.38, +1.97 and +4.10 when the native grid is meshed and the mesh scaled afterwards (each against the same tissue meshed at full resolution; measured on dw3d 0.7.0's meshes, not measured again for 0.7.1, whose meshes differ slightly, because some of these runs need 8 to 40 GiB of memory; see <code>BENCHMARKS.md</code>). One small example cannot show a difference of a degree: its own seed-to-seed spread is larger.</p>
+<p>The accuracy gain of resampling first is measured, not shown here: on 12 simulated tissues at equilibrium with cells as small as those of real tissues, down-sampled along z, the contact-angle error grew by +0.83, +0.71 and +1.17 degrees at an anisotropy of 5/3, 2 and 3 when the mask is resampled first, against +1.38, +1.97 and +4.10 when the native grid is meshed and the mesh scaled afterwards (each against the same tissue meshed at full resolution; measured on dw3d 0.7.0's meshes, before 0.8.0 pads thin margins of medium on the native grid, and not measured again, because some of these runs need 8 to 40 GiB of memory; see <code>BENCHMARKS.md</code>). One small example cannot show a difference of a degree: its own seed-to-seed spread is larger.</p>
 <div class="highlight"><pre><span></span><code>pip install "foambryo[viewing]"          # matplotlib, for the figure
 python anisotropic_voxels.py             # under a minute; writes ./anisotropic-voxels-output/
 </code></pre></div>
-<p>The script: <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/anisotropic_voxels.py"><code>Examples/anisotropic_voxels.py</code></a>. It needs only foambryo (and matplotlib, from <code>foambryo[viewing]</code>, for its figure); it generates its own tissue.</p>
+<p>The script: <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/anisotropic_voxels.py"><code>Examples/anisotropic_voxels.py</code></a>. It needs only foambryo (and matplotlib, from <code>foambryo[viewing]</code>, for its figure); it generates its own tissue.</p>
 <p><img alt="One xz section of the generated stack (voxels 1.0 x 0.5 um) and of its resampling to cubic voxels of 0.5 um; colour = cell label." src="../figures/stack_and_its_resampling.png" /></p>
 <p><em>One xz section of the generated stack (voxels 1.0 x 0.5 um) and of its resampling to cubic voxels of 0.5 um; colour = cell label.</em></p>
 <h2 id="output-of-one-run">Output of one run<a class="headerlink" href="#output-of-one-run" title="Permanent link">&para;</a></h2>
-<p>On macOS 14 (Apple M3 Max), Python 3.12; times vary with the machine.</p>
+<p>On macOS 27 (Apple silicon), Python 3.13, with the code of foambryo 0.8.0 and delaunay-watershed 0.8.0 (thin margins of medium padded by default); times vary with the machine.</p>
 <div class="highlight"><pre><span></span><code>the stack: shape (48, 96, 96), 12 cells, spacing (1.0, 0.5, 0.5) um
 voxels handed to the reconstruction: 8.85e+05 (the stack has 4.42e+05); estimated 0.3 s and 0.32 GiB (fitted on tissues of 2 to 1 866 cells)
 with spacing: mesh in um, extent (z, y, x) = [46.5 47.  46.5], source_spacing (1.0, 0.5, 0.5)
   cell volume / (voxels x voxel volume): median 0.964
-without spacing: mesh in voxels, extent (z, y, x) = [47.  95.  91.2]: the tissue is squashed along z;
-  cell volume / (voxels x true voxel volume): median 0.481
+without spacing: mesh in voxels, extent (z, y, x) = [48.  95.  86.7]: the tissue is squashed along z;
+  cell volume / (voxels x true voxel volume): median 0.472
 anisotropic-voxels-output/stack.rec: 602 points, 1423 triangles, 12 cells (0 cut by the image boundary); recorded {'coordinate_frame': 'physical', 'spacing': (1.0, 0.5, 0.5), 'spacing_unit': 'um', 'resampling': 'shape'}
   read back: source_spacing (1.0, 0.5, 0.5)
 tensions of 49 interfaces, mean 1.000 (normalised to 1)
@@ -1873,8 +2013,8 @@ figure: anisotropic-voxels-output/stack_and_its_resampling.png
 <span class="sd">as small as those of real tissues, down-sampled along z, the contact-angle error grew by +0.83, +0.71 and +1.17</span>
 <span class="sd">degrees at an anisotropy of 5/3, 2 and 3 when the mask is resampled first, against +1.38, +1.97 and +4.10 when the</span>
 <span class="sd">native grid is meshed and the mesh scaled afterwards (each against the same tissue meshed at full resolution;</span>
-<span class="sd">measured on dw3d 0.7.0's meshes, not measured again for 0.7.1, whose meshes differ slightly, because some of</span>
-<span class="sd">these runs need 8 to 40 GiB of memory; see BENCHMARKS.md). One small example cannot show a difference of a</span>
+<span class="sd">measured on dw3d 0.7.0's meshes, before 0.8.0 pads thin margins of medium on the native grid, and not measured</span>
+<span class="sd">again, because some of these runs need 8 to 40 GiB of memory; see BENCHMARKS.md). One small example cannot show a difference of a</span>
 <span class="sd">degree: its own seed-to-seed spread is larger.</span>
 
 <span class="sd">    pip install "foambryo[viewing]"          # matplotlib, for the figure</span>
@@ -2048,10 +2188,10 @@ figure: anisotropic-voxels-output/stack_and_its_resampling.png
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

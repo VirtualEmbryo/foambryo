@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -541,6 +541,34 @@
   
   
     <li class="md-nav__item">
+      <a href="user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="user-guide/viewers/" class="md-nav__link">
         
   
@@ -664,6 +692,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1527,6 +1611,62 @@
   
   
     <li class="md-nav__item">
+      <a href="api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="api/viewing/" class="md-nav__link">
         
   
@@ -1732,18 +1872,18 @@
 
 
 <h1 id="foambryo">foambryo<a class="headerlink" href="#foambryo" title="Permanent link">&para;</a></h1>
-<p><strong>foambryo</strong> infers the relative surface tensions and cell pressures of foam-like cell aggregates (early embryos, tissues, organoids) from the 3-D geometry of their cells. It starts from a segmentation mask, reconstructs its multimaterial mesh with <a href="https://github.com/VirtualEmbryo/delaunay-watershed">delaunay-watershed-3d</a>, reads the contact angles and curvatures of the mesh, and inverts the Young-Dupré and Laplace laws.</p>
+<p><strong>foambryo</strong> infers the relative surface tensions and cell pressures of foam-like cell aggregates (early embryos, tissues, organoids) from the geometry of their cells, in 3D and, since 0.8.0, in 2D. It starts from a segmentation mask, reconstructs its multimaterial mesh with <a href="https://github.com/VirtualEmbryo/delaunay-watershed">delaunay-watershed</a>, reads the contact angles and curvatures of the mesh, and inverts the Young-Dupré and Laplace laws. The same functions take a 3-D or a 2-D mask or mesh: the input decides the dimension. Everything 2D is provisional in 0.8.0.</p>
 <p><img alt="Benchmark case 000 in foambryo's Polyscope window" src="images/viewer_polyscope_case_000_tensions.jpg" /></p>
 <ul>
 <li><a href="getting-started/">Getting started</a>: installation and three quick starts (Python, command line, napari).</li>
 <li><a href="methods-note/">Methods note</a>: what foambryo computes, and how to read its results.</li>
-<li>User guide: <a href="user-guide/methods/">methods</a>, <a href="user-guide/cropped-tissues/">cropped tissues</a>, <a href="user-guide/anisotropic-voxels/">anisotropic voxels</a>, <a href="user-guide/large-tissues/">large tissues</a>, <a href="user-guide/seed-ensembles/">seed ensembles</a>, <a href="user-guide/viewers/">viewers</a>.</li>
-<li><a href="examples/">Examples</a>, one page each, every one runnable on generated data.</li>
+<li>User guide: <a href="user-guide/methods/">methods</a>, <a href="user-guide/cropped-tissues/">cropped tissues</a>, <a href="user-guide/anisotropic-voxels/">anisotropic voxels</a>, <a href="user-guide/large-tissues/">large tissues</a>, <a href="user-guide/seed-ensembles/">seed ensembles</a>, <a href="user-guide/two-dimensional-tissues/">two-dimensional tissues</a>, <a href="user-guide/viewers/">viewers</a>.</li>
+<li><a href="examples/">Examples</a>, one page each: two on real 2D images of <em>C. elegans</em> embryos (with and without eggshell), the others runnable on generated data.</li>
 <li><a href="command_line_specification/">The command line</a>: every option, file, column, exit code and message.</li>
 <li><a href="api/">API reference</a>, generated from the docstrings.</li>
 <li><a href="changelog/">Changelog</a> and <a href="release-notes/">release notes</a>.</li>
 </ul>
-<p>If you use foambryo, please cite: Ichbiah S., Delbary F., McDougall A., Dumollard R., Turlier H. <em>Embryo mechanics cartography: inference of 3D force atlases from fluorescence microscopy.</em> Nature Methods <strong>20</strong>(12), 1989–1999 (2023), <a href="https://doi.org/10.1038/s41592-023-02084-7">doi:10.1038/s41592-023-02084-7</a>.</p>
+<p>If you use foambryo, in 3D or in 2D, please cite both articles: Ichbiah S., Delbary F., McDougall A., Dumollard R., Turlier H. <em>Embryo mechanics cartography: inference of 3D force atlases from fluorescence microscopy.</em> Nature Methods <strong>20</strong>(12), 1989–1999 (2023), <a href="https://doi.org/10.1038/s41592-023-02084-7">doi:10.1038/s41592-023-02084-7</a>; and Yamamoto K., Ichbiah S., Perez M., Borrego-Pinto J., Delbary F., Goehring N. W., Northrop P., Turlier H., Charras G. <em>Spatiotemporal mapping of the contractile and adhesive forces sculpting early C. elegans embryos.</em> Developmental Cell <strong>61</strong>(6), 1273–1288.e4 (2026), <a href="https://doi.org/10.1016/j.devcel.2026.04.013">doi:10.1016/j.devcel.2026.04.013</a>.</p>
 <p>foambryo is free software, under the GNU General Public License, version 3 or (at your option) any later version (<code>GPL-3.0-or-later</code>).</p>
 
 
@@ -1804,10 +1944,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

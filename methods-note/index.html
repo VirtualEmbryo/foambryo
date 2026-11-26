@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -415,6 +415,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Pressures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#laplaces-law-in-2d-and-3d-one-sign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laplace's law in 2D and 3D: one sign
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -657,6 +674,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../user-guide/viewers/" class="md-nav__link">
         
   
@@ -780,6 +825,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1643,6 +1744,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/viewing/" class="md-nav__link">
         
   
@@ -1877,6 +2034,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Pressures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#laplaces-law-in-2d-and-3d-one-sign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laplace's law in 2D and 3D: one sign
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1982,6 +2156,8 @@ E = \sum_{i&lt;j} \gamma_{ij} A_{ij} \;-\; \sum_{i \ge 1} p_i V_i ,
 <li><strong><code>WeightedLaplace</code></strong>: the same, with the curvature averaged with area weights.</li>
 </ul>
 <p>Every pressure is relative to the medium, whose pressure is <code>base_pressure</code>: a non-zero <code>base_pressure</code> shifts all pressures by that amount and changes no difference. An interface whose vertices all lie on triple lines has no curvature, and a cell that no remaining Laplace equation connects to the medium gets <code>nan</code>, with an <code>UndeterminedPressureWarning</code>.</p>
+<h3 id="laplaces-law-in-2d-and-3d-one-sign">Laplace's law in 2D and 3D: one sign<a class="headerlink" href="#laplaces-law-in-2d-and-3d-one-sign" title="Permanent link">&para;</a></h3>
+<p>Both dimensions mean the same law: <strong>the pressure is higher on the side that holds the centre of curvature</strong>, by <span class="arithmatex">\(2\gamma/R\)</span> across a sphere of radius <span class="arithmatex">\(R\)</span> and <span class="arithmatex">\(\gamma/R\)</span> across a circle. The two implementations write it in the terms of their own mesh's orientation. In 3D, <span class="arithmatex">\(p_a - p_b = -2\gamma_{ab} H_{ab}\)</span> with <span class="arithmatex">\(H_{ab}\)</span> signed by the normal that points from <span class="arithmatex">\(a\)</span> into <span class="arithmatex">\(b\)</span>, delaunay-watershed-3d's triangle normal (its right-hand normal points out of the first label, <span class="arithmatex">\(a\)</span>); equivalently <span class="arithmatex">\(p_a - p_b = 2\gamma_{ab}H_{ab}\)</span> with <span class="arithmatex">\(H_{ab}\)</span> positive when the centre of curvature lies on <span class="arithmatex">\(a\)</span>'s side, as above. In 2D, <span class="arithmatex">\(\gamma\kappa = p_\text{left} - p_\text{right}\)</span>, with <span class="arithmatex">\(\kappa &gt; 0\)</span> when the circle's centre lies on the left of the interface's traversal in the frame <span class="arithmatex">\((x, y) = (\text{column}, \text{row})\)</span>, the traversal being chosen with the first label, <span class="arithmatex">\(a\)</span>, on its left in that frame. Both meshes follow one orientation rule in their index frames, <span class="arithmatex">\((z, y, x)\)</span> and <span class="arithmatex">\((\text{row}, \text{column})\)</span>: each element is the positively oriented boundary of its first label <span class="arithmatex">\(a\)</span>, so a triangle's right-hand normal and an edge's normal <span class="arithmatex">\((\Delta c, -\Delta r)\)</span> both point from <span class="arithmatex">\(a\)</span> into <span class="arithmatex">\(b\)</span> (delaunay-watershed's user guide, "Orientation in 2D and 3D"; delaunay-watershed-2d stored its edges the other way round before 0.8.0, and foambryo measures a 2-D mesh's orientation on input, <code>foambryo.planar_mesh</code>). Checked end to end, from a mask to the pressures, on one cell in the medium at a tension of 1 (<code>tests/test_laplace_sign_on_a_circle_and_a_sphere.py</code>): a ball of radius 9 voxels gives <span class="arithmatex">\(p_1 - p_0 = 0.232\)</span> (variational) and <span class="arithmatex">\(0.234\)</span> (Laplace) against <span class="arithmatex">\(2/R = 0.222\)</span>, a disk of radius 20 pixels <span class="arithmatex">\(0.0499\)</span> against <span class="arithmatex">\(1/R = 0.05\)</span>; the cell has the higher pressure in both.</p>
 <h2 id="diagnostics-error-bars-and-seed-spread">Diagnostics, error bars and seed spread<a class="headerlink" href="#diagnostics-error-bars-and-seed-spread" title="Permanent link">&para;</a></h2>
 <p><code>compute_inference_diagnostics</code> describes how well the mesh determines the force-balance solution:</p>
 <ul>
@@ -2058,10 +2234,10 @@ E = \sum_{i&lt;j} \gamma_{ij} A_{ij} \;-\; \sum_{i \ge 1} p_i V_i ,
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -659,6 +659,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewers/" class="md-nav__link">
         
   
@@ -782,6 +810,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1645,6 +1729,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/viewing/" class="md-nav__link">
         
   
@@ -1951,7 +2091,7 @@
 </code></pre></div>
 <p><code>tensions</code> maps each interface <code>(label_1, label_2)</code>, with <code>label_1 &lt; label_2</code>, to its tension; <code>pressures</code> maps each material (the medium, 0, included) to its pressure.</p>
 <h2 id="tension-methods">Tension methods<a class="headerlink" href="#tension-methods" title="Permanent link">&para;</a></h2>
-<p>foambryo has several strategies to compute tensions. They fall into two families that respond very differently to mesh-reconstruction quality — see <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/BENCHMARKS.md"><code>BENCHMARKS.md</code></a> — angle-reading methods, which read local contact angles at triple junctions, and operator-inverting methods, which assemble and invert a global discrete operator over the whole mesh:</p>
+<p>foambryo has several strategies to compute tensions. They fall into two families that respond very differently to mesh-reconstruction quality — see <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/BENCHMARKS.md"><code>BENCHMARKS.md</code></a> — angle-reading methods, which read local contact angles at triple junctions, and operator-inverting methods, which assemble and invert a global discrete operator over the whole mesh:</p>
 <p>Angle-reading:</p>
 <ul>
 <li><code>YoungDupre</code> (Young-Dupré with cosines only) — the recommended default when mesh quality is uncertain,</li>
@@ -1994,7 +2134,7 @@
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">dcel_mesh_from_file</span><span class="p">(</span><span class="s2">"my_mesh.rec"</span><span class="p">)</span>
 <span class="n">tensions</span> <span class="o">=</span> <span class="n">infer_tensions</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="n">angle_reading</span><span class="o">=</span><span class="s2">"quadric"</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>The measured gain</strong>, on 42 mechanically-equilibrated benchmark cases meshed by <code>dw3d</code> with its defaults (see <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/BENCHMARKS.md"><code>BENCHMARKS.md</code></a> for the full table and its provenance):</p>
+<p><strong>The measured gain</strong>, on 42 mechanically-equilibrated benchmark cases meshed by <code>dw3d</code> with its defaults (see <a href="https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/BENCHMARKS.md"><code>BENCHMARKS.md</code></a> for the full table and its provenance):</p>
 <table>
 <thead>
 <tr>
@@ -2145,10 +2285,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

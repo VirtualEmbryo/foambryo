@@ -14,14 +14,14 @@
         <link rel="prev" href="../results/">
       
       
-        <link rel="next" href="../viewing/">
+        <link rel="next" href="../two-dimensional/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1722,6 +1806,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -2120,7 +2260,8 @@ clipped to:</p>
 <p><code>alpha</code> is <code>DEFAULT_CLIP_QUANTILE</code> (0.05) unless given. <code>save_colour_bars</code> writes the bars to an image file and
 returns the values at their ends (<code>ColourBarRanges</code>). This module needs matplotlib (installed by
 <code>foambryo[viewing]</code>), but neither Polyscope nor a display. The functions are implemented in
-<code>foambryo._colour_scales</code>; this module is their public interface.</p>
+<code>foambryo._colour_scales</code>; this module is their public interface. What the viewers draw of a 2-D mesh
+(<code>planar_mesh_drawing</code>) is in <code>foambryo.plotting_utilities</code>.</p>
 
 
 
@@ -3119,6 +3260,8 @@ file's suffix.</p>
     <div class="doc doc-contents ">
 
         <p>The pressure the viewer's surface gives each triangle: that of its higher-labelled material.</p>
+<p>A 2-D mesh (<code>foambryo.PlanarMesh</code>) draws each cell as one filled polygon: its pressures are one per cell, each
+cell once, in ascending label order (exploded or not, the same cells).</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3202,7 +3345,17 @@ pressure of the cell it was scattered with), as the viewer draws them with
             </td>
             <td>
               <div class="doc-md-description">
-                <p>NDArray[np.float64]: one pressure per row of <code>mesh.f</code> (or of <code>mesh.f_scattered</code>).</p>
+                <p>NDArray[np.float64]: one pressure per row of <code>mesh.f</code> (or of <code>mesh.f_scattered</code>); for a 2-D mesh, one per</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>cell.</p>
               </div>
             </td>
           </tr>
@@ -3254,7 +3407,8 @@ pressure of the cell it was scattered with), as the viewer draws them with
 <p>The one place the pressure range is computed: the viewer's surface ("Pressures Cells"), its
 graph view's cell nodes ("Graph Nodes") and the colour bars all take it from here, so one
 pressure has one colour in all three. It is the <code>1 - alpha</code> quantile of the finite pressures
-over the triangles the surface draws (<code>surface_face_pressures</code>); the bottom is 0.</p>
+over the triangles the surface draws (<code>surface_face_pressures</code>); the bottom is 0. For a 2-D mesh, over its
+cells, each once.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3606,10 +3760,10 @@ grey).</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

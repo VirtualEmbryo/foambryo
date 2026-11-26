@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -635,6 +635,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../user-guide/viewers/" class="md-nav__link">
         
   
@@ -758,6 +786,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1621,6 +1705,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/viewing/" class="md-nav__link">
         
   
@@ -1890,14 +2030,15 @@
 
 <h1 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>foambryo needs Python 3.11 or later. Install it from PyPI, in a virtual environment:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>foambryo<span class="w">                 </span><span class="c1"># the library (delaunay-watershed-3d comes with it)</span>
+<p>foambryo needs Python 3.12 or later. Install it from PyPI, in a virtual environment:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>foambryo<span class="w">                 </span><span class="c1"># the library (delaunay-watershed, its 3D and 2D meshers, comes with it)</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"foambryo[viewing]"</span><span class="w">      </span><span class="c1"># and the Polyscope viewer (Polyscope, matplotlib)</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"foambryo[cli]"</span><span class="w">          </span><span class="c1"># and TIFF masks for the foambryo command (tifffile)</span>
 </code></pre></div>
-<p>The napari plugin: <code>pip install "napari[all]" napari-foambryo</code> (its version 0.1.0 is released with foambryo 0.7.0).</p>
+<p>The napari plugin: <code>pip install "napari[all]" napari-foambryo</code> (its version 0.2.0, with 2D docks, is released with foambryo 0.8.0).</p>
 <h2 id="the-input-a-segmentation-mask">The input: a segmentation mask<a class="headerlink" href="#the-input-a-segmentation-mask" title="Permanent link">&para;</a></h2>
 <p>A 3-D array of non-negative integer labels: one label per cell, 0 for the medium around the tissue. Axis 0 is z, axes 1 and 2 are y and x. Its voxel size is <code>(dz, dy, dx)</code>, in any one unit; one axis (the z step) may be longer than the other two, which must be equal. foambryo never guesses it: give it, or work in voxel units.</p>
+<p>A <strong>2-D mask</strong> (axis 0 y, axis 1 x) is a section or a monolayer imaged in one plane; its pixel size is <code>(dy, dx)</code>, the two equal. The same functions mesh it and infer its tensions and pressures; see <a href="../user-guide/two-dimensional-tissues/">two-dimensional tissues</a>, where it says which numbers hold for a confined tissue (an embryo in its eggshell, cells on a substrate).</p>
 <h2 id="in-python">In Python<a class="headerlink" href="#in-python" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tifffile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">foambryo</span><span class="w"> </span><span class="kn">import</span> <span class="n">dcel_mesh_from_segmentation_mask</span><span class="p">,</span> <span class="n">infer_forces</span>
@@ -1910,10 +2051,16 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"foam
 <span class="n">plot_force_inference</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">tensions</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s2">"um"</span><span class="p">)</span>  <span class="c1"># needs a display</span>
 </code></pre></div>
 <p>The tensions are normalised to a mean of 1 (<code>mean_tension</code>), the pressures are relative to the medium's (0, <code>base_pressure</code>), in tension per um here. Undetermined values are <code>nan</code>. See the <a href="../user-guide/methods/">methods</a>.</p>
+<p>In 2D, the same calls:</p>
+<div class="highlight"><pre><span></span><code><span class="n">mask_2d</span> <span class="o">=</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"segmentation_2d.tif"</span><span class="p">)</span>                          <span class="c1"># axis 0 is y</span>
+<span class="n">mesh_2d</span> <span class="o">=</span> <span class="n">dcel_mesh_from_segmentation_mask</span><span class="p">(</span><span class="n">mask_2d</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">))</span>  <span class="c1"># a PlanarMesh, in um</span>
+<span class="n">tensions</span><span class="p">,</span> <span class="n">pressures</span> <span class="o">=</span> <span class="n">infer_forces</span><span class="p">(</span><span class="n">mesh_2d</span><span class="p">)</span>    <span class="c1"># junction angles read on circular arcs (angle_reading="arc")</span>
+</code></pre></div>
 <h2 id="on-the-command-line">On the command line<a class="headerlink" href="#on-the-command-line" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>foambryo<span class="w"> </span>mesh<span class="w"> </span>segmentation.tif<span class="w"> </span>--spacing<span class="w"> </span><span class="m">1</span>.0<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>-o<span class="w"> </span>tissue.rec<span class="w">   </span><span class="c1"># the mesh, in um</span>
 foambryo<span class="w"> </span>infer<span class="w"> </span>tissue.rec<span class="w"> </span>-o<span class="w"> </span>results<span class="w">                                 </span><span class="c1"># tensions.csv, pressures.csv, run.json</span>
 foambryo<span class="w"> </span>view<span class="w"> </span>tissue.rec<span class="w"> </span>--results<span class="w"> </span>results<span class="w">                           </span><span class="c1"># the Polyscope window</span>
+foambryo<span class="w"> </span>mesh<span class="w"> </span>section.tif<span class="w"> </span>--spacing<span class="w"> </span><span class="m">0</span>.25<span class="w"> </span><span class="m">0</span>.25<span class="w"> </span>-o<span class="w"> </span>section.rec<span class="w">         </span><span class="c1"># a 2-D mask: a 2-D mesh</span>
 </code></pre></div>
 <p><code>foambryo infer</code> gives exactly the numbers of <code>infer_forces(dcel_mesh_from_file("tissue.rec"))</code>. See the <a href="../command_line_specification/">command-line specification</a> and the <a href="../examples/command-line/">example</a>.</p>
 <h2 id="in-napari">In napari<a class="headerlink" href="#in-napari" title="Permanent link">&para;</a></h2>
@@ -1977,10 +2124,10 @@ foambryo<span class="w"> </span>view<span class="w"> </span>tissue.rec<span clas
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

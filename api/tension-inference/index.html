@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1199,6 +1283,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.young_dupre_entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        young_dupre_entries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#foambryo.tension_inference.infer_tensions_by_junction_component" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1656,6 +1751,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -1908,6 +2059,17 @@
     <span class="md-ellipsis">
       
         infer_tensions_and_residuals_with_report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foambryo.tension_inference.young_dupre_entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        young_dupre_entries
       
     </span>
   </a>
@@ -2236,7 +2398,7 @@ out and how many interfaces were left without any equation (reported as <code>na
 
 
 <a href="#foambryo.tension_inference.infer_tensions" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CHORD_READING</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">exclude_image_border</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">excluded_vertices</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2264,7 +2426,10 @@ out and how many interfaces were left without any equation (reported as <code>na
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Mesh to analyze, in any length unit (the tensions do not depend on it).</p>
+                <p>Mesh to analyze, in any length unit (the tensions do not depend on it). A 2-D mesh
+(<code>foambryo.PlanarMesh</code>, dw2d's <code>DCEL_Data</code>) is inferred in 2D: per-junction Young-Dupré rows, each
+junction-graph component gauged alone, the arc reading by default (<code>foambryo.planar_mesh</code>,
+<code>foambryo._two_dimensional</code>); with <code>diagnostics</code>, the second value is then a <code>TwoDimensionalReport</code>.</p>
               </div>
             </td>
             <td>
@@ -2321,7 +2486,7 @@ to 1.</p>
               <div class="doc-md-description">
                 <p>which trijunction angle convention the angle-reading
 methods (<code>ANGLE_READING_METHODS</code>) consume, one of
-<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>: <code>"chord"</code> (the default,
+<code>foambryo.second_order_angle_reading.ANGLE_READINGS</code>: <code>"chord"</code> (the default in 3D, <code>None</code>,
 bit-identical to every published number), <code>"quadric"</code> (the second-order reading),
 <code>"oriented_chord"</code> or <code>"oriented_quadric"</code> (the same readings with reflex wedges
 reported above 180 degrees). Keyword-only. A quadric reading that could not cover
@@ -2331,7 +2496,7 @@ to get the coverage numbers instead of the warning.</p>
               </div>
             </td>
             <td>
-                  <code><span title="foambryo.second_order_angle_reading.CHORD_READING">CHORD_READING</span></code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3073,12 +3238,99 @@ and <code>mode</code> does not read angles.</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="foambryo.tension_inference.young_dupre_entries" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">young_dupre_entries</span>
+
+
+<a href="#foambryo.tension_inference.young_dupre_entries" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">young_dupre_entries</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The nine <code>(row, column, value)</code> entries of each junction's three Young-Dupré rows.</p>
+<p>Shared by the 3D builder (one junction per triple line, weighted by its length) and the 2D one
+(<code>foambryo._two_dimensional</code>: one junction per junction vertex, unit weight). For a junction
+between materials <code>a</code>, <code>b</code>, <code>c</code> with interfaces <code>ab</code>, <code>bc</code>, <code>ac</code> and the angle <code>t_m</code> inside
+material <code>m</code>, its rows <code>3 i</code>, <code>3 i + 1</code>, <code>3 i + 2</code> are, times the weight <code>w</code>::</p>
+<div class="highlight"><pre><span></span><code>g_ab + g_bc cos(t_b) + g_ac cos(t_a) = 0
+g_ab cos(t_b) + g_bc + g_ac cos(t_c) = 0
+g_ab cos(t_a) + g_bc cos(t_c) + g_ac = 0
+</code></pre></div>
+<p>The force balance of three tensions meeting at a point, projected on the three interfaces
+(Young-Dupré; the projected form is what this package has always written). The values are
+computed one junction at a time, as scalars, in the order the 3D builder always used, so that
+its matrix is bitwise unchanged.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>junctions</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>, <span title="int">int</span>, <span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>one <code>(column_ab, column_bc, column_ac, t_a, t_b, t_c, weight)</code> per junction,
+angles in radians.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>tuple</code></td>            <td>
+                  <code><span title="tuple">tuple</span>[<span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>], <span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.int64">int64</span>], <span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.float64">float64</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>(rows, cols, values)</code>, each of length <code>9 * len(junctions)</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="foambryo.tension_inference.infer_tensions_by_junction_component" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">infer_tensions_by_junction_component</span>
 
 
 <a href="#foambryo.tension_inference.infer_tensions_by_junction_component" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_by_junction_component</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentTensionSolution</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ComponentTensionSolution</span><span class="p">,</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">infer_tensions_by_junction_component</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">mean_tension</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">TensionComputationMethod</span> <span class="o">=</span> <span class="n">TensionComputationMethod</span><span class="o">.</span><span class="n">YoungDupre</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">angle_reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">refusal</span><span class="p">:</span> <span class="n">WedgeRefusal</span> <span class="o">=</span> <span class="n">NO_REFUSAL</span><span class="p">,</span> <span class="n">exclude_image_border</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">excluded_vertices</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="n">sparse_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentTensionSolution</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ComponentTensionSolution</span><span class="p">,</span> <span class="n">SolveDiagnostics</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3116,7 +3368,8 @@ the chord angles; it emits no <code>JunctionGraphGaugeWarning</code>, since the 
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Mesh to analyze, in any length unit.</p>
+                <p>Mesh to analyze, in any length unit. A 2-D mesh is inferred in 2D, as by
+<code>infer_tensions</code> (the arc reading by default; <code>exclude_image_border</code> and <code>excluded_vertices</code> apply).</p>
               </div>
             </td>
             <td>
@@ -3567,10 +3820,10 @@ other edge is absent.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

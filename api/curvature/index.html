@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1521,6 +1605,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -1991,6 +2131,12 @@
         <p>Mean curvature of a mesh's interfaces, from the cotangent Laplacian, as the Laplace pressure methods read it.</p>
 <p>Curvatures are in inverse mesh length units. An interface all of whose vertices lie on junction
 lines has no curvature (<code>nan</code>); see <code>foambryo.pressure_inference.UndeterminedPressureWarning</code>.</p>
+<p>A 2-D mesh (<code>foambryo.PlanarMesh</code>, delaunay-watershed-2d's <code>DCEL_Data</code>, a <code>(points, segments, labels)</code> triple or a
+<code>(vertices, edges)</code> pair) is read in 2D by <code>compute_curvature_interfaces</code> and <code>compute_curvature_vertices_cotan</code>: the
+curvature of each interface (a curve has one curvature, which takes the place of the surface's <code>2 H</code> in Laplace's law),
+from the circle the 2-D pressures read or from the vertex curvatures, and the curvature at each vertex from the
+cotangent Laplacian's 1-D form; definitions, signs and derivation in <code>foambryo._planar_curvature_and_stress</code>. The
+Gaussian curvature has no 2-D counterpart.</p>
 <p>Sacha Ichbiah, 2021.
 Matthieu Perez, 2024.</p>
 
@@ -2152,6 +2298,29 @@ and curvature flow", SIGGRAPH 1999.
     </table>
 
 
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for a 2-D mesh: a curve has one curvature, and no Gaussian curvature.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
     </div>
 
 </div>
@@ -2170,6 +2339,10 @@ and curvature flow", SIGGRAPH 1999.
     <div class="doc doc-contents ">
 
         <p>Return the mean curvature at every vertex along with other unidentified data.</p>
+<p>A 2-D mesh gives the 2-D form, <code>(|K_i|, 1 / l_i, K_i)</code>: the magnitude of the curvature vector of the cotangent
+Laplacian's 1-D form (<code>K_i = (t_2 - t_1) / l_i</code>, exact on a circle sampled at equal steps), the inverse dual length
+and the vector <code>(n, 2)</code> in <code>(row, column)</code>, pointing to the centre of curvature; <code>nan</code> at the junctions, the ends of
+the interfaces and the image border's vertices (<code>foambryo._planar_curvature_and_stress.vertex_curvatures</code>).</p>
 
 
     </div>
@@ -2184,14 +2357,20 @@ and curvature flow", SIGGRAPH 1999.
 
 
 <a href="#foambryo.curvature.compute_curvature_interfaces" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_curvature_interfaces</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute_curvature_interfaces</span><span class="p">(</span><span class="n">mesh</span><span class="p">:</span> <span class="n">DcelData</span><span class="p">,</span> <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Compute the mean curvature on the interfaces of the mesh.</p>
 <p>The vertex mean curvature of the cotangent Laplacian, signed by the vertex normal, averaged over
-each interface's vertices that are not on a junction line.</p>
+each interface's vertices that are not on a junction line. Positive when the centre of curvature
+lies on the side of the interface's second label: <code>P_a - P_b = -2 H_ab T_ab</code> (a sphere of label 1
+in the medium 0 has <code>H_01 = +1/R</code>).</p>
+<p>A 2-D mesh gives each interface's curvature <code>kappa_ab</code> in the same sense, with <code>p_a - p_b = -gamma_ab
+kappa_ab</code> (a disk of label 1 in the medium has <code>kappa_01 = +1/R</code>), read from the circle the 2-D
+pressures fit (<code>reading="arc"</code>, the default) or from the vertex curvatures (<code>"local"</code>); the module
+<code>foambryo._planar_curvature_and_stress</code> gives the definitions and the derivation.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2214,7 +2393,7 @@ each interface's vertices that are not on a junction line.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the mesh.</p>
+                <p>the mesh, 3-D or 2-D.</p>
               </div>
             </td>
             <td>
@@ -2231,11 +2410,29 @@ each interface's vertices that are not on a junction line.</p>
             <td>
               <div class="doc-md-description">
                 <p>weight each vertex by its area (<code>PressureComputationMethod.
-WeightedLaplace</code>) rather than equally (<code>Laplace</code>). Defaults to True.</p>
+WeightedLaplace</code>) rather than equally (<code>Laplace</code>); in 2D, each vertex by its dual length
+(<code>"local"</code>) or each piece of an interface by its length (<code>"arc"</code>). Defaults to True.</p>
               </div>
             </td>
             <td>
                   <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reading</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>how the curvature is read: in 3D <code>"cotan"</code> (the only reading),
+in 2D <code>"arc"</code> or <code>"local"</code>. Defaults to None: <code>"cotan"</code> in 3D, <code>"arc"</code> in 2D. Keyword-only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -2258,7 +2455,31 @@ WeightedLaplace</code>) rather than equally (<code>Laplace</code>). Defaults to 
             <td>
               <div class="doc-md-description">
                 <p>dict[tuple[int, int], float]: interface <code>(label_1, label_2)</code> -&gt; mean curvature, in inverse
-mesh length units; <code>nan</code> for an interface all of whose vertices lie on junction lines.</p>
+mesh length units; <code>nan</code> for an interface all of whose vertices lie on junction lines (in 2D,
+one the reading gives no curvature).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>for a reading the mesh's dimension does not have.</p>
               </div>
             </td>
           </tr>
@@ -2759,10 +2980,10 @@ mesh length units; <code>nan</code> for an interface all of whose vertices lie o
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       

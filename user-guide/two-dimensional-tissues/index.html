@@ -1,0 +1,2425 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Surface tensions and cell pressures of 3-D cell aggregates, from their segmentation">
+      
+      
+      
+      
+        <link rel="prev" href="../seed-ensembles/">
+      
+      
+        <link rel="next" href="../viewers/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Two-dimensional tissues - foambryo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#two-dimensional-tissues" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="foambryo" class="md-header__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            foambryo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Two-dimensional tissues
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="foambryo" class="md-nav__button md-logo" aria-label="foambryo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    foambryo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualEmbryo/foambryo" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods note
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cropped-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../large-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#from-a-mask-to-tensions-and-pressures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From a mask to tensions and pressures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orientation-and-the-sign-of-laplaces-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orientation, and the sign of Laplace's law
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-angle-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which angle reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-pressures-and-stresses-to-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which pressures and stresses to trust
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#junctions-on-the-image-border-and-lenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Junctions on the image border, and lenses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-global-fit-opt-in-provisional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The global fit (opt-in, provisional)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#curvature-and-stress-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Curvature and stress in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-command-line-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The command line in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-viewers-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The viewers in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-foambryo2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from foambryo2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../viewers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/anisotropic-voxels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anisotropic voxels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cropped-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/large-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large tissue: estimate, solvers, diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/command-line/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The command line, from a mask to the figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polyscope-viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer from Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The second-order angle reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/refusing-folded-trijunction-wedges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Declining folded trijunction observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/default-junction-relocation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What junction relocation changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading meshes and masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pressure-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pressures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/force-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensions and pressures together
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/seed-ensembles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed ensembles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/crop-faces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cropped tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/linear-solves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear solves and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/junction-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The junction graph and the normalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error bars and diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/second-order-angle-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Angle readings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/wedge-refusal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wedge refusal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/per-edge-tension-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per-edge Young-Dupré
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/force-balance-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The force-balance family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reconstruction-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconstruction cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/segmentation-masks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segmentation masks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Result files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/colour-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Colour scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/viewing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Polyscope viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/geometry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/curvature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curvature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#from-a-mask-to-tensions-and-pressures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From a mask to tensions and pressures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orientation-and-the-sign-of-laplaces-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orientation, and the sign of Laplace's law
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-angle-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which angle reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-pressures-and-stresses-to-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which pressures and stresses to trust
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#junctions-on-the-image-border-and-lenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Junctions on the image border, and lenses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-global-fit-opt-in-provisional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The global fit (opt-in, provisional)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#curvature-and-stress-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Curvature and stress in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-command-line-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The command line in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-viewers-in-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The viewers in 2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-foambryo2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from foambryo2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="two-dimensional-tissues">Two-dimensional tissues<a class="headerlink" href="#two-dimensional-tissues" title="Permanent link">&para;</a></h1>
+<p>foambryo infers the relative tensions and pressures of a two-dimensional tissue (a section, a monolayer, an embryo imaged in one plane) with the same functions as in 3D: the input decides the dimension. A 2-D mask gives a 2-D mesh, a 2-D mesh gives 2-D inference.</p>
+<p><strong>Provisional.</strong> Everything 2D is provisional in 0.8.0: the 2-D names and signatures may change in any release until they are declared stable.</p>
+<p><strong>Citation.</strong> If you use foambryo, in 2D as in 3D, please cite both articles: Ichbiah S., Delbary F., McDougall A., Dumollard R., Turlier H. <em>Embryo mechanics cartography: inference of 3D force atlases from fluorescence microscopy.</em> Nature Methods <strong>20</strong>(12), 1989–1999 (2023), <a href="https://doi.org/10.1038/s41592-023-02084-7">doi:10.1038/s41592-023-02084-7</a>; and Yamamoto K., Ichbiah S., Perez M., Borrego-Pinto J., Delbary F., Goehring N. W., Northrop P., Turlier H., Charras G. <em>Spatiotemporal mapping of the contractile and adhesive forces sculpting early C. elegans embryos.</em> Developmental Cell <strong>61</strong>(6), 1273–1288.e4 (2026), <a href="https://doi.org/10.1016/j.devcel.2026.04.013">doi:10.1016/j.devcel.2026.04.013</a>.</p>
+<h2 id="from-a-mask-to-tensions-and-pressures">From a mask to tensions and pressures<a class="headerlink" href="#from-a-mask-to-tensions-and-pressures" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">foambryo</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">foambryo</span><span class="o">.</span><span class="n">dcel_mesh_from_segmentation_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">))</span>  <span class="c1"># a 2-D mask: a PlanarMesh</span>
+<span class="n">tensions</span><span class="p">,</span> <span class="n">pressures</span> <span class="o">=</span> <span class="n">foambryo</span><span class="o">.</span><span class="n">infer_forces</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>                          <span class="c1"># arc reading, Laplace pressures</span>
+</code></pre></div>
+<p><code>dcel_mesh_from_segmentation_mask</code> hands a 2-D label image (0 the medium, the cells 1, 2, …) to delaunay-watershed's 2D mesher (dw2d) and returns a <code>foambryo.PlanarMesh</code>: <code>points</code> <code>(n, 2)</code> in <code>(row, column)</code>, <code>segments</code> <code>(m, 2)</code>, <code>labels</code> <code>(m, 2)</code>, the vertices on the image border, the image shape and, with <code>spacing=(dy, dx)</code>, the pixel size (square pixels only). <code>min_distance=None</code> is 4 pixels in 2D (3 voxels in 3D). <code>foambryo.dimension_of(mesh)</code> says which dimension a mesh is. The package-level functions also take dw2d's own <code>DCEL_Data</code>, a <code>(points, segments, labels)</code> triple or a <code>(vertices, edges)</code> pair, and <code>dcel_mesh_from_file</code> reads a 2-D <code>.rec</code> file.</p>
+<table>
+<thead>
+<tr>
+<th>function</th>
+<th>in 2D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>infer_tensions(mesh, angle_reading=None)</code></td>
+<td>Young's law at each junction; <code>None</code> is <code>"arc"</code> in 2D, <code>"chord"</code> in 3D</td>
+</tr>
+<tr>
+<td><code>infer_tensions_by_junction_component(mesh)</code></td>
+<td>the same, with each interface's junction-graph component</td>
+</tr>
+<tr>
+<td><code>infer_pressures(mesh, tensions)</code></td>
+<td>Laplace's law on the interfaces read by a circle (<code>mode=None</code> is <code>Laplace</code> in 2D, the only one offered)</td>
+</tr>
+<tr>
+<td><code>infer_forces(mesh)</code>, <code>infer_tensions_then_pressures(mesh)</code></td>
+<td>the tensions of each component gauged alone, then the pressures of each component on its own scale</td>
+</tr>
+<tr>
+<td><code>infer_forces_by_equilibrium_tiling(mesh, mask)</code></td>
+<td>the opt-in global fit (below)</td>
+</tr>
+<tr>
+<td><code>interface_arcs(mesh)</code>, <code>junction_table(mesh)</code></td>
+<td>each interface with the circle read on it (<code>InterfaceArc</code>); each junction with its wedges</td>
+</tr>
+</tbody>
+</table>
+<p>Functions without a 2-D counterpart yet (<code>infer_force_balance</code>, <code>infer_tensions_young_dupre_local</code>, <code>infer_tensions_with_uncertainty</code>, <code>compute_inference_diagnostics</code>, the <code>…_and_residuals</code> functions, <code>infer_tensions_over_seeds</code> given a 2-D mask) raise <code>ValueError</code> saying so. With <code>diagnostics=True</code>, <code>infer_tensions</code> and <code>infer_tensions_by_junction_component</code> also return a <code>TwoDimensionalReport</code> and <code>infer_pressures</code> a <code>TwoDimensionalPressureReport</code>, each holding the solves' <code>SolveDiagnostics</code>; <code>infer_forces</code> returns one <code>SolveDiagnostics</code> of its solves, as in 3D.</p>
+<h2 id="orientation-and-the-sign-of-laplaces-law">Orientation, and the sign of Laplace's law<a class="headerlink" href="#orientation-and-the-sign-of-laplaces-law" title="Permanent link">&para;</a></h2>
+<p>These two conventions are stated here once; the rest of the documentation refers to them.</p>
+<p><strong>Orientation.</strong> Every mesh element is the positively oriented boundary of its first label, in the mask's index frame. In 2D: on every segment <code>labels[k, 0] &lt; labels[k, 1]</code>, and <code>labels[k, 0]</code> lies on the left of the segment <code>segments[k, 0] → segments[k, 1]</code> in <code>(row, column)</code>, so that the segment's normal <code>(dc, −dr)</code> points out of the first label. In 3D the triangle's right-hand normal in <code>(z, y, x)</code> points out of its first label: it is one rule. delaunay-watershed's 2D meshes follow it since 0.8.0 (their edges ran the other way before). foambryo does not take a 2-D mesh's orientation on trust: it measures it from the signed area of each cell's boundary, reverses a mesh in the former orientation (dw2d 0.1.5's, for instance), which then gives the same tensions and pressures bit for bit, and refuses with a <code>ValueError</code> a mesh whose cells disagree.</p>
+<p><strong>Laplace's law.</strong> For an interface between labels <span class="arithmatex">\(a &lt; b\)</span>, with tension <span class="arithmatex">\(\gamma_{ab}\)</span> and signed curvature <span class="arithmatex">\(\kappa_{ab}\)</span> (in 1/length, positive when the centre of curvature lies on <span class="arithmatex">\(b\)</span>'s side),</p>
+<div class="arithmatex">\[p_a - p_b = -\gamma_{ab}\,\kappa_{ab},\]</div>
+<p>the two-dimensional form of the 3D law <span class="arithmatex">\(p_a - p_b = -2 H_{ab}\, \gamma_{ab}\)</span> with the mean curvature <span class="arithmatex">\(H_{ab}\)</span> positive under the same convention. A cell bulging into the medium ($b = $ the cell, <span class="arithmatex">\(a = 0\)</span>): the centre of curvature lies inside the cell, <span class="arithmatex">\(\kappa_{0b} &gt; 0\)</span>, so <span class="arithmatex">\(p_b = p_0 + \gamma_{0b}\kappa_{0b}\)</span> is above the medium's pressure. <code>foambryo.curvature.compute_curvature_interfaces</code> returns <span class="arithmatex">\(\kappa_{ab}\)</span> with this sign; <code>InterfaceArc.curvature</code> is signed along the interface's own traversal instead (positive when the circle's centre is on the traversal's left), with <code>tension * curvature = p_left - p_right</code>.</p>
+<p>The pressures are in units of the tension per unit length of the mesh: relative tension per pixel for a mesh in pixels, per micrometre for a mesh built with <code>spacing</code> in micrometres.</p>
+<h2 id="which-angle-reading">Which angle reading<a class="headerlink" href="#which-angle-reading" title="Permanent link">&para;</a></h2>
+<p>Young's law at a junction where three interfaces meet, <span class="arithmatex">\(\sum_k \gamma_k \mathbf{t}_k = 0\)</span> with <span class="arithmatex">\(\mathbf{t}_k\)</span> the unit tangent of interface <span class="arithmatex">\(k\)</span> leaving the junction, needs the three tangents. In a 2D mesh each interface is a polyline whose vertices are about 5 px apart at the default <code>min_distance</code> of 4 pixels, so the tangent must be read; <code>angle_reading</code> chooses how.</p>
+<table>
+<thead>
+<tr>
+<th>reading</th>
+<th>what it reads</th>
+<th>assumes</th>
+<th>use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"arc"</code> (default)</td>
+<td>the geometric least-squares circle through all the interface's vertices; the tangent at the circle's point nearest the junction (an interface with fewer than 4 vertices: its chord, junction to other end)</td>
+<td>every interface is a circular arc: uniform tension and pressure difference, the tissue deformed by its own forces only, near mechanical equilibrium</td>
+<td>free tissues near equilibrium; <strong>not</strong> compressed or confined cells</td>
+</tr>
+<tr>
+<td><code>"chord"</code></td>
+<td>the direction of each interface's first edge at the junction (foambryo2D's reading)</td>
+<td>nothing beyond the first edge</td>
+<td><strong>compressed or confined cells</strong> (an embryo in its eggshell, cells on a substrate): the reading to use there</td>
+</tr>
+<tr>
+<td><code>"fitted_tangent"</code></td>
+<td>the tangent at the junction of a parabola through the junction and the next four vertices of the interface</td>
+<td>the interface is smooth over its first four edges</td>
+<td>the other reading local to the junctions, to check how much the choice matters under confinement</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why confinement changes the reading.</strong> In a <em>C. elegans</em> embryo inside its eggshell, the cells are compressed against the shell. The shell's contact forces act on the cells where they touch it, so an interface's curvature follows Laplace's law, and its tangent obeys Young–Dupré, only close to the junctions; further along, the interface takes the shape the shell imposes. For compressed cells, therefore:</p>
+<ul>
+<li><strong>no Laplace pressures</strong>: they would be read from curvatures that the shell, not the cells' tensions and pressures, sets, and would not make sense;</li>
+<li><strong>no arc reading and no global fit</strong>: both fit a circle to the whole interface, including the part the shell shapes;</li>
+<li><strong>the chord</strong>, which reads only each interface's first edge at the junction; <code>"fitted_tangent"</code>, which reads the junction and its next four vertices, is the other reading local to the junctions.</li>
+</ul>
+<p><strong>What was measured, on one embryo per condition</strong> (a 4-cell <em>C. elegans</em> embryo inside its eggshell and one whose eggshell was removed, three frames each, dw2d's mesh at its defaults; see the <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/">eggshell example</a>):</p>
+<table>
+<thead>
+<tr>
+<th>quantity</th>
+<th>inside the eggshell</th>
+<th>eggshell removed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RMS distance of the cell–medium interfaces' vertices to their fitted circle</td>
+<td>0.67–1.76 px</td>
+<td>0.06–1.04 px</td>
+</tr>
+<tr>
+<td>the same, cell–cell interfaces</td>
+<td>0.13–0.48 px</td>
+<td>0.12–0.58 px</td>
+</tr>
+<tr>
+<td>range of the relative tensions (mean 1), one frame: the global fit</td>
+<td>0.23–2.03</td>
+<td>0.54–1.62</td>
+</tr>
+<tr>
+<td>the same, the two local readings (chord; fitted tangent)</td>
+<td>0.51–1.36; 0.61–1.33</td>
+<td>0.53–1.41; 0.59–1.54</td>
+</tr>
+</tbody>
+</table>
+<p>Pressed against the shell, the cell–medium interfaces depart from a circle about twice as much as without it, and the global fit, which forces them onto circles, spreads the tensions over a range more than twice as wide as the local readings' (1.80 against 0.86 and 0.72). These numbers come from one embryo per condition: they show which assumption fails inside an eggshell, not how accurate any reading is.</p>
+<p><strong>Free tissues: arcs and pressures apply in principle.</strong> On synthetic equilibrium foams the arc reading lowers the relative tension error by 0.068 and the pressure error by 0.091 of the RMS pressure against the chord (with the mesher's default junction relocation), and is significantly worse in no tier (BENCHMARKS.md, <em>Two-dimensional tissues</em>); it is the default for that reason. <strong>Open question:</strong> on the free embryo of the <a href="../../examples/two-dimensional-tissue/">worked example</a> (one embryo, one frame), the chord gives three of the four cell–cell interfaces 0.39 to 0.61 times the tension the arc reading gives them, and no real image has known tensions. Which reading is closer to the truth on real free tissues is not known.</p>
+<h2 id="which-pressures-and-stresses-to-trust">Which pressures and stresses to trust<a class="headerlink" href="#which-pressures-and-stresses-to-trust" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tissue</th>
+<th>junction angles</th>
+<th>tensions</th>
+<th>pressures</th>
+<th>full stress</th>
+<th>deviatoric stress</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>deformed by its own forces only (free, near equilibrium)</td>
+<td><code>"arc"</code> (default); the global fit, opt-in</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes: the anisotropic part of the cell's stress</td>
+</tr>
+<tr>
+<td>compressed or confined (eggshell, substrate)</td>
+<td><code>"chord"</code>; <code>"fitted_tangent"</code> as a check</td>
+<td>yes, read near the junctions</td>
+<td><strong>no</strong></td>
+<td><strong>no</strong></td>
+<td>the contribution of the cortical tensions only, not the cell's total stress anisotropy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pressures</strong> come from Laplace's law on the interfaces' curvatures. In a compressed or confined tissue the curvature of an interface is imposed partly by the shell or the substrate, so Laplace's law does not give the cells' pressures: foambryo computes numbers, and they are not measurements. Only the tensions read near the junctions may be read there. foambryo cannot tell a confined tissue from a free one: this is the user's call.</p>
+<p><strong>The full stress</strong> of a cell, its mean stress tensor <span class="arithmatex">\(\sigma = -p\,I + \frac{1}{A}\sum_m \gamma_m \sum_e l_e\, \mathbf{t}_e \mathbf{t}_e^{\top}\)</span> (a sum over the cell's interfaces <span class="arithmatex">\(m\)</span> and their segments <span class="arithmatex">\(e\)</span>, of length <span class="arithmatex">\(l_e\)</span> and unit tangent <span class="arithmatex">\(\mathbf{t}_e\)</span>; <span class="arithmatex">\(A\)</span> the cell's area; 2 × 2 in <code>(row, column)</code>, in units of a pressure), contains the pressure, so it is not a measurement in a confined tissue either.</p>
+<p><strong>The deviatoric stress</strong>, <span class="arithmatex">\(\sigma - \frac{\operatorname{tr}\sigma}{2} I\)</span>, drops the isotropic term <span class="arithmatex">\(-p\,I\)</span>: it is computed from the tensions and the cell's boundary alone, and is the contribution of the cortical tensions to the cell's stress anisotropy (its principal directions and the difference of its principal values; not the mean normal stress). In a free tissue that is the anisotropic part of the cell's stress. Under confinement, the shell's contact forces also act on the cells and are not in it: there it is the cortical tensions' contribution only, not the cell's total stress anisotropy, and it holds as such when the tensions are read near the junctions and each interface's tension is uniform along it. <code>plot_force_inference(mesh, tensions, pressures, stress="deviatoric")</code> draws it in 2D and in 3D, with its own colour bar and without colouring the cells by pressure (on the command line, <code>foambryo view MESH --stress deviatoric</code>); <code>stress="full"</code> (the default) draws the full stress.</p>
+<p>A cell that rows of several junction-graph components determine has no single pressure scale: its pressure is <code>nan</code> in the flat map, with a warning (its pressure in each component is in the report). A cell cut by the image border is reported; its pressure is not withheld, unlike a cut cell in 3D, and no stress glyph is drawn for it, full or deviatoric.</p>
+<h2 id="junctions-on-the-image-border-and-lenses">Junctions on the image border, and lenses<a class="headerlink" href="#junctions-on-the-image-border-and-lenses" title="Permanent link">&para;</a></h2>
+<p><strong>The image border.</strong> Where the image border cuts a cell–cell interface, the medium along the border makes a straight 180° wedge that is not a contact angle. By default (<code>exclude_image_border=True</code>) the vertices on the image border are excluded: on a mesh from dw2d 0.8.0 they are dw2d's own mark, taken before any vertex moves and never moved by its junction relocation (<code>PlanarMesh.image_border_vertices</code>, <code>foambryo.image_border_vertices(mesh)</code>); on bare arrays, the vertices on the image rectangle. <code>excluded_vertices</code> excludes more.</p>
+<p><strong>Lenses.</strong> When two interfaces take their Young's-law rows from the same junctions and no other (a small lens, a cell with two sides, often on the border of a crop), their tensions are determined only as far as their two columns are well conditioned; read by chords, the two columns are equal and the system is singular, and the solve would return two opposite tensions of order 1e11 to 1e12. Where the condition number of the two columns exceeds <code>MAX_LENS_CONDITION</code> (20: an angle error of 1/20 rad could then change the two tensions by their own size), those junctions give no row, the two tensions are <code>nan</code>, <code>IllConditionedLensWarning</code> names the interfaces, and <code>TwoDimensionalReport.refused_lenses</code> records them. On 3 522 readings of synthetic and real meshes the guard fired on 2.6 %, almost all crops, and changed nothing elsewhere, bit for bit.</p>
+<h2 id="the-global-fit-opt-in-provisional">The global fit (opt-in, provisional)<a class="headerlink" href="#the-global-fit-opt-in-provisional" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">solution</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="n">report</span> <span class="o">=</span> <span class="n">foambryo</span><span class="o">.</span><span class="n">infer_forces_by_equilibrium_tiling</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">diagnostics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">tensions</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">dict_tensions</span>
+</code></pre></div>
+<p>Instead of reading each junction and each interface alone, <code>infer_forces_by_equilibrium_tiling(mesh, labels, mean_tension=1.0, *, max_evaluations=EQUILIBRIUM_TILING_MAX_EVALUATIONS, diagnostics=False)</code> fits the label image's crack points (the middles of the sides shared by two pixels of different labels) by one equilibrium tiling of circular arcs, in which every interface is a circle and Young's and Laplace's laws hold exactly (Noll N., Streichan S. J., Shraiman B. I., <em>Variational method for image-based inference of internal stress in epithelial tissues</em>, Phys. Rev. X 10, 011072 (2020), <a href="https://doi.org/10.1103/PhysRevX.10.011072">doi:10.1103/PhysRevX.10.011072</a>). It starts from the arc reading of the mesh. It needs the label image the mesh was built from as well as the mesh, and refuses one that cannot be the mesh's. It returns a <code>ComponentTensionSolution</code> (each component a biconnected block of the graph of materials, gauged to <code>mean_tension</code>), the pressures relative to the medium and, with <code>diagnostics=True</code>, an <code>EquilibriumTilingReport</code> with the reason for every <code>nan</code>. On the command line: <code>foambryo infer MESH --tension-method equilibrium-tiling --mask MASK</code>.</p>
+<ul>
+<li><strong>Opt-in.</strong> On synthetic equilibrium foams it is more accurate than the arc reading in almost every tier and scale (BENCHMARKS.md), including a 4 096-cell tissue, but it refuses some images whole where the arc reading refuses none (11 of 453 crops). Its refusals are <code>nan</code> with a reason, not wrong numbers.</li>
+<li><strong>Provisional</strong>, as every 2-D name.</li>
+<li><strong>Not for compressed or confined cells.</strong> It assumes circular interfaces and Laplace's law for every cell; inside an eggshell or on a substrate neither holds away from the junctions, and its tensions are not the cells' (on one embryo inside its eggshell it spread the tensions from 0.23 to 2.03, against 0.51 to 1.36 for the chord).</li>
+</ul>
+<h2 id="curvature-and-stress-in-2d">Curvature and stress in 2D<a class="headerlink" href="#curvature-and-stress-in-2d" title="Permanent link">&para;</a></h2>
+<p><code>foambryo.curvature.compute_curvature_interfaces(mesh, reading="arc")</code> returns each interface's signed curvature <span class="arithmatex">\(\kappa_{ab}\)</span> (convention above), read from the circle the 2-D pressures fit (<code>reading="arc"</code>, the default) or from the vertex curvatures (<code>"local"</code>); <code>compute_curvature_vertices_cotan</code> returns the vertex curvatures, <span class="arithmatex">\(K_i = (t_2 - t_1)/l_i\)</span> (the cotangent Laplacian's one-dimensional form, exact on a circle sampled at equal steps; the junctions, the interfaces' ends and the image border's vertices have none, <code>nan</code>). <code>compute_gaussian_curvature_vertices</code> refuses a 2-D mesh: a curve has one curvature. The cells' stresses are drawn by the viewer (<code>plot_force_inference</code>, above); <code>foambryo.plotting_utilities.planar_mesh_drawing(mesh)</code> returns what the viewers draw of a 2-D mesh (each cell cut into triangles by ear clipping, its area and centroid, the interfaces and junctions), for figures of your own; it needs neither Polyscope nor a display.</p>
+<h2 id="the-command-line-in-2d">The command line in 2D<a class="headerlink" href="#the-command-line-in-2d" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>foambryo<span class="w"> </span>mesh<span class="w"> </span>mask.tif<span class="w"> </span>--spacing<span class="w"> </span><span class="m">0</span>.2457<span class="w"> </span><span class="m">0</span>.2457<span class="w"> </span>-o<span class="w"> </span>embryo.rec
+foambryo<span class="w"> </span>infer<span class="w"> </span>embryo.rec<span class="w"> </span>-o<span class="w"> </span>results
+foambryo<span class="w"> </span>infer<span class="w"> </span>embryo.rec<span class="w"> </span>-o<span class="w"> </span>results-chord<span class="w"> </span>--angle-reading<span class="w"> </span>chord<span class="w"> </span>--no-pressures
+foambryo<span class="w"> </span>infer<span class="w"> </span>embryo.rec<span class="w"> </span>-o<span class="w"> </span>results-global-fit<span class="w"> </span>--tension-method<span class="w"> </span>equilibrium-tiling<span class="w"> </span>--mask<span class="w"> </span>mask.tif
+foambryo<span class="w"> </span>view<span class="w"> </span>embryo.rec<span class="w"> </span>--image<span class="w"> </span>membranes.tif<span class="w"> </span>--angle-reading<span class="w"> </span>chord<span class="w"> </span>--stress<span class="w"> </span>deviatoric
+</code></pre></div>
+<p><code>foambryo mesh</code> meshes a 2-D mask (<code>--spacing DY DX</code>, the two equal; <code>--min-distance</code> 4 pixels by default; thin margins of medium padded as delaunay-watershed does, <code>--no-pad-thin-medium-margins</code> to turn it off) and writes a <code>.rec</code> file that records <code>dimension = 2</code>. <code>foambryo infer</code> infers a 2-D mesh with Young's law and Laplace's law (<code>--pressure-method laplace</code>, the only one in 2D), takes <code>--angle-reading arc|chord|fitted_tangent</code>, and with <code>--tension-method equilibrium-tiling --mask MASK</code> runs the global fit; <code>run.json</code> records <code>dimension</code>. <code>foambryo infer-over-seeds</code> refuses a 2-D mask (dw2d has no dither seed), and <code>--media</code> is refused on a 2-D mesh. <code>foambryo view</code> opens the 2-D window on a 2-D mesh or mask, with <code>--image</code> under it and, with <code>--stress deviatoric</code>, the deviatoric stress's glyphs. See the <a href="../../command_line_specification/">command-line specification</a>.</p>
+<h2 id="the-viewers-in-2d">The viewers in 2D<a class="headerlink" href="#the-viewers-in-2d" title="Permanent link">&para;</a></h2>
+<p><code>foambryo view</code> and <code>plot_force_inference</code>, <code>plot_tension_inference</code>, <code>plot_pressure_inference</code> and <code>view_mask</code> open a 2-D window on 2-D input: each interface a curve coloured by its tension, each cell a polygon coloured by its pressure, the junctions as points, and each uncut cell's stress glyph; rows run downward, as in napari and matplotlib. See <a href="../viewers/">Viewers</a>. The napari plugin, napari-foambryo 0.2.0, has 2-D docks too.</p>
+<h2 id="coming-from-foambryo2d">Coming from foambryo2D<a class="headerlink" href="#coming-from-foambryo2d" title="Permanent link">&para;</a></h2>
+<p>foambryo2D is frozen; its inference runs in foambryo since 0.8.0, on foambryo's own Young's-law rows, junction graph and solves. Its per-junction Young–Dupré inference is <code>foambryo.infer_tensions(mesh, angle_reading="chord")</code>, which gives its tensions to 1e-12 of the mean tension on 18 reference meshes, on the largest junction-graph component (the only one foambryo2D solved; foambryo gauges each component and returns the others too). foambryo adds the arc reading (the default), pressures, the image-border mark, the lens guard, the global fit and the viewers. Meshes from dw2d 0.1.5 are read in their former orientation and give the same results.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../examples/two-dimensional-tissue/">A free 2D tissue: mask → mesh → tensions, pressures and stresses</a>: a 4-cell embryo without eggshell, the arc reading and the global fit.</li>
+<li><a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/">Choosing an angle reading inside an eggshell</a>: the chord, with <code>fitted_tangent</code> as a check; why the arc reading and the global fit do not apply; no pressures; the deviatoric stress as the cortical tensions' contribution.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-3.0-or-later, Turlier lab
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

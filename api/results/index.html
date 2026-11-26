@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -533,6 +533,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/two-dimensional-tissues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/viewers/" class="md-nav__link">
         
   
@@ -656,6 +684,62 @@
     
   
     Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/two-dimensional-tissue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A free 2D tissue: mask → mesh → tensions, pressures and stresses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choosing-an-angle-reading-inside-an-eggshell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing an angle reading inside an eggshell
   
 
     
@@ -1854,6 +1938,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../two-dimensional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-dimensional tissues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotting-utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../viewing/" class="md-nav__link">
         
   
@@ -2363,7 +2503,7 @@
     <div class="doc doc-contents first">
 
         <p>The result files of the <code>foambryo</code> command, for every front end that writes or reads them.</p>
-<p><code>foambryo infer</code> and <code>foambryo infer-over-seeds</code> write CSV tables and a JSON run record, <code>run.json</code> (schema 1);
+<p><code>foambryo infer</code> and <code>foambryo infer-over-seeds</code> write CSV tables and a JSON run record, <code>run.json</code> (schema 2);
 the napari plugin writes the same files. Both use this module, so a table written by either reads back as the
 library's 64-bit numbers, and a run record has the same keys:</p>
 <ul>
@@ -3671,7 +3811,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
 
     <div class="doc doc-contents ">
 
-        <p>The versions a run record names: Python, foambryo, delaunay-watershed-3d, NumPy, SciPy, then <code>extra</code>.</p>
+        <p>The versions a run record names: Python, foambryo, delaunay-watershed-3d and -2d, iorec, NumPy, SciPy, <code>extra</code>.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3914,6 +4054,16 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
+                <p><code>pixel</code> for a 2-D mesh in pixels (its appendix records <code>dimension = 2</code> and no physical frame),</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
                 <p>else <code>mesh length unit (not recorded in the mesh file)</code>.</p>
               </div>
             </td>
@@ -3959,7 +4109,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
 
     <div class="doc doc-contents ">
 
-        <p>The run record of an inference on one mesh, schema 1, as <code>foambryo infer</code> writes it.</p>
+        <p>The run record of an inference on one mesh, schema 2, as <code>foambryo infer</code> writes it.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4191,7 +4341,7 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the record, for <code>write_run_record</code>: <code>schema</code>, <code>command</code>, <code>arguments</code>, <code>date</code>, <code>elapsed_seconds</code>,</p>
+                <p>the record, for <code>write_run_record</code>: <code>schema</code>, <code>dimension</code> (3, or 2 for a 2-D mesh), <code>command</code>,</p>
               </div>
             </td>
           </tr>
@@ -4201,7 +4351,17 @@ tension is written <code>nan</code>. Floats are written exactly (<code>format_fl
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>versions</code>, <code>input</code>, <code>options</code>, <code>library_call</code>, <code>mesh</code> (counts, the media and the cut cells), <code>results</code></p>
+                <p><code>arguments</code>, <code>date</code>, <code>elapsed_seconds</code>, <code>versions</code>, <code>input</code>, <code>options</code>, <code>library_call</code>, <code>mesh</code> (counts, the</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>media and the cut cells: <code>triangles</code> and <code>crop_faces</code> in 3D, <code>segments</code> and <code>image_border_vertices</code> in 2D), <code>results</code></p>
               </div>
             </td>
           </tr>
@@ -4291,7 +4451,7 @@ by its enumeration name, <code>spacing</code> as <code>(dz, dy, dx)</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>The run record of a seed ensemble, schema 1, as <code>foambryo infer-over-seeds</code> writes it.</p>
+        <p>The run record of a seed ensemble, schema 2 (3-D only: <code>dimension</code> 3), as <code>foambryo infer-over-seeds</code> writes it.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4677,10 +4837,10 @@ by its enumeration name, <code>spacing</code> as <code>(dz, dy, dx)</code>.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
       
