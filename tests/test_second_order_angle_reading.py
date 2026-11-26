@@ -13,7 +13,10 @@ one function that defines
    point. A one-ulp drift anywhere fails this test. Bit identity holds only on the numerical stack
    it was verified on (numpy and scipy, `BITWISE_NUMPY`, `BITWISE_SCIPY`); elsewhere that test skips
    with the reason, and a second gate compares the same quantities with the stored numbers of
-   `tests/data/angle_reading_reference_values.json` to a relative 1e-12, on every stack.
+   `tests/data/angle_reading_reference_values.json` to a relative 1e-12, on every stack. Tensions
+   that come out of a dense least-squares solve are compared by that second gate only: their last
+   bits belong to the LAPACK library, which on macOS is the operating system's Accelerate framework
+   and changes with the system, numpy and scipy unchanged (`SOLVED_BY_THE_SYSTEM_LAPACK`).
 
 2. **Safeguards 1, 2 and 4** of the inherited five (see
    `foambryo.second_order_angle_reading`'s module docstring, and dw3d's chord-versus-tangent
@@ -114,6 +117,16 @@ EXACT_GAUGE_SINCE_0_7 = (
 #: moved (a differently weighted gauge row), so they leave the bitwise digests. `LogLami`'s gauge was
 #: already exact, so its values are compared to the baseline as they are, to 1e-12.
 SOLVED_THROUGH_THE_EXACT_GAUGE = (*EXACT_GAUGE_SINCE_0_7, "LogLami")
+#: Methods whose tensions are a dense LAPACK least-squares solve (`scipy.linalg.lstsq`, numpy's
+#: `linalg`), whose last bits belong to the LAPACK library rather than to numpy or scipy. On macOS
+#: both link the system's Accelerate framework: the upgrade from macOS 14.8.4 to 27.2 moved these two
+#: methods' tensions by up to 176 ulp (3.5e-15 relative to the case's largest tension) on 46 and 17
+#: of the 47 cases, with numpy 2.5.1, scipy 1.18.0, Python and foambryo unchanged, while every angle,
+#: length and per-edge angle stayed bit-identical. They leave the bitwise digests and are compared to
+#: 1e-12 by `test_default_reading_matches_the_reference_values_to_1e12`, as the gauge-solved ones are.
+SOLVED_BY_THE_SYSTEM_LAPACK = ("Variational", "ForceBalance")
+#: Every method left out of the bitwise digests: the tolerance gate is their only gate.
+LEFT_OUT_OF_THE_BITWISE_DIGESTS = (*SOLVED_THROUGH_THE_EXACT_GAUGE, *SOLVED_BY_THE_SYSTEM_LAPACK)
 
 
 def _digest(items):
@@ -195,10 +208,13 @@ def reference_mesh():
 def test_default_reading_is_bitwise_unchanged_on_every_benchmark_case(baseline):
     """The default path must reproduce commit `55bac17` bit for bit, on all 47 cases.
 
-    Angles (radians and degrees), accumulated lengths, per-edge trijunction angles, and the
-    tensions from every one of the ten inference methods, digested over their raw IEEE-754
-    bits. This is the gate the second-order-angle-reading work is accepted or rejected on; if it fails, the fix is
-    in the source, never in `tests/data/angle_reading_bit_identity_baseline.json`.
+    Angles (radians and degrees), accumulated lengths and per-edge trijunction angles, digested
+    over their raw IEEE-754 bits. This is the gate the second-order-angle-reading work is accepted
+    or rejected on; if it fails, the fix is in the source, never in
+    `tests/data/angle_reading_bit_identity_baseline.json`. The tensions of
+    the ten inference methods are all left to the 1e-12 gate: eight are solved through the exact
+    gauge (`SOLVED_THROUGH_THE_EXACT_GAUGE`), and the last bits of the other two are the system
+    LAPACK's (`SOLVED_BY_THE_SYSTEM_LAPACK`).
 
     Bit identity is a property of the whole numerical stack, so this runs only on the numpy and
     scipy it is verified on (`BITWISE_NUMPY`, `BITWISE_SCIPY`) and skips elsewhere, saying why;
@@ -220,7 +236,7 @@ def test_default_reading_is_bitwise_unchanged_on_every_benchmark_case(baseline):
         case = path.stem.removesuffix("_mesh")
         recorded = baseline["cases"][case]
         for field, value in _digest_one_case(path).items():
-            if field.removeprefix("tensions_") in SOLVED_THROUGH_THE_EXACT_GAUGE:
+            if field.removeprefix("tensions_") in LEFT_OUT_OF_THE_BITWISE_DIGESTS:
                 continue
             if recorded[field] != value:
                 differences.append(f"{case}/{field}")
@@ -238,7 +254,8 @@ def test_default_reading_matches_the_reference_values_to_1e12():
     sum of squares of the angles, lengths and per-edge angles, against
     `tests/data/angle_reading_reference_values.json`. Those values were written in a run whose
     digests all equal the bit-identity baseline, so they are the baseline's own numbers. 1e-12 is far
-    above the 1.8e-14 measured between numpy 2.5.1 and 2.4.6, and far below any change of method.
+    above the 1.8e-14 measured between numpy 2.5.1 and 2.4.6 and the 3.5e-15 measured between macOS
+    14.8.4 and 27.2's LAPACK, and far below any change of method.
     """
     reference = json.loads(REFERENCE_VALUES.read_text())["cases"]
     meshes = _benchmark_meshes()
@@ -265,6 +282,24 @@ def test_default_reading_matches_the_reference_values_to_1e12():
             ):
                 failures.append(f"{case}/{field}")
     assert not failures, f"{len(failures)} quantity(ies) moved by more than {REFERENCE_RTOL:g}: {failures[:12]}"
+
+
+def test_every_tension_left_out_of_the_bitwise_digests_is_in_the_tolerance_gate():
+    """A method leaves the bitwise gate only to be gated at 1e-12: never to leave every gate.
+
+    Reads the two data files only: each of the ten methods has its tensions stored, on all 47
+    cases, in the values the tolerance gate compares with, and its digest in the baseline.
+    """
+    methods = {*ANGLE_METHOD_NAMES, *NON_ANGLE_METHOD_NAMES}
+    assert set(LEFT_OUT_OF_THE_BITWISE_DIGESTS) <= methods
+    assert set(SOLVED_BY_THE_SYSTEM_LAPACK).isdisjoint(SOLVED_THROUGH_THE_EXACT_GAUGE)
+    reference = json.loads(REFERENCE_VALUES.read_text())["cases"]
+    recorded = json.loads(BASELINE.read_text())["cases"]
+    assert len(reference) == len(recorded) == 47
+    for case, fields in reference.items():
+        for name in methods:
+            assert fields[f"tensions_{name}"], f"{case}: no stored tensions for {name}"
+            assert f"tensions_{name}" in recorded[case]
 
 
 def test_the_selector_defaults_to_the_chord_reading(reference_mesh):

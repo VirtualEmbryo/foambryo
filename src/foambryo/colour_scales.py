@@ -21,7 +21,8 @@ clipped to:
 `alpha` is `DEFAULT_CLIP_QUANTILE` (0.05) unless given. `save_colour_bars` writes the bars to an image file and
 returns the values at their ends (`ColourBarRanges`). This module needs matplotlib (installed by
 `foambryo[viewing]`), but neither Polyscope nor a display. The functions are implemented in
-`foambryo._colour_scales`; this module is their public interface.
+`foambryo._colour_scales`; this module is their public interface. What the viewers draw of a 2-D mesh
+(`planar_mesh_drawing`) is in `foambryo.plotting_utilities`.
 """
 
 from foambryo._colour_scales import (

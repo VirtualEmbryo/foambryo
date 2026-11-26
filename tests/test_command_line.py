@@ -17,7 +17,7 @@ What this pins, and why:
   also those of the plain reconstruction scaled by the spacing, as before the resampling route. Sums
   or counts would miss a changed mesh; hashes do not. A spacing with two different short axes is
   refused; above an anisotropy of 3 the reconstruction's warning that this was not measured is relayed.
-* **The run record** has every key of schema 1, with its type; the spectra file has the library's own
+* **The run record** has every key of schema 2, with its type; the spectra file has the library's own
   layout.
 * **Exit codes and messages** for a missing file, a mask without spacing, existing outputs, results
   of another mesh, and a refused pressure solve.
@@ -33,6 +33,7 @@ import hashlib
 import inspect
 import json
 import math
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -116,7 +117,8 @@ def test_every_default_of_the_command_is_the_librarys():
     infer = parser.parse_args(["infer", "m.rec", "-o", "out"])
     library = inspect.signature(infer_forces).parameters
     assert cli.TENSION_METHODS[infer.tension_method] is library["mode_tension"].default
-    assert cli.PRESSURE_METHODS[infer.pressure_method] is library["mode_pressure"].default
+    # The pressure method's default is per dimension (None: variational in 3D, laplace in 2D), in both.
+    assert infer.pressure_method is library["mode_pressure"].default is None
     assert infer.mean_tension == library["mean_tension"].default
     assert infer.base_pressure == library["base_pressure"].default
     assert infer.solver == library["solver"].default
@@ -171,7 +173,7 @@ def _library_options(options: list[str]) -> dict:
         "mean_tension": args.mean_tension,
         "base_pressure": args.base_pressure,
         "mode_tension": cli.TENSION_METHODS[args.tension_method],
-        "mode_pressure": cli.PRESSURE_METHODS[args.pressure_method],
+        "mode_pressure": None if args.pressure_method is None else cli.PRESSURE_METHODS[args.pressure_method],
         "solver": args.solver,
         "diagnostics": cli.DIAGNOSTICS[args.diagnostics],
     }
@@ -238,23 +240,24 @@ def test_spectra_file_is_the_librarys_layout(capsys, tmp_path, benchmark_mesh):
 
 
 RUN_RECORD_KEYS = {
-    "schema": int, "command": str, "arguments": list, "date": str, "elapsed_seconds": float, "versions": dict,
+    "schema": int, "dimension": int, "command": str, "arguments": list, "date": str, "elapsed_seconds": float, "versions": dict,
     "input": dict, "options": dict, "library_call": str, "mesh": dict, "results": dict, "units": dict,
     "status": str, "error": type(None), "warnings": list, "solves": type(None), "outputs": list,
 }
 
 
-def test_run_record_has_every_schema_1_key(capsys, tmp_path, benchmark_mesh):
+def test_run_record_has_every_schema_2_key(capsys, tmp_path, benchmark_mesh):
     outdir = tmp_path / "results"
     assert _run(capsys, "infer", benchmark_mesh, "-o", outdir)[0] == cli.EXIT_OK
     record = json.loads((outdir / "run.json").read_text())
     assert set(record) == set(RUN_RECORD_KEYS)
     for key, kind in RUN_RECORD_KEYS.items():
         assert isinstance(record[key], kind), key
-    assert record["schema"] == 1
+    assert record["schema"] == 2 and record["dimension"] == 3
     assert record["command"] == "foambryo infer"
     assert record["arguments"] == ["infer", str(benchmark_mesh), "-o", str(outdir)]
-    assert set(record["versions"]) == {"python", "foambryo", "delaunay-watershed-3d", "numpy", "scipy"}
+    assert set(record["versions"]) == {"python", "foambryo", "delaunay-watershed-3d", "delaunay-watershed-2d", "iorec",
+                                       "numpy", "scipy"}
     assert record["input"]["sha256"] == hashlib.sha256(benchmark_mesh.read_bytes()).hexdigest()
     assert record["input"]["bytes"] == benchmark_mesh.stat().st_size
     assert set(record["input"]) == {"path", "sha256", "bytes", "metadata"}
@@ -320,6 +323,57 @@ def test_a_closed_interface_refuses_the_pressures_and_keeps_the_tensions(capsys,
 # ---------------------------------------------------------------------------------------------
 SPACINGS = {"unit voxels": (1.0, 1.0, 1.0), "cubic voxels of 0.5": (0.5, 0.5, 0.5), "z twice as long": (1.0, 0.5, 0.5)}
 
+#: (mask, spacing) pairs on which delaunay-watershed-3d's reconstruction loses a cell, or keeps only a fragment of it.
+CELL_LOST_BY_THE_WATERSHED = {
+    ("four cells cut by the image box", "unit voxels"): "dw3d's watershed loses cell 1 of the cut mask (0.8.0 keeps 4 "
+    "triangles of it, 0.010 of its volume)",
+    ("four cells cut by the image box", "cubic voxels of 0.5"): "the same mesh as on unit voxels, scaled",
+}
+
+
+def _volumes_over_voxels_inside_the_box(mask, spacing, points, triangles, labels) -> dict[int, float]:
+    """Each cell's mesh volume over its voxel volume inside the box of voxel centres (where a mesh can reach)."""
+    points, triangles, labels = np.asarray(points, float), np.asarray(triangles, np.int64), np.asarray(labels, np.int64)
+    det = np.einsum("ij,ij->i", points[triangles[:, 0]], np.cross(points[triangles[:, 1]], points[triangles[:, 2]])) / 6
+    out = {}
+    for cell in (int(c) for c in np.unique(mask) if c):
+        volume = float(det[labels[:, 0] == cell].sum() - det[labels[:, 1] == cell].sum())
+        index = np.argwhere(mask == cell)
+        weight = np.ones(len(index))
+        for axis, n in enumerate(mask.shape):
+            weight *= np.where((index[:, axis] == 0) | (index[:, axis] == n - 1), 0.5, 1.0)
+        out[cell] = volume / (weight.sum() * float(np.prod(spacing)))
+    return out
+
+
+@pytest.mark.parametrize("spacing_name", list(SPACINGS))
+@pytest.mark.parametrize("mask_name", list(MASKS))
+def test_every_cell_of_the_mask_is_meshed(request, mask_name, spacing_name):
+    """Every cell of the mask is in the mesh `foambryo mesh` writes, with at least half its volume, cut or not.
+
+    The volume is read against the cell's voxels inside the box of voxel centres, which is where the mesh can reach (a
+    cut cell's voxels on the image box count for half). On cubic voxels, dw3d 0.7.1's seeded watershed loses cell 1 of
+    the cut mask at min_distance 3 (it keeps only its seed tetrahedron, which mesh surgery relabels); dw3d 0.7.0 loses
+    it on macOS arm64 and kept 8 of its triangles in one Linux run. dw3d 0.8.0 pads the mask's four free faces, 4 voxels
+    from the ball, and keeps 4 triangles of cell 1: 0.010 of its volume, while cell 2 holds 1.25 times its own and cell
+    4 0.42. On the uncut ball with z twice as long, dw3d 0.8.0's padded mesh keeps 0.064 of cell 3's volume; without
+    padding the same mesh loses that cell on 2 of 20 dither seeds. The expected failures are not strict, because the
+    outcome depends on the installed delaunay-watershed-3d and the machine.
+    """
+    if (mask_name, spacing_name) in CELL_LOST_BY_THE_WATERSHED:
+        reason = CELL_LOST_BY_THE_WATERSHED[(mask_name, spacing_name)]
+        request.applymarker(pytest.mark.xfail(strict=False, reason=reason))
+    mask = MASKS[mask_name]()
+    algorithm = get_default_mesh_reconstruction_algorithm(3, False)
+    spacing = SPACINGS[spacing_name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        points, triangles, labels = algorithm.construct_mesh_in_physical_units(mask, spacing, spacing_unit="um")
+    cells = {int(label) for label in np.unique(mask)} - {0}
+    assert cells <= {int(label) for label in np.unique(labels)}
+    ratios = _volumes_over_voxels_inside_the_box(mask, spacing, points, triangles, labels)
+    assert all(ratio >= 0.5 for ratio in ratios.values()), ratios
+
 
 @pytest.mark.parametrize("spacing_name", list(SPACINGS))
 @pytest.mark.parametrize("mask_name", list(MASKS))
@@ -367,9 +421,17 @@ def test_mesh_file_holds_the_library_reconstruction(capsys, tmp_path, mask_name,
     assert float(appendix["resampled_spacing"]) == min(spacing)  # dw3d's reader returns this key as text
     assert ("crop_faces" in appendix) == report.meets_the_image_box
     n_cells = np.count_nonzero(np.unique(labels))
+    # a label of the mask absent from the mesh is named (dw3d's `unresolved`, every cause since its 0.8.0 line)
+    unresolved = sorted((u.label, u.voxels) for u in getattr(algorithm.enclosed_medium_report, "unresolved", ()))
+    absent = ""
+    if unresolved:
+        names = ", ".join(f"{label}: {voxels} voxels" for label, voxels in unresolved)
+        absent = (f"; {len(unresolved)} label{'s' if len(unresolved) != 1 else ''} of the mask unresolved, absent "
+                  f"from the mesh ({names})")
     assert out == (f"{segmentation_mask_report(mask).summary()}\n"
                    f"wrote {mesh_path}: {len(points)} points, {len(triangles)} triangles, {n_cells} cells "
-                   f"({len(report.cut_cells) if report.meets_the_image_box else 0} cut by the image boundary)\n")
+                   f"({len(report.cut_cells) if report.meets_the_image_box else 0} cut by the image boundary)"
+                   f"{absent}\n")
     # and foambryo reads it, crop faces and source voxel size included
     mesh = dcel_mesh_from_file(mesh_path)
     assert int(mesh.crop_faces.sum()) == int(crop.sum())
@@ -383,7 +445,23 @@ def test_mesh_says_the_mask_is_resampled_and_warns_above_the_measured_anisotropy
     assert err == ("foambryo mesh: warning: AnisotropicVoxelSpacingWarning: the voxels are 2 times longer along "
                    "axis 0 (z) than along the other two: the mask is resampled to cubic voxels of 0.3 um by "
                    "shape-based interpolation before meshing (2 times the voxels; --min-distance counts cubic "
-                   "voxels)\n")
+                   "voxels)\n"
+                   # a resampled mask is not padded by default (delaunay-watershed 0.8.0): the ball is 4 voxels from
+                   # the faces in y and x, and the meshes of cells 3 and 4 lie on two of them; the hint names the
+                   # command's option, not the library's keyword; each cell's mesh volume over its voxel count shows
+                   # that neither took the medium
+                   + "".join(
+                       f"{prefix}cell {cell} lies on the image face {face}, 4 voxels of medium away from its voxels "
+                       f"(not padded: off by default on a resampled mask, pass --pad-thin-medium-margins), mesh volume "
+                       f"{ratio} times its voxel count{end}"
+                       for prefix, cell, face, ratio, end in (
+                           ("foambryo mesh: warning: ThinMediumMarginWarning: ", 3, "axis1_high", "0.82", "; "),
+                           ("", 4, "axis2_high", "0.97", (
+                               ". The mesh of such a cell may include medium between it and the face, which makes its "
+                               "volume larger than its voxel count (cell_volume_report lists the cells outside "
+                               "[0.5, 1.5]). See dw3d.thin_medium_margins.\n")),
+                       )
+                   ))
     code, _, err = _run(capsys, "mesh", tmp_path / "mask.npy", "-o", tmp_path / "k3.5.rec", "--spacing", 1, 1, 3.5)
     assert code == cli.EXIT_OK
     relayed = {line.split(": ")[2]: line for line in err.splitlines()}
@@ -451,7 +529,7 @@ def test_a_mask_without_spacing_exits_2_and_says_how_to_give_it(capsys, tmp_path
 
 
 @pytest.mark.parametrize(("array", "message"), [
-    (np.zeros((4, 4)), "mask.npy holds a 2-D array; a mask is 3-D"),
+    (np.zeros((4, 4, 4, 4), dtype=np.int32), "mask.npy holds a 4-D array; a mask is 3-D (z, y, x) or 2-D (y, x)"),
     (np.zeros((4, 4, 4)), "mask.npy holds float64 values; a mask holds integer labels"),
     (-np.ones((4, 4, 4), dtype=np.int32), "mask.npy holds negative labels; labels are 0 (medium) or positive"),
 ])
@@ -613,3 +691,209 @@ def test_infer_over_seeds_needs_overwrite_and_a_spacing(capsys, tmp_path):
     assert code == cli.EXIT_FILE
     assert "--overwrite" in err
     assert _run(capsys, *arguments, "--overwrite")[0] == 0
+
+
+# ---------------------------------------------------------------------------------------------
+# view --stress full|deviatoric
+# ---------------------------------------------------------------------------------------------
+@pytest.fixture(scope="module")
+def ball_mesh_and_results(tmp_path_factory) -> tuple[Path, Path]:
+    """The four-cell ball meshed and inferred by the command (no dataset needed: runs in the CI layout)."""
+    folder = tmp_path_factory.mktemp("ball")
+    np.save(folder / "mask.npy", MASKS["four cells in a ball"]())
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        assert cli.main(["mesh", str(folder / "mask.npy"), "-o", str(folder / "ball.rec"), "--spacing", "1", "1",
+                         "1"]) == cli.EXIT_OK
+        assert cli.main(["infer", str(folder / "ball.rec"), "-o", str(folder / "results")]) == cli.EXIT_OK
+    return folder / "ball.rec", folder / "results"
+
+
+@pytest.fixture
+def opened_force_views(monkeypatch):
+    """`plot_force_inference` replaced by a recorder of its keywords (skipped without Polyscope)."""
+    pytest.importorskip("polyscope")
+    from foambryo import viewing
+
+    calls: list = []
+    monkeypatch.setattr(viewing, "plot_force_inference", lambda *args, **kwargs: calls.append(kwargs))
+    return calls
+
+
+@pytest.mark.parametrize("stress", [None, "full", "deviatoric"])
+def test_view_passes_the_stress_to_the_force_view(capsys, ball_mesh_and_results, opened_force_views, stress):
+    mesh, outdir = ball_mesh_and_results
+    options = [] if stress is None else ["--stress", stress]
+    code, _, err = _run(capsys, "view", mesh, "--results", outdir, *options)
+    assert code == cli.EXIT_OK, err
+    assert opened_force_views[-1]["stress"] == (stress or "full")  # full by default, as plot_force_inference
+
+
+def test_view_refuses_an_unknown_stress_and_a_deviatoric_stress_without_pressures(capsys, ball_mesh_and_results):
+    mesh, _ = ball_mesh_and_results
+    assert _run(capsys, "view", mesh, "--stress", "isotropic")[0] == cli.EXIT_USAGE
+    code, out, err = _run(capsys, "view", mesh, "--stress", "deviatoric", "--no-pressures")
+    assert (code, out) == (cli.EXIT_USAGE, "")
+    assert "--stress deviatoric is drawn by the force view: leave out --no-pressures" in err
+
+
+def test_view_no_show_writes_the_deviatoric_views_bars_without_polyscope(capsys, tmp_path, ball_mesh_and_results,
+                                                                        monkeypatch):
+    """The tension bar and the deviatoric stress's, from the tensions alone; no pressure bar, no Polyscope."""
+    from foambryo._viewer_figures import (
+        DEVIATORIC_STRESS_TITLE,
+        deviatoric_stress_principal_values,
+        principal_stress_colour_scale,
+    )
+
+    benchmark_mesh, outdir = ball_mesh_and_results
+    monkeypatch.setitem(__import__("sys").modules, "polyscope", None)  # any import of Polyscope now fails
+    bars = tmp_path / "bars.png"
+    code, out, err = _run(capsys, "view", benchmark_mesh, "--results", outdir, "--colour-bars", bars, "--no-show",
+                          "--stress", "deviatoric")
+    assert code == cli.EXIT_OK, err
+    assert bars.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
+    mesh = cli._read_mesh(Path(benchmark_mesh), None)
+    tensions = cli._read_view_results(outdir, Path(benchmark_mesh), mesh).tensions
+    assert "pressure" not in out
+    bar = principal_stress_colour_scale(DEVIATORIC_STRESS_TITLE, deviatoric_stress_principal_values(mesh, tensions))
+    assert bar.low < 0 < bar.high
+    assert out == f"wrote {bars}: tension {out.split('tension ')[1].split(',')[0]}, deviatoric stress " \
+                  f"{bar.low:.6g} to {bar.high:.6g}\n"
+
+
+# ---------------------------------------------------------------------------------------------
+# mesh --pad-thin-medium-margins / --no-pad-thin-medium-margins
+# ---------------------------------------------------------------------------------------------
+@pytest.mark.parametrize(("options", "expected"), [([], None), (["--pad-thin-medium-margins"], True),
+                                                   (["--no-pad-thin-medium-margins"], False)])
+def test_mesh_passes_the_padding_choice_to_the_reconstruction(capsys, tmp_path, monkeypatch, options, expected):
+    """None (the library's default) unless the option is given."""
+    calls: list = []
+    real = cli.reconstruct_mask
+
+    def recording(*args, **kwargs):
+        calls.append(kwargs)
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(cli, "reconstruct_mask", recording)
+    np.save(tmp_path / "mask.npy", MASKS["four cells in a ball"]())
+    code, _, err = _run(capsys, "mesh", tmp_path / "mask.npy", "-o", tmp_path / "m.rec", "--spacing", 1, 1, 1,
+                        *options)
+    assert code == cli.EXIT_OK, err
+    assert calls[-1]["pad_thin_medium_margins"] is expected
+
+
+def test_mesh_names_its_options_in_the_thin_margin_warning(capsys, tmp_path):
+    """Asked for, a resampled mask is padded and no cell is named; refused, a cubic one is not, and the hint says so."""
+    np.save(tmp_path / "mask.npy", MASKS["four cells in a ball"]())
+    code, _, err = _run(capsys, "mesh", tmp_path / "mask.npy", "-o", tmp_path / "k2.rec", "--spacing", 0.6, 0.3, 0.3,
+                        "--pad-thin-medium-margins")
+    assert code == cli.EXIT_OK, err
+    assert "not padded" not in err
+    cube = np.zeros((18, 18, 18), dtype=np.uint16)
+    cube[3:15, 3:15, 3:15] = 1  # a 12-voxel cube 3 voxels from every face
+    np.save(tmp_path / "cube.npy", cube)
+    code, _, err = _run(capsys, "mesh", tmp_path / "cube.npy", "-o", tmp_path / "padded.rec", "--spacing", 1, 1, 1)
+    assert code == cli.EXIT_OK, err
+    assert "ThinMediumMarginWarning" not in err  # padded by default on cubic voxels
+    code, _, err = _run(capsys, "mesh", tmp_path / "cube.npy", "-o", tmp_path / "unit.rec", "--spacing", 1, 1, 1,
+                        "--no-pad-thin-medium-margins")
+    assert code == cli.EXIT_OK, err
+    line = next(line for line in err.splitlines() if "ThinMediumMarginWarning" in line)
+    assert "(not padded: --no-pad-thin-medium-margins was given)" in line
+    assert "pad_thin_medium_margins" not in err  # the library's keyword is not what a command-line user types
+
+
+def test_reconstruct_mask_pads_as_asked_and_is_the_library_default_otherwise():
+    """Bitwise delaunay-watershed's mesh: the default call, padding on and padding off (cubic and resampled)."""
+    from dw3d import get_default_mesh_reconstruction_algorithm
+
+    from foambryo.io import reconstruct_mask
+
+    mask = MASKS["four cells in a ball"]()
+    meshes = {}
+    for spacing in ((1.0, 1.0, 1.0), (0.6, 0.3, 0.3)):
+        for pad in (None, True, False):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                ours = reconstruct_mask(mask, spacing, pad_thin_medium_margins=pad)
+                algorithm = get_default_mesh_reconstruction_algorithm(None, False)
+                keyword = {} if pad is None else {"pad_thin_medium_margins": pad}
+                theirs = algorithm.construct_mesh_in_physical_units(mask, spacing, spacing_unit="um", axis_order="zyx",
+                                                                    **keyword)
+            for a, b in zip((ours.points, ours.triangles, ours.labels), theirs, strict=True):
+                np.testing.assert_array_equal(a, b)
+            meshes[spacing, pad] = ours.points
+    # the defaults: padded on cubic voxels, not padded when resampled
+    np.testing.assert_array_equal(meshes[(1.0, 1.0, 1.0), None], meshes[(1.0, 1.0, 1.0), True])
+    np.testing.assert_array_equal(meshes[(0.6, 0.3, 0.3), None], meshes[(0.6, 0.3, 0.3), False])
+    assert meshes[(1.0, 1.0, 1.0), True].shape != meshes[(1.0, 1.0, 1.0), False].shape or not np.array_equal(
+        meshes[(1.0, 1.0, 1.0), True], meshes[(1.0, 1.0, 1.0), False])  # the choice changes the mesh
+
+
+def test_a_two_dimensional_mask_takes_the_padding_choice_too(capsys, tmp_path):
+    """A square 2 pixels from one side of the image: refused, it is not padded and the hint names the option."""
+    mask = np.zeros((48, 48), dtype=np.uint16)
+    mask[2:26, 12:36] = 1
+    mask[26:46, 12:36] = 2
+    np.save(tmp_path / "mask2d.npy", mask)
+    code, _, err = _run(capsys, "mesh", tmp_path / "mask2d.npy", "-o", tmp_path / "off.rec", "--spacing", 1, 1,
+                        "--no-pad-thin-medium-margins")
+    assert code == cli.EXIT_OK, err
+    assert "(not padded: --no-pad-thin-medium-margins was given)" in err
+    code, _, err = _run(capsys, "mesh", tmp_path / "mask2d.npy", "-o", tmp_path / "on.rec", "--spacing", 1, 1)
+    assert code == cli.EXIT_OK, err
+    assert "not padded" not in err
+
+
+# ---------------------------------------------------------------------------------------------
+# the requirement a too-old delaunay-watershed-3d is told about
+# ---------------------------------------------------------------------------------------------
+def _declared_delaunay_watershed_floor() -> str:
+    """The release of `delaunay-watershed>=X` in `setup.cfg`'s `install_requires`, without its pre-release part."""
+    parser = configparser.ConfigParser()
+    parser.read(REPOSITORY / "setup.cfg", encoding="utf-8")
+    for requirement in parser["options"]["install_requires"].split():
+        if requirement.startswith("delaunay-watershed>="):
+            from packaging.version import Version  # pytest's own dependency
+
+            return Version(requirement.removeprefix("delaunay-watershed>=")).base_version
+    raise AssertionError("setup.cfg declares no delaunay-watershed floor")
+
+
+@pytest.mark.parametrize("command", ["mesh", "infer-over-seeds"])
+def test_a_reconstruction_without_physical_units_names_the_requirement_foambryo_declares(capsys, tmp_path,
+                                                                                        monkeypatch, command):
+    """The message names the delaunay-watershed release foambryo requires, not an older one it no longer accepts."""
+    from dw3d.reconstruction_algorithm import MeshReconstructionAlgorithm
+
+    monkeypatch.delattr(MeshReconstructionAlgorithm, "construct_mesh_in_physical_units")
+    np.save(tmp_path / "mask.npy", _four_cells_in_a_ball())
+    output = tmp_path / ("m.rec" if command == "mesh" else "ensemble")
+    code, _, err = _run(capsys, command, tmp_path / "mask.npy", "-o", output, "--spacing", 1, 1, 1)
+    assert code == cli.EXIT_FILE
+    floor = _declared_delaunay_watershed_floor()
+    assert f"needs delaunay-watershed {floor} or later, as foambryo requires" in err
+    assert "pip install -U delaunay-watershed" in err
+    assert "0.7 or later" not in err
+
+
+def test_the_library_entry_points_name_the_requirement_foambryo_declares(monkeypatch):
+    """`reconstruct_mask` and `dcel_mesh_from_segmentation_mask` say the same as the command."""
+    from foambryo import dcel_mesh_from_segmentation_mask
+    from foambryo import io as foambryo_io
+
+    class OlderReconstruction:
+        def construct_mesh_from_segmentation_mask(self, _mask: np.ndarray) -> None:
+            raise AssertionError
+
+    floor = _declared_delaunay_watershed_floor()
+    monkeypatch.setattr(foambryo_io, "get_default_mesh_reconstruction_algorithm", lambda *_: OlderReconstruction())
+    expected = f"needs delaunay-watershed {floor} or later, as foambryo requires"
+    with pytest.raises(ValueError, match=expected):
+        foambryo_io.reconstruct_mask(_four_cells_in_a_ball(), (1.0, 1.0, 1.0))
+    with pytest.raises(ValueError, match=expected):
+        dcel_mesh_from_segmentation_mask(_four_cells_in_a_ball(), spacing=(1.0, 1.0, 1.0))
+    with pytest.raises(ValueError, match=expected):
+        dcel_mesh_from_segmentation_mask(_four_cells_in_a_ball(), physical_image_faces=("axis0_low",))

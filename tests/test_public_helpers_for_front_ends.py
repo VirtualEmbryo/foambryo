@@ -12,7 +12,8 @@ on the command line and in napari. What this pins:
 * `infer_tensions_over_seeds(progress=...)` reports each seed once, in order, and changes no number;
 * `segmentation_mask_report` counts what it is built to count, on masks made with exactly those defects, and
   changes nothing;
-* the public `results` and `colour_scales` modules are the command's own functions, not copies.
+* the public `results` and `colour_scales` modules are the command's own functions and the viewers' own drawing of a
+  2-D mesh, not copies.
 
 Synthetic masks only (four cells in a ball, built in the command's tests).
 """
@@ -30,6 +31,7 @@ from foambryo import (
     PressureComputationMethod,
     TensionComputationMethod,
     _colour_scales,
+    _planar_drawing,
     _result_tables,
     cli,
     colour_scales,
@@ -39,6 +41,7 @@ from foambryo import (
     infer_tensions,
     infer_tensions_over_seeds,
     infer_tensions_then_pressures,
+    plotting_utilities,
     reconstruct_mask,
     results,
 )
@@ -204,12 +207,13 @@ def test_progress_is_called_once_per_seed_in_order_and_changes_nothing(max_worke
 # segmentation masks
 # ---------------------------------------------------------------------------------------------
 def test_reading_and_checking_give_the_commands_messages(tmp_path):
-    np.save(tmp_path / "flat.npy", np.zeros((4, 4), dtype=np.uint8))
+    np.save(tmp_path / "flat.npy", np.zeros((1, 4, 4), dtype=np.uint8))
     np.save(tmp_path / "floats.npy", np.zeros((4, 4, 4)))
     np.save(tmp_path / "negative.npy", -np.ones((4, 4, 4), dtype=np.int32))
     np.savez(tmp_path / "two.npz", a=np.zeros((2, 2, 2), dtype=np.uint8), b=np.zeros((2, 2, 2), dtype=np.uint8))
     expected = {
-        "flat.npy": "flat.npy holds a 2-D array; a mask is 3-D",
+        "flat.npy": ("flat.npy holds a 3-D array of shape (1, 4, 4), with an axis of length 1; a single plane is meshed "
+                     "as a 2-D mask: pass mask[0] (or numpy.squeeze(mask)), or the full stack"),
         "floats.npy": "floats.npy holds float64 values; a mask holds integer labels",
         "negative.npy": "negative.npy holds negative labels; labels are 0 (medium) or positive",
         "two.npz": "two.npz holds the arrays ['a', 'b']: name the mask 'mask'",
@@ -281,6 +285,9 @@ def test_pieces_touching_only_at_an_edge_are_two_pieces():
 def test_the_public_modules_re_export_the_commands_functions():
     for name in colour_scales.__all__:
         assert getattr(colour_scales, name) is getattr(_colour_scales, name), name
+    for name in ("planar_mesh_drawing", "PlanarMeshDrawing"):
+        assert getattr(plotting_utilities, name) is getattr(_planar_drawing, name), name
+        assert not hasattr(colour_scales, name), name
     for name in ("write_tension_table", "read_tension_table", "format_float", "write_run_record", "RUN_RECORD_SCHEMA"):
         assert getattr(results, name) is getattr(_result_tables, name), name
     assert cli.tables is results

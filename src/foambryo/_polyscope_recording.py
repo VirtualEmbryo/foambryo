@@ -23,8 +23,6 @@ import contextlib
 import threading
 from typing import TYPE_CHECKING, Any
 
-import polyscope as _polyscope
-
 from foambryo._display_frame import in_drawn_frame
 
 if TYPE_CHECKING:
@@ -33,6 +31,16 @@ if TYPE_CHECKING:
 __all__ = ["Recorder", "polyscope_target", "recording"]
 
 _LOCAL = threading.local()
+
+
+def _polyscope() -> Any:  # noqa: ANN401 - the polyscope module
+    """The `polyscope` module, imported at the first call that draws, not when a drawing module is imported.
+
+    So `foambryo.plotting_utilities` (and every module that only defines drawing functions) imports without Polyscope.
+    """
+    import polyscope  # deferred on purpose: Polyscope is optional (`foambryo[viewing]`)
+
+    return polyscope
 
 #: Calls that act on the window rather than on the scene: not recorded (the window's thread makes them itself).
 _NOT_RECORDED = frozenset({"init", "show"})
@@ -49,7 +57,7 @@ class _PolyscopeTarget:
 
     def __getattr__(self, name: str) -> Any:  # noqa: ANN401 - whatever Polyscope or the recorder holds
         recorder = getattr(_LOCAL, "recorder", None)
-        attribute = getattr(_polyscope, name) if recorder is None else recorder.attribute(name)
+        attribute = getattr(_polyscope(), name) if recorder is None else recorder.attribute(name)
         return in_drawn_frame(name, attribute)
 
 
@@ -94,7 +102,7 @@ class Recorder:
         if name in _NOT_RECORDED:
             return lambda *_args, **_kwargs: None
         if name[:1].isupper():  # a class or an enum (type hints, isinstance): Polyscope's own
-            return getattr(_polyscope, name)
+            return getattr(_polyscope(), name)
         for kind in _KINDS:
             if name == f"register_{kind}":
                 return lambda structure_name, *args, _kind=kind, **kwargs: self._register(
@@ -131,11 +139,12 @@ class Recorder:
         Polyscope is initialised first (the recorder drops the drawing code's `init` calls; `init` does nothing once
         Polyscope runs), so that a first scene can be replayed in a fresh process.
         """
-        _polyscope.init()
+        polyscope = _polyscope()
+        polyscope.init()
         structures: dict[int, Any] = {}
         for index, (target, name, args, kwargs) in enumerate(self.calls):
             if target is None:
-                result = getattr(_polyscope, name)(*args, **kwargs)
+                result = getattr(polyscope, name)(*args, **kwargs)
                 if name.startswith("register_"):
                     structures[index] = result
             else:

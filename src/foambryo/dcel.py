@@ -34,6 +34,30 @@ from foambryo.geometry import (
 )
 from foambryo.second_order_angle_reading import CHORD_READING, AngleReadingReport
 
+__all__ = [
+    "DcelData",
+    "Face",
+    "HalfEdge",
+    "Vertex",
+    "build_lists",
+    "compute_centroids_graph",
+    "compute_faces_areas",
+    "compute_length_halfedges",
+    "compute_networkx_graph",
+    "compute_normal_faces",
+    "compute_scattered_arrays",
+    "compute_vertex_normals",
+    "compute_verts_and_faces_interfaces",
+    "find_trijunctional_edges",
+    "make_vertices_list",
+    "mark_trijunctional_vertices",
+    "remove_unused_vertices",
+    "renormalize_verts",
+    "separate_faces_dict",
+    "separate_faces_dict_keep_idx",
+    "update_graph_with_scattered_values",
+]
+
 
 def separate_faces_dict(
     triangles_and_labels: NDArray[np.int64],
@@ -782,8 +806,7 @@ class DcelData:
     def compute_area_derivatives(self) -> dict[tuple[int, int], NDArray[np.float64]]:
         """Compute dict that maps interface (label1, label2) to array of change of area per point.
 
-        Closed-form float64 derivative (the current default; the former float32 autodiff path
-        lives in :mod:`foambryo._autodiff_derivatives` as a gradient check). The variational
+        Closed-form float64 derivative, checked against complex-step derivatives in the tests. The variational
         solve itself uses the sparse operator :func:`foambryo.geometry.compute_area_derivative_sparse`;
         this dict form is kept for callers that want a per-interface field (e.g. viewing).
         """
@@ -811,8 +834,7 @@ class DcelData:
     def compute_length_derivatives(self) -> dict[tuple[int, int, int], NDArray[np.float64]]:
         """Compute map trijunction (id reg 1, id reg 2, id reg 3) -> change of length wrt points.
 
-        Closed-form float64 derivative (the current default; the former autodiff path lives in
-        :mod:`foambryo._autodiff_derivatives`).
+        Closed-form float64 derivative, checked against complex-step derivatives in the tests.
         """
         return compute_length_derivative_dict(self)
 

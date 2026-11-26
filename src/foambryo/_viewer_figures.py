@@ -35,6 +35,8 @@ from foambryo._colour_scales import (
     CROP_FACE_EDGE_COLOR,
     CROP_FACE_OPACITY,
     UNDETERMINED_COLOR,
+    _has_no_value_faces,
+    _is_planar,
     _pressure_bar_colours,
     _quantity_bar_colours,
     _tension_bar_colours,
@@ -59,6 +61,11 @@ if TYPE_CHECKING:
 TENSION_TITLE = "Surface tension"
 PRESSURE_TITLE = "Pressure"
 SEED_SPREAD_TITLE = "Tension spread over the seeds (SD)"
+DEVIATORIC_STRESS_TITLE = "Deviatoric stress"
+
+#: The colours of the stress glyphs' axes (`plot_force_inference`): compressive and tensile principal directions.
+COMPRESSIVE_AXIS_COLOR = (0.7, 0.0, 0.0)
+TENSILE_AXIS_COLOR = (0.2, 0.5, 0.5)
 
 #: Units written differently on screen than in a file (`.rec` appendices hold ASCII words).
 _DISPLAY_UNITS = {"um": "µm", "micron": "µm", "microns": "µm", "micrometer": "µm", "micrometre": "µm"}
@@ -77,14 +84,16 @@ class ColourScale:
         high: the value at the bar's right end (the colour of every value at or above it).
         colour_function: `"tension"` (`coolwarm` between `low` and `high`, centred on the mean tension,
             `tension_colours`), `"pressure"` (reversed `magma` from 0 to `high`, `pressure_colours`) or
-            `"quantity"` (`jet` between `low` and `high`, `quantity_colours`: a seed spread).
+            `"quantity"` (`jet` between `low` and `high`, `quantity_colours`: a seed spread) or `"stress"` (the stress
+            glyphs' two colours, `COMPRESSIVE_AXIS_COLOR` below 0 and `TENSILE_AXIS_COLOR` from 0, between the
+            smallest and the largest principal value: the glyphs' axes have no colour map, only these two colours).
         clipping: how the range was chosen, in words, for the bar's caption.
     """
 
     title: str
     low: float
     high: float
-    colour_function: Literal["tension", "pressure", "quantity"]
+    colour_function: Literal["tension", "pressure", "quantity", "stress"]
     clipping: str
 
     def colours(self) -> NDArray[np.float64]:
@@ -93,6 +102,9 @@ class ColourScale:
             return _tension_bar_colours((self.low, self.high))
         if self.colour_function == "quantity":
             return _quantity_bar_colours((self.low, self.high))
+        if self.colour_function == "stress":
+            values = np.linspace(self.low, self.high, 512)
+            return np.where(values[:, np.newaxis] < 0, COMPRESSIVE_AXIS_COLOR, TENSILE_AXIS_COLOR).astype(np.float64)
         return _pressure_bar_colours(self.high)
 
 
@@ -105,13 +117,16 @@ class ViewerColourScales:
         undetermined: whether any value drawn is `nan`, or an interface of the mesh has no tension (drawn in
             `UNDETERMINED_COLOR`: an interface as its outline, a cell filled).
         alpha: the quantile clipped at each end.
-        crop: whether the mesh has crop faces (drawn as glass, `CROP_FACE_COLOR`).
+        crop: whether the mesh has crop faces (drawn as glass, `CROP_FACE_COLOR`), or, for a 2-D mesh, image-border
+            segments (drawn in `CROP_FACE_EDGE_COLOR`).
+        planar: whether the mesh is 2-D (its legend then names image-border segments and green curves).
     """
 
     scales: tuple[ColourScale, ...]
     undetermined: bool
     alpha: float
     crop: bool = False
+    planar: bool = False
 
     def scale(self, title: str) -> ColourScale | None:
         """The scale titled `title`, or `None`."""
@@ -160,15 +175,17 @@ def viewer_colour_scales(
         scales.append(ColourScale(TENSION_TITLE, *ranges.tension, "tension",
                                   f"centred on the mean, {middle:.4g}; to the farther of the {percent} and {top} "
                                   "quantiles"))
+    planar = _is_planar(mesh)
     if pressure is not None:
-        over = "the scattered view's triangles" if scattered else "triangles"
+        over = ("cells" if planar else "the scattered view's triangles" if scattered else "triangles")
         scales.append(ColourScale(PRESSURE_TITLE, *pressure, "pressure",
                                   f"from 0, clipped at the {top} quantile over {over}"))
     undetermined = (dict_tensions is not None and (_any_nan(dict_tensions.values()) or bool(
         interfaces_on_mesh(mesh) - set(dict_tensions)))) or (
         dict_pressures is not None and _any_nan(dict_pressures.values()))
-    crop = bool(getattr(mesh, "has_crop_faces", False))
-    return ViewerColourScales(scales=tuple(scales), undetermined=bool(undetermined), alpha=alpha, crop=crop)
+    crop = _has_no_value_faces(mesh)
+    return ViewerColourScales(scales=tuple(scales), undetermined=bool(undetermined), alpha=alpha, crop=crop,
+                              planar=planar)
 
 
 def quantity_colour_scale(title: str, values: Mapping[tuple[int, int], float], alpha: float) -> ColourScale | None:
@@ -315,6 +332,65 @@ def project_to_pixels(
     return pixels
 
 
+def principal_stress_colour_scale(title: str, principal_values: Iterable[float]) -> ColourScale | None:
+    """The bar of the stress glyphs: their two colours over the range of the cells' principal values.
+
+    Each glyph draws a cell's principal directions, red where the principal value is compressive (negative) and
+    teal where it is tensile (tension positive). The bar spans the smallest and the largest principal value of the
+    cells drawn (0 included), red below 0 and teal from 0.
+
+    Args:
+        title: the bar's title (`DEVIATORIC_STRESS_TITLE`).
+        principal_values: every principal value of every glyph drawn; `nan` takes no part.
+
+    Returns:
+        ColourScale | None: the bar, or `None` when no value is finite.
+    """
+    array = np.array(list(principal_values), dtype=np.float64)
+    array = array[np.isfinite(array)]
+    if not array.size:
+        return None
+    return ColourScale(title, float(min(array.min(), 0.0)), float(max(array.max(), 0.0)), "stress",
+                       "red compressive, teal tensile; the cells' principal values")
+
+
+def deviatoric_stress_principal_values(mesh: Any, dict_tensions: Mapping[tuple[int, int], float]) -> list[float]:  # noqa: ANN401
+    """The principal values of the deviatoric stress glyphs the force view draws, computed without Polyscope.
+
+    The cells are those the force windows draw a deviatoric glyph for: in 3D every cell but the media with a positive
+    volume, in 2D every cell not cut by the image border with a positive area; a cell whose tensor is not finite
+    (an undetermined tension) has none. Used by `foambryo view --stress deviatoric --colour-bars`, which writes the
+    bars without a window.
+
+    Args:
+        mesh: a 3-D `DcelData` or a 2-D `PlanarMesh`.
+        dict_tensions: tension per interface.
+
+    Returns:
+        list[float]: every principal value of every cell's deviatoric stress.
+    """
+    from foambryo._cell_stress import cell_mean_stress_tensors
+
+    if _is_planar(mesh):
+        from foambryo._planar_curvature_and_stress import cell_areas_and_centroids
+        from foambryo.plotting_utilities import planar_mesh_drawing
+
+        scene = planar_mesh_drawing(mesh)
+        areas, _ = cell_areas_and_centroids(mesh)
+        cut = set(mesh.cut_cells)
+        cells = [c for c in scene.cells if c not in cut and c in scene.centroids and areas.get(c, 0.0) > 0]
+        tensors = cell_mean_stress_tensors(mesh, dict(dict_tensions), None, areas, cells, lumen_materials=mesh.media,
+                                           part="deviatoric")
+    else:
+        media = list(getattr(mesh, "media", (0,)))
+        volumes = mesh.compute_volumes_cells()
+        graph_volumes = mesh.compute_networkx_graph().nodes.data("volume")
+        cells = [c for c in mesh.materials[1 : mesh.n_materials] if c not in media and graph_volumes[c] > 0]
+        tensors = cell_mean_stress_tensors(mesh, dict(dict_tensions), None, volumes, cells, lumen_materials=media,
+                                           part="deviatoric")
+    return [float(v) for tensor in tensors.values() if np.all(np.isfinite(tensor)) for v in np.linalg.eigvalsh(tensor)]
+
+
 # ---------------------------------------------------------------------------------------------
 # a saved figure: the view, its colour bars and its scale bar
 # ---------------------------------------------------------------------------------------------
@@ -328,6 +404,9 @@ def _draw_bar(axes: Axes, scale: ColourScale) -> None:
     if scale.colour_function == "tension":  # the middle is the mean tension
         axes.set_xticks([left, (left + right) / 2, right])
         axes.set_xticklabels([f"{low:.4g}", f"{(low + high) / 2:.4g}", f"{high:.4g}"])
+    elif scale.colour_function == "stress" and low < 0 < high:  # where the colour changes
+        axes.set_xticks([left, 0.0, right])
+        axes.set_xticklabels([f"{low:.4g}", "0", f"{high:.4g}"])
     else:
         axes.set_xticks([left, right])
         axes.set_xticklabels([f"{low:.4g}", f"{high:.4g}"])
@@ -418,7 +497,7 @@ def figure_of_the_view(
         top += bar_row
     if legend:
         draw_no_value_legend(figure.add_axes(rect(top + 0.05, 0.2)), undetermined=scales.undetermined,
-                             crop=scales.crop)
+                             crop=scales.crop, planar=scales.planar)
         top += swatch_row
     if caption:
         axes = figure.add_axes(rect(top, caption_row))
@@ -427,14 +506,27 @@ def figure_of_the_view(
     return figure
 
 
-def draw_no_value_legend(axes: Axes, *, undetermined: bool, crop: bool) -> None:
-    """The swatches of what has no value: an undetermined interface (a green outline) and a crop face (glass)."""
+def draw_no_value_legend(axes: Axes, *, undetermined: bool, crop: bool, planar: bool = False) -> None:
+    """The swatches of what has no value: an undetermined interface (a green outline) and a crop face (glass).
+
+    For a 2-D mesh (`planar`): an undetermined interface is a green curve, and the image-border segments are lines
+    in the glass's edge colour.
+    """
     from matplotlib.patches import Rectangle
 
     axes.set_xlim(0, 1)
     axes.set_ylim(0, 1)
     axes.set_axis_off()
     x = 0.0
+    if planar:
+        if undetermined:
+            axes.plot([x, x + 0.04], [0.5, 0.5], color=UNDETERMINED_COLOR, linewidth=2.0)
+            axes.text(x + 0.06, 0.5, "undetermined (nan): green curve (a cell: green)", fontsize=7, va="center")
+            x = 0.55
+        if crop:
+            axes.plot([x, x + 0.04], [0.5, 0.5], color=CROP_FACE_EDGE_COLOR, linewidth=2.0)
+            axes.text(x + 0.06, 0.5, "image border (no value)", fontsize=7, va="center")
+        return
     if undetermined:
         axes.add_patch(Rectangle((x, 0.1), 0.04, 0.8, facecolor="none", edgecolor=UNDETERMINED_COLOR, linewidth=1.5))
         axes.text(x + 0.06, 0.5, "undetermined (nan): green outline (a cell: green)", fontsize=7, va="center")
@@ -501,7 +593,17 @@ class SeedEnsembleMaps(Protocol):
 
 
 def interfaces_on_mesh(mesh: DcelData) -> set[tuple[int, int]]:
-    """The label pairs of the mesh's interfaces that can carry a tension: its triangles' pairs, crop faces excluded."""
+    """The label pairs of the mesh's interfaces that can carry a tension: its triangles' pairs, crop faces excluded.
+
+    For a 2-D mesh: its segments' pairs, the image-border segments excluded.
+    """
+    if _is_planar(mesh):
+        from foambryo._planar_drawing import image_border_segments
+        from foambryo.planar_mesh import PlanarMesh
+
+        planar = PlanarMesh.from_any(mesh)
+        labels = planar.labels[~image_border_segments(planar)]
+        return {(int(a), int(b)) for a, b in labels}
     triangles = np.asarray(mesh.f)
     crop = np.asarray(getattr(mesh, "crop_faces", np.zeros(len(triangles), dtype=bool)), dtype=bool)
     return {(int(a), int(b)) for a, b in triangles[~crop][:, 3:5]}

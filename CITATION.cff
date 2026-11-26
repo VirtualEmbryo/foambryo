@@ -1,8 +1,8 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the article in preferred-citation."
+message: "If you use this software, please cite both the article in preferred-citation (Nature Methods 2023) and the Developmental Cell 2026 article in references."
 type: software
 title: "foambryo"
-abstract: "Tension inference for 3D cell assemblies."
+abstract: "Tension, pressure and stress inference for 3D and 2D cell assemblies."
 authors:
   - given-names: Sacha
     family-names: Ichbiah
@@ -10,8 +10,8 @@ authors:
     family-names: Perez
   - given-names: Hervé
     family-names: Turlier
-version: 0.7.1
-date-released: 2026-10-26
+version: 0.8.0
+date-released: 2026-11-26
 license: GPL-3.0-or-later
 repository-code: "https://github.com/VirtualEmbryo/foambryo"
 url: "https://pypi.org/project/foambryo/"
@@ -38,3 +38,49 @@ preferred-citation:
   month: 12
   doi: "10.1038/s41592-023-02084-7"
   issn: "1548-7105"
+references:
+  - type: article
+    title: "Spatiotemporal mapping of the contractile and adhesive forces sculpting early C. elegans embryos"
+    notes: "Please cite it with the preferred citation; it is the reference of the 2-D inference."
+    authors:
+      - given-names: Kazunori
+        family-names: Yamamoto
+      - given-names: Sacha
+        family-names: Ichbiah
+      - given-names: Matthieu
+        family-names: Perez
+      - given-names: Joana
+        family-names: Borrego-Pinto
+      - given-names: Fabrice
+        family-names: Delbary
+      - given-names: Nathan W.
+        family-names: Goehring
+      - given-names: Paul
+        family-names: Northrop
+      - given-names: Hervé
+        family-names: Turlier
+      - given-names: Guillaume
+        family-names: Charras
+    journal: "Developmental Cell"
+    volume: 61
+    issue: 6
+    start: "1273"
+    end: "1288.e4"
+    year: 2026
+    doi: "10.1016/j.devcel.2026.04.013"
+  - type: article
+    title: "Variational method for image-based inference of internal stress in epithelial tissues"
+    notes: "The opt-in global fit of an equilibrium tiling of circular arcs in 2D (infer_forces_by_equilibrium_tiling)."
+    authors:
+      - given-names: Nicholas
+        family-names: Noll
+      - given-names: Sebastian J.
+        family-names: Streichan
+      - given-names: Boris I.
+        family-names: Shraiman
+    journal: "Physical Review X"
+    volume: 10
+    issue: 1
+    start: "011072"
+    year: 2020
+    doi: "10.1103/PhysRevX.10.011072"

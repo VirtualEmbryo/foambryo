@@ -1,6 +1,6 @@
 # The command line, from a mask to the figures
 
-[`Examples/command_line_example.sh`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/Examples/command_line_example.sh) runs every sub-command of `foambryo` on a doublet at equilibrium (two equal spheres split by a plane), whose three tensions are all 1 and whose pressures are 2/R = 0.133 per um: `foambryo mesh` (from a `.npz` that records its voxel size, and from a `.npy` stack with `--spacing`), `foambryo infer` (with `--diagnostics basic`, and `--no-pressures`), `foambryo view` (`--colour-bars` without a window, `--figure` with one) and `foambryo infer-over-seeds`.
+[`Examples/command_line_example.sh`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/Examples/command_line_example.sh) runs every sub-command of `foambryo` on a doublet at equilibrium (two equal spheres split by a plane), whose three tensions are all 1 and whose pressures are 2/R = 0.133 per um: `foambryo mesh` (from a `.npz` that records its voxel size, and from a `.npy` stack with `--spacing`), `foambryo infer` (with `--diagnostics basic`, and `--no-pressures`), `foambryo view` (`--colour-bars` without a window, `--figure` with one) and `foambryo infer-over-seeds`.
 
     pip install "foambryo[viewing]"
     sh command_line_example.sh

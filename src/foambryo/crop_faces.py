@@ -74,6 +74,8 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     from foambryo.dcel import DcelData
+    from foambryo.junction_graph import ComponentTensionSolution
+    from foambryo.per_edge_tension_inference import YoungDupreLocalResult
 
 #: Geometric edge as an ordered `(min, max)` vertex-key pair.
 GeometricEdge = tuple[int, int]
@@ -307,7 +309,10 @@ def warn_if_crop_faces_unrecorded(
     warnings.warn(message, UnrecordedCropFacesWarning, stacklevel=stacklevel)
 
 
-def remove_crop_interfaces(solution, crop_interfaces: tuple[tuple[int, int], ...]):  # noqa: ANN001, ANN201
+def remove_crop_interfaces(
+    solution: ComponentTensionSolution | YoungDupreLocalResult,
+    crop_interfaces: tuple[tuple[int, int], ...],
+) -> ComponentTensionSolution | YoungDupreLocalResult:
     """A tension solution without its crop interfaces, which must have come out undetermined.
 
     Works on any solution dataclass with `tensions` (aligned with `dict_tensions`' keys),

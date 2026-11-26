@@ -1,11 +1,13 @@
-"""The meshes every inference reads: a `DcelData` from a segmentation mask, raw mesh arrays or a mesh file.
+"""The meshes every inference reads: a `DcelData` (3D) or a `PlanarMesh` (2D) from a mask, mesh arrays or a file.
 
 Inputs can be:
-- a segmentation mask (3D uint array) ;
-- a multimaterial mesh: points, triangles, labels ;
-- a file (.rec, or opened by meshio) containing a multimaterial mesh.
+- a segmentation mask (3D or 2D integer array; its `ndim` decides) ;
+- a multimaterial mesh: points, triangles (or segments), labels ;
+- a file (.rec, or opened by meshio) containing a multimaterial mesh; a 2-D `.rec` file is recognised by the
+  `dimension` its appendix records, else by its layout (`dw3d.io.rec_dimension`).
 
-Output is always a DcelData mesh. Conventions: label 0 is the exterior medium; a mask's axes are
+Output is a DcelData mesh in 3D, a `foambryo.PlanarMesh` in 2D (points in the mask's `(row, column)` order, in pixels
+unless an isotropic `spacing` is given). Conventions: label 0 is the exterior medium; a mask's axes are
 (z, y, x) and the mesh's coordinates follow them, column 0 along axis 0; the mesh is in voxel units
 unless a `spacing` gives a physical one, and the inferred pressures are in the tension unit divided
 by that length unit. Mesh files keep that column order, (z, y, x): a program that reads the columns as
@@ -23,11 +25,12 @@ from typing import cast
 
 import numpy as np
 from dw3d import get_default_mesh_reconstruction_algorithm
-from dw3d.io import load_meshio_mesh, load_rec
+from dw3d.io import load_meshio_mesh, load_rec, rec_dimension
 from numpy.typing import NDArray
 
 from foambryo.crop_faces import warn_if_crop_faces_unrecorded
 from foambryo.dcel import DcelData
+from foambryo.planar_mesh import PlanarMesh
 
 # `load_rec_appendix` only exists on dw3d >= 0.4.0's `dw3d.io`. An unguarded
 # `from dw3d.io import ... load_rec_appendix` here would make the whole `foambryo`
@@ -65,9 +68,28 @@ __all__ = [
     "dcel_mesh_from_file",
     "dcel_mesh_from_multimaterial_mesh",
     "dcel_mesh_from_segmentation_mask",
+    "default_min_distance",
     "load_rec_appendix",
     "reconstruct_mask",
 ]
+
+
+def default_min_distance(dimension: int = 3) -> int:
+    """The reconstruction's point spacing when none is given (`min_distance=None`): delaunay-watershed's own defaults.
+
+    Args:
+        dimension: 3 for a 3-D mask, 2 for a 2-D one.
+
+    Returns:
+        int: 3 voxels in 3D (dw3d's), 4 pixels in 2D (dw2d's).
+    """
+    if dimension == 2:
+        from dw2d import DEFAULT_MIN_DISTANCE as two_dimensional_default
+
+        return int(two_dimensional_default)
+    from dw3d.reconstruction_algorithm_factory import DEFAULT_MIN_DISTANCE as three_dimensional_default
+
+    return int(three_dimensional_default)
 
 
 @dataclass(frozen=True)
@@ -80,11 +102,11 @@ class MaskReconstruction:
 
     Attributes:
         points: the mesh's points, in the unit of `spacing`, axis order (z, y, x).
-        triangles: the triangles, as the reconstruction returned them.
+        triangles: the triangles, as the reconstruction returned them; in 2D the segments `(m, 2)`.
         labels: the two materials of each triangle.
         crop_faces: `True` on the crop faces, aligned with `triangles`, or `None` when the reconstruction
             records none.
-        spacing: the voxel size the mask was reconstructed with, `(dz, dy, dx)`.
+        spacing: the voxel size the mask was reconstructed with, `(dz, dy, dx)`; in 2D the pixel size `(dy, dx)`.
         spacing_unit: its unit.
         min_distance: the reconstruction's `min_distance`, in cubic voxels of the shortest spacing.
         rec_bytes: the `.rec` file (crop faces as its last triangle rows, metadata appendix included).
@@ -93,7 +115,10 @@ class MaskReconstruction:
         media: the labels that are media: 0, then the enclosed media (lumens) the reconstruction made its own
             regions (delaunay-watershed-3d 0.7.1 and later; `(0,)` with an earlier one).
         unresolved: labels of the mask absent from the mesh, because no tetrahedron of the reconstruction lay in
-            their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts.
+            their voxels (delaunay-watershed-3d 0.7.1 and later), with their voxel counts (pixel counts in 2D).
+        dimension: 3, or 2 for a 2-D mask (meshed by delaunay-watershed's dw2d).
+        image_border_vertices: 2D only: the vertices on the image border (dw2d's mark).
+        image_shape: 2D only: the shape of the label image.
     """
 
     points: NDArray[np.float64]
@@ -108,12 +133,22 @@ class MaskReconstruction:
     n_cut_cells: int
     media: tuple[int, ...] = (0,)
     unresolved: dict[int, int] = field(default_factory=dict)
+    dimension: int = 3
+    image_border_vertices: NDArray[np.int64] | None = None
+    image_shape: tuple[int, ...] | None = None
 
-    def mesh(self) -> DcelData:
+    def mesh(self) -> "DcelData | PlanarMesh":
         """The mesh for inference, as `dcel_mesh_from_segmentation_mask(mask, spacing=...)` builds it.
 
-        Built from copies of the arrays, so the reconstruction is unchanged by any use of the mesh.
+        Built from copies of the arrays, so the reconstruction is unchanged by any use of the mesh. In 2D
+        (`dimension == 2`) a `PlanarMesh`, whose `triangles` are the segments.
         """
+        if self.dimension == 2:
+            return PlanarMesh(
+                self.points.copy(), self.triangles.copy(), self.labels.copy(),
+                image_border_vertices=self.image_border_vertices, image_shape=self.image_shape,
+                spacing=self.spacing[0], unit=self.spacing_unit,
+            )
         crop_faces = None if self.crop_faces is None else self.crop_faces.copy()
         return DcelData(self.points.copy(), self.triangles.copy(), self.labels.copy(), crop_faces=crop_faces,
                         source_spacing=self.spacing, media=self.media, unresolved=tuple(self.unresolved))
@@ -138,16 +173,20 @@ class MaskReconstruction:
             names = ", ".join(f"{label}: {voxels} voxels" for label, voxels in sorted(self.unresolved.items()))
             lumens += (f"; {len(self.unresolved)} label{'s' if plural else ''} of the mask unresolved, absent from "
                        f"the mesh ({names})")
+        if self.dimension == 2:
+            return (f"{len(self.points)} points, {len(self.triangles)} segments, {self.n_cells} cells "
+                    f"({self.n_cut_cells} cut by the image border){lumens}")
         return (f"{len(self.points)} points, {len(self.triangles)} triangles, {self.n_cells} cells "
                 f"({self.n_cut_cells} cut by the image boundary){lumens}")
 
 
 def reconstruct_mask(
     segmentation_mask: NDArray[np.uint],
-    spacing: tuple[float, float, float],
+    spacing: tuple[float, ...],
     *,
     spacing_unit: str = "um",
-    min_distance: int = 3,
+    min_distance: int | None = None,
+    pad_thin_medium_margins: bool | None = None,
 ) -> MaskReconstruction:
     """Reconstruct a mask's mesh in physical units, exactly as `foambryo mesh` does.
 
@@ -166,7 +205,19 @@ def reconstruct_mask(
         spacing_unit: the unit of `spacing`, recorded in the `.rec` file. Keyword-only. Defaults to `"um"`, the
             command's.
         min_distance: minimum distance between the reconstruction's points, in cubic voxels of the shortest
-            spacing. Keyword-only. Defaults to 3, delaunay-watershed-3d's.
+            spacing. Keyword-only. Defaults to None: 3 voxels (delaunay-watershed-3d's), 4 pixels for a 2-D mask
+            (dw2d's).
+        pad_thin_medium_margins: whether delaunay-watershed pads with medium the faces of the image box (sides of
+            the image in 2D) that no cell reaches when their margin of medium is thin, so that a cell a few voxels
+            from such a face does not take the medium between them (`construct_mesh_in_physical_units`'
+            keyword, `foambryo mesh --pad-thin-medium-margins` / `--no-pad-thin-medium-margins`). Keyword-only.
+            Defaults to None, delaunay-watershed's own default: on for cubic voxels and square pixels, off for a
+            mask it resamples (voxels longer along one axis), where the padding made its watershed lose cells more
+            often.
+
+    A 2-D mask (`segmentation_mask.ndim == 2`) is meshed by dw2d through the same call (delaunay-watershed-3d hands
+    it over), with `spacing` the pixel size `(dy, dx)`, square pixels only, and `axis_order="yx"`; the result has
+    `dimension == 2` and its `mesh()` is a `PlanarMesh`.
 
     Returns:
         MaskReconstruction: the mesh's arrays, its `.rec` bytes and its counts.
@@ -177,11 +228,16 @@ def reconstruct_mask(
     """
     algorithm = get_default_mesh_reconstruction_algorithm(min_distance, False)
     if not hasattr(algorithm, "construct_mesh_in_physical_units"):
-        message = "reconstruct_mask needs a delaunay-watershed-3d with construct_mesh_in_physical_units (0.7 or later)"
+        message = ("reconstruct_mask needs delaunay-watershed 0.8.0 or later, as foambryo requires: the installed "
+                   "delaunay-watershed-3d has no construct_mesh_in_physical_units")
         raise ValueError(message)
+    # Passed only when given, so that the call is the library's own default call otherwise.
+    padding = {} if pad_thin_medium_margins is None else {"pad_thin_medium_margins": bool(pad_thin_medium_margins)}
+    if np.ndim(segmentation_mask) == 2:
+        return _reconstruct_a_two_dimensional_mask(algorithm, segmentation_mask, spacing, spacing_unit, **padding)
     spacing = (float(spacing[0]), float(spacing[1]), float(spacing[2]))
     points, triangles, labels = algorithm.construct_mesh_in_physical_units(
-        segmentation_mask, spacing, spacing_unit=spacing_unit, axis_order="zyx",
+        segmentation_mask, spacing, spacing_unit=spacing_unit, axis_order="zyx", **padding,
     )
     with tempfile.TemporaryDirectory() as folder:
         rec_path = Path(folder) / "mesh.rec"
@@ -200,7 +256,8 @@ def reconstruct_mask(
         crop_faces=None if crop_faces is None else np.asarray(crop_faces, dtype=bool),
         spacing=spacing,
         spacing_unit=spacing_unit,
-        min_distance=int(min_distance),
+        min_distance=int(getattr(algorithm, "placement_min_distance", None) or default_min_distance(3)
+                         if min_distance is None else min_distance),
         rec_bytes=rec_bytes,
         n_cells=int(np.count_nonzero(~np.isin(present, media))),
         n_cut_cells=len(report.cut_cells) if report is not None and report.meets_the_image_box else 0,
@@ -211,12 +268,12 @@ def reconstruct_mask(
 
 def dcel_mesh_from_segmentation_mask(
     segmentation_mask: NDArray[np.uint],
-    min_distance: int = 3,
+    min_distance: int | None = None,
     print_info: bool = False,
     *,
     physical_image_faces: Iterable[str] = (),
-    spacing: tuple[float, float, float] | None = None,
-) -> DcelData:
+    spacing: tuple[float, ...] | None = None,
+) -> "DcelData | PlanarMesh":
     """Obtain a DcelData mesh from a segmentation mask using Delaunay-Watershed 3D.
 
     The default mesh reconstruction algorithm is used (its dither seed is 42; see
@@ -230,11 +287,13 @@ def dcel_mesh_from_segmentation_mask(
     Args:
         segmentation_mask (NDArray[np.uint]): Instance segmentation image: 3-D integer labels,
             axes (z, y, x), label 0 the medium, one label per cell. The mesh's coordinates follow
-            the mask's axes, column 0 along axis 0.
-        min_distance (int, optional): minimum distance between points of the output mesh, in voxels.
-            Defaults to 3, dw3d's own default (it was 5 up to foambryo 0.4.2). Pass 5 to reproduce the
-            0.4 spacing; at 5 or more dw3d emits `CoarseSpacingRelocationWarning` once per
-            reconstruction.
+            the mask's axes, column 0 along axis 0. **A 2-D mask** (axes (y, x)) is meshed by dw2d, through
+            delaunay-watershed-3d's algorithm, and returned as a `foambryo.PlanarMesh` (with dw2d's image-border
+            vertices, and its points in the unit of an isotropic `spacing` when given).
+        min_distance (int | None, optional): minimum distance between points of the output mesh, in voxels.
+            Defaults to None: 3 in 3D, dw3d's own default (it was 5 up to foambryo 0.4.2), and 4 pixels in 2D,
+            dw2d's. Pass 5 to reproduce the 0.4 spacing; at 5 or more dw3d emits `CoarseSpacingRelocationWarning`
+            once per reconstruction.
         print_info (bool, optional): print mesh construction details. Defaults to False.
         physical_image_faces (Iterable[str], optional): faces of the image box where the tissue
             really ends, for example on a coverslip: `"axis0_low"` (index 0 along the mask's first
@@ -252,7 +311,7 @@ def dcel_mesh_from_segmentation_mask(
             against the same tissues meshed at full resolution: resampling first costs +0.83, +0.71
             and +1.17 degrees of contact-angle error at an anisotropy of 5/3, 2 and 3, against
             +1.38, +1.97 and +4.10 for meshing the native grid and scaling the mesh (dw3d 0.7.0's
-            meshes, not measured again for 0.7.1). Above 3
+            meshes, before 0.8.0 pads thin margins of medium on the native grid; not measured again). Above 3
             nothing was measured at that cell size, and delaunay-watershed-3d warns
             (`UnmeasuredAnisotropyWarning`); the mesh is built anyway. The cost is that of a mask
             acquired at the short spacing: the anisotropy times the voxels.
@@ -306,9 +365,13 @@ def _dcel_mesh_from_mask_with(
             to a dw3d without `construct_mesh_in_physical_units`.
     """
     physical_image_faces = tuple(physical_image_faces)
+    if np.ndim(segmentation_mask) == 2 and physical_image_faces:
+        message = "physical_image_faces applies to 3-D masks only (the mask is 2-D)"
+        raise ValueError(message)
     records_crop = hasattr(mesh_reconstruction_algorithm, "physical_image_faces")
     if physical_image_faces and not records_crop:
-        message = "physical_image_faces needs a delaunay-watershed-3d that records crop faces (0.7 or later)"
+        message = ("physical_image_faces needs delaunay-watershed 0.8.0 or later, as foambryo requires: the installed "
+                   "delaunay-watershed-3d does not record crop faces")
         raise ValueError(message)
     if records_crop:
         mesh_reconstruction_algorithm.physical_image_faces = physical_image_faces
@@ -320,11 +383,18 @@ def _dcel_mesh_from_mask_with(
         )
     else:
         if not hasattr(mesh_reconstruction_algorithm, "construct_mesh_in_physical_units"):
-            message = "spacing needs a delaunay-watershed-3d with construct_mesh_in_physical_units (0.7 or later)"
+            message = ("spacing needs delaunay-watershed 0.8.0 or later, as foambryo requires: the installed "
+                       "delaunay-watershed-3d has no construct_mesh_in_physical_units")
             raise ValueError(message)
         points, triangles, labels = mesh_reconstruction_algorithm.construct_mesh_in_physical_units(
             segmentation_mask,
             spacing,
+        )
+    two_dimensional = getattr(mesh_reconstruction_algorithm, "two_dimensional_algorithm", None)
+    if two_dimensional is not None:
+        return PlanarMesh(
+            points, triangles, labels, image_border_vertices=two_dimensional.image_border_vertices,
+            image_shape=np.shape(segmentation_mask), spacing=None if spacing is None else float(spacing[0]),
         )
     crop_faces = getattr(mesh_reconstruction_algorithm, "crop_faces", None)
     media = [label for label in getattr(mesh_reconstruction_algorithm, "medium_labels", ()) if label != 0]
@@ -361,8 +431,11 @@ def dcel_mesh_from_multimaterial_mesh(
     *,
     crop_faces: NDArray[np.bool_] | NDArray[np.integer] | None = None,
     source_spacing: tuple[float, float, float] | None = None,
-) -> DcelData:
+) -> "DcelData | PlanarMesh":
     """Obtain a DcelData mesh for force inference from raw multimaterial mesh data.
+
+    `(n, 2)` points with `(m, 2)` segments in place of triangles give a 2-D mesh, `foambryo.PlanarMesh` (dw2d's
+    layout; crop faces and a source spacing are 3-D only).
 
     Args:
         points (NDArray[np.float64]): Points of the multimaterial mesh, shape `(nv, 3)`, in any
@@ -385,11 +458,23 @@ def dcel_mesh_from_multimaterial_mesh(
         ValueError: as `DcelData`: a triangle with the same material on both sides, an invalid
             `crop_faces` or `source_spacing`.
     """
+    if np.shape(triangles)[1:] == (2,):
+        if np.shape(points)[1:] != (2,):
+            message = f"(m, 2) segments need (n, 2) points, got points of shape {np.shape(points)}"
+            raise ValueError(message)
+        if crop_faces is not None or source_spacing is not None:
+            message = "crop_faces and source_spacing apply to 3-D meshes only (the mesh is 2-D: segments)"
+            raise ValueError(message)
+        return PlanarMesh(points, triangles, labels)
     return DcelData(points, triangles, labels, crop_faces=crop_faces, source_spacing=source_spacing)
 
 
-def dcel_mesh_from_file(filename: str | Path) -> DcelData:
+def dcel_mesh_from_file(filename: str | Path) -> "DcelData | PlanarMesh":
     """Obtain a DcelData mesh for force inference from a multimaterial mesh file.
+
+    A 2-D `.rec` file (its appendix records `dimension = 2`, or its layout has two coordinates per point:
+    `dw3d.io.rec_dimension`) is read by dw2d's reader into a `foambryo.PlanarMesh`, with the image-border vertices and,
+    for a mesh in physical units, the pixel size and unit its appendix records.
 
     It can be either a `.rec` (or `.arec`) file created from Delaunay-Watershed 3D, or a mesh
     that can be opened by meshio and contains a "label1" and "label2" data.
@@ -428,6 +513,8 @@ def dcel_mesh_from_file(filename: str | Path) -> DcelData:
     filename = Path(filename)
     source_spacing = None
     media = unresolved = None
+    if filename.suffix in (".rec", ".arec") and rec_dimension(filename) == 2:
+        return _planar_mesh_from_rec_file(filename)
     if filename.suffix in (".rec", ".arec"):
         points, triangles, labels = load_rec(filename)
         crop_faces = _crop_faces_from_rec_appendix(filename, labels)
@@ -510,3 +597,78 @@ def _crop_faces_from_meshio_file(filename: Path) -> NDArray[np.bool_] | None:
     except ImportError:
         return None
     return load_meshio_mesh_with_crop_faces(filename)[3]
+
+
+def _reconstruct_a_two_dimensional_mask(
+    algorithm: object,
+    segmentation_mask: NDArray[np.integer],
+    spacing: tuple[float, ...],
+    spacing_unit: str,
+    **padding: bool,
+) -> MaskReconstruction:
+    """`reconstruct_mask` for a 2-D mask: delaunay-watershed-3d's algorithm hands it to dw2d."""
+    if len(spacing) != 2:
+        message = f"a 2-D mask takes a pixel size of 2 values (dy, dx), got {len(spacing)}: {tuple(spacing)}"
+        raise ValueError(message)
+    spacing = (float(spacing[0]), float(spacing[1]))
+    points, segments, labels = algorithm.construct_mesh_in_physical_units(
+        segmentation_mask, spacing, spacing_unit=spacing_unit, axis_order="yx", **padding,
+    )
+    two_dimensional = algorithm.two_dimensional_algorithm
+    with tempfile.TemporaryDirectory() as folder:
+        rec_path = Path(folder) / "mesh.rec"
+        algorithm.save_to_rec_mesh(rec_path)
+        rec_bytes = rec_path.read_bytes()
+    mask = np.asarray(segmentation_mask)
+    unresolved = {int(label): int(np.count_nonzero(mask == label)) for label in two_dimensional.unresolved_cells}
+    present = np.unique(np.asarray(labels))
+    return MaskReconstruction(
+        points=points,
+        triangles=segments,
+        labels=labels,
+        crop_faces=None,
+        spacing=spacing,
+        spacing_unit=spacing_unit,
+        min_distance=int(two_dimensional.min_distance),
+        rec_bytes=rec_bytes,
+        n_cells=int(np.count_nonzero(present != 0)),
+        n_cut_cells=len(two_dimensional.cut_cells),
+        media=(0,),
+        unresolved=unresolved,
+        dimension=2,
+        image_border_vertices=two_dimensional.image_border_vertices,
+        image_shape=tuple(mask.shape),
+    )
+
+
+def _planar_mesh_from_rec_file(filename: Path) -> PlanarMesh:
+    """A 2-D `.rec` file as a `PlanarMesh`: dw2d's reader, and the appendix's border vertices and physical frame.
+
+    The edges' orientation is measured from the geometry (`foambryo.planar_mesh`'s docstring): a file in the former
+    orientation (dw2d before 0.8.0, which records none) is reversed on input; a file whose recorded `orientation`
+    its geometry contradicts, or that records an unknown rule, is refused.
+    """
+    from dw2d.io import load_rec as load_two_dimensional_rec
+    from dw2d.io import load_rec_appendix as load_two_dimensional_appendix
+
+    from foambryo.planar_mesh import _segments_in_the_one_orientation
+
+    points, segments, labels = load_two_dimensional_rec(filename)
+    appendix = load_two_dimensional_appendix(filename) or {}
+    spacing = None
+    if appendix.get("coordinate_frame") == "physical" and "spacing" in appendix:
+        spacing = float(appendix["spacing"][0])
+    border = appendix.get("image_border_vertices")
+    try:
+        segments, _ = _segments_in_the_one_orientation(
+            points, segments, labels, border, declared=appendix.get("orientation"),
+        )
+    except ValueError as error:
+        message = f"{filename}: {error}"
+        raise ValueError(message) from error
+    shape = appendix.get("source_shape")
+    return PlanarMesh(
+        points, segments, labels, image_border_vertices=None if border is None else np.asarray(border, dtype=np.int64),
+        image_shape=None if shape is None or len(shape) != 2 else tuple(shape), spacing=spacing,
+        unit=appendix.get("spacing_unit"),
+    )

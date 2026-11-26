@@ -494,6 +494,9 @@ def infer_tensions_young_dupre_local(
     Warns:
         SparseSolveFallbackWarning: when `lsqr` did not converge on a large system.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_tensions_young_dupre_local")
     if angle_reading in (QUADRIC_READING, ORIENTED_QUADRIC_READING):
         message = (
             f"angle_reading={angle_reading!r} cannot be combined with "

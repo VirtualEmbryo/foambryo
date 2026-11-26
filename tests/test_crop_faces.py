@@ -82,6 +82,8 @@ def reconstruction():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         points, triangles, labels = algorithm.construct_mesh_from_segmentation_mask(_ball_in_three_cells(True))
+    # every cell of the cut mask is meshed: a cell cut by the image box can be lost by dw3d's watershed
+    assert set(np.unique(labels).tolist()) >= {1, 2, 3}
     return (
         np.asarray(points, dtype=np.float64),
         np.asarray(triangles, dtype=np.int64),

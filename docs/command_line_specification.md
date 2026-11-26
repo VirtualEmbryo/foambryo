@@ -1,6 +1,6 @@
 # The `foambryo` command — behavioural specification, version 1
 
-Version 1, for foambryo 0.7.0 (October 2026; § 11 lists the changes since the first version). The implementation follows this text; where the two disagree, the text is the intent and the code is a defect. § 9 lists possible extensions.
+Version 1, for foambryo 0.7.0 (October 2026), extended to two-dimensional input in foambryo 0.8.0 (§ 12; § 11 lists the changes since the first version). The implementation follows this text; where the two disagree, the text is the intent and the code is a defect. § 9 lists possible extensions.
 
 This specification describes **behaviour only**: commands, options, defaults, files, columns, exit codes and messages. Every number the command writes is a number the library returns for the same options: the command adds file handling and records, and **no default of its own**.
 
@@ -54,9 +54,9 @@ foambryo mesh MASK -o MESH.rec [--spacing DZ DY DX] [--spacing-unit UNIT]
 |---|---|---|
 | `.npy` | `numpy.load` (no pickles) | one array |
 | `.npz` | `numpy.load` (no pickles) | the array named `mask`, or else the file's only array other than `spacing` / `spacing_unit`; optionally `spacing` (3 numbers) and `spacing_unit` (a string) |
-| `.tif`, `.tiff` | `tifffile.imread` (`foambryo[cli]`) | one 3-D image; **the TIFF's resolution tags are not read** (§ 9, *TIFF metadata*) |
+| `.tif`, `.tiff` | `tifffile.imread` (`foambryo[cli]`) | one 3-D (or, § 12, 2-D) image; **the TIFF's resolution tags are not read** (§ 9, *TIFF metadata*) |
 
-The array must be **three-dimensional, of an integer type, with no negative value**. Label 0 is the medium (exterior); every other label is a cell. **Axis 0 is z, axis 1 is y, axis 2 is x**: the order in which numpy and tifffile return a z-stack. The array is passed to the reconstruction unchanged (same values, same type).
+The array must be **three-dimensional (or two-dimensional, § 12), of an integer type, with no negative value**. Label 0 is the medium (exterior); every other label is a cell. **Axis 0 is z, axis 1 is y, axis 2 is x**: the order in which numpy and tifffile return a z-stack. The array is passed to the reconstruction unchanged (same values, same type).
 
 ### 3.2 Options
 
@@ -67,6 +67,7 @@ The array must be **three-dimensional, of an integer type, with no negative valu
 | `--spacing DZ DY DX` | from the `.npz`, else **required** | voxel size along axes 0, 1, 2, each finite and > 0; one axis may be longer than the other two, which must be equal. Give `--spacing 1 1 1` to keep voxel units |
 | `--spacing-unit UNIT` | from the `.npz`, else `um` | the unit of the spacing: one word of ASCII letters, digits and `_ . - / ^` (it is written into the file as text; `µm` is refused, write `um`) |
 | `--min-distance N` | `3`, the library's | minimum distance between the reconstruction's points, in cubic voxels of the shortest spacing, an integer ≥ 1 |
+| `--pad-thin-medium-margins`, `--no-pad-thin-medium-margins` | delaunay-watershed's own: padded on cubic voxels and square pixels, not on a mask resampled to cubic voxels | pad, or not, the thin margins of medium on the image faces no cell reaches before meshing (delaunay-watershed 0.8.0; `reconstruct_mask(..., pad_thin_medium_margins=...)`). Without either, the mesh is bitwise that of a command without the option. `ThinMediumMarginWarning`, as the command prints it, names the option |
 | `--overwrite` | off | replace `MESH.rec` if it exists; without it an existing file is an error |
 
 When both `--spacing` and the `.npz` give a spacing and they differ, **the command line wins** and a warning names both values. The same holds for the unit.
@@ -159,7 +160,7 @@ label,pressure
 * **With a medium besides 0** (an enclosed lumen: from the `.rec` file's `media`, or `--media`), a third column, `region_kind`, says what each row is: `exterior` (0), `medium` or `cell`. The lumen's pressure is then its own row, marked `medium`. Without such a medium the file is exactly the two columns above, which foambryo 0.7.0's reader requires. `foambryo.results.read_pressure_table` reads both; `read_pressure_region_kinds` reads the column.
 * **Written only when the pressures were computed**: not with `--no-pressures`, nor when the library refuses them (§ 4.4).
 
-**`run.json`**: the run record, schema 1 (§ 5).
+**`run.json`**: the run record, schema 2 (§ 5).
 
 **`solves.csv`**: only with `--diagnostics basic` or `spectrum`. One row per linear solve, in the order they ran, with the columns
 
@@ -227,7 +228,7 @@ seed,label_1,label_2,tension
 1,0,1,0.8774...
 ```
 
-**`run.json`**, schema 1 (§ 5), with `command` = `"foambryo infer-over-seeds"` and these keys in place of the mesh-related ones:
+**`run.json`**, schema 2 (§ 5), with `command` = `"foambryo infer-over-seeds"` and these keys in place of the mesh-related ones:
 * `input`: `path`, `sha256` and `bytes` of the mask file, its `shape`, the `spacing` used, its `spacing_unit`, and `spacing_from` (`"command line"` or the file's name);
 * `options`: `seeds` (N), `combine`, `angle_reading`, `tension_method`, `min_distance`, `max_workers`;
 * `seeds`: the seed list, `[0, 1, …, N−1]`;
@@ -237,9 +238,11 @@ seed,label_1,label_2,tension
 
 `library_call`, `status` (`complete` or `failed`), `error`, `warnings` and `outputs` are as in § 5.
 
-## 5. `run.json`, schema 1
+## 5. `run.json`, schema 2
 
-A JSON object, UTF-8, indented. Non-finite numbers are written as the strings `"nan"`, `"inf"`, `"-inf"` (JSON has no such numbers). **Keys may be added within schema 1; a reader must ignore keys it does not know.** Removing or renaming a key, or changing a key's meaning, makes a new schema number and is announced in the CHANGELOG.
+Schema 2 (foambryo 0.8.0) is schema 1 with the key `dimension` (3 or 2); a 3-D record is a schema-1 record plus `dimension`, its `versions` also naming `delaunay-watershed-2d` and `iorec`. A 2-D record's `mesh` object counts `segments` and `image_border_vertices` instead of `triangles` and `crop_faces` (§ 12), so a reader that requires `triangles` fails on it. `options` records `angle_reading` only when it was given. The table below is schema 1's.
+
+A JSON object, UTF-8, indented. Non-finite numbers are written as the strings `"nan"`, `"inf"`, `"-inf"` (JSON has no such numbers). **Keys may be added within a schema; a reader must ignore keys it does not know.** Removing or renaming a key, or changing a key's meaning, makes a new schema number and is announced in the CHANGELOG.
 
 | Key | Type | Content |
 |---|---|---|
@@ -281,6 +284,7 @@ foambryo view MASK [--spacing DZ DY DX] [--spacing-unit UNIT] [--min-distance N]
 | `--no-show` | off | do not keep a viewer window open. With `--colour-bars` alone it runs without a display and without Polyscope installed; with `--figure`, Polyscope renders the view once and the window closes. Without either, refused (exit 2) |
 | `--scale-bar LENGTH` | a round length | the length scale bar's length, in the mesh's unit (§ 6.3) |
 | `--no-scale-bar` | off | draw no length scale bar |
+| `--stress full\|deviatoric` | `full` | the cells' stress glyphs in the force view (`plot_force_inference(stress=...)`): each cell's mean stress tensor, or its deviatoric part, computed from the tensions alone, for a tissue whose pressures are not measurements (an embryo in its eggshell, cells on a substrate), where it is the contribution of the cortical tensions, not the cell's total stress anisotropy; with `deviatoric` the cells are not coloured by pressure, and the colour bars (`--colour-bars`, `--figure`) are the tension bar and the "Deviatoric stress" bar. Refused (exit 2) with `--no-pressures`, with `--results` of `infer --no-pressures`, and with a seed ensemble's results |
 | `--scattered [COEFF]` | off; `COEFF` 0.2, the viewer functions' `scatter_coeff` | open the window exploded: each cell moved by `COEFF × (its centroid − the tissue's centroid)` (`DcelData.compute_scattered_arrays`); the panel changes it |
 | `--no-pressures` | off | the tensions only (`infer_tensions`), as `foambryo infer --no-pressures`; refused with `--pressure-method`, `--base-pressure` or `--results` |
 | `MASK`, `--spacing`, `--spacing-unit`, `--min-distance` | as for `mesh` (§ 3.2) | a mask (`.npy`, `.npz`, `.tif`, `.tiff`) is opened in the window to be reconstructed there (§ 6.5); the three options are refused with a mesh |
@@ -338,7 +342,7 @@ A figure is Polyscope's own rendering of the view, without the user interface (`
 
 With a mask, `--results`, `--figure`, `--colour-bars` and `--no-show` are refused (exit 2): they need a mesh; `foambryo mesh` writes it without a window. The values are drawn once prepared in the background: the mask and the reconstruction stay on screen until then.
 
-From Python, `foambryo.viewing.view_mask(mask, spacing, *, spacing_unit="um", min_distance=None, mean_tension, base_pressure, mode_tension, mode_pressure, solver, pressures=True, scattered=False, scatter_coeff=0.2, scale_bar=True, mask_name="mask.npz")` opens the same window (every default the library's; `min_distance=None` is delaunay-watershed-3d's); a mask or spacing the command refuses raises `ValueError`.
+From Python, `foambryo.viewing.view_mask(mask, spacing, *, spacing_unit="um", min_distance=None, mean_tension, base_pressure, mode_tension, mode_pressure, solver, pressures=True, scattered=False, scatter_coeff=0.2, scale_bar=True, mask_name="mask.npz", angle_reading=None, stress="full")` opens the same window (every default the library's; `min_distance=None` is delaunay-watershed-3d's); a mask or spacing the command refuses raises `ValueError`, and so does `stress="deviatoric"` with `pressures=False`, as `--stress deviatoric` with `--no-pressures`.
 
 ## 7. Messages and exit codes
 
@@ -376,7 +380,7 @@ Synthetic masks and benchmark meshes only.
 
 ## 9. Possible extensions
 
-None of these is in schema 1; each would be a change to this specification. Requests and comments are welcome on the issue tracker.
+None of these is in schema 2; each would be a change to this specification. Requests and comments are welcome on the issue tracker.
 
 * **Formats.** Masks are read from `.npy`, `.npz` and `.tif`, meshes from `.rec`; `mesh` could also write `.vtk`.
 * **TIFF metadata.** `mesh` does not read the spacing from a TIFF (ImageJ `spacing` and the resolution tags), because these tags are often missing or wrong and a wrong spacing is silent; it could, for software whose tags are reliable.
@@ -414,7 +418,7 @@ None of these is in schema 1; each would be a change to this specification. Requ
 | 3 | mesh | `<name> holds the arrays [...]: name the mask 'mask'` |
 | 3 | mesh | `<name>: 'spacing' must be three finite numbers > 0, not [...]` / `<name>: 'spacing_unit' must be one ASCII word, not '…'` |
 | 3 | mesh | `<name>: spacing (…) has two different fine axes; …` (the `.npz`'s spacing, as above) |
-| 3 | mesh | `foambryo mesh needs delaunay-watershed-3d 0.7 or later (installed: <version>): pip install -U delaunay-watershed-3d` |
+| 3 | mesh | `foambryo mesh needs delaunay-watershed 0.8.0 or later, as foambryo requires (installed: delaunay-watershed-3d <version>): pip install -U delaunay-watershed` |
 | 3 | infer, view | `cannot read the mesh <name>: <error type>: <reader's message>` |
 | 2 | infer | `--pressure-method applies to the pressures: --no-pressures infers the tensions only` (and the same for `--base-pressure`) |
 | 3 | infer | `<given> exists and is not a directory` |
@@ -435,13 +439,15 @@ None of these is in schema 1; each would be a change to this specification. Requ
 | — | view | warning `UserWarning: <k> interfaces of the ensemble are not on <name> (not drawn); <m> interfaces of <name> are not in the ensemble (drawn undetermined)` |
 | 2, 3 | infer-over-seeds | the mask and spacing messages of `mesh` (missing spacing, unreadable mask, two different short axes) |
 | 3 | infer-over-seeds | `<given> exists and is not a directory`; `<given> already holds tensions.csv, …: pass --overwrite to replace them` (the files of § 4b it holds) |
-| 3 | infer-over-seeds | `foambryo infer-over-seeds needs delaunay-watershed-3d 0.7 or later (installed: <version>): pip install -U delaunay-watershed-3d` |
+| 3 | infer-over-seeds | `foambryo infer-over-seeds needs delaunay-watershed 0.8.0 or later, as foambryo requires (installed: delaunay-watershed-3d <version>): pip install -U delaunay-watershed` |
 | 4 | infer-over-seeds | `failed: <library's message> (nothing but run.json was written)` |
 | — | infer-over-seeds | warning `SeedEnsembleExperimentalWarning: combine='angles' is experimental: …` (with `--combine angles`), the `AnisotropicVoxelSpacingWarning` of `mesh`, and each seed's own warnings prefixed with `seed <s>: ` |
 
 On success each sub-command prints, on standard output, one `wrote <path>…` line per file written.
 
 ## 11. Changes since the first version
+
+* **foambryo 0.8.0: two-dimensional input** (§ 12): `mesh`, `infer` and `view` take 2-D masks and meshes; `infer-over-seeds` refuses them; `run.json` is schema 2 (§ 5); `--angle-reading` on `infer` and `view` takes the 2-D readings; `--tension-method equilibrium-tiling --mask MASK` on `infer` (2D only); `--image` on `view` (2D only); `--stress full|deviatoric` on `view` (2D and 3D); `--pad-thin-medium-margins` / `--no-pad-thin-medium-margins` on `mesh` (2D and 3D); `foambryo --version` also names delaunay-watershed-2d and iorec.
 
 * **25 Oct 2026: the window draws the tissue, not its mirror image** (§ 6): it drew the mesh's columns (z, y, x) as Polyscope's x, y, z, an exchange of two axes; it now draws x, y, z as the mask's column, row and slice, each triangle facing its own side, and the frame is labelled `x`, `y`, `z` along them. The scale bar lies along x.
 
@@ -454,3 +460,14 @@ On success each sub-command prints, on standard output, one `wrote <path>…` li
 * **11 Oct 2026: `foambryo mesh` resamples anisotropic masks to cubic voxels** (§ 3), and the viewer has one pressure scale (§ 6.1).
 * **11 Oct 2026: a fourth sub-command, `foambryo infer-over-seeds` (§ 4b).** Several reconstructions of one mask at fixed dither seeds, with the tensions combined over them, and the three new `tensions.csv` columns `tension_seed_sd`, `n_seeds_found` and `found_by_fewer_than_half_the_seeds`, and a second table, `tensions_per_seed.csv`, with every seed's own tensions. `run.json` gains `seeds` and `reconstructions`. Its acceptance test is § 8, item 7, its messages are in § 10, and its possible extensions are in § 9, *Seed ensembles*.
 * **12 Oct 2026: the viewer's window** (§ 6): the colour bars drawn in the window, the coloured surface's back faces drawn like its front faces, a length scale bar (§ 6.3), `--figure` (§ 6.4) and *Save figure* / *Save colour bars* in the window, `infer`'s inference options for `view` (refused with `--results`), the results of `infer-over-seeds` (§ 6.2), and a choice of methods with *Recompute* in the window. A refused tension inference in `view` now exits 4 with `failed: …` (it raised a traceback, exit 1).
+
+## 12. Two-dimensional input (foambryo 0.8.0, provisional)
+
+The input decides the dimension: a 2-D mask is meshed in 2D, a 2-D mesh is inferred in 2D, with the same sub-commands and options. Everything 2D is provisional, as in the library.
+
+* **`foambryo mesh`** takes a 2-D mask (axis 0 y, axis 1 x), meshed by delaunay-watershed-2d. `--spacing DY DX` (the two equal: square pixels only; an `.npz` may record two numbers); `--min-distance` defaults to 4 pixels (3 voxels in 3D), the library's. The `.rec` file's appendix records `dimension = 2`, the image-border vertices and, in physical units, the frame and spacing. A 3-D mask with an axis of length 1 is refused, suggesting `mask[0]`.
+* **`foambryo infer`** reads a 2-D mesh (a `.rec` file whose appendix records `dimension = 2`, else one with two coordinates per point) and infers it as `infer_forces` does in 2D: Young's law at each junction, each junction-graph component gauged alone, then Laplace's law per component. `--tension-method` takes `young-dupre`, or `equilibrium-tiling` with `--mask MASK` (the label image the mesh was built from: `.npy`, `.npz`, `.tif`), which runs `infer_forces_by_equilibrium_tiling`; `--pressure-method` defaults to `laplace`, the only one in 2D; `--angle-reading` takes `arc` (the default in 2D), `chord` or `fitted_tangent`, and a reading of the other dimension exits 2. `--media` is refused on a 2-D mesh.
+* **`foambryo infer-over-seeds`** refuses a 2-D mask (delaunay-watershed-2d has no dither seed), with exit code 2 and the reason.
+* **`foambryo view`** opens the 2-D window on a 2-D mesh or mask: the interfaces as curves coloured by tension, the cells as polygons coloured by pressure, the junctions as points, each uncut cell's stress glyph; rows run downward, as in napari and matplotlib. `--image FILE` draws the image the mask was segmented from under the mesh, on its pixel grid (2D only); a 2-D mask is given with `--spacing DY DX`.
+* **Which numbers to trust** (the user guide's page on two-dimensional tissues): the pressures, and the stresses built on them, are measurements only for a tissue deformed by its own tensions and pressures; for compressed or confined cells (an eggshell, a substrate) use `foambryo infer MESH --angle-reading chord --no-pressures`, and `foambryo view MESH --angle-reading chord --stress deviatoric` to draw the deviatoric stress, the cortical tensions' contribution.
+

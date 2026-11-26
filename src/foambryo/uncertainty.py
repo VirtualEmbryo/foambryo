@@ -486,6 +486,9 @@ def compute_inference_diagnostics(
             module docstring), raised before the operator is built.
         KeyError: if `dict_tensions` misses an interface of the mesh.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "compute_inference_diagnostics")
     require_no_crop_faces(mesh, "compute_inference_diagnostics")
     _require_dense_operator_within_the_limit(mesh, "compute_inference_diagnostics")
     m, interfaces, cells = build_force_balance_operator(mesh)
@@ -1061,6 +1064,9 @@ def infer_tensions_with_uncertainty(
             1 300 cells of real size, for every method and model, because the diagnostics are
             always computed; see the module docstring), raised before anything is built.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_tensions_with_uncertainty")
     require_no_crop_faces(mesh, "infer_tensions_with_uncertainty")
     angle_family = {TensionComputationMethod.YoungDupre}
     balance_family = {

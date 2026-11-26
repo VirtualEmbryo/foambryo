@@ -129,13 +129,14 @@ def reconstruction_estimate(shape: tuple[int, ...], spacing: tuple[float, float,
 def _defaults() -> dict[str, Any]:
     """The library's defaults for every choice: `infer_forces`' and `infer_tensions_over_seeds`'."""
     from foambryo.force_inference import infer_forces
+    from foambryo.pressure_inference import default_pressure_method
     from foambryo.seed_ensembles import DEFAULT_ENSEMBLE_SEEDS, infer_tensions_over_seeds
 
     forces = inspect.signature(infer_forces).parameters
     seeds = inspect.signature(infer_tensions_over_seeds).parameters
     return {
         "tension_method": option_name(forces["mode_tension"].default),
-        "pressure_method": option_name(forces["mode_pressure"].default),
+        "pressure_method": option_name(default_pressure_method(3)),  # the library's default is per dimension
         "mean_tension": float(forces["mean_tension"].default),
         "base_pressure": float(forces["base_pressure"].default),
         "solver": forces["solver"].default,
@@ -163,7 +164,9 @@ class ViewerChoices:
             exports as `solves.csv`.
         mode: `"one mesh"` (`infer_tensions_then_pressures` on the reconstruction) or `"seed ensemble"`
             (`infer_tensions_over_seeds` on the mask: tensions only, no single mesh carries pressures).
-        seeds, max_workers, combine, angle_reading: `foambryo infer-over-seeds`' options.
+        seeds, max_workers, combine, angle_reading: `foambryo infer-over-seeds`' options. For a 2-D mask
+            (`dimension` 2, one mesh only), `angle_reading` is the one-mesh inference's reading (`ANGLE_READINGS_2D`).
+        dimension: the mask's, 3 or 2.
     """
 
     tension_method: str
@@ -178,6 +181,7 @@ class ViewerChoices:
     max_workers: int = 1
     combine: str = "tensions"
     angle_reading: str = "chord"
+    dimension: int = 3
 
     @classmethod
     def library(cls, **given: Any) -> ViewerChoices:  # noqa: ANN401
@@ -195,7 +199,16 @@ class ViewerChoices:
             "solver": self.solver,
             "diagnostics": DIAGNOSTICS[self.diagnostics],
             "with_pressures": self.pressures,
+            **self._two_dimensional_reading(),
         }
+
+    def _two_dimensional_reading(self) -> dict[str, str]:
+        """The 2-D one-mesh reading, as a keyword, when it is not the 2-D default (the call then names it)."""
+        if self.dimension != 2:
+            return {}
+        from foambryo._two_dimensional import DEFAULT_ANGLE_READING
+
+        return {} if self.angle_reading == DEFAULT_ANGLE_READING else {"angle_reading": self.angle_reading}
 
     def ensemble_call(
         self, mask: np.ndarray, spacing: tuple[float, float, float], min_distance: int,
@@ -217,14 +230,17 @@ class ViewerChoices:
         pressure = (["--pressure-method", self.pressure_method, "--base-pressure", repr(self.base_pressure)]
                     if self.pressures else ["--no-pressures"])
         diagnostics = ["--diagnostics", self.diagnostics] if self.diagnostics != "none" else []
-        return ["--tension-method", self.tension_method, *pressure, "--mean-tension", repr(self.mean_tension),
-                "--solver", self.solver, *diagnostics]
+        reading = self._two_dimensional_reading()
+        reading_arguments = ["--angle-reading", reading["angle_reading"]] if reading else []
+        return ["--tension-method", self.tension_method, *reading_arguments, *pressure, "--mean-tension",
+                repr(self.mean_tension), "--solver", self.solver, *diagnostics]
 
     def record_options(self) -> dict[str, Any]:
         """`run.json`'s `options` for these choices, as `foambryo infer` writes them."""
         options: dict[str, Any] = {"tension_method": self.tension_method, "pressure_method": self.pressure_method,
                                    "mean_tension": self.mean_tension, "base_pressure": self.base_pressure,
                                    "solver": self.solver, "diagnostics": self.diagnostics}
+        options.update(self._two_dimensional_reading())
         if not self.pressures:
             options.update(pressure_method=None, base_pressure=None, no_pressures=True)
         return options
@@ -303,8 +319,13 @@ class MaskWorkflow:
         """A child job is running."""
         return self.job is not None and self.job.state == RUNNING
 
-    def estimate(self) -> ReconstructionEstimate:
-        """The reconstruction's estimate for this mask (`reconstruction_estimate`)."""
+    def estimate(self) -> ReconstructionEstimate | None:
+        """The reconstruction's estimate for this mask (`reconstruction_estimate`), or `None`.
+
+        A 2-D mask has none: delaunay-watershed-2d meshes it in about a second.
+        """
+        if np.ndim(self.mask) == 2:
+            return None
         return reconstruction_estimate(self.mask.shape, self.spacing)
 
     def start_reconstruction(self) -> None:
@@ -316,7 +337,9 @@ class MaskWorkflow:
             "min_distance": self.min_distance,
         })
         self.job_kind = "reconstruct"
-        self.status = f"reconstructing in a child process (estimate: {self.estimate().text()})"
+        estimate = self.estimate()
+        self.status = ("reconstructing in a child process (a 2-D mask: delaunay-watershed-2d)" if estimate is None
+                       else f"reconstructing in a child process (estimate: {estimate.text()})")
 
     def start_inference(self) -> None:
         """Infer with `choices` in a child process: on the reconstruction (one mesh), or on the mask (an ensemble)."""

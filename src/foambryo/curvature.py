@@ -3,6 +3,13 @@
 Curvatures are in inverse mesh length units. An interface all of whose vertices lie on junction
 lines has no curvature (`nan`); see `foambryo.pressure_inference.UndeterminedPressureWarning`.
 
+A 2-D mesh (`foambryo.PlanarMesh`, delaunay-watershed-2d's `DCEL_Data`, a `(points, segments, labels)` triple or a
+`(vertices, edges)` pair) is read in 2D by `compute_curvature_interfaces` and `compute_curvature_vertices_cotan`: the
+curvature of each interface (a curve has one curvature, which takes the place of the surface's `2 H` in Laplace's law),
+from the circle the 2-D pressures read or from the vertex curvatures, and the curvature at each vertex from the
+cotangent Laplacian's 1-D form; definitions, signs and derivation in `foambryo._planar_curvature_and_stress`. The
+Gaussian curvature has no 2-D counterpart.
+
 Sacha Ichbiah, 2021.
 Matthieu Perez, 2024.
 """
@@ -18,6 +25,15 @@ if TYPE_CHECKING:
     from foambryo.dcel import DcelData
 
 # TODO: IMPLEMENT THE EDGE_BASED CURVATURE FORMULA (Paper from Julicher)
+
+
+def _is_two_dimensional(mesh: object) -> bool:
+    """Whether `mesh` is a 2-D mesh (`foambryo.dimension_of`); a mesh with faces is 3-D without further check."""
+    if hasattr(mesh, "f"):
+        return False
+    from foambryo.planar_mesh import dimension_of
+
+    return dimension_of(mesh) == 2
 
 
 def compute_laplacian_cotan(
@@ -95,7 +111,16 @@ def compute_gaussian_curvature_vertices(mesh: "DcelData") -> NDArray[np.float64]
 
     Returns:
         NDArray[np.float64]: Discrete gaussian curvature at every vertex of the mesh.
+
+    Raises:
+        ValueError: for a 2-D mesh: a curve has one curvature, and no Gaussian curvature.
     """
+    if _is_two_dimensional(mesh):
+        message = (
+            "compute_gaussian_curvature_vertices has no 2-D counterpart: a 2-D interface is a curve, with one "
+            "curvature (compute_curvature_vertices_cotan, compute_curvature_interfaces)"
+        )
+        raise ValueError(message)
     mesh_trimesh = trimesh.Trimesh(vertices=mesh.v, faces=mesh.f[:, :3])
     return trimesh.curvature.discrete_gaussian_curvature_measure(mesh_trimesh, mesh.v, 0.0)
 
@@ -103,7 +128,17 @@ def compute_gaussian_curvature_vertices(mesh: "DcelData") -> NDArray[np.float64]
 def compute_curvature_vertices_cotan(
     mesh: "DcelData",
 ) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
-    """Return the mean curvature at every vertex along with other unidentified data."""
+    """Return the mean curvature at every vertex along with other unidentified data.
+
+    A 2-D mesh gives the 2-D form, `(|K_i|, 1 / l_i, K_i)`: the magnitude of the curvature vector of the cotangent
+    Laplacian's 1-D form (`K_i = (t_2 - t_1) / l_i`, exact on a circle sampled at equal steps), the inverse dual length
+    and the vector `(n, 2)` in `(row, column)`, pointing to the centre of curvature; `nan` at the junctions, the ends of
+    the interfaces and the image border's vertices (`foambryo._planar_curvature_and_stress.vertex_curvatures`).
+    """
+    if _is_two_dimensional(mesh):
+        from foambryo._planar_curvature_and_stress import vertex_curvatures
+
+        return vertex_curvatures(mesh)
     points: NDArray[np.float64] = mesh.v
     triangles = mesh.f[:, :3]
     lcot, inv_areas = laplacian_cot(points, triangles)
@@ -120,21 +155,48 @@ def compute_curvature_vertices_cotan(
     )
 
 
-def compute_curvature_interfaces(mesh: "DcelData", weighted: bool = True) -> dict[tuple[int, int], float]:
+def compute_curvature_interfaces(
+    mesh: "DcelData",
+    weighted: bool = True,
+    *,
+    reading: str | None = None,
+) -> dict[tuple[int, int], float]:
     """Compute the mean curvature on the interfaces of the mesh.
 
     The vertex mean curvature of the cotangent Laplacian, signed by the vertex normal, averaged over
-    each interface's vertices that are not on a junction line.
+    each interface's vertices that are not on a junction line. Positive when the centre of curvature
+    lies on the side of the interface's second label: `P_a - P_b = -2 H_ab T_ab` (a sphere of label 1
+    in the medium 0 has `H_01 = +1/R`).
+
+    A 2-D mesh gives each interface's curvature `kappa_ab` in the same sense, with `p_a - p_b = -gamma_ab
+    kappa_ab` (a disk of label 1 in the medium has `kappa_01 = +1/R`), read from the circle the 2-D
+    pressures fit (`reading="arc"`, the default) or from the vertex curvatures (`"local"`); the module
+    `foambryo._planar_curvature_and_stress` gives the definitions and the derivation.
 
     Args:
-        mesh (DcelData): the mesh.
+        mesh (DcelData): the mesh, 3-D or 2-D.
         weighted (bool, optional): weight each vertex by its area (`PressureComputationMethod.
-            WeightedLaplace`) rather than equally (`Laplace`). Defaults to True.
+            WeightedLaplace`) rather than equally (`Laplace`); in 2D, each vertex by its dual length
+            (`"local"`) or each piece of an interface by its length (`"arc"`). Defaults to True.
+        reading (str | None, optional): how the curvature is read: in 3D `"cotan"` (the only reading),
+            in 2D `"arc"` or `"local"`. Defaults to None: `"cotan"` in 3D, `"arc"` in 2D. Keyword-only.
 
     Returns:
         dict[tuple[int, int], float]: interface `(label_1, label_2)` -> mean curvature, in inverse
-            mesh length units; `nan` for an interface all of whose vertices lie on junction lines.
+            mesh length units; `nan` for an interface all of whose vertices lie on junction lines (in 2D,
+            one the reading gives no curvature).
+
+    Raises:
+        ValueError: for a reading the mesh's dimension does not have.
     """
+    if _is_two_dimensional(mesh):
+        from foambryo._planar_curvature_and_stress import DEFAULT_CURVATURE_READING_2D, interface_curvatures
+
+        chosen = DEFAULT_CURVATURE_READING_2D if reading is None else reading
+        return interface_curvatures(mesh, weighted, reading=chosen)
+    if reading not in (None, "cotan"):
+        message = f'reading must be "cotan" (or None) for a 3-D mesh, got {reading!r}; "arc" and "local" are 2-D ones'
+        raise ValueError(message)
     lcot, inv_areas = compute_laplacian_cotan(points=mesh.v, triangles=mesh.f[:, :3])
 
     vertex_normals = mesh.compute_vertex_normals()

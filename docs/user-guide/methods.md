@@ -22,7 +22,7 @@ pressures = infer_pressures(mesh, tensions, base_pressure=0)
 
 ## Tension methods
 
-foambryo has several strategies to compute tensions. They fall into two families that respond very differently to mesh-reconstruction quality — see [`BENCHMARKS.md`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/BENCHMARKS.md) — angle-reading methods, which read local contact angles at triple junctions, and operator-inverting methods, which assemble and invert a global discrete operator over the whole mesh:
+foambryo has several strategies to compute tensions. They fall into two families that respond very differently to mesh-reconstruction quality — see [`BENCHMARKS.md`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/BENCHMARKS.md) — angle-reading methods, which read local contact angles at triple junctions, and operator-inverting methods, which assemble and invert a global discrete operator over the whole mesh:
 
 Angle-reading:
 
@@ -77,7 +77,7 @@ mesh = dcel_mesh_from_file("my_mesh.rec")
 tensions = infer_tensions(mesh, 1, TensionComputationMethod.YoungDupre, angle_reading="quadric")
 ```
 
-**The measured gain**, on 42 mechanically-equilibrated benchmark cases meshed by `dw3d` with its defaults (see [`BENCHMARKS.md`](https://github.com/VirtualEmbryo/foambryo/blob/v0.7.0/BENCHMARKS.md) for the full table and its provenance):
+**The measured gain**, on 42 mechanically-equilibrated benchmark cases meshed by `dw3d` with its defaults (see [`BENCHMARKS.md`](https://github.com/VirtualEmbryo/foambryo/blob/v0.8.0/BENCHMARKS.md) for the full table and its provenance):
 
 | `dw3d` `min_distance` | 3 | 4 |
 |---|---:|---:|

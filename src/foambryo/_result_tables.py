@@ -1,7 +1,7 @@
 """The files `foambryo infer` writes and `foambryo view` reads: CSV tables and a JSON run record.
 
 Implemented here and public through `foambryo.results`, which front ends import. The file formats (the columns
-and the `run.json` keys, schema 1) are specified in the README's "Command line" section and in
+and the `run.json` keys, schema 2) are specified in the README's "Command line" section and in
 `docs/command_line_specification.md` of the source repository. The readers and writers take a `pathlib.Path`.
 
 **Numbers are written exactly.** A float is written as Python's `repr`, the shortest decimal string
@@ -24,7 +24,10 @@ import numpy as np
 
 #: The run record's schema. Keys may be added within a schema; removing or renaming one, or changing
 #: what one means, makes a new schema number.
-RUN_RECORD_SCHEMA = 1
+#: Schema 2 (foambryo 0.8.0): the record states the mesh's `dimension` (3 or 2), and a 2-D mesh's block counts
+#: `segments` and `image_border_vertices` instead of `triangles` and `crop_faces`; a 3-D record is schema 1's plus
+#: `dimension`. Readers (`view --results`) read schemas 1 and 2.
+RUN_RECORD_SCHEMA = 2
 
 TENSION_TABLE = "tensions.csv"
 PRESSURE_TABLE = "pressures.csv"

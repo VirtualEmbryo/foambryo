@@ -13,7 +13,7 @@ Matthieu Perez 2024
 
 import time
 import warnings
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
@@ -35,8 +35,36 @@ if TYPE_CHECKING:
 
     from foambryo.dcel import DcelData
 
+__all__ = [
+    "DENSE_CROP_PRESSURE_MAX_ENTRIES",
+    "NORMAL_EQUATIONS_NULL_TOLERANCE",
+    "PressureComputationMethod",
+    "UndeterminedInferenceError",
+    "UndeterminedPressureWarning",
+    "UndeterminedTensionError",
+    "default_pressure_method",
+    "infer_pressures",
+    "infer_pressures_and_residuals",
+    "warn_on_undetermined_pressures",
+]
 
-class UndeterminedTensionError(ValueError):
+
+class UndeterminedInferenceError(ValueError):
+    """An inference refused to return a result that the mesh does not determine.
+
+    The common base of the refusals of an undetermined result: `UndeterminedTensionError` here (a
+    tension that is not finite, so no pressure) and `foambryo._two_dimensional.NoJunctionError` (a 2D
+    mesh without any junction, so no tension). Catch it to handle every such refusal at once; catch a
+    subclass for one cause. Subclasses `ValueError`.
+
+    Attributes:
+        interfaces: the interfaces concerned (sorted material pairs).
+    """
+
+    interfaces: tuple
+
+
+class UndeterminedTensionError(UndeterminedInferenceError):
     """A pressure inference was handed an interface tension that is not a finite number.
 
     Every pressure method solves for the cell pressures from the interface tensions, and the
@@ -53,8 +81,8 @@ class UndeterminedTensionError(ValueError):
     mesh remain valid; use `foambryo.infer_tensions_by_junction_component` to see which interfaces
     are undetermined and which component each determined tension belongs to.
 
-    Subclasses `ValueError`, so code that already caught the generic error the least-squares
-    solve raised on a non-finite input keeps working.
+    Subclasses `UndeterminedInferenceError`, hence `ValueError`, so code that already caught the
+    generic error the least-squares solve raised on a non-finite input keeps working.
 
     Attributes:
         interfaces: the interfaces whose tension is not finite, sorted.
@@ -199,12 +227,26 @@ class PressureComputationMethod(Enum):
         return self is PressureComputationMethod.Variational
 
 
+def default_pressure_method(dimension: int = 3) -> PressureComputationMethod:
+    """The pressure method `infer_pressures`, `infer_forces` and the front ends use when none is given (`mode=None`).
+
+    Args:
+        dimension: 3 for a 3-D mesh, 2 for a 2-D one.
+
+    Returns:
+        PressureComputationMethod: `Variational` in 3D; `Laplace` in 2D, the only method offered there.
+    """
+    return PressureComputationMethod.Laplace if dimension == 2 else PressureComputationMethod.Variational
+
+
 def infer_pressures(
     mesh: "DcelData",
     dict_tensions: dict[tuple[int, int], float],
-    mode: PressureComputationMethod = PressureComputationMethod.Variational,
+    mode: "PressureComputationMethod | None" = None,
     base_pressure: float = 0,
     *,
+    exclude_image_border: bool = True,
+    excluded_vertices: "Collection[int]" = (),
     solver: str = "auto",
     sparse_threshold: int | None = None,
     diagnostics: bool | str = False,
@@ -229,10 +271,15 @@ def infer_pressures(
             separately normalised pieces of the junction graph are used as given). On an uncropped
             mesh every value must be finite; on a cropped mesh the crop interfaces may be absent
             and undetermined tensions `nan`.
-        mode (PressureComputationMethod, optional): Computation method. Defaults to
-            `PressureComputationMethod.Variational`.
+        mode (PressureComputationMethod | None, optional): Computation method. Defaults to None:
+            `PressureComputationMethod.Variational` for a 3-D mesh, `Laplace` (the one method offered in 2D) for a
+            2-D mesh, which is inferred by `foambryo._two_dimensional.infer_pressures` (Laplace's law on the circle
+            read on each interface; it also takes a `ComponentTensionSolution`, solved per component).
         base_pressure (float, optional): Pressure of the exterior medium (label 0), returned as
             its pressure. Defaults to 0.
+        exclude_image_border (bool, optional): 2-D meshes only (`ValueError` when not True on a 3-D mesh): exclude
+            the vertices on the image border. Keyword-only.
+        excluded_vertices (Collection[int], optional): 2-D meshes only: more vertices to exclude. Keyword-only.
         solver (str, optional): `"auto"` (the default), `"dense"` or `"sparse"`: how the
             pressure system is solved (`foambryo.linear_solves`). `"auto"` is dense below
             `sparse_threshold` unknowns (materials for the Laplace methods, interfaces plus cells for
@@ -272,8 +319,18 @@ def infer_pressures(
         DenseSolveMemoryWarning: when `solver="dense"` is forced on a system too large for the
             memory available.
     """
+    from foambryo._inference_by_dimension import pressures, refuse_two_dimensional_options
+    from foambryo.planar_mesh import dimension_of
+
+    if dimension_of(mesh) == 2:
+        return pressures(
+            mesh, dict_tensions, mode, base_pressure, exclude_image_border=exclude_image_border,
+            excluded_vertices=excluded_vertices, solver=solver, sparse_threshold=sparse_threshold,
+            diagnostics=diagnostics,
+        )
+    refuse_two_dimensional_options("infer_pressures", exclude_image_border, excluded_vertices)
     result = infer_pressures_and_residuals(
-        mesh, dict_tensions, mode, base_pressure,
+        mesh, dict_tensions, PressureComputationMethod.Variational if mode is None else mode, base_pressure,
         solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
     )
     if diagnostics is False:
@@ -354,6 +411,9 @@ def infer_pressures_and_residuals(
         DenseSolveMemoryWarning: when `solver="dense"` is forced on a system too large for the
             memory available.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_pressures_and_residuals")
     with linear_solves.solve_options(solver, sparse_threshold, diagnostics) as collected:
         result = _infer_pressures_and_residuals(mesh, dict_tensions, mode, base_pressure)
     return result if collected is None else (*result, collected)

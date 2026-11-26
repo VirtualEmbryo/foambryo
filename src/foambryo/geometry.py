@@ -48,8 +48,8 @@ def _find_key_multiplier(num_points: int) -> int:
 def compute_length_derivative_dict(mesh: "DcelData") -> dict[tuple[int, int, int], NDArray[np.float64]]:
     """Compute map trijunction (id reg 1, id reg 2, id reg 3) -> derivative of length wrt each point.
 
-    Closed-form float64 replacement for the former autodiff path (moved to
-    `foambryo._autodiff_derivatives`). For an edge with endpoints ``p, q`` the
+    Closed-form float64 derivative, checked against complex-step derivatives in the tests. For an edge
+    with endpoints ``p, q`` the
     total-length gradient is the unit edge vector at ``p`` and its negative at ``q``:
     ``d||p - q|| / dp = (p - q) / ||p - q||``. Summed over every edge of the trijunction.
     """

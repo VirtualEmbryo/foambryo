@@ -510,7 +510,11 @@ def test_view_inference_defaults_are_the_librarys():
     resolved = cli._view_inference_args(args)
     library = inspect.signature(infer_forces).parameters
     assert cli.TENSION_METHODS[resolved.tension_method] is library["mode_tension"].default
-    assert cli.PRESSURE_METHODS[resolved.pressure_method] is library["mode_pressure"].default
+    # The library's pressure default is per dimension (None); `view` draws 3-D meshes: Variational.
+    from foambryo.pressure_inference import default_pressure_method
+
+    assert library["mode_pressure"].default is None
+    assert cli.PRESSURE_METHODS[resolved.pressure_method] is default_pressure_method(3)
     assert resolved.mean_tension == library["mean_tension"].default
     assert resolved.base_pressure == library["base_pressure"].default
     assert resolved.solver == library["solver"].default

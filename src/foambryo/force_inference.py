@@ -17,19 +17,33 @@ from foambryo.tension_inference import TensionComputationMethod, infer_tensions
 if TYPE_CHECKING:
     from foambryo.dcel import DcelData
 
+__all__ = [
+    "INFERENCE_COMPLETE",
+    "INFERENCE_FAILED",
+    "INFERENCE_PRESSURES_REFUSED",
+    "InferenceOutcome",
+    "infer_forces",
+    "infer_tensions_then_pressures",
+]
+
 
 def infer_forces(
     mesh: "DcelData",
     mean_tension: float = 1,
     base_pressure: float = 0,
     mode_tension: TensionComputationMethod = TensionComputationMethod.YoungDupre,
-    mode_pressure: PressureComputationMethod = PressureComputationMethod.Variational,
+    mode_pressure: PressureComputationMethod | None = None,
     *,
     solver: str = "auto",
     sparse_threshold: int | None = None,
     diagnostics: bool | str = False,
+    angle_reading: str | None = None,
 ) -> tuple:
-    """Infer the relative tensions, then the pressures, of a 3D mesh.
+    """Infer the relative tensions, then the pressures, of a 3D mesh (or of a 2D one).
+
+    A 2-D mesh (`foambryo.PlanarMesh`, dw2d's `DCEL_Data`) is inferred in 2D: the tensions of each junction-graph
+    component, gauged alone (`infer_tensions_by_junction_component`, the arc reading), then the pressures of each
+    component on its own tensions' scale (Laplace's law); see `foambryo._inference_by_dimension.forces`.
 
     `infer_tensions(mesh, mean_tension, mode_tension, ...)` then `infer_pressures(mesh, tensions,
     mode_pressure, base_pressure, ...)`, with the same solver options; see those two functions for
@@ -43,8 +57,8 @@ def infer_forces(
         base_pressure (float, optional): Pressure of the exterior medium (label 0). Defaults to 0.
         mode_tension (TensionComputationMethod, optional): Method for tension computation.
             Defaults to `TensionComputationMethod.YoungDupre`.
-        mode_pressure (PressureComputationMethod, optional): Method for pressure computation.
-            Defaults to `PressureComputationMethod.Variational`.
+        mode_pressure (PressureComputationMethod | None, optional): Method for pressure computation.
+            Defaults to None: `PressureComputationMethod.Variational` in 3D, `Laplace` (the only one) in 2D.
         solver (str, optional): `"auto"` (the default), `"dense"` or `"sparse"`, passed to both the
             tension and the pressure solves (`foambryo.linear_solves`). `"auto"` is dense below
             `sparse_threshold` unknowns and sparse at or above, and bitwise the dense result below
@@ -56,6 +70,10 @@ def infer_forces(
         diagnostics (bool | str, optional): `False` (the default), `True` or `"spectrum"`: also
             return a `foambryo.linear_solves.SolveDiagnostics` holding the records of the tension
             solves then of the pressure solve. Keyword-only.
+        angle_reading (str | None, optional): how the junction angles are read, passed to the tension solve: in 3D
+            one of `foambryo.second_order_angle_reading.ANGLE_READINGS` (for the methods that read angles, as
+            `infer_tensions`), in 2D one of `ANGLE_READINGS_2D`. Defaults to None: `"chord"` in 3D, `"arc"` in 2D,
+            the numbers of the call without it. Keyword-only.
 
     Returns:
         tuple[dict[tuple[int, int], float], dict[int, float]]:
@@ -91,10 +109,22 @@ def infer_forces(
         SparseSolveFallbackWarning: as `infer_tensions` and `infer_pressures`.
         DenseSolveMemoryWarning: as `infer_tensions` and `infer_pressures`.
     """
+    from foambryo.planar_mesh import dimension_of
+
+    if dimension_of(mesh) == 2:
+        from foambryo._inference_by_dimension import forces
+
+        return forces(
+            mesh, mean_tension, base_pressure, mode_tension, mode_pressure,
+            solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics, angle_reading=angle_reading,
+        )
+    if mode_pressure is None:
+        mode_pressure = PressureComputationMethod.Variational
     options = validate_solve_options(solver, sparse_threshold, diagnostics)
     if diagnostics is False:
         dict_tensions = infer_tensions(
             mesh, mean_tension=mean_tension, mode=mode_tension, solver=solver, sparse_threshold=sparse_threshold,
+            angle_reading=angle_reading,
         )
         dict_pressures = infer_pressures(
             mesh,
@@ -107,7 +137,7 @@ def infer_forces(
         return (dict_tensions, dict_pressures)
     dict_tensions, tension_diagnostics = infer_tensions(
         mesh, mean_tension=mean_tension, mode=mode_tension,
-        solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
+        solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics, angle_reading=angle_reading,
     )
     dict_pressures, pressure_diagnostics = infer_pressures(
         mesh, dict_tensions, mode=mode_pressure, base_pressure=base_pressure,
@@ -152,11 +182,12 @@ def infer_tensions_then_pressures(
     mean_tension: float = 1,
     base_pressure: float = 0,
     mode_tension: TensionComputationMethod = TensionComputationMethod.YoungDupre,
-    mode_pressure: PressureComputationMethod = PressureComputationMethod.Variational,
+    mode_pressure: PressureComputationMethod | None = None,
     *,
     solver: str = "auto",
     diagnostics: bool | str = False,
     with_pressures: bool = True,
+    angle_reading: str | None = None,
 ) -> InferenceOutcome:
     """The tensions then the pressures, by the two calls `infer_forces` makes, keeping what succeeds.
 
@@ -178,12 +209,16 @@ def infer_tensions_then_pressures(
             `mean_tension`, exactly, in each connected piece of the junction graph. Defaults to 1.
         base_pressure (float, optional): the pressure of the exterior medium, label 0. Defaults to 0.
         mode_tension (TensionComputationMethod, optional): the tension method. Defaults to `YoungDupre`.
-        mode_pressure (PressureComputationMethod, optional): the pressure method. Defaults to `Variational`.
+        mode_pressure (PressureComputationMethod | None, optional): the pressure method. Defaults to None:
+            `Variational` in 3D, `Laplace` in 2D (where the calls are those `infer_forces` makes in 2D).
         solver (str, optional): `"auto"` (the default), `"dense"` or `"sparse"`, as for `infer_forces`.
             Keyword-only.
         diagnostics (bool | str, optional): `False` (the default), `True` or `"spectrum"`, as for `infer_forces`;
             the solve records are returned in `InferenceOutcome.records`. Keyword-only.
         with_pressures (bool, optional): `False` infers the tensions only (no pressure solve). Defaults to `True`.
+            Keyword-only.
+        angle_reading (str | None, optional): how the junction angles are read, as for `infer_forces`. Defaults to
+            None: the dimension's default (`"chord"` in 3D, `"arc"` in 2D); `library_call` names it only when given.
             Keyword-only.
 
     Returns:
@@ -199,29 +234,39 @@ def infer_tensions_then_pressures(
         UserWarning: every warning `infer_tensions` and `infer_pressures` emit, unchanged.
     """
     from foambryo.junction_graph import MalformedTripleLineError
+    from foambryo.planar_mesh import dimension_of
     from foambryo.pressure_inference import UndeterminedTensionError
 
+    if dimension_of(mesh) == 2:
+        return _infer_tensions_then_pressures_in_two_dimensions(
+            mesh, mean_tension, base_pressure, mode_tension, mode_pressure,
+            solver=solver, diagnostics=diagnostics, with_pressures=with_pressures, angle_reading=angle_reading,
+        )
+    if mode_pressure is None:
+        mode_pressure = PressureComputationMethod.Variational
+    reading = "" if angle_reading is None else f", angle_reading={angle_reading!r}"
     if with_pressures:
         library_call = (
             f"infer_forces(mesh, mean_tension={mean_tension!r}, base_pressure={base_pressure!r}, "
             f"mode_tension=TensionComputationMethod.{mode_tension.name}, "
             f"mode_pressure=PressureComputationMethod.{mode_pressure.name}, "
-            f"solver={solver!r}, diagnostics={diagnostics!r})"
+            f"solver={solver!r}, diagnostics={diagnostics!r}{reading})"
         )
     else:
         library_call = (
             f"infer_tensions(mesh, mean_tension={mean_tension!r}, mode=TensionComputationMethod.{mode_tension.name}, "
-            f"solver={solver!r}, diagnostics={diagnostics!r})"
+            f"solver={solver!r}, diagnostics={diagnostics!r}{reading})"
         )
     solve: dict[str, Any] = {"solver": solver, "sparse_threshold": None}
     if diagnostics is not False:
         solve["diagnostics"] = diagnostics
+    reading_option: dict[str, Any] = {} if angle_reading is None else {"angle_reading": angle_reading}
     tensions: dict[tuple[int, int], float] | None = None
     pressures: dict[int, float] | None = None
     records: list = []
     try:
         validate_solve_options(solver, None, diagnostics)
-        result = infer_tensions(mesh, mean_tension=mean_tension, mode=mode_tension, **solve)
+        result = infer_tensions(mesh, mean_tension=mean_tension, mode=mode_tension, **solve, **reading_option)
         if diagnostics is False:
             tensions = cast("dict[tuple[int, int], float]", result)
         else:
@@ -241,3 +286,54 @@ def infer_tensions_then_pressures(
     except (ValueError, MalformedTripleLineError) as error:
         return InferenceOutcome(tensions, pressures, records, INFERENCE_FAILED, str(error), library_call)
     return InferenceOutcome(tensions, pressures, records, INFERENCE_COMPLETE, None, library_call)
+
+
+def _infer_tensions_then_pressures_in_two_dimensions(
+    mesh: object,
+    mean_tension: float,
+    base_pressure: float,
+    mode_tension: TensionComputationMethod,
+    mode_pressure: PressureComputationMethod | None,
+    *,
+    solver: str,
+    diagnostics: bool | str,
+    with_pressures: bool,
+    angle_reading: str | None = None,
+) -> InferenceOutcome:
+    """`infer_tensions_then_pressures` on a 2-D mesh: the calls `infer_forces` makes in 2D (the tensions of each
+    junction-graph component, then the pressures on each component's scale), keeping what succeeds."""
+    from foambryo import _two_dimensional
+    from foambryo._inference_by_dimension import two_dimensional_pressure_mode
+
+    reading = "" if angle_reading is None else f", angle_reading={angle_reading!r}"
+    call = (
+        f"infer_forces(mesh, mean_tension={mean_tension!r}, base_pressure={base_pressure!r}, "
+        f"mode_tension=TensionComputationMethod.{mode_tension.name}, solver={solver!r}, diagnostics={diagnostics!r}"
+        f"{reading})"
+        if with_pressures
+        else f"infer_tensions_by_junction_component(mesh, mean_tension={mean_tension!r}, "
+        f"mode=TensionComputationMethod.{mode_tension.name}, solver={solver!r}, diagnostics={diagnostics!r}{reading})"
+    )
+    reading_option = {} if angle_reading is None else {"angle_reading": angle_reading}
+    tensions = None
+    pressures = None
+    records: list = []
+    try:
+        validate_solve_options(solver, None, diagnostics)
+        two_dimensional_pressure_mode(mode_pressure)
+        result = _two_dimensional.infer_tensions_by_junction_component(
+            mesh, mean_tension, mode_tension, solver=solver, diagnostics=diagnostics, **reading_option,
+        )
+        solution, report = (result, None) if diagnostics is False else result
+        tensions = solution.dict_tensions
+        if report is not None:
+            records += report.solves.records
+        if not with_pressures:
+            return InferenceOutcome(tensions, None, records, INFERENCE_COMPLETE, None, call)
+        result = _two_dimensional.infer_pressures(mesh, solution, base_pressure, solver=solver, diagnostics=diagnostics)
+        pressures, report = (result, None) if diagnostics is False else result
+        if report is not None:
+            records += report.solves.records
+    except ValueError as error:  # NoJunctionError is a ValueError too (UndeterminedInferenceError)
+        return InferenceOutcome(tensions, pressures, records, INFERENCE_FAILED, str(error), call)
+    return InferenceOutcome(tensions, pressures, records, INFERENCE_COMPLETE, None, call)

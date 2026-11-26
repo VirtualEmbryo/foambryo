@@ -1,12 +1,12 @@
 # The test suite on Linux, Python 3.12 and 3.13, with the newest releases of the dependencies
 # ("current", resolved when the job runs) and with the declared lower bounds pinned exactly
 # ("floor"), every extra installed. Python 3.13 has no wheel for some lower bounds (numpy 2.0.0,
-# scipy 1.13.0, scikit-image 0.23.1, edt 2.4.1, matplotlib 3.8.4, torch 2.3.0): its floor job
+# scipy 1.13.0, scikit-image 0.23.1, edt 2.4.1, matplotlib 3.8.4): its floor job
 # pins the oldest release of each that has a CPython 3.13 wheel for Linux.
 #
-# delaunay-watershed-3d comes from PyPI: the newest release in the current jobs, the lower bound
-# (0.7.0) in the floor jobs. torch comes from PyTorch's CPU-only index, which keeps the CUDA
-# libraries out of the install.
+# delaunay-watershed (a metapackage that installs delaunay-watershed-3d, which carries dw3d, and
+# delaunay-watershed-2d, which carries dw2d, at its own version) comes from PyPI: its newest release in the current
+# jobs, the release foambryo was tested with (0.8.0) in the floor jobs.
 #
 # The suite runs without the datasets that live beside the repository in the development
 # workspace (benchmarking-dataset/, companion/, converged-meshes/), so the tests that need them
@@ -17,8 +17,7 @@
 #
 # The same jobs run on macOS 15 on Apple silicon (arm64), in the public repositories only: macOS
 # runner minutes are billed ten times Linux's in a private repository. Every exact pin there has a
-# macOS arm64 wheel for its Python, checked on PyPI and on PyTorch's CPU index, except torch 2.5.0 for
-# Python 3.13, which has none: the macOS floor job for 3.13 pins 2.6.0, the lowest that has one.
+# macOS arm64 wheel for its Python, checked on PyPI.
 #
 # Every action is pinned by its commit SHA (the tag in the comment). Pull requests from forks run with
 # the read-only token this file grants (contents: read) and no secret; the workflow never uses
@@ -57,8 +56,8 @@ jobs:
           - python: "3.12"
             dependencies: floor
             pins: >-
-              delaunay-watershed-3d==0.7.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
-              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23 torch==2.3.0
+              delaunay-watershed==0.8.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23
               scikit-image==0.23.1 edt==2.4.1 meshio==5.3.5
           - python: "3.13"
             dependencies: current
@@ -66,8 +65,8 @@ jobs:
           - python: "3.13"
             dependencies: floor
             pins: >-
-              delaunay-watershed-3d==0.7.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
-              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23 torch==2.5.0
+              delaunay-watershed==0.8.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23
               scikit-image==0.25.0 edt==3.0.0 meshio==5.3.5
     env:
       PINS: ${{ matrix.pins }}
@@ -87,10 +86,8 @@ jobs:
           set -euo pipefail
           printf '%s\n' ${PINS} > "${RUNNER_TEMP}/constraints.txt"
           python -m pip install --upgrade pip
-          python -m pip install --only-binary=:all: --no-deps --index-url https://download.pytorch.org/whl/cpu \
-            --constraint "${RUNNER_TEMP}/constraints.txt" torch
           python -m pip install --only-binary=:all: --constraint "${RUNNER_TEMP}/constraints.txt" \
-            ".[viewing,autodiff,benchmarks,cli]" pytest
+            ".[viewing,benchmarks,cli]" pytest
           python -m pip check
           python -m pip freeze --all
       - name: Run the test suite
@@ -100,7 +97,7 @@ jobs:
           status=${PIPESTATUS[0]}
           {
             echo "### ${JOB_LABEL}"
-            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed-3d", "numpy", "scipy", "torch", "polyscope"]))'
+            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed", "delaunay-watershed-3d", "delaunay-watershed-2d", "numpy", "scipy", "polyscope"]))'
             echo
             tail -n 1 "${RUNNER_TEMP}/pytest-output.txt"
           } >> "${GITHUB_STEP_SUMMARY}"
@@ -144,8 +141,8 @@ jobs:
           - python: "3.12"
             dependencies: floor
             pins: >-
-              delaunay-watershed-3d==0.7.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
-              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23 torch==2.3.0
+              delaunay-watershed==0.8.0 numpy==2.0.0 scipy==1.13.0 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.8.4 tifffile==2023.1.23
               scikit-image==0.23.1 edt==2.4.1 meshio==5.3.5
           - python: "3.13"
             dependencies: current
@@ -153,8 +150,8 @@ jobs:
           - python: "3.13"
             dependencies: floor
             pins: >-
-              delaunay-watershed-3d==0.7.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
-              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23 torch==2.6.0
+              delaunay-watershed==0.8.0 numpy==2.1.0 scipy==1.14.1 networkx==3.2 trimesh==4.0.0
+              polyscope==2.6.1 matplotlib==3.9.2 tifffile==2023.1.23
               scikit-image==0.25.0 edt==3.0.0 meshio==5.3.5
     env:
       PINS: ${{ matrix.pins }}
@@ -172,10 +169,8 @@ jobs:
           set -euo pipefail
           printf '%s\n' ${PINS} > "${RUNNER_TEMP}/constraints.txt"
           python -m pip install --upgrade pip
-          python -m pip install --only-binary=:all: --no-deps --index-url https://download.pytorch.org/whl/cpu \
-            --constraint "${RUNNER_TEMP}/constraints.txt" torch
           python -m pip install --only-binary=:all: --constraint "${RUNNER_TEMP}/constraints.txt" \
-            ".[viewing,autodiff,benchmarks,cli]" pytest
+            ".[viewing,benchmarks,cli]" pytest
           python -m pip check
           python -m pip freeze --all
       - name: Run the test suite
@@ -185,7 +180,7 @@ jobs:
           status=${PIPESTATUS[0]}
           {
             echo "### ${JOB_LABEL}"
-            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed-3d", "numpy", "scipy", "torch", "polyscope"]))'
+            python -c 'import importlib.metadata as m; print(", ".join(f"{p} {m.version(p)}" for p in ["delaunay-watershed", "delaunay-watershed-3d", "delaunay-watershed-2d", "numpy", "scipy", "polyscope"]))'
             echo
             tail -n 1 "${RUNNER_TEMP}/pytest-output.txt"
           } >> "${GITHUB_STEP_SUMMARY}"

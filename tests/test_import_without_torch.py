@@ -1,14 +1,14 @@
-"""The sparse-assembly work — `import foambryo` and inference must not require `torch`.
+"""`import foambryo` and inference must not require `torch`.
 
-torch became an optional `[autodiff]` extra in the sparse-assembly work (it backs only the gradient-check test).
-We prove the runtime path is torch-free by running a subprocess in which any `import torch`
-raises, then importing foambryo and running the full default inference (YoungDupre tensions
-+ Variational pressures, plus the Variational tension solve). The subprocess also asserts
+foambryo no longer depends on torch in any form (no extra, no development dependency): the float32 autodiff
+gradient check it backed was replaced by a float64 complex-step check (`tests/derivative_references.py`). This
+test keeps torch from coming back on the runtime path. We prove the runtime path is torch-free by running a
+subprocess in which any `import torch` raises, then importing foambryo and running the full default inference
+(YoungDupre tensions + Variational pressures, plus the Variational tension solve). The subprocess also asserts
 that `torch` never entered `sys.modules`.
 
-This is a subprocess rather than an in-process monkeypatch because `torch` is already
-imported by other tests in the same session; only a fresh interpreter can prove a clean
-torch-free import.
+This is a subprocess rather than an in-process monkeypatch because another installed package may
+import `torch` in the same test run; only a fresh interpreter can prove a clean torch-free import.
 """
 
 import subprocess

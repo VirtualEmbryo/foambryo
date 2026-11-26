@@ -7,8 +7,9 @@ tables byte for byte:
 * `tensions.csv`, and `pressures.csv` when pressures were inferred;
 * `solves.csv` with diagnostics (`basic` or `spectrum`), and `spectra.npz` with the spectrum: those of the window's
   last inference (values given to the window carry none);
-* `run.json`: the command's run record (schema 1), its `command` the window's, its `input` the mesh file the
-  window was opened on (or `mesh.rec`, written beside it, for a mesh reconstructed in the window);
+* `run.json`: the command's run record (schema 2, `results.RUN_RECORD_SCHEMA`: schema 1 plus the mesh's
+  `dimension`), its `command` the window's, its `input` the mesh file the window was opened on (or `mesh.rec`,
+  written beside it, for a mesh reconstructed in the window);
 * `colour_bars.png`: `save_colour_bars` on the values shown, as `foambryo view --colour-bars` writes it;
 * `mesh.rec` for a mesh reconstructed in the window: `foambryo mesh`'s file, byte for byte.
 

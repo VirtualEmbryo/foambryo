@@ -22,6 +22,7 @@ Matthieu Perez 2024
 """
 import time
 import warnings
+from collections.abc import Collection
 from enum import Enum
 from typing import TYPE_CHECKING
 
@@ -41,6 +42,7 @@ from foambryo.junction_graph import (
     warn_on_junction_graph_fragmentation,
 )
 from foambryo.per_edge_tension_inference import infer_tensions_young_dupre_local
+from foambryo.planar_mesh import dimension_of
 from foambryo.second_order_angle_reading import (
     CHORD_READING,
     AngleReadingReport,
@@ -288,8 +290,10 @@ def infer_tensions(
     mean_tension: float = 1,
     mode: TensionComputationMethod = TensionComputationMethod.YoungDupre,
     *,
-    angle_reading: str = CHORD_READING,
+    angle_reading: str | None = None,
     refusal: WedgeRefusal = NO_REFUSAL,
+    exclude_image_border: bool = True,
+    excluded_vertices: "Collection[int]" = (),
     solver: str = "auto",
     sparse_threshold: int | None = None,
     diagnostics: bool | str = False,
@@ -297,7 +301,10 @@ def infer_tensions(
     """Infer the relative surface tension of every interface of a mesh, by the chosen method.
 
     Args:
-        mesh (DcelData): Mesh to analyze, in any length unit (the tensions do not depend on it).
+        mesh (DcelData): Mesh to analyze, in any length unit (the tensions do not depend on it). A 2-D mesh
+            (`foambryo.PlanarMesh`, dw2d's `DCEL_Data`) is inferred in 2D: per-junction Young-Dupré rows, each
+            junction-graph component gauged alone, the arc reading by default (`foambryo.planar_mesh`,
+            `foambryo._two_dimensional`); with `diagnostics`, the second value is then a `TwoDimensionalReport`.
         mean_tension (float, optional): The normalisation: the tensions are normalised so that
             their mean is `mean_tension`, exactly, in each connected piece of the junction graph
             (for `LogLami`, their geometric mean; `Equilibrium`, `Variational` and `ForceBalance`
@@ -309,7 +316,7 @@ def infer_tensions(
             `TensionComputationMethod.YoungDupre`.
         angle_reading (str, optional): which trijunction angle convention the angle-reading
             methods (`ANGLE_READING_METHODS`) consume, one of
-            `foambryo.second_order_angle_reading.ANGLE_READINGS`: `"chord"` (the default,
+            `foambryo.second_order_angle_reading.ANGLE_READINGS`: `"chord"` (the default in 3D, `None`,
             bit-identical to every published number), `"quadric"` (the second-order reading),
             `"oriented_chord"` or `"oriented_quadric"` (the same readings with reflex wedges
             reported above 180 degrees). Keyword-only. A quadric reading that could not cover
@@ -376,13 +383,28 @@ def infer_tensions(
         DenseSolveMemoryWarning: when `solver="dense"` is forced on a system too large for the
             memory available.
     """
+    if dimension_of(mesh) == 2:
+        from foambryo import _inference_by_dimension
+
+        return _inference_by_dimension.tensions(
+            "infer_tensions", mesh, mean_tension, mode, angle_reading=angle_reading, refusal=refusal,
+            exclude_image_border=exclude_image_border, excluded_vertices=excluded_vertices,
+            solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
+        )
+    _refuse_two_dimensional_options("infer_tensions", exclude_image_border, excluded_vertices)
     result = infer_tensions_and_residuals(
-        mesh, mean_tension, mode, angle_reading=angle_reading, refusal=refusal,
-        solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
+        mesh, mean_tension, mode, angle_reading=CHORD_READING if angle_reading is None else angle_reading,
+        refusal=refusal, solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
     )
     if diagnostics is False:
         return result[1]
     return (result[1], result[3])
+
+
+def _refuse_two_dimensional_options(function: str, exclude_image_border: bool, excluded_vertices: "Collection[int]") -> None:
+    from foambryo._inference_by_dimension import refuse_two_dimensional_options
+
+    refuse_two_dimensional_options(function, exclude_image_border, excluded_vertices)
 
 
 def infer_tensions_and_residuals(
@@ -440,6 +462,9 @@ def infer_tensions_and_residuals(
         ValueError: as :func:`infer_tensions`.
         MalformedTripleLineError: as :func:`infer_tensions`.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_tensions_and_residuals")
     with linear_solves.solve_options(solver, sparse_threshold, diagnostics) as collected:
         tensions, dict_tensions, residuals, report, solution = _infer_tensions_and_residuals_with_report_and_solution(
             mesh, mean_tension, mode, angle_reading=angle_reading, refusal=refusal,
@@ -510,6 +535,9 @@ def infer_tensions_and_residuals_with_report(
             and `mode` does not read angles.
         MalformedTripleLineError: as :func:`infer_tensions`.
     """
+    from foambryo.planar_mesh import require_three_dimensions
+
+    require_three_dimensions(mesh, "infer_tensions_and_residuals_with_report")
     with linear_solves.solve_options(solver, sparse_threshold, diagnostics) as collected:
         tensions, dict_tensions, residuals, report, _solution = _infer_tensions_and_residuals_with_report_and_solution(
             mesh, mean_tension, mode, angle_reading=angle_reading, refusal=refusal,
@@ -736,10 +764,8 @@ def _build_matrix_tension_symmetrical_yd(
     # CLASSICAL
     # YOUNG-DUPRÉ
     # Nine entries per line, in the order the dense builder has always assigned them.
-    rows = np.empty(9 * nj, dtype=np.int64)
-    cols = np.empty(9 * nj, dtype=np.int64)
-    values = np.empty(9 * nj, dtype=np.float64)
-    for i, key in enumerate(linear_keys_angles):
+    junctions = []
+    for key in linear_keys_angles:
         c = key // ka**2
         b = (key - (c * (ka**2))) // ka
         a = key % ka
@@ -753,14 +779,8 @@ def _build_matrix_tension_symmetrical_yd(
         idx_tac = reverse_map_t[min(a, c) * nb_zones + max(a, c)]
 
         factor = dict_length_tri[(a, b, c)] / total_length_mesh
-        span = slice(9 * i, 9 * i + 9)
-        rows[span] = (3 * i, 3 * i, 3 * i, 3 * i + 1, 3 * i + 1, 3 * i + 1, 3 * i + 2, 3 * i + 2, 3 * i + 2)
-        cols[span] = (idx_tab, idx_tbc, idx_tac) * 3
-        values[span] = (
-            1 * factor, np.cos(angle_b) * factor, np.cos(angle_a) * factor,
-            np.cos(angle_b) * factor, 1 * factor, np.cos(angle_c) * factor,
-            np.cos(angle_a) * factor, np.cos(angle_c) * factor, 1 * factor,
-        )
+        junctions.append((idx_tab, idx_tbc, idx_tac, angle_a, angle_b, angle_c, factor))
+    rows, cols, values = young_dupre_entries(junctions)
 
     if as_sparse:
         gauge = np.arange(nm)
@@ -778,6 +798,48 @@ def _build_matrix_tension_symmetrical_yd(
     matrix_m[3 * nj, :nm] = 1  # Enforces mean of tensions = 1 (see B[-1])
 
     return (matrix_m, vector_b)
+
+
+def young_dupre_entries(
+    junctions: list[tuple[int, int, int, float, float, float, float]],
+) -> tuple[NDArray[np.int64], NDArray[np.int64], NDArray[np.float64]]:
+    """The nine `(row, column, value)` entries of each junction's three Young-Dupré rows.
+
+    Shared by the 3D builder (one junction per triple line, weighted by its length) and the 2D one
+    (`foambryo._two_dimensional`: one junction per junction vertex, unit weight). For a junction
+    between materials `a`, `b`, `c` with interfaces `ab`, `bc`, `ac` and the angle `t_m` inside
+    material `m`, its rows `3 i`, `3 i + 1`, `3 i + 2` are, times the weight `w`::
+
+        g_ab + g_bc cos(t_b) + g_ac cos(t_a) = 0
+        g_ab cos(t_b) + g_bc + g_ac cos(t_c) = 0
+        g_ab cos(t_a) + g_bc cos(t_c) + g_ac = 0
+
+    The force balance of three tensions meeting at a point, projected on the three interfaces
+    (Young-Dupré; the projected form is what this package has always written). The values are
+    computed one junction at a time, as scalars, in the order the 3D builder always used, so that
+    its matrix is bitwise unchanged.
+
+    Args:
+        junctions: one `(column_ab, column_bc, column_ac, t_a, t_b, t_c, weight)` per junction,
+            angles in radians.
+
+    Returns:
+        tuple: `(rows, cols, values)`, each of length `9 * len(junctions)`.
+    """
+    nj = len(junctions)
+    rows = np.empty(9 * nj, dtype=np.int64)
+    cols = np.empty(9 * nj, dtype=np.int64)
+    values = np.empty(9 * nj, dtype=np.float64)
+    for i, (idx_tab, idx_tbc, idx_tac, angle_a, angle_b, angle_c, factor) in enumerate(junctions):
+        span = slice(9 * i, 9 * i + 9)
+        rows[span] = (3 * i, 3 * i, 3 * i, 3 * i + 1, 3 * i + 1, 3 * i + 1, 3 * i + 2, 3 * i + 2, 3 * i + 2)
+        cols[span] = (idx_tab, idx_tbc, idx_tac) * 3
+        values[span] = (
+            1 * factor, np.cos(angle_b) * factor, np.cos(angle_a) * factor,
+            np.cos(angle_b) * factor, 1 * factor, np.cos(angle_c) * factor,
+            np.cos(angle_a) * factor, np.cos(angle_c) * factor, 1 * factor,
+        )
+    return rows, cols, values
 
 
 def _infer_tension_projection_yd(
@@ -1915,7 +1977,10 @@ def infer_tensions_by_junction_component(
     mean_tension: float = 1,
     mode: TensionComputationMethod = TensionComputationMethod.YoungDupre,
     *,
+    angle_reading: str | None = None,
     refusal: WedgeRefusal = NO_REFUSAL,
+    exclude_image_border: bool = True,
+    excluded_vertices: "Collection[int]" = (),
     solver: str = "auto",
     sparse_threshold: int | None = None,
     diagnostics: bool | str = False,
@@ -1935,7 +2000,8 @@ def infer_tensions_by_junction_component(
     the chord angles; it emits no `JunctionGraphGaugeWarning`, since the result carries what the warning would say.
 
     Args:
-        mesh (DcelData): Mesh to analyze, in any length unit.
+        mesh (DcelData): Mesh to analyze, in any length unit. A 2-D mesh is inferred in 2D, as by
+            `infer_tensions` (the arc reading by default; `exclude_image_border` and `excluded_vertices` apply).
         mean_tension (float, optional): The normalisation, applied **per piece**: the tensions of
             each connected piece are normalised so that their mean is `mean_tension`, exactly (for
             `LogLami`, their geometric mean). Defaults to 1.
@@ -1982,6 +2048,21 @@ def infer_tensions_by_junction_component(
         SparseSolveFallbackWarning: as :func:`infer_tensions`.
         DenseSolveMemoryWarning: as :func:`infer_tensions`.
     """
+    if dimension_of(mesh) == 2:
+        from foambryo import _inference_by_dimension
+
+        return _inference_by_dimension.tensions(
+            "infer_tensions_by_junction_component", mesh, mean_tension, mode, angle_reading=angle_reading,
+            refusal=refusal, exclude_image_border=exclude_image_border, excluded_vertices=excluded_vertices,
+            solver=solver, sparse_threshold=sparse_threshold, diagnostics=diagnostics,
+        )
+    _refuse_two_dimensional_options("infer_tensions_by_junction_component", exclude_image_border, excluded_vertices)
+    if angle_reading not in (None, CHORD_READING):
+        message = (
+            f"infer_tensions_by_junction_component reads the chord angles in 3D; angle_reading={angle_reading!r} "
+            "is offered in 3D by infer_tensions"
+        )
+        raise ValueError(message)
     if mode not in _JUNCTION_GRAPH_GAUGED_BUILDERS:
         message = (
             f"{mode} is not decomposed by the triple-junction graph -- its coupling "
